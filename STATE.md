@@ -4,7 +4,7 @@ Living build state. Updated every session (brief §0).
 
 - **Working register:** river / omission. Name, license, taxonomy labels, metaphor
   language are **RESERVED** — see §RESERVED. Package placeholder `xyz.mdhv.riverwip`.
-- **Current phase:** P0 → P1 (P0 scaffold complete).
+- **Current phase:** P1 Sources (pure logic done + verified; Android side in progress).
 
 ---
 
@@ -82,8 +82,19 @@ Living build state. Updated every session (brief §0).
 - Direct-fetch IP exposure — document in v1; user-configured proxy is later.
 
 ## Verification log (feeds/APIs — brief §0 "verify live at build time")
-- Pending: candidate starter feeds to be verified live during P1. Dead URLs are
-  dropped from the seed registry; only resolving feeds ship.
+- **2026-07-07** — verified 31 candidate endpoints (fan-out fetch + curl re-check
+  through the build proxy). **20 concrete feeds ship** (11 global, 9 India):
+  BBC (top/world), NPR, Guardian (world/intl), Al Jazeera, DW, France24, NYT
+  (world/top), ProPublica; The Hindu (home/national), NDTV, Times of India,
+  Indian Express, Livemint, Hindustan Times, Business Standard, Scroll.in
+  (via FeedBurner). Builder kinds verified: Google News (RSS), Mastodon (tag
+  timeline, no auth). **Dropped:** CNN edition RSS (HTTP 503, retired), Wikinews
+  Special:NewsFeed (404), The Wire & The Print (served HTML, no items), Deccan
+  Herald (no resolving path). **Caveats:** GDELT DOC 2.0 exists but rate-limits
+  (429/503 under load — retry w/ backoff); Mastodon public timeline needs auth on
+  mastodon.social (422) so the hashtag timeline is the no-auth default.
+- Guardian Open Platform (keyed, free) and GNews (Tier-B `api` reference) are
+  registered as keyed providers; not live-verified (need a key).
 
 ---
 
