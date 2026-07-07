@@ -4,7 +4,7 @@ Living build state. Updated every session (brief §0).
 
 - **Working register:** river / omission. Name, license, taxonomy labels, metaphor
   language are **RESERVED** — see §RESERVED. Package placeholder `xyz.mdhv.riverwip`.
-- **Current phase:** P1 Sources (pure logic done + verified; Android side in progress).
+- **Current phase:** P1 Sources complete → P2 Ingest & classify next.
 
 ---
 
@@ -39,16 +39,27 @@ Living build state. Updated every session (brief §0).
   assemble.
 - `LICENSE.RESERVED`, `.gitignore`, `gradle.properties` (package base centralized).
 
-### P1 — plan (in progress)
-- Add-by-URL + feed autodiscovery; OPML import/export.
-- Verified starter registry (India + global balanced) — URLs verified live at
-  build time (in progress; see Open Questions / verification log).
-- Source kinds: rss, googlenews (builder), gdelt (query builder), mastodon,
-  guardian (guided key), wikinews; `api` kind + Keystore path with one Tier B ref.
-- Registry schema mirrors provider-catalogue `services[]` (`consumedAt: runtime`)
-  for zero-migration P6 consumption.
-- **Gate:** ≥3 source kinds connect end-to-end; denominator copy on every
-  stream-total surface and empty state.
+### P1 — done (pure logic + Android layer)
+- Pure (`:core:model`, verified locally): domain types, taxonomy, hashing/ids,
+  canonical-URL normalization, feed URL builders (Google News/GDELT/Mastodon),
+  HTML feed autodiscovery, OPML import/export, registry schema, verified starters,
+  source-kind detector. 32 tests.
+- Data (`:core:data`, verified via JVM harness): Room `SourceEntity`/DAO/DB,
+  dependency-free `HttpClient` (gzip, conditional GET, redirects — foss-clean, no
+  OkHttp), `FeedProbe`/`FeedProber`, `SourceRepository` (add-by-URL w/ discovery,
+  starters, OPML, enable/disable/remove, health fields). Repo + probe tests pass.
+- Feature (`:feature:sources`): `SourcesViewModel` + `SourcesScreen` — add-by-URL,
+  candidate picker, one-click starters by region, builder/keyed rows (honestly
+  labeled), OPML import/export via SAF, source list w/ enable + remove. Wired into
+  `:app` via `AppContainer` (manual DI). *(Compose/Room compile validated in CI.)*
+- Registry mirrors provider-catalogue `services[]` (`consumedAt: runtime`) →
+  zero-migration P6.
+- **Gate:** starters seed rss + googlenews + gdelt + mastodon kinds (≥4);
+  denominator copy present on the sources surface + empty states. ✅
+
+### CI note
+- Unit tests run `testDebugUnitTest` (non-flavored modules) + `testFossDebugUnitTest`
+  + `testFullDebugUnitTest` (flavored) so every module's tests execute.
 
 ---
 

@@ -5,13 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import xyz.mdhv.riverwip.design.Copy
-import xyz.mdhv.riverwip.design.EmptyState
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import xyz.mdhv.riverwip.design.RiverTheme
+import xyz.mdhv.riverwip.feature.sources.SourcesScreen
+import xyz.mdhv.riverwip.feature.sources.SourcesViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,21 +22,14 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * P0 themed shell: a single empty state that already speaks the register —
- * denominator-honest, descriptive, never "all the news". Real navigation
- * (sources · reader · river) is wired in later phases.
+ * P1 shell: the sources surface, wired to the composition root. Real navigation
+ * across sources · reader · river lands as those features arrive (P3/P4).
  */
 @Composable
 fun RiverApp() {
+    val container = (LocalContext.current.applicationContext as RiverApplication).container
     RiverTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
-            EmptyState(
-                title = "A reader for what flowed past",
-                body = "This shows the shape of the news ${Copy.fromSources(0)}, " +
-                    "against what you actually read. It never claims to show all the news. " +
-                    "Add a source to begin.",
-                modifier = Modifier.padding(padding),
-            )
-        }
+        val vm: SourcesViewModel = viewModel(factory = SourcesViewModel.Factory(container.sourceRepository))
+        SourcesScreen(vm = vm, modifier = Modifier.fillMaxSize())
     }
 }

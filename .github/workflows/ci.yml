@@ -38,8 +38,11 @@ jobs:
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Unit tests (both flavors)
-        run: ./gradlew testFossDebugUnitTest testFullDebugUnitTest --stacktrace
+      - name: Unit tests (all modules + both flavors)
+        # Non-flavored modules expose `testDebugUnitTest`; flavored modules
+        # (app, :core:inference, :feature:lens) expose the per-flavor tasks.
+        # Requesting all three covers every module's unit tests.
+        run: ./gradlew testDebugUnitTest testFossDebugUnitTest testFullDebugUnitTest --stacktrace
 
       - name: Lint (foss)
         run: ./gradlew lintFossDebug --stacktrace
