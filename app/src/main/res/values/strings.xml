@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Working label only. The final app name is RESERVED (see STATE.md). -->
+    <string name="app_name">river</string>
+</resources>

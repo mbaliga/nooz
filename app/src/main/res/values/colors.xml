@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors Tokens.Palette.fieldRaised (#121212). Kept in sync with the
+         design token contract; the Compose surfaces are the source of truth. -->
+    <color name="river_window_background">#FF121212</color>
+</resources>
