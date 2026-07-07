@@ -1,6 +1,6 @@
 package xyz.mdhv.riverwip.design
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.unit.dp
 
 /**
@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
  * Behaviour must not depend on the token *values*: surfaces are re-skinned by
  * changing values here alone.
  *
- * Values are sourced from the **Hyle Design System** (`tokens/*.json`, the
- * ecosystem's cross-platform source of truth). Dark-first; the single north-star
+ * Values are sourced from the **Hyle Design System** (its shared `tokens` JSON,
+ * the ecosystem's cross-platform source of truth). Dark-first; the single north-star
  * accent is violet `#8E7BFF`. The provenance convention is fixed and never
  * inverted: warm radium (`#C7EF9E`) = on-device, cold cyan (`#35E0FF`) = cloud
  * — and per the colour-vision constraint, provenance always pairs with a
@@ -22,37 +22,37 @@ object Tokens {
     /** Raw palette (ARGB), mirrored from Hyle `color.palette.*`. */
     object Palette {
         // Field — canvas / backdrops. `void` (pure black) is art-only.
-        val fieldVoid = Color(0xFF000000)
-        val fieldNear = Color(0xFF0A0809)
-        val fieldRaised = Color(0xFF121212) // UI surfaces sit here, never pure black (halation).
-        val fieldDeep = Color(0xFF050009)
+        val fieldVoid = ComposeColor(0xFF000000)
+        val fieldNear = ComposeColor(0xFF0A0809)
+        val fieldRaised = ComposeColor(0xFF121212) // UI surfaces sit here, never pure black (halation).
+        val fieldDeep = ComposeColor(0xFF050009)
 
         // Ink — text, warm off-white at descending opacity.
-        val inkPure = Color(0xFFECE8E4)
-        val inkFull = Color(0xEBECE8E4)
-        val inkDim = Color(0x6BECE8E4)
-        val inkFaint = Color(0x2EECE8E4)
+        val inkPure = ComposeColor(0xFFECE8E4)
+        val inkFull = ComposeColor(0xEBECE8E4)
+        val inkDim = ComposeColor(0x6BECE8E4)
+        val inkFaint = ComposeColor(0x2EECE8E4)
 
         // Accent — spend scarce light here.
-        val accentViolet = Color(0xFF8E7BFF)
-        val accentVioletBright = Color(0xFFA593FF)
-        val accentVioletDeep = Color(0xFF7867E6)
+        val accentViolet = ComposeColor(0xFF8E7BFF)
+        val accentVioletBright = ComposeColor(0xFFA593FF)
+        val accentVioletDeep = ComposeColor(0xFF7867E6)
 
         // Provenance — ecosystem convention. Never invert.
-        val provenanceNative = Color(0xFFC7EF9E) // radium yellow-green = on-device
-        val provenanceCloud = Color(0xFF35E0FF)  // cold cyan = cloud
+        val provenanceNative = ComposeColor(0xFFC7EF9E) // radium yellow-green = on-device
+        val provenanceCloud = ComposeColor(0xFF35E0FF)  // cold cyan = cloud
 
-        val hairlineDefault = Color(0x14FFFFFF)
-        val hairlineStrong = Color(0x24FFFFFF)
-        val glassPane = Color(0x850A0809)
+        val hairlineDefault = ComposeColor(0x14FFFFFF)
+        val hairlineStrong = ComposeColor(0x24FFFFFF)
+        val glassPane = ComposeColor(0x850A0809)
 
         // Feedback. NOTE (colour-vision constraint, §2): the primary user is
         // red–green colourblind. No meaning may ride on danger-vs-success colour
         // alone — these are always paired with icon + text. Kept for surfaces
         // that already carry a non-colour signal.
-        val signalDanger = Color(0xFFE5564B)
-        val signalWarning = Color(0xFFE0941A)
-        val signalSuccess = Color(0xFF5BBF7A)
+        val signalDanger = ComposeColor(0xFFE5564B)
+        val signalWarning = ComposeColor(0xFFE0941A)
+        val signalSuccess = ComposeColor(0xFF5BBF7A)
     }
 
     /** Semantic colour roles (mirrored from Hyle `color.{text,background,...}`). */
