@@ -1,9 +1,13 @@
 package xyz.mdhv.riverwip.data
 
 import android.content.Context
+import java.io.File
+import xyz.mdhv.riverwip.data.cache.FullTextCache
 import xyz.mdhv.riverwip.data.db.RiverDatabase
 import xyz.mdhv.riverwip.data.net.FeedProbe
 import xyz.mdhv.riverwip.data.net.HttpClient
+import xyz.mdhv.riverwip.data.repo.ArticleRepository
+import xyz.mdhv.riverwip.data.repo.HttpArticleFetcher
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
@@ -22,23 +26,33 @@ class RiverData private constructor(
     val itemRepository: ItemRepository,
     val readEventRepository: ReadEventRepository,
     val weeklyAggregateRepository: WeeklyAggregateRepository,
+    val articleRepository: ArticleRepository,
     /** For `Configuration.Provider` on the Application — see `RiverApplication`. */
     val workerFactory: RiverWorkerFactory,
 ) {
     companion object {
+        /** Full-text cache budget (brief §4: "user-visible storage budget"). Working default; a settings screen can raise/lower it later. */
+        const val DEFAULT_FULL_TEXT_CACHE_BYTES: Long = 200L * 1024 * 1024
+
         fun create(context: Context): RiverData {
-            val db = RiverDatabase.build(context.applicationContext)
+            val appContext = context.applicationContext
+            val db = RiverDatabase.build(appContext)
             val http = HttpClient()
             val probe = FeedProbe(http)
             val itemRepository = ItemRepository(sourceDao = db.sourceDao(), itemDao = db.itemDao(), http = http)
             val weeklyAggregateRepository = WeeklyAggregateRepository(
                 itemDao = db.itemDao(), readEventDao = db.readEventDao(), weeklyAggregateDao = db.weeklyAggregateDao(),
             )
+            val fullTextCache = FullTextCache(File(appContext.cacheDir, "full-text"), DEFAULT_FULL_TEXT_CACHE_BYTES)
+            val articleRepository = ArticleRepository(
+                itemDao = db.itemDao(), fetcher = HttpArticleFetcher(http), cache = fullTextCache,
+            )
             return RiverData(
                 sourceRepository = SourceRepository(dao = db.sourceDao(), probe = probe),
                 itemRepository = itemRepository,
                 readEventRepository = ReadEventRepository(dao = db.readEventDao()),
                 weeklyAggregateRepository = weeklyAggregateRepository,
+                articleRepository = articleRepository,
                 workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository),
             )
         }
