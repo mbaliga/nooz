@@ -4,7 +4,9 @@ Living build state. Updated every session (brief §0).
 
 - **Working register:** river / omission. Name, license, taxonomy labels, metaphor
   language are **RESERVED** — see §RESERVED. Package placeholder `xyz.mdhv.riverwip`.
-- **Current phase:** P1 Sources complete → P2 Ingest & classify next.
+- **Current phase:** P2 ingest. The pure analytical cores of P2/P4/P5 and the §8
+  CVD palette have landed and are unit-verified ahead of their Android/UI wiring
+  (see "Strategy" below). Remaining: the Android IO/UI for P2–P5, plus P6/P7.
 
 ---
 
@@ -12,14 +14,37 @@ Living build state. Updated every session (brief §0).
 
 | Phase | Title | Status |
 | ----- | ----- | ------ |
-| P0 | Scaffold | ✅ complete |
-| P1 | Sources | ⏳ in progress |
-| P2 | Ingest & classify | ☐ not started |
+| P0 | Scaffold | ✅ complete (CI green) |
+| P1 | Sources | ✅ complete (CI green) |
+| P2 | Ingest & classify | ◑ pure core done + verified; WorkManager fetch/persist wiring remains |
 | P3 | Reader | ☐ not started |
-| P4 | The River (centerpiece) | ☐ not started |
-| P5 | The Lens (tap-to-defuse) | ☐ not started |
+| P4 | The River (centerpiece) | ◑ decomposition + metrics math done + verified; Compose canvas viz remains |
+| P5 | The Lens (tap-to-defuse) | ◑ fidelity guard + affect-span detection done + verified; rewrite UI + providers remain |
+| §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ☐ not started |
 | P7 | Hardening & release prep | ☐ not started |
+
+### Strategy: analytical cores first, then UI
+The brief's load-bearing, correctness-critical logic is pure and lives in
+`:core:model`, so it is unit-verified locally and in CI *ahead* of the Android
+surfaces that present it. Done + green:
+- **P2 ingest core** — `FeedParser` (RSS/Atom/RDF/JSON, XXE-hardened), `Simhash`
+  (char-shingle), `Dedup`, `Classifier` (evidence-carrying), `Ingest` transform.
+- **P4 river math** — `RiverAnalysis`: coverage, over/under, breadth, and the
+  supply-vs-drift decomposition that sums to Δ exactly (500-case property test).
+- **P5 lens safety** — `FidelityGuard` (adversarial corpus caught 100%),
+  `BiasLexicon` + `AffectSpanDetector`.
+- **§8** — `Cvd` + `TopicPalette` + build-failing pairwise CVD test.
+
+Remaining (Android/Compose/IO, CI-compile-verified as they land):
+- P2: WorkManager scheduled fetch (ETag/Last-Modified, per-source failure
+  tracking), Item/ReadEvent/WeeklyAggregate Room tables, ingest→persist wiring.
+- P3: reader list + typography reader, jsoup full-text extraction, end-of-feed marker.
+- P4: Compose/Canvas river visualization (un-read as dark mass), cross-section panel.
+- P5: reader underlines + defuse bottom sheet, `:core:inference` providers
+  (Urbana/llama.cpp/ML Kit), session-ephemeral defuse choices, sterile-lens toggle.
+- P6: `catalogue.json` consumption + local source-health monitor + CI sentry Action.
+- P7: a11y, baseline profiles, F-Droid/Play metadata, screenshots.
 
 ### P0 — done
 - Multi-module Gradle build: `:app`, `:core:model|data|inference|design`,
