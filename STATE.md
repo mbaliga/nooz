@@ -4,8 +4,9 @@ Living build state. Updated every session (brief §0).
 
 - **Working register:** river / omission. Name, license, taxonomy labels, metaphor
   language are **RESERVED** — see §RESERVED. Package placeholder `xyz.mdhv.riverwip`.
-- **Current phase:** P0–P6 substantially built (pure cores + Android/Compose UI
-  through the lens, plus the P6 catalogue-sensing layer). Remaining: P7 (hardening).
+- **Current phase:** P0–P7 substantially built. P7's a11y pass, F-Droid/Play
+  metadata skeleton, and screenshot script are in; baseline profiles are an
+  honestly-logged gap (see P7 section below).
 
 ---
 
@@ -21,7 +22,7 @@ Living build state. Updated every session (brief §0).
 | P5 | The Lens (tap-to-defuse) | ◑ UI + guard + router complete; **inference execution honestly stubbed** (see below) |
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
-| P7 | Hardening & release prep | ☐ not started |
+| P7 | Hardening & release prep | ◑ a11y pass done (+ adversarially reviewed/fixed); F-Droid/Play metadata skeleton + screenshot script done; **baseline profiles honestly not attempted** (see below) |
 
 ### Strategy: analytical cores first, then UI
 The brief's load-bearing, correctness-critical logic is pure and lives in
@@ -99,12 +100,46 @@ against the real thing:
   and defaults to opening the PR against this repo's own tracked mirror when
   those aren't set. See `catalogue/README.md`.
 
+### P7 — Hardening & release prep
+- **A11y pass**: done, then adversarially reviewed and fixed (see the new
+  "Adversarial-review-caught issues" section below) — TalkBack labels/actions
+  on lens spans (`LensAnnotatedParagraph`'s per-span `CustomAccessibilityAction`s)
+  and river regions (`RiverCanvas`'s per-week `selectable` + `contentDescription`
+  overlay, RTL-pinned, in a `selectableGroup()`), plus loading-state labels,
+  live regions, expand/collapse `stateDescription`, and a merged
+  switch+label announcement in Sources.
+- **F-Droid metadata / Play listing skeleton**: `fastlane/metadata/android/en-US/`
+  — the one directory shape both F-Droid (reads it directly from an app's
+  source repo) and Play (via fastlane's `supply`/Triple-T) understand, so one
+  skeleton serves both. `title.txt` stays an explicit RESERVED placeholder
+  (the name decision *is* the file); `short_description.txt`/
+  `full_description.txt` hold draft, functional copy — no name, no
+  metaphor/mythological language, no taxonomy-label decisions, per §RESERVED.
+  `images/` is empty (icon is RESERVED; screenshots need a device this
+  session doesn't have). See `fastlane/README.md`.
+- **Screenshot script**: `scripts/capture_screenshots.sh` — real, ready-to-run
+  `adb`-based tooling for whoever has a connected device/emulator. Never
+  executed in this session (no device here); honestly documented as such
+  rather than faked.
+- **Baseline profiles — honestly not attempted.** Generating one requires
+  running a macrobenchmark instrumented test on a real/emulated device to
+  record an actual startup/rendering trace; this sandbox has no Android SDK
+  emulator, and `ci.yml` doesn't run `connectedAndroidTest` either (no AVD is
+  provisioned there). Scaffolding an `androidx.baselineprofile` Gradle module
+  I have no way to compile-check, exercise, or verify even at the "does this
+  new module break the existing build" level (Gradle configures the whole
+  project graph even for targeted tasks, so a broken new module could take
+  down `assembleFossDebug`/`assembleFullDebug` for everything else) is a real
+  risk for zero verified benefit in this environment — the same bar D3/D4
+  apply elsewhere. Logged here as a follow-up requiring a device-capable
+  environment, not attempted rather than faked.
+
 ### Remaining
-- P7: a11y pass (TalkBack labels on lens spans + river regions), baseline
-  profiles, F-Droid metadata (blocked on the RESERVED license), Play listing
-  skeleton, screenshot script.
 - P6 follow-up: point `CATALOGUE_FORK_REPO`/`CATALOGUE_FORK_TOKEN` at the
   real provider-catalogue project once one exists and is authorized.
+- P7 follow-up: baseline profiles (see above); fill in `fastlane/` once the
+  RESERVED name/license/icon decisions land; run `scripts/capture_screenshots.sh`
+  once a device/emulator is available.
 - Visual polish (logged, not correctness-blocking): the lens's pre-underline
   is solid, not dotted (a true dotted underline needs a custom draw pass keyed
   to `TextLayoutResult`); the river's topic bands are flat stacked rects, not
@@ -322,6 +357,36 @@ respect as the CI-caught log above.
   dropped negations) caught 100%; accept/revert wiring complete. Real-device
   round-trip (actually generating and displaying a model's rewrite) blocked on
   wiring one real provider — see above.
+
+### P6 — done except the sentry's PR target (see above)
+- Pure (`:core:model`): `SourceHealth`/`HealthStatus`/`SourceHealthClassifier`
+  (OK/STALE/RATE_LIMITED/FAILING/UNKNOWN from data P2 already recorded — no
+  new collection, just a read model over it).
+- Feature (`:core:data`): `CatalogueRepository` (DataStore-backed, no default
+  URL — decision D4), `SourceRepository.observeHealth()`.
+- Feature (`:feature:sources`): a "Catalogue" card (URL entry, refresh, revert
+  to built-in starters) and a per-source health line, both wired through
+  `SourcesViewModel`.
+- CI: `.github/workflows/catalogue-sentry.yml` + `.github/scripts/catalogue_sentry.py`
+  + `catalogue/catalogue.snapshot.json`. Locally dry-run three times (baseline,
+  simulated drift, simulated recovery) — all three behaved correctly.
+- **Gate:** "simulated tier change → Action opens a correct PR" — satisfied
+  against this repo's own mirror (the `workflow_dispatch` `simulate_drift`
+  input exercises the full probe→diff→PR path); satisfied against the *real*
+  external provider-catalogue project only once `CATALOGUE_FORK_REPO`/
+  `CATALOGUE_FORK_TOKEN` are configured — see decision D4.
+
+### P7 — a11y pass done (+ adversarially fixed); metadata skeleton + screenshot script done; baseline profiles not attempted
+- A11y, F-Droid/Play skeleton, and the screenshot script are described in the
+  P7 section above (not repeated here). The a11y pass is worth flagging twice
+  for one reason: CI (unit tests + lint + assemble) caught none of the real
+  bugs in it — a dedicated adversarial review pass did, catching an RTL
+  tap/TalkBack mismatch and a dead switch tap-target that would otherwise have
+  shipped silently. See "Adversarial-review-caught issues" below.
+- **Gate**: no gate stated in the brief for P7 beyond the a11y pass itself;
+  treating "TalkBack labels including lens spans and river regions" as met
+  (both surfaces now have real semantics, reviewed and fixed), with baseline
+  profiles as the one honestly-open item.
 
 ---
 
