@@ -67,7 +67,7 @@ fun ReaderDetailScreen(vm: ReaderViewModel, lensVm: LensViewModel, item: Item, o
                         Icon(Icons.Filled.OpenInBrowser, contentDescription = "Open in browser")
                     }
                     // Instantly-discoverable lens toggle (brief §P5): default ON, one tap OFF.
-                    IconButton(onClick = { lensVm.setUnderlinesEnabled(!lensVm.underlinesEnabled) }) {
+                    IconButton(onClick = { lensVm.updateUnderlinesEnabled(!lensVm.underlinesEnabled) }) {
                         Icon(
                             if (lensVm.underlinesEnabled) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                             contentDescription = if (lensVm.underlinesEnabled) "Hide flagged language" else "Show flagged language",

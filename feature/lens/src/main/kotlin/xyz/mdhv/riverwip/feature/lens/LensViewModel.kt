@@ -47,11 +47,15 @@ class LensViewModel(private val inferenceRouter: InferenceRouter) : ViewModel() 
     var sterileLensEnabled: Boolean by mutableStateOf(false)
         private set
 
-    fun setUnderlinesEnabled(enabled: Boolean) {
+    // Named distinctly from the property (not `setUnderlinesEnabled`/`setSterileLensEnabled`):
+    // Kotlin's `private set` still compiles a same-named synthetic setter for a delegated
+    // `var`, and a same-signature public function collides with it at the JVM level
+    // (a "platform declaration clash") regardless of the differing Kotlin visibility.
+    fun updateUnderlinesEnabled(enabled: Boolean) {
         underlinesEnabled = enabled
     }
 
-    fun setSterileLensEnabled(enabled: Boolean) {
+    fun updateSterileLensEnabled(enabled: Boolean) {
         sterileLensEnabled = enabled
     }
 
