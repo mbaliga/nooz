@@ -10,6 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -95,13 +98,27 @@ fun LensAnnotatedParagraph(
     Text(
         text = annotated,
         style = style,
-        modifier = modifier.pointerInput(renderedSpans.size) {
-            detectTapGestures { pos ->
-                val lr = layoutResult ?: return@detectTapGestures
-                val charOffset = lr.getOffsetForPosition(pos)
-                selectedSpan = renderedSpans.firstOrNull { charOffset in it.renderedStart until it.renderedEnd }?.span
+        modifier = modifier
+            .pointerInput(renderedSpans.size) {
+                detectTapGestures { pos ->
+                    val lr = layoutResult ?: return@detectTapGestures
+                    val charOffset = lr.getOffsetForPosition(pos)
+                    selectedSpan = renderedSpans.firstOrNull { charOffset in it.renderedStart until it.renderedEnd }?.span
+                }
             }
-        },
+            // TalkBack's "explore by touch" never lands a raw tap at the exact
+            // pixel a span occupies, so the gesture above is unreachable to it —
+            // this is the actual way in (brief §P7: "TalkBack labels including
+            // lens spans"). One custom action per detected span, surfaced in
+            // TalkBack's local context menu regardless of where the span sits.
+            .semantics {
+                customActions = renderedSpans.map { rendered ->
+                    CustomAccessibilityAction(label = "${rendered.span.evidence}. View suggestion.") {
+                        selectedSpan = rendered.span
+                        true
+                    }
+                }
+            },
         onTextLayout = { layoutResult = it },
     )
 

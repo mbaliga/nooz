@@ -13,6 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.Provenance
@@ -37,7 +41,10 @@ fun DefuseBottomSheet(
 
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
         Column(
-            modifier = Modifier.padding(Tokens.Spacing.md),
+            // The rewrite state below changes without any user action of its own
+            // (Loading -> Accepted/Rejected) — a live region announces that
+            // transition to TalkBack instead of leaving it silent.
+            modifier = Modifier.padding(Tokens.Spacing.md).semantics { liveRegion = LiveRegionMode.Polite },
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
         ) {
             Text("Original", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -51,7 +58,11 @@ fun DefuseBottomSheet(
 
             when (state) {
                 is AffectSpanUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(top = Tokens.Spacing.sm))
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(top = Tokens.Spacing.sm)
+                            .semantics { contentDescription = "Loading suggested rewrite" },
+                    )
                 }
                 is AffectSpanUiState.Accepted -> {
                     Text(

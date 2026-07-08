@@ -9,8 +9,21 @@ package xyz.mdhv.riverwip.model
  */
 object RiverLayout {
 
-    /** One topic's slice of a week's column. [readFraction] is always ≤ [streamFraction] (reads are drawn from the stream). */
-    data class TopicBand(val topic: Topic, val streamFraction: Double, val readFraction: Double)
+    /**
+     * One topic's slice of a week's column. [readFraction] is always ≤
+     * [streamFraction] (reads are drawn from the stream). [streamCount]/
+     * [readCount] are the raw, un-normalized item counts the fractions were
+     * derived from — kept alongside them so a consumer (e.g. an accessibility
+     * description) can report an absolute count without re-deriving it from
+     * [WeekColumn.totalStream]/[WeekColumn.totalRead] and the fractions.
+     */
+    data class TopicBand(
+        val topic: Topic,
+        val streamFraction: Double,
+        val readFraction: Double,
+        val streamCount: Int,
+        val readCount: Int,
+    )
 
     data class WeekColumn(val weekStart: Long, val totalStream: Int, val totalRead: Int, val bands: List<TopicBand>)
 
@@ -40,6 +53,8 @@ object RiverLayout {
                     topic = topic,
                     streamFraction = stream.toDouble() / maxTotal,
                     readFraction = read.toDouble() / maxTotal,
+                    streamCount = stream,
+                    readCount = read,
                 )
             }
             WeekColumn(weekStart = agg.weekStart, totalStream = streamTotal, totalRead = readTotal, bands = bands)

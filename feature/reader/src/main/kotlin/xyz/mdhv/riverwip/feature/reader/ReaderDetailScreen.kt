@@ -26,6 +26,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
@@ -94,7 +96,7 @@ fun ReaderDetailScreen(vm: ReaderViewModel, lensVm: LensViewModel, item: Item, o
             when (val s = state) {
                 is ArticleUiState.Loading -> item {
                     androidx.compose.foundation.layout.Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(modifier = Modifier.semantics { contentDescription = "Loading article" })
                     }
                 }
                 is ArticleUiState.Loaded -> items(s.paragraphs) { para ->

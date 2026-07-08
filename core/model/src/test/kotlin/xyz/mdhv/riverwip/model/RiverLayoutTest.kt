@@ -36,6 +36,24 @@ class RiverLayoutTest {
         assertTrue(band.readFraction <= band.streamFraction)
     }
 
+    @Test fun rawCountsAreAbsoluteNotNormalized() {
+        // streamCount/readCount must survive as the actual item counts (clamped,
+        // for read) regardless of how the fractions get scaled against maxTotal —
+        // an accessibility description reads these, not the fractions.
+        val out = RiverLayout.layout(
+            listOf(
+                agg(0L, mapOf(Topic.TECH to 100), mapOf(Topic.TECH to 10)),
+                agg(1L, mapOf(Topic.TECH to 5), mapOf(Topic.TECH to 99)),
+            ),
+        )
+        val heavy = out[0].bands.first { it.topic == Topic.TECH }
+        assertEquals(100, heavy.streamCount)
+        assertEquals(10, heavy.readCount)
+        val clamped = out[1].bands.first { it.topic == Topic.TECH }
+        assertEquals(5, clamped.streamCount)
+        assertEquals(5, clamped.readCount) // clamped to streamCount, same as readFraction
+    }
+
     @Test fun heaviestWeekReachesFullScaleOthersAreProportional() {
         val out = RiverLayout.layout(
             listOf(

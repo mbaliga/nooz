@@ -19,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.design.Tokens
@@ -119,7 +121,8 @@ private fun MetricRow(label: String, value: String, formula: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = !expanded }
+            .clickable(onClickLabel = if (expanded) "Hide formula" else "Show formula") { expanded = !expanded }
+            .semantics { stateDescription = if (expanded) "expanded" else "collapsed" }
             .padding(vertical = Tokens.Spacing.xxs),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -139,7 +142,8 @@ private fun OverUnderRow(topic: Topic, ratio: Double) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = !expanded }
+            .clickable(onClickLabel = if (expanded) "Hide formula" else "Show formula") { expanded = !expanded }
+            .semantics { stateDescription = if (expanded) "expanded" else "collapsed" }
             .padding(vertical = Tokens.Spacing.xxs),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

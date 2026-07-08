@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
@@ -190,6 +192,9 @@ private fun AddByUrlCard(vm: SourcesViewModel) {
                     onValueChange = { url = it },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
+                    // A placeholder alone is only the accessible name while the
+                    // field is empty; a label keeps it once text is entered.
+                    label = { Text("Feed or site URL") },
                     placeholder = { Text("https://…") },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                     keyboardActions = KeyboardActions(onGo = { if (url.isNotBlank()) vm.addByUrl(url) }),
@@ -272,7 +277,14 @@ private fun SourceRow(source: Source, health: SourceHealth?, onToggle: (Boolean)
         modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xxs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(Modifier.weight(1f)) {
+        Column(
+            Modifier
+                .weight(1f)
+                // Merges title/url/health with the switch state into one announcement
+                // ("<title>, <kind> · <url>, switch, on/off") instead of a bare,
+                // unlabeled "Switch" (brief §P7 a11y pass).
+                .toggleable(value = source.enabled, onValueChange = onToggle, role = Role.Switch),
+        ) {
             Text(source.title, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             Text(
                 "${source.kind.key} · ${source.url}",
@@ -282,7 +294,7 @@ private fun SourceRow(source: Source, health: SourceHealth?, onToggle: (Boolean)
             )
             if (health != null) HealthLine(health)
         }
-        Switch(checked = source.enabled, onCheckedChange = onToggle)
+        Switch(checked = source.enabled, onCheckedChange = null)
         IconButton(onClick = onRemove) { Icon(Icons.Filled.Delete, contentDescription = "Remove ${source.title}") }
     }
 }
@@ -343,6 +355,7 @@ private fun CatalogueCard(vm: SourcesViewModel) {
                 onValueChange = { urlInput = it },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                label = { Text("Catalogue URL") },
                 placeholder = { Text("https://…/catalogue.json") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { vm.setCatalogueUrl(urlInput) }),
