@@ -74,8 +74,9 @@ fun ReaderDetailScreen(vm: ReaderViewModel, item: Item, onBack: () -> Unit) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
                     Text(item.title, style = MaterialTheme.typography.headlineSmall)
-                    if (!item.author.isNullOrBlank()) {
-                        Text(item.author, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    val author = item.author
+                    if (!author.isNullOrBlank()) {
+                        Text(author, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
