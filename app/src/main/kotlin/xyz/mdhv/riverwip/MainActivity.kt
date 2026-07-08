@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -26,6 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import xyz.mdhv.riverwip.design.RiverTheme
 import xyz.mdhv.riverwip.feature.reader.ReaderScreen
 import xyz.mdhv.riverwip.feature.reader.ReaderViewModel
+import xyz.mdhv.riverwip.feature.river.RiverScreen
+import xyz.mdhv.riverwip.feature.river.RiverViewModel
 import xyz.mdhv.riverwip.feature.sources.SourcesScreen
 import xyz.mdhv.riverwip.feature.sources.SourcesViewModel
 
@@ -37,11 +40,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class TopLevelDestination { READER, SOURCES }
+private enum class TopLevelDestination { READER, RIVER, SOURCES }
 
 /**
- * The app shell: a bottom-nav switch between Reader (P3) and Sources (P1). The
- * river (P4) and lens (P5) surfaces join this once their UI lands.
+ * The app shell: a bottom-nav switch between Reader (P3), River (P4), and
+ * Sources (P1). The lens (P5) surfaces join once its UI lands — it lives inside
+ * the reader, not as its own top-level destination.
  */
 @Composable
 fun RiverApp() {
@@ -56,6 +60,12 @@ fun RiverApp() {
                         onClick = { destination = TopLevelDestination.READER },
                         icon = { Icon(Icons.Filled.Home, contentDescription = null) },
                         label = { Text("Reader") },
+                    )
+                    NavigationBarItem(
+                        selected = destination == TopLevelDestination.RIVER,
+                        onClick = { destination = TopLevelDestination.RIVER },
+                        icon = { Icon(Icons.Filled.Timeline, contentDescription = null) },
+                        label = { Text("River") },
                     )
                     NavigationBarItem(
                         selected = destination == TopLevelDestination.SOURCES,
@@ -78,6 +88,15 @@ fun RiverApp() {
                             ),
                         )
                         ReaderScreen(vm)
+                    }
+                    TopLevelDestination.RIVER -> {
+                        val vm: RiverViewModel = viewModel(
+                            factory = RiverViewModel.Factory(
+                                weeklyAggregateRepository = container.weeklyAggregateRepository,
+                                sourceRepository = container.sourceRepository,
+                            ),
+                        )
+                        RiverScreen(vm)
                     }
                     TopLevelDestination.SOURCES -> {
                         val vm: SourcesViewModel = viewModel(factory = SourcesViewModel.Factory(container.sourceRepository))
