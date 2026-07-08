@@ -6,9 +6,9 @@ import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import java.util.concurrent.TimeUnit
 
 /**
@@ -26,7 +26,7 @@ object FetchScheduler {
         val interval = intervalMinutes.coerceAtLeast(15L)
         val request = PeriodicWorkRequestBuilder<FetchWorker>(interval, TimeUnit.MINUTES)
             .setConstraints(networkConstraints())
-            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, PeriodicWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, WorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
             .build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             FetchWorker.UNIQUE_WORK_NAME,
