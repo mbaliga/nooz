@@ -48,7 +48,14 @@ inference provider). Design tokens from the [Hyle Design System](https://github.
 ```
 
 ## Status
-See [`STATE.md`](STATE.md). Currently: P0 scaffold complete, P1 sources in progress.
+See [`STATE.md`](STATE.md). Currently: all seven build phases (P0–P7) are
+built — P0–P4 complete, P5's lens UI/guard/router complete with real
+inference execution honestly stubbed pending a verified provider, P6's
+catalogue-sensing layer complete with its CI sentry targeting this repo's own
+mirror pending a real provider-catalogue project to point at, and P7's a11y
+pass (adversarially reviewed and fixed) plus F-Droid/Play metadata skeleton
+and screenshot script done, with baseline profiles logged as a deliberate,
+undone gap (no device/emulator available to generate or verify one).
 
 ## License
 **RESERVED** — see [`LICENSE.RESERVED`](LICENSE.RESERVED). F-Droid eligibility for
