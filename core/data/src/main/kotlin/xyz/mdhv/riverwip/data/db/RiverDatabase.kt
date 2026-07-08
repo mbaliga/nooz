@@ -11,12 +11,15 @@ import androidx.room.RoomDatabase
  * unshipped); flip to true with a schema dir before the first release migration.
  */
 @Database(
-    entities = [SourceEntity::class],
+    entities = [SourceEntity::class, ItemEntity::class, ReadEventEntity::class, WeeklyAggregateEntity::class],
     version = 1,
     exportSchema = false,
 )
 abstract class RiverDatabase : RoomDatabase() {
     abstract fun sourceDao(): SourceDao
+    abstract fun itemDao(): ItemDao
+    abstract fun readEventDao(): ReadEventDao
+    abstract fun weeklyAggregateDao(): WeeklyAggregateDao
 
     companion object {
         fun build(context: Context): RiverDatabase =
