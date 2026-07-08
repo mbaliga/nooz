@@ -111,9 +111,18 @@ fun LensAnnotatedParagraph(
             // this is the actual way in (brief §P7: "TalkBack labels including
             // lens spans"). One custom action per detected span, surfaced in
             // TalkBack's local context menu regardless of where the span sits.
+            // Indexed so repeated terms (e.g. two "very"s in one paragraph) get
+            // distinguishable labels instead of identical, unpickable entries.
             .semantics {
-                customActions = renderedSpans.map { rendered ->
-                    CustomAccessibilityAction(label = "${rendered.span.evidence}. View suggestion.") {
+                customActions = renderedSpans.mapIndexed { index, rendered ->
+                    val actionVerb = when (vm.stateFor(itemId, rendered.span)) {
+                        is AffectSpanUiState.Accepted -> "Revert suggestion"
+                        is AffectSpanUiState.Rejected -> "Rewrite unavailable"
+                        is AffectSpanUiState.Loading -> "Suggestion loading"
+                        else -> "View suggestion"
+                    }
+                    val label = "${rendered.span.evidence} (${index + 1} of ${renderedSpans.size}). $actionVerb."
+                    CustomAccessibilityAction(label = label) {
                         selectedSpan = rendered.span
                         true
                     }

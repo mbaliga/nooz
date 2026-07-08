@@ -122,7 +122,7 @@ private fun MetricRow(label: String, value: String, formula: String) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClickLabel = if (expanded) "Hide formula" else "Show formula") { expanded = !expanded }
-            .semantics { stateDescription = if (expanded) "expanded" else "collapsed" }
+            .semantics(mergeDescendants = true) { stateDescription = if (expanded) "expanded" else "collapsed" }
             .padding(vertical = Tokens.Spacing.xxs),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -143,7 +143,7 @@ private fun OverUnderRow(topic: Topic, ratio: Double) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClickLabel = if (expanded) "Hide formula" else "Show formula") { expanded = !expanded }
-            .semantics { stateDescription = if (expanded) "expanded" else "collapsed" }
+            .semantics(mergeDescendants = true) { stateDescription = if (expanded) "expanded" else "collapsed" }
             .padding(vertical = Tokens.Spacing.xxs),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

@@ -277,24 +277,30 @@ private fun SourceRow(source: Source, health: SourceHealth?, onToggle: (Boolean)
         modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xxs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(
-            Modifier
+        Row(
+            modifier = Modifier
                 .weight(1f)
-                // Merges title/url/health with the switch state into one announcement
-                // ("<title>, <kind> · <url>, switch, on/off") instead of a bare,
-                // unlabeled "Switch" (brief §P7 a11y pass).
+                // Toggleable spans the text AND the switch, so both the whole
+                // row's tap target and its TalkBack announcement
+                // ("<title>, <kind> · <url>, switch, on/off") stay correct — the
+                // Switch below is display-only (onCheckedChange = null) so its
+                // own bounds don't compete with this modifier for the tap
+                // (brief §P7 a11y pass).
                 .toggleable(value = source.enabled, onValueChange = onToggle, role = Role.Switch),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(source.title, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
-            Text(
-                "${source.kind.key} · ${source.url}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-            )
-            if (health != null) HealthLine(health)
+            Column(Modifier.weight(1f)) {
+                Text(source.title, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                Text(
+                    "${source.kind.key} · ${source.url}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                )
+                if (health != null) HealthLine(health)
+            }
+            Switch(checked = source.enabled, onCheckedChange = null)
         }
-        Switch(checked = source.enabled, onCheckedChange = null)
         IconButton(onClick = onRemove) { Icon(Icons.Filled.Delete, contentDescription = "Remove ${source.title}") }
     }
 }

@@ -169,6 +169,57 @@ against the real thing:
   differently from the property (`updateUnderlinesEnabled`,
   `updateSterileLensEnabled`) rather than mirroring the property name.
 
+### Adversarial-review-caught issues (CI didn't catch these — read before touching P7's a11y layer)
+CI is unit tests + lint + assemble; none of those exercise locale, TalkBack, or
+touch-target geometry, so this class of bug compiles clean and stays invisible
+to the pipeline. Caught instead by a dedicated review+adversarial-verify pass
+over the P7 accessibility diffs (see STATE.md's P7 section) — worth the same
+respect as the CI-caught log above.
+- **Custom `Canvas` drawing + a Compose layout overlay silently disagree under
+  RTL**: `RiverCanvas`'s `Canvas` computes column position with raw,
+  direction-unaware pixel math (`x = index * (colWidth + gapPx)`) — `DrawScope`
+  never auto-mirrors for RTL, mirroring is the drawer's own job. The
+  accessibility/tap overlay added on top of it, a plain `Row`, *does*
+  auto-mirror under `LayoutDirection.Rtl` (this app declares
+  `android:supportsRtl="true"`, and nothing pinned direction anywhere). Result:
+  in an RTL locale the two layers disagree about which physical position is
+  "week 0," so both taps and TalkBack focus for a visually-correct bar resolve
+  to the wrong week. Fixed by wrapping the overlay in
+  `CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr)`
+  so it matches the Canvas's own always-LTR coordinate space. **Lesson**:
+  whenever a custom `Canvas`/`DrawScope` and a real Compose layout share one
+  coordinate system (an overlay, a hit-test layer), pin them to the same
+  layout direction explicitly — they do not agree by default.
+- **`Modifier.toggleable` must span the whole interactive region, including
+  the control it labels**: in `SourceRow`, `toggleable` was attached to the
+  label `Column` only, with the sibling `Switch`'s `onCheckedChange` set to
+  `null` (correct, to avoid a duplicate handler) — but that left the `Switch`
+  itself outside the only remaining tap target, so tapping the switch control
+  directly did nothing (only tapping the text still worked). Fixed by moving
+  `toggleable` onto a `Row` that wraps both the label `Column` and the
+  `Switch` together. **Lesson**: when hollowing out a control's own handler in
+  favor of a parent `toggleable`/`selectable`, the parent's bounds must
+  actually contain that control, not just the text next to it.
+- **Repeated `CustomAccessibilityAction` labels are indistinguishable in
+  TalkBack's action menu**: `LensAnnotatedParagraph` built one action label
+  per detected span from `span.evidence` alone (term + category), so two
+  spans hitting the same common lexicon word (e.g. two "very"s) produced
+  byte-identical, unpickable menu entries. Fixed by indexing labels (`"(2 of
+  3)"`) and varying the trailing verb by the span's actual state (Accepted →
+  "Revert suggestion", Rejected → "Rewrite unavailable", else → "View
+  suggestion") instead of a static "View suggestion" regardless of state.
+- **A rounded percentage can contradict the exact count next to it**:
+  `RiverCanvas`'s per-column description rounded read/stream to a percentage
+  naively, so e.g. 199 of 200 read rounds to "100% read, 199 of 200" — two
+  adjacent numbers a screen reader states as fact that don't agree. Fixed by
+  only ever showing 0%/100% when it's exactly true, clamping everything else
+  to 1–99.
+- **`Modifier.selectable` wants a `selectableGroup()` parent**: a row of
+  individually-`selectable` items (the river's week columns) needs
+  `Modifier.selectableGroup()` on their shared container for TalkBack/Switch
+  Access to expose proper single-selection/position semantics ("item 3 of
+  12"); added to `RiverCanvas`'s overlay `Row`.
+
 ### P0 — done
 - Multi-module Gradle build: `:app`, `:core:model|data|inference|design`,
   `:feature:sources|reader|river|lens`. Version catalog (`gradle/libs.versions.toml`).

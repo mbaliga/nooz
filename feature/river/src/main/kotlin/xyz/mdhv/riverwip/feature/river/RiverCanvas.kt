@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -16,8 +18,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
@@ -95,15 +99,27 @@ fun RiverCanvas(
         // TalkBack at all, not just visually. It also now owns tap-to-select
         // (replacing the old manual `pointerInput` + pixel-offset math): Compose's
         // layout system hit-tests each column for free once it is a real element.
-        Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(gapWidth)) {
-            columns.forEachIndexed { index, column ->
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .selectable(selected = index == selectedIndex, onClick = { onSelectWeek(index) })
-                        .semantics(mergeDescendants = true) { contentDescription = describeColumn(column) },
-                )
+        //
+        // Pinned to LTR: the Canvas above always paints column 0 at the physical
+        // left edge (`x = index * (colWidth + gapPx)` never consults
+        // `layoutDirection`), but a plain `Row` auto-mirrors under an RTL locale
+        // (this app declares `android:supportsRtl="true"`). Without pinning, an
+        // RTL locale would silently reverse which week a tap/TalkBack focus maps
+        // to relative to the bar the Canvas actually drew.
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                modifier = Modifier.fillMaxSize().selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(gapWidth),
+            ) {
+                columns.forEachIndexed { index, column ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .selectable(selected = index == selectedIndex, onClick = { onSelectWeek(index) })
+                            .semantics(mergeDescendants = true) { contentDescription = describeColumn(column) },
+                    )
+                }
             }
         }
     }
@@ -113,7 +129,14 @@ private fun describeColumn(column: RiverLayout.WeekColumn): String {
     val date = WEEK_DESCRIPTION_FORMAT.format(Instant.ofEpochMilli(column.weekStart).atZone(ZoneId.systemDefault()))
     if (column.bands.isEmpty()) return "Week of $date. Nothing flowed this week."
     val perTopic = column.bands.joinToString(". ") { band ->
-        val percent = if (band.streamCount > 0) (band.readCount * 100.0 / band.streamCount).roundToInt() else 0
+        // Rounding to a bare 0/100 would say "100% read" next to an explicit
+        // "199 of 200" — a self-contradictory pair of claims read aloud as fact.
+        // Only ever show 0%/100% when it's exactly true; otherwise clamp to 1-99.
+        val percent = when {
+            band.readCount <= 0 -> 0
+            band.readCount >= band.streamCount -> 100
+            else -> (band.readCount * 100.0 / band.streamCount).roundToInt().coerceIn(1, 99)
+        }
         "${band.topic.placeholderLabel}: $percent% read, ${band.readCount} of ${band.streamCount}"
     }
     return "Week of $date. $perTopic. ${column.totalRead} of ${column.totalStream} read overall."
