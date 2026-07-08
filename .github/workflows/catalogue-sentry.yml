@@ -1,0 +1,55 @@
+name: Catalogue sentry
+
+# CI-side sentry, not device-side (brief §P6): this probes Tier A/B endpoints
+# on a schedule so tier/availability drift can be caught and reviewed without
+# any app release — and, crucially, without a user's device ever probing or
+# reporting anything about anyone else's provider. See catalogue/README.md.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1' # weekly, Monday ~06:17 UTC
+  workflow_dispatch:
+    inputs:
+      simulate_drift:
+        description: >-
+          Force one service to appear drifted, to exercise the PR-opening
+          path end to end (brief §P6 gate: "simulated tier change -> Action
+          opens a correct PR").
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Probe Tier A/B endpoints and diff against the last known state
+        id: probe
+        env:
+          SIMULATE_DRIFT: ${{ (inputs.simulate_drift && '1') || '0' }}
+        run: python3 .github/scripts/catalogue_sentry.py
+
+      # No default target is configured: opening a PR against the real,
+      # external provider-catalogue project needs a fork of it plus a PAT
+      # authorized to push there, neither of which this build has (see
+      # catalogue/README.md). Until CATALOGUE_FORK_REPO / CATALOGUE_FORK_TOKEN
+      # are configured, this opens the PR here, against this repo's own
+      # tracked mirror — a real PR, just not yet against the real project.
+      - name: Open a PR with the updated catalogue state
+        if: steps.probe.outputs.drifted == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.CATALOGUE_FORK_TOKEN || secrets.GITHUB_TOKEN }}
+          push-to-fork: ${{ vars.CATALOGUE_FORK_REPO }}
+          branch: catalogue-sentry/drift-${{ github.run_number }}
+          commit-message: "catalogue-sentry: tier drift detected"
+          title: "Catalogue drift detected: ${{ steps.probe.outputs.summary }}"
+          body-path: catalogue/DRIFT_REPORT.md
+          add-paths: |
+            catalogue/catalogue.snapshot.json
+            catalogue/DRIFT_REPORT.md

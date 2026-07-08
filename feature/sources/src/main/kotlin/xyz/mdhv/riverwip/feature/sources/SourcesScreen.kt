@@ -43,14 +43,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.model.HealthStatus
 import xyz.mdhv.riverwip.model.ServiceDef
 import xyz.mdhv.riverwip.model.Source
+import xyz.mdhv.riverwip.model.SourceHealth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SourcesScreen(vm: SourcesViewModel, modifier: Modifier = Modifier) {
     val sources by vm.sources.collectAsStateWithLifecycle()
     val enabledCount by vm.enabledCount.collectAsStateWithLifecycle()
+    val health by vm.health.collectAsStateWithLifecycle()
+    val startersByRegion by vm.startersByRegion.collectAsStateWithLifecycle()
+    val builders by vm.builders.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -114,7 +119,7 @@ fun SourcesScreen(vm: SourcesViewModel, modifier: Modifier = Modifier) {
             }
 
             item { SectionHeader("One-click starters") }
-            for ((region, defs) in vm.startersByRegion) {
+            for ((region, defs) in startersByRegion) {
                 item {
                     Text(
                         region.replaceFirstChar { it.uppercase() },
@@ -127,7 +132,9 @@ fun SourcesScreen(vm: SourcesViewModel, modifier: Modifier = Modifier) {
             }
 
             item { SectionHeader("Query builders & keyed") }
-            items(vm.builders, key = { "builder-${it.id}" }) { def -> BuilderRow(def) { vm.addStarter(def) } }
+            items(builders, key = { "builder-${it.id}" }) { def -> BuilderRow(def) { vm.addStarter(def) } }
+
+            item { CatalogueCard(vm) }
 
             item {
                 SectionHeader("Your sources")
@@ -143,6 +150,7 @@ fun SourcesScreen(vm: SourcesViewModel, modifier: Modifier = Modifier) {
             items(sources, key = { it.id }) { source ->
                 SourceRow(
                     source = source,
+                    health = health[source.id],
                     onToggle = { enabled -> vm.setEnabled(source.id, enabled) },
                     onRemove = { vm.remove(source.id) },
                 )
@@ -259,7 +267,7 @@ private fun BuilderRow(def: ServiceDef, onAdd: () -> Unit) {
 }
 
 @Composable
-private fun SourceRow(source: Source, onToggle: (Boolean) -> Unit, onRemove: () -> Unit) {
+private fun SourceRow(source: Source, health: SourceHealth?, onToggle: (Boolean) -> Unit, onRemove: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xxs),
         verticalAlignment = Alignment.CenterVertically,
@@ -272,8 +280,107 @@ private fun SourceRow(source: Source, onToggle: (Boolean) -> Unit, onRemove: () 
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
             )
+            if (health != null) HealthLine(health)
         }
         Switch(checked = source.enabled, onCheckedChange = onToggle)
         IconButton(onClick = onRemove) { Icon(Icons.Filled.Delete, contentDescription = "Remove ${source.title}") }
+    }
+}
+
+/** Local source-health monitor (brief §P6): descriptive, never alarmist — shapes and counts, not warnings. */
+@Composable
+private fun HealthLine(health: SourceHealth) {
+    val label = when (health.status) {
+        HealthStatus.UNKNOWN -> "not fetched yet"
+        HealthStatus.OK -> "fetched ${relativeTime(health.lastFetchAt)}"
+        HealthStatus.STALE -> "stale — last fetched ${relativeTime(health.lastFetchAt)}"
+        HealthStatus.RATE_LIMITED -> "rate-limited — ${health.lastError}"
+        HealthStatus.FAILING -> "${health.consecutiveFailures} failed fetch(es) — ${health.lastError}"
+    }
+    Text(
+        label,
+        style = MaterialTheme.typography.labelSmall,
+        color = if (health.status == HealthStatus.OK || health.status == HealthStatus.UNKNOWN) {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        } else {
+            MaterialTheme.colorScheme.error
+        },
+    )
+}
+
+/** Coarse relative-time label. Never a precise duration on read events elsewhere (brief §3) — this is fetch metadata, not usage data, but stays just as coarse. */
+private fun relativeTime(epochMillis: Long?): String {
+    if (epochMillis == null) return "never"
+    val deltaMs = (System.currentTimeMillis() - epochMillis).coerceAtLeast(0)
+    val minutes = deltaMs / 60_000
+    return when {
+        minutes < 1 -> "just now"
+        minutes < 60 -> "${minutes}m ago"
+        minutes < 60 * 24 -> "${minutes / 60}h ago"
+        else -> "${minutes / (60 * 24)}d ago"
+    }
+}
+
+@Composable
+private fun CatalogueCard(vm: SourcesViewModel) {
+    val savedUrl by vm.catalogueUrl.collectAsStateWithLifecycle()
+    val lastRefreshedAt by vm.catalogueLastRefreshedAt.collectAsStateWithLifecycle()
+    var urlInput by remember(savedUrl) { mutableStateOf(savedUrl.orEmpty()) }
+    val refreshState = vm.catalogueRefreshState
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(Tokens.Spacing.md), verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
+            Text("Catalogue", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Optionally point this at a catalogue.json to refresh starters and free-tier " +
+                    "limits without an app update. Nothing is fetched unless you tap refresh — " +
+                    "there is no default URL, since this build can't verify one is live.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedTextField(
+                value = urlInput,
+                onValueChange = { urlInput = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                placeholder = { Text("https://…/catalogue.json") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { vm.setCatalogueUrl(urlInput) }),
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
+                Button(
+                    onClick = {
+                        vm.setCatalogueUrl(urlInput)
+                        vm.refreshCatalogue()
+                    },
+                    enabled = urlInput.isNotBlank() && refreshState !is CatalogueRefreshUiState.Loading,
+                ) { Text(if (refreshState is CatalogueRefreshUiState.Loading) "…" else "Refresh") }
+                if (savedUrl != null) {
+                    OutlinedButton(onClick = {
+                        urlInput = ""
+                        vm.clearCatalogue()
+                    }) { Text("Use built-in starters") }
+                }
+            }
+            when (refreshState) {
+                is CatalogueRefreshUiState.Error -> Text(
+                    "Couldn't refresh: ${refreshState.message}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                is CatalogueRefreshUiState.Refreshed -> Text(
+                    "Loaded ${refreshState.serviceCount} service definitions.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                else -> lastRefreshedAt?.let {
+                    Text(
+                        "Last refreshed ${relativeTime(it)}.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
     }
 }

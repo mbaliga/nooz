@@ -101,7 +101,9 @@ fun RiverApp() {
                         RiverScreen(vm)
                     }
                     TopLevelDestination.SOURCES -> {
-                        val vm: SourcesViewModel = viewModel(factory = SourcesViewModel.Factory(container.sourceRepository))
+                        val vm: SourcesViewModel = viewModel(
+                            factory = SourcesViewModel.Factory(container.sourceRepository, container.catalogueRepository),
+                        )
                         SourcesScreen(vm = vm, modifier = Modifier.fillMaxSize())
                     }
                 }

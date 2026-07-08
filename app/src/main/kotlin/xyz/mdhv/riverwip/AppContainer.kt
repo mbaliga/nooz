@@ -4,6 +4,7 @@ import android.content.Context
 import java.io.File
 import xyz.mdhv.riverwip.data.RiverData
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
+import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
@@ -23,7 +24,9 @@ import xyz.mdhv.riverwip.inference.ProviderFactory
  *  - P3 reader:  articleRepository (full-text extraction + LRU cache).
  *  - P4 river:   aggregate store + analysis (uses weeklyAggregateRepository).
  *  - P5 lens:    inferenceRouter (default order: Urbana → local llama.cpp →
- *                ML Kit — the last only in the `full` flavor).  ← here
+ *                ML Kit — the last only in the `full` flavor).
+ *  - P6 catalogue: catalogueRepository (remote refresh, no baked-in default
+ *                  URL — see STATE.md decision D4).  ← here
  */
 class AppContainer(appContext: Context) {
 
@@ -34,6 +37,7 @@ class AppContainer(appContext: Context) {
     val readEventRepository: ReadEventRepository = data.readEventRepository
     val weeklyAggregateRepository: WeeklyAggregateRepository = data.weeklyAggregateRepository
     val articleRepository: ArticleRepository = data.articleRepository
+    val catalogueRepository: CatalogueRepository = data.catalogueRepository
 
     /** Downloaded models live in persistent storage (never purged like a cache), never bundled in the APK. */
     val inferenceRouter: InferenceRouter = InferenceRouter(

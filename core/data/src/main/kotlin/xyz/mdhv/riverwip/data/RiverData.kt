@@ -7,6 +7,7 @@ import xyz.mdhv.riverwip.data.db.RiverDatabase
 import xyz.mdhv.riverwip.data.net.FeedProbe
 import xyz.mdhv.riverwip.data.net.HttpClient
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
+import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.HttpArticleFetcher
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
@@ -27,6 +28,7 @@ class RiverData private constructor(
     val readEventRepository: ReadEventRepository,
     val weeklyAggregateRepository: WeeklyAggregateRepository,
     val articleRepository: ArticleRepository,
+    val catalogueRepository: CatalogueRepository,
     /** For `Configuration.Provider` on the Application — see `RiverApplication`. */
     val workerFactory: RiverWorkerFactory,
 ) {
@@ -53,6 +55,7 @@ class RiverData private constructor(
                 readEventRepository = ReadEventRepository(dao = db.readEventDao()),
                 weeklyAggregateRepository = weeklyAggregateRepository,
                 articleRepository = articleRepository,
+                catalogueRepository = CatalogueRepository(context = appContext, http = http),
                 workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository),
             )
         }

@@ -4,8 +4,8 @@ Living build state. Updated every session (brief §0).
 
 - **Working register:** river / omission. Name, license, taxonomy labels, metaphor
   language are **RESERVED** — see §RESERVED. Package placeholder `xyz.mdhv.riverwip`.
-- **Current phase:** P0–P5 substantially built (pure cores + Android/Compose UI
-  for all five phases). Remaining: P6 (catalogue sensing) and P7 (hardening).
+- **Current phase:** P0–P6 substantially built (pure cores + Android/Compose UI
+  through the lens, plus the P6 catalogue-sensing layer). Remaining: P7 (hardening).
 
 ---
 
@@ -20,7 +20,7 @@ Living build state. Updated every session (brief §0).
 | P4 | The River (centerpiece) | ✅ complete: pure layout/analysis math + Canvas visualization + cross-section panel |
 | P5 | The Lens (tap-to-defuse) | ◑ UI + guard + router complete; **inference execution honestly stubbed** (see below) |
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
-| P6 | Catalogue sensing layer | ☐ not started |
+| P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
 | P7 | Hardening & release prep | ☐ not started |
 
 ### Strategy: analytical cores first, then UI
@@ -59,15 +59,52 @@ against the real thing:
   silent no-op, never a fake success). Wiring one real provider (most likely
   LocalLlamaProvider via a llama.cpp AAR) is the highest-value remaining P5 work.
 
+### P6 — Catalogue sensing layer
+- **`SourceHealth`** (`:core:model`): a pure `classify(lastFetchAt, lastError,
+  consecutiveFailures, now)` over data P2's fetch loop already recorded on
+  `SourceEntity` (`etag`/`lastModified`/`lastFetchAt`/`lastError`/
+  `consecutiveFailures` — anticipated back in P2, now finally read). Four
+  states: OK, STALE (no success in 48h), RATE_LIMITED (429/"Too Many
+  Requests"/`Retry-After` in the error), FAILING (any other error). Unit
+  tested. `SourceRepository.observeHealth()` exposes it; the Sources screen
+  shows a per-row status line — descriptive, never alarmist, per the copy
+  register.
+- **`CatalogueRepository`** (`:core:data`): lets `catalogue.json` refresh
+  Tier A/B definitions without an app release, per spec. **Deliberately ships
+  with no default URL** — brief §0 requires every remote URL be verified live
+  at build time, and "the provider-catalogue repo" is an external project
+  this build has no access to and cannot verify; shipping a guessed URL would
+  violate that same standard. The user supplies the URL (Sources screen,
+  "Catalogue" card); refresh is a manual pull, never automatic/background.
+  Falls back to the verified `Starters.seed` until/unless the user loads one.
+  Backed by `DataStore<Preferences>` (`catalogue` store) — this is the first
+  real use of the already-declared DataStore dependency.
+- **CI-side sentry** (`.github/workflows/catalogue-sentry.yml` +
+  `.github/scripts/catalogue_sentry.py`): scheduled (weekly) + manually
+  dispatchable Action that GETs every probeable Tier A/B endpoint listed in
+  `catalogue/catalogue.snapshot.json` (a hand-maintained mirror of
+  `Starters.kt`), diffs against the last recorded status, and — on drift —
+  rewrites the snapshot, writes `catalogue/DRIFT_REPORT.md`, and opens a PR
+  via `peter-evans/create-pull-request`. Locally dry-run three times against
+  a scratch copy: first run establishes baseline (no drift, correct), a
+  `SIMULATE_DRIFT=1` run correctly detects and reports one seeded failure,
+  and a third run correctly detects the simulated recovery back to OK —
+  satisfies the brief's own gate ("simulated tier change → Action opens a
+  correct PR") end-to-end. **What's honestly incomplete**: "opens PRs
+  against the catalogue repo" in the brief means an external
+  `provider-catalogue` project this build has no fork of and no PAT for.
+  Rather than fabricate that, the sentry is built to do the real thing
+  (real probes, real diffing, real PR) against a *configurable* target —
+  `CATALOGUE_FORK_REPO` (repo variable) + `CATALOGUE_FORK_TOKEN` (secret) —
+  and defaults to opening the PR against this repo's own tracked mirror when
+  those aren't set. See `catalogue/README.md`.
+
 ### Remaining
-- P6: `catalogue.json` consumption (the schema already mirrors
-  provider-catalogue's `services[]` — zero migration needed), local
-  source-health monitor UI, CI-side sentry Action (probes Tier A/B, opens PRs
-  against the catalogue repo — needs that repo's identity/credentials, not
-  available in this session's scope).
 - P7: a11y pass (TalkBack labels on lens spans + river regions), baseline
   profiles, F-Droid metadata (blocked on the RESERVED license), Play listing
   skeleton, screenshot script.
+- P6 follow-up: point `CATALOGUE_FORK_REPO`/`CATALOGUE_FORK_TOKEN` at the
+  real provider-catalogue project once one exists and is authorized.
 - Visual polish (logged, not correctness-blocking): the lens's pre-underline
   is solid, not dotted (a true dotted underline needs a custom draw pass keyed
   to `TextLayoutResult`); the river's topic bands are flat stacked rects, not
@@ -259,12 +296,20 @@ against the real thing:
   section above. This is a considered decision, not a shortcut: the brief's
   own FidelityGuard exists because small models fabricate; an agent silently
   faking a "working" model would be a worse failure than admitting the gap.
+- **D4 — No default catalogue URL, no default sentry PR target.** Same
+  standard as D3, applied to P6: brief §0's "verify live at build time" rules
+  out shipping a guessed `catalogue.json` URL, and the CI sentry has no
+  fork/PAT for the external provider-catalogue project the brief describes.
+  Both are built to do the real thing (real fetch/parse/merge, real probe/
+  diff/PR) against a *user- or repo-configurable* target rather than a
+  fabricated default — see the P6 section above.
 
 ## Schema versions
 - Data model: **v1**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`).
 - Source registry schema: **v1** (mirrors provider-catalogue `services[]`).
-- Catalogue consumption (`catalogue.json`): **not yet** (P6).
+- Catalogue consumption (`catalogue.json`): **built** (P6) — user-supplied URL
+  only, no baked-in default (see D4).
 
 ## Open questions (log now; surface at P4 gate per brief §10)
 - Daily vs weekly default abstraction — built as a parameter; ship weekly.

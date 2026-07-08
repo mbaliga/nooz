@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.map
 import xyz.mdhv.riverwip.data.db.SourceDao
 import xyz.mdhv.riverwip.data.mapping.toDomain
 import xyz.mdhv.riverwip.data.mapping.toEntity
+import xyz.mdhv.riverwip.data.mapping.toHealth
 import xyz.mdhv.riverwip.data.net.FeedProber
 import xyz.mdhv.riverwip.data.net.ProbeResult
 import xyz.mdhv.riverwip.model.FeedAutodiscovery
@@ -12,6 +13,7 @@ import xyz.mdhv.riverwip.model.Ids
 import xyz.mdhv.riverwip.model.Opml
 import xyz.mdhv.riverwip.model.ServiceDef
 import xyz.mdhv.riverwip.model.Source
+import xyz.mdhv.riverwip.model.SourceHealth
 import xyz.mdhv.riverwip.model.SourceKindDetector
 import xyz.mdhv.riverwip.model.Tier
 import xyz.mdhv.riverwip.model.toSourceOrNull
@@ -31,6 +33,10 @@ class SourceRepository(
 
     /** The honest denominator (brief §1): count of the user's enabled sources. */
     fun observeEnabledCount(): Flow<Int> = dao.observeEnabledCount()
+
+    /** Local source-health monitor (brief §P6) — kept on-device, never reported anywhere. */
+    fun observeHealth(): Flow<List<SourceHealth>> =
+        dao.observeAll().map { list -> val now = clock(); list.map { it.toHealth(now) } }
 
     sealed interface AddResult {
         data class Added(val source: Source) : AddResult
