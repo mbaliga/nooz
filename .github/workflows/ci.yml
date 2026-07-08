@@ -49,3 +49,13 @@ jobs:
 
       - name: Assemble (both flavors)
         run: ./gradlew assembleFossDebug assembleFullDebug --stacktrace
+
+      # Keep the built debug APKs so they can be downloaded from the run's
+      # "Artifacts" section and sideloaded onto an Android device (API 31+).
+      # Debug-signed (debug keystore) — fine for testing, not for store upload.
+      - name: Upload debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apks
+          path: app/build/outputs/apk/**/*-debug.apk
+          if-no-files-found: error
