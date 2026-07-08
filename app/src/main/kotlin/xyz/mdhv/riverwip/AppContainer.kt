@@ -1,6 +1,7 @@
 package xyz.mdhv.riverwip
 
 import android.content.Context
+import java.io.File
 import xyz.mdhv.riverwip.data.RiverData
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
@@ -8,6 +9,8 @@ import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
+import xyz.mdhv.riverwip.inference.InferenceRouter
+import xyz.mdhv.riverwip.inference.ProviderFactory
 
 /**
  * The manual DI composition root (house style: constructor injection, no
@@ -17,9 +20,10 @@ import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
  *  - P1 sources: RiverData → SourceRepository.
  *  - P2 ingest:  RiverData → ItemRepository, ReadEventRepository,
  *                WeeklyAggregateRepository, workerFactory (WorkManager).
- *  - P3 reader:  articleRepository (full-text extraction + LRU cache).  ← here
+ *  - P3 reader:  articleRepository (full-text extraction + LRU cache).
  *  - P4 river:   aggregate store + analysis (uses weeklyAggregateRepository).
- *  - P5 lens:    inference router + fidelity guard.
+ *  - P5 lens:    inferenceRouter (default order: Urbana → local llama.cpp →
+ *                ML Kit — the last only in the `full` flavor).  ← here
  */
 class AppContainer(appContext: Context) {
 
@@ -30,6 +34,11 @@ class AppContainer(appContext: Context) {
     val readEventRepository: ReadEventRepository = data.readEventRepository
     val weeklyAggregateRepository: WeeklyAggregateRepository = data.weeklyAggregateRepository
     val articleRepository: ArticleRepository = data.articleRepository
+
+    /** Downloaded models live in persistent storage (never purged like a cache), never bundled in the APK. */
+    val inferenceRouter: InferenceRouter = InferenceRouter(
+        ProviderFactory.build(appContext, File(appContext.filesDir, "models")),
+    )
 
     /** For `Configuration.Provider` on [RiverApplication] — never touched by feature UI. */
     val workerFactory: RiverWorkerFactory = data.workerFactory

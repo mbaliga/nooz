@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import xyz.mdhv.riverwip.design.RiverTheme
+import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.feature.reader.ReaderScreen
 import xyz.mdhv.riverwip.feature.reader.ReaderViewModel
 import xyz.mdhv.riverwip.feature.river.RiverScreen
@@ -87,7 +88,8 @@ fun RiverApp() {
                                 readEventRepository = container.readEventRepository,
                             ),
                         )
-                        ReaderScreen(vm)
+                        val lensVm: LensViewModel = viewModel(factory = LensViewModel.Factory(container.inferenceRouter))
+                        ReaderScreen(vm, lensVm)
                     }
                     TopLevelDestination.RIVER -> {
                         val vm: RiverViewModel = viewModel(

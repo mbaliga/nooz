@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,12 +29,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.feature.lens.LensAnnotatedParagraph
+import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.Item
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReaderDetailScreen(vm: ReaderViewModel, item: Item, onBack: () -> Unit) {
+fun ReaderDetailScreen(vm: ReaderViewModel, lensVm: LensViewModel, item: Item, onBack: () -> Unit) {
     val state by vm.articleState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val topic = Classifier.dominantTopic(item.topics)
@@ -62,6 +66,13 @@ fun ReaderDetailScreen(vm: ReaderViewModel, item: Item, onBack: () -> Unit) {
                     }) {
                         Icon(Icons.Filled.OpenInBrowser, contentDescription = "Open in browser")
                     }
+                    // Instantly-discoverable lens toggle (brief §P5): default ON, one tap OFF.
+                    IconButton(onClick = { lensVm.setUnderlinesEnabled(!lensVm.underlinesEnabled) }) {
+                        Icon(
+                            if (lensVm.underlinesEnabled) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (lensVm.underlinesEnabled) "Hide flagged language" else "Show flagged language",
+                        )
+                    }
                 },
             )
         },
@@ -87,7 +98,12 @@ fun ReaderDetailScreen(vm: ReaderViewModel, item: Item, onBack: () -> Unit) {
                     }
                 }
                 is ArticleUiState.Loaded -> items(s.paragraphs) { para ->
-                    Text(para, style = MaterialTheme.typography.bodyLarge)
+                    LensAnnotatedParagraph(
+                        itemId = item.id,
+                        text = para,
+                        vm = lensVm,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
                 }
                 is ArticleUiState.Fallback -> item {
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
