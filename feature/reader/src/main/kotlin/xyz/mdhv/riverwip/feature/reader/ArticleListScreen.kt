@@ -15,8 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +32,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.Copy
@@ -40,32 +48,70 @@ import java.time.format.DateTimeFormatter
 
 private val TIME_FORMAT = DateTimeFormatter.ofPattern("MMM d, HH:mm")
 
+/** Honest empty-state copy for the exact situation — never a silent blank (brief §3). */
+private fun emptyBody(enabledCount: Int, isRefreshing: Boolean, last: RefreshResult?): String = when {
+    enabledCount == 0 ->
+        "This reader only ever shows ${Copy.fromSources(0)}, never all the news. " +
+            "Add a feed on the Sources tab to begin."
+    isRefreshing -> "Fetching stories ${Copy.fromSources(enabledCount)}…"
+    last?.allFailed == true ->
+        "Couldn't reach your sources${last.error?.let { " ($it)" } ?: ""}. " +
+            "Check your connection and tap Fetch now to try again."
+    last != null && last.newItems == 0 ->
+        "Your sources returned nothing new. Tap Fetch now to check again."
+    else -> "Tap Fetch now to pull the latest stories ${Copy.fromSources(enabledCount)}."
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleListScreen(vm: ReaderViewModel, onOpenItem: (Item) -> Unit) {
     val items by vm.items.collectAsStateWithLifecycle()
     val enabledCount by vm.enabledSourceCount.collectAsStateWithLifecycle()
+    val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
+    val lastRefresh by vm.lastRefresh.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
-            TopAppBar(title = {
-                Column {
-                    Text("Reader", style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        // Denominator honesty on every stream-total surface (brief §1/§7).
-                        "${items.size} stories ${Copy.fromSources(enabledCount)}.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            })
+            TopAppBar(
+                title = {
+                    Column {
+                        Text("Reader", style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            // Denominator honesty on every stream-total surface (brief §1/§7).
+                            "${items.size} stories ${Copy.fromSources(enabledCount)}.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
+                actions = {
+                    if (isRefreshing) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(horizontal = Tokens.Spacing.md)
+                                .size(20.dp)
+                                .semantics { contentDescription = "Fetching your sources" },
+                            strokeWidth = 2.dp,
+                        )
+                    } else {
+                        IconButton(onClick = { vm.refresh() }, enabled = enabledCount > 0) {
+                            Icon(Icons.Filled.Refresh, contentDescription = "Fetch your sources now")
+                        }
+                    }
+                },
+            )
         },
     ) { padding ->
         if (items.isEmpty()) {
             EmptyState(
-                title = "Nothing here yet",
-                body = "Once your sources fetch, stories ${Copy.fromSources(enabledCount)} will appear here.",
+                title = if (enabledCount == 0) "No sources yet" else "Nothing here yet",
+                body = emptyBody(enabledCount, isRefreshing, lastRefresh),
                 modifier = Modifier.padding(padding),
+                action = if (enabledCount > 0 && !isRefreshing) {
+                    { Button(onClick = { vm.refresh() }) { Text("Fetch now") } }
+                } else {
+                    null
+                },
             )
         } else {
             LazyColumn(

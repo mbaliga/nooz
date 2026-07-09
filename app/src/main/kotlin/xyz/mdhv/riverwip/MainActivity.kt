@@ -86,6 +86,7 @@ fun RiverApp() {
                                 sourceRepository = container.sourceRepository,
                                 articleRepository = container.articleRepository,
                                 readEventRepository = container.readEventRepository,
+                                weeklyAggregateRepository = container.weeklyAggregateRepository,
                             ),
                         )
                         val lensVm: LensViewModel = viewModel(factory = LensViewModel.Factory(container.inferenceRouter))

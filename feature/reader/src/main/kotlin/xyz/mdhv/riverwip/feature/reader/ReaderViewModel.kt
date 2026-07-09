@@ -9,12 +9,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
+import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.model.DwellBucket
 import xyz.mdhv.riverwip.model.Item
 
@@ -26,11 +29,22 @@ sealed interface ArticleUiState {
     data class Fallback(val summary: String?) : ArticleUiState
 }
 
+/** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
+data class RefreshResult(
+    val newItems: Int,
+    val sourcesTried: Int,
+    val sourcesFailed: Int,
+    val error: String? = null,
+) {
+    val allFailed: Boolean get() = error != null || (sourcesTried > 0 && sourcesFailed == sourcesTried)
+}
+
 class ReaderViewModel(
     private val itemRepository: ItemRepository,
     private val sourceRepository: SourceRepository,
     private val articleRepository: ArticleRepository,
     private val readEventRepository: ReadEventRepository,
+    private val weeklyAggregateRepository: WeeklyAggregateRepository,
 ) : ViewModel() {
 
     /** The stream, from the user's currently enabled sources only (brief §1). */
@@ -40,6 +54,53 @@ class ReaderViewModel(
     /** The honest denominator for this surface's copy. */
     val enabledSourceCount: StateFlow<Int> = sourceRepository.observeEnabledCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
+
+    private val _isRefreshing = MutableStateFlow(false)
+    /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
+
+    private val _lastRefresh = MutableStateFlow<RefreshResult?>(null)
+    val lastRefresh: StateFlow<RefreshResult?> = _lastRefresh
+
+    init {
+        // Fetch once, automatically, the first time the reader is opened with
+        // sources added but nothing yet ingested — so adding sources and coming
+        // back to the reader "just works" instead of waiting on the background
+        // cadence (WorkManager's minimum period is 15 min and its first run is
+        // delayed). `.first { it }` suspends until that condition first holds,
+        // then completes — it never re-fires on its own.
+        viewModelScope.launch {
+            combine(enabledSourceCount, items) { count, list -> count > 0 && list.isEmpty() }
+                .first { it }
+            if (_lastRefresh.value == null) refresh()
+        }
+    }
+
+    /**
+     * Fetch every enabled source now, ingest, and roll the river's aggregates
+     * forward — the same work the background [xyz.mdhv.riverwip.data.work.FetchWorker]
+     * does, but on demand with visible progress. Per-source failures are isolated
+     * (one dead feed never blocks the rest).
+     */
+    fun refresh() {
+        if (_isRefreshing.value) return
+        _isRefreshing.value = true
+        viewModelScope.launch {
+            try {
+                val outcomes = itemRepository.fetchAndIngestAllEnabled()
+                weeklyAggregateRepository.recompute()
+                _lastRefresh.value = RefreshResult(
+                    newItems = outcomes.sumOf { it.newItemCount },
+                    sourcesTried = outcomes.size,
+                    sourcesFailed = outcomes.count { !it.succeeded },
+                )
+            } catch (e: Exception) {
+                _lastRefresh.value = RefreshResult(0, 0, 0, error = e.message ?: e.javaClass.simpleName)
+            } finally {
+                _isRefreshing.value = false
+            }
+        }
+    }
 
     var selectedItem: Item? by mutableStateOf(null)
         private set
@@ -89,9 +150,16 @@ class ReaderViewModel(
         private val sourceRepository: SourceRepository,
         private val articleRepository: ArticleRepository,
         private val readEventRepository: ReadEventRepository,
+        private val weeklyAggregateRepository: WeeklyAggregateRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ReaderViewModel(itemRepository, sourceRepository, articleRepository, readEventRepository) as T
+            ReaderViewModel(
+                itemRepository,
+                sourceRepository,
+                articleRepository,
+                readEventRepository,
+                weeklyAggregateRepository,
+            ) as T
     }
 }

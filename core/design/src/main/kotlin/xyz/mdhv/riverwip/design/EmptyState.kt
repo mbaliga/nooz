@@ -22,6 +22,7 @@ fun EmptyState(
     title: String,
     body: String,
     modifier: Modifier = Modifier,
+    action: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -43,6 +44,9 @@ fun EmptyState(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = Tokens.Spacing.xs),
         )
+        if (action != null) {
+            Column(Modifier.padding(top = Tokens.Spacing.md)) { action() }
+        }
     }
 }
 

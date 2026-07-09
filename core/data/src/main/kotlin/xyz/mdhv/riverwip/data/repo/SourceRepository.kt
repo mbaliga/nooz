@@ -34,6 +34,9 @@ class SourceRepository(
     /** The honest denominator (brief §1): count of the user's enabled sources. */
     fun observeEnabledCount(): Flow<Int> = dao.observeEnabledCount()
 
+    /** One-shot enabled-source count (for a fetch-on-first-open decision, not a UI total). */
+    suspend fun enabledCountOnce(): Int = dao.enabled().size
+
     /** Local source-health monitor (brief §P6) — kept on-device, never reported anywhere. */
     fun observeHealth(): Flow<List<SourceHealth>> =
         dao.observeAll().map { list -> val now = clock(); list.map { it.toHealth(now) } }
