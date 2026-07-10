@@ -2,19 +2,23 @@ package xyz.mdhv.riverwip.feature.reader
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,11 +40,32 @@ import xyz.mdhv.riverwip.feature.lens.LensAnnotatedParagraph
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.Item
+import kotlin.math.ceil
 
+/** Static estimate from content length (~200 wpm). Display-only — nothing is measured or stored (brief §3). */
+private fun readingMinutes(paragraphs: List<String>): Int {
+    val words = paragraphs.sumOf { it.split(Regex("\\s+")).count { w -> w.isNotBlank() } }
+    return ceil(words / 200.0).toInt().coerceAtLeast(1)
+}
+
+/**
+ * The paper (owner's Paper mock, 2026-07): a big serif headline over a
+ * "Source | Author" byline, quiet body text, and a bottom utility bar —
+ * share / open-in-browser on the left, an estimated reading time on the right
+ * (Settings-toggleable). The lens stays woven into every paragraph (brief §P5);
+ * the mock's struck-through "Show Progress" is deliberately absent.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReaderDetailScreen(vm: ReaderViewModel, lensVm: LensViewModel, item: Item, onBack: () -> Unit) {
+fun ReaderDetailScreen(
+    vm: ReaderViewModel,
+    lensVm: LensViewModel,
+    item: Item,
+    showReadingTime: Boolean,
+    onBack: () -> Unit,
+) {
     val state by vm.articleState.collectAsStateWithLifecycle()
+    val sourceTitles by vm.sourceTitles.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val topic = Classifier.dominantTopic(item.topics)
 
@@ -53,6 +79,25 @@ fun ReaderDetailScreen(vm: ReaderViewModel, lensVm: LensViewModel, item: Item, o
                     }
                 },
                 actions = {
+                    // Instantly-discoverable lens toggle (brief §P5): default ON, one tap OFF.
+                    IconButton(onClick = { lensVm.updateUnderlinesEnabled(!lensVm.underlinesEnabled) }) {
+                        Icon(
+                            if (lensVm.underlinesEnabled) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (lensVm.underlinesEnabled) "Hide flagged language" else "Show flagged language",
+                        )
+                    }
+                },
+            )
+        },
+        bottomBar = {
+            Column {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Tokens.Spacing.xs, vertical = Tokens.Spacing.xxs),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     IconButton(onClick = {
                         context.startActivity(
                             Intent(Intent.ACTION_SEND).apply {
@@ -66,17 +111,24 @@ fun ReaderDetailScreen(vm: ReaderViewModel, lensVm: LensViewModel, item: Item, o
                     IconButton(onClick = {
                         context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(item.canonicalUrl)))
                     }) {
-                        Icon(Icons.Filled.OpenInBrowser, contentDescription = "Open in browser")
+                        Icon(Icons.Filled.Public, contentDescription = "Open in browser")
                     }
-                    // Instantly-discoverable lens toggle (brief §P5): default ON, one tap OFF.
-                    IconButton(onClick = { lensVm.updateUnderlinesEnabled(!lensVm.underlinesEnabled) }) {
-                        Icon(
-                            if (lensVm.underlinesEnabled) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = if (lensVm.underlinesEnabled) "Hide flagged language" else "Show flagged language",
-                        )
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+                        val s = state
+                        if (showReadingTime && s is ArticleUiState.Loaded) {
+                            val minutes = remember(s.paragraphs) { readingMinutes(s.paragraphs) }
+                            Text(
+                                "$minutes min",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(end = Tokens.Spacing.sm)
+                                    .semantics { contentDescription = "Estimated reading time $minutes minutes" },
+                            )
+                        }
                     }
-                },
-            )
+                }
+            }
         },
     ) { padding ->
         LazyColumn(
@@ -85,17 +137,31 @@ fun ReaderDetailScreen(vm: ReaderViewModel, lensVm: LensViewModel, item: Item, o
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
-                    Text(item.title, style = MaterialTheme.typography.headlineSmall)
+                Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
+                    // The Paper mock's voice: an oversized serif headline...
+                    Text(item.title, style = MaterialTheme.typography.displayLarge)
+                    // ...over a source | author byline row.
                     val author = item.author
-                    if (!author.isNullOrBlank()) {
-                        Text(author, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    val sourceTitle = sourceTitles[item.sourceId]
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(
+                            sourceTitle ?: "",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        if (!author.isNullOrBlank()) {
+                            Text(
+                                author,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
             }
             when (val s = state) {
                 is ArticleUiState.Loading -> item {
-                    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(modifier = Modifier.semantics { contentDescription = "Loading article" })
                     }
                 }

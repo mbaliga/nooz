@@ -2,6 +2,7 @@ package xyz.mdhv.riverwip
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
@@ -17,13 +18,17 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 import xyz.mdhv.riverwip.design.RiverTheme
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.feature.reader.ReaderScreen
@@ -43,16 +48,42 @@ class MainActivity : ComponentActivity() {
 
 private enum class TopLevelDestination { READER, RIVER, SOURCES }
 
+private const val SPLASH_MILLIS = 1_100L
+
 /**
- * The app shell: a bottom-nav switch between Reader (P3), River (P4), and
- * Sources (P1). The lens (P5) surfaces join once its UI lands — it lives inside
- * the reader, not as its own top-level destination.
+ * The app shell: a brief splash (owner's mock), then the bottom-nav switch
+ * between Reader (P3), River (P4), and Sources (P1) — kept as-is per the
+ * owner's instruction; the mocks restyle the surfaces inside it. Theme and
+ * reading font follow the persisted Settings.
  */
 @Composable
 fun RiverApp() {
     val container = (LocalContext.current.applicationContext as RiverApplication).container
-    RiverTheme {
+    val settingsVm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container.settingsRepository))
+    val settings by settingsVm.settings.collectAsStateWithLifecycle()
+
+    RiverTheme(themeMode = settings.themeMode, readerFont = settings.readerFont) {
+        // Splash once per process-fresh launch; rememberSaveable keeps rotation
+        // from replaying it.
+        var splashDone by rememberSaveable { mutableStateOf(false) }
+        if (!splashDone) {
+            LaunchedEffect(Unit) {
+                delay(SPLASH_MILLIS)
+                splashDone = true
+            }
+            SplashScreen()
+            return@RiverTheme
+        }
+
         var destination by remember { mutableStateOf(TopLevelDestination.READER) }
+        var showSettings by rememberSaveable { mutableStateOf(false) }
+
+        if (showSettings) {
+            BackHandler { showSettings = false }
+            SettingsScreen(vm = settingsVm, onBack = { showSettings = false })
+            return@RiverTheme
+        }
+
         Scaffold(
             bottomBar = {
                 NavigationBar {
@@ -90,7 +121,12 @@ fun RiverApp() {
                             ),
                         )
                         val lensVm: LensViewModel = viewModel(factory = LensViewModel.Factory(container.inferenceRouter))
-                        ReaderScreen(vm, lensVm)
+                        ReaderScreen(
+                            vm = vm,
+                            lensVm = lensVm,
+                            showReadingTime = settings.showReadingTime,
+                            onOpenSettings = { showSettings = true },
+                        )
                     }
                     TopLevelDestination.RIVER -> {
                         val vm: RiverViewModel = viewModel(

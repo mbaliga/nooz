@@ -10,11 +10,16 @@ import xyz.mdhv.riverwip.feature.lens.LensViewModel
  * single-feature flow.
  */
 @Composable
-fun ReaderScreen(vm: ReaderViewModel, lensVm: LensViewModel) {
+fun ReaderScreen(
+    vm: ReaderViewModel,
+    lensVm: LensViewModel,
+    showReadingTime: Boolean,
+    onOpenSettings: () -> Unit,
+) {
     val selected = vm.selectedItem
     if (selected == null) {
-        ArticleListScreen(vm, onOpenItem = { vm.openItem(it) })
+        ArticleListScreen(vm, onOpenItem = { vm.openItem(it) }, onOpenSettings = onOpenSettings)
     } else {
-        ReaderDetailScreen(vm, lensVm, selected, onBack = { vm.closeItem() })
+        ReaderDetailScreen(vm, lensVm, selected, showReadingTime, onBack = { vm.closeItem() })
     }
 }

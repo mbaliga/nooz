@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
@@ -29,6 +30,11 @@ class RiverViewModel(
     /** The honest denominator for this surface's copy. */
     val enabledSourceCount: StateFlow<Int> = sourceRepository.observeEnabledCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
+
+    /** Source id → title, so the flow's accessibility description can name sources, not ids. */
+    val sourceTitles: StateFlow<Map<String, String>> = sourceRepository.observeSources()
+        .map { list -> list.associate { it.id to it.title } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
 
     /** Which week column is sliced open for the cross-section panel, if any. */
     var selectedWeekIndex: Int? by mutableStateOf(null)

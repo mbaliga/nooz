@@ -2,8 +2,9 @@
 
 Living build state. Updated every session (brief §0).
 
-- **Working register:** river / omission. Name, license, taxonomy labels, metaphor
-  language are **RESERVED** — see §RESERVED. Package placeholder `xyz.mdhv.riverwip`.
+- **Working register:** omission. Name: **Nooz** (owner-decided 2026-07-10, see
+  D5). License, taxonomy labels, metaphor language remain **RESERVED** — see
+  §RESERVED. Package placeholder `xyz.mdhv.riverwip` (rename still pending).
 - **Current phase:** P0–P7 substantially built. P7's a11y pass, F-Droid/Play
   metadata skeleton, and screenshot script are in; baseline profiles are an
   honestly-logged gap (see P7 section below).
@@ -419,6 +420,27 @@ respect as the CI-caught log above.
   Both are built to do the real thing (real fetch/parse/merge, real probe/
   diff/PR) against a *user- or repo-configurable* target rather than a
   fabricated default — see the P6 section above.
+- **D5 — The owner's design mocks (2026-07-10) supersede the dark-first
+  working skin; the name is decided.** The owner supplied five mocks (Splash,
+  Paper = article view, Viz = the river as an hourglass supply→consumption
+  flow, Stand = the list, Settings) carrying a "Nooz" wordmark and a light,
+  paper-and-serif newspaper language. These are *owner artifacts*, so the
+  previously-RESERVED name decision is now **made — "Nooz"** — and applied
+  (app label, wordmark on splash and viz, fastlane title); this repo did not
+  choose it, it implemented it. The paper theme is now the default
+  (`ThemeMode.LIGHT`), with the Hyle dark scheme kept as the dark option and
+  a Settings selector (light/system/dark). Explicitly per the owner: the app
+  shell/landing and the Sources screen keep their existing layouts (they only
+  inherit the theme). Two deliberate deviations from the mock pixels, both on
+  standing constraints: (a) stream colours stay the CVD-verified topic
+  palette — the mock's exact hues include red/green pairs the build-failing
+  pairwise ΔE test (brief §8) exists to prevent; (b) the mock's exact
+  typeface files weren't supplied, so display roles bind to the platform
+  serif ([FontFamily.Serif]) — same live-verification bar as feeds/models;
+  swapping in real font files later touches `Type.kt` alone. The mock's
+  struck-through "Show Progress" row is honoured as a decision *against*
+  that feature. Still open: final package name (rename is
+  install-breaking, deliberately not done), icon, license, taxonomy labels.
 
 ## Schema versions
 - Data model: **v1**, materialized in Room (`SourceEntity`, `ItemEntity`,
@@ -457,6 +479,13 @@ respect as the CI-caught log above.
 ---
 
 ## RESERVED — never decide, never suggest in-product
-App name & final package; license; icon & any visual metaphor language; final
-taxonomy labels; any mythological/metaphorical naming; Tier B paid-key decisions.
-No Marvel/Loki/TVA references anywhere (loom image guides form only, never copy).
+Still reserved: final package; license; icon & any visual metaphor language;
+final taxonomy labels; any mythological/metaphorical naming; Tier B paid-key
+decisions. No Marvel/Loki/TVA references anywhere (loom image guides form only,
+never copy).
+
+**Decided by the owner** (not by this build): the app name — **"Nooz"** —
+delivered via the owner's own design mocks on 2026-07-10 and applied per
+decision D5. The applicationId/package stays `xyz.mdhv.riverwip` until the
+owner schedules the rename (changing it breaks in-place upgrades of installed
+test builds).

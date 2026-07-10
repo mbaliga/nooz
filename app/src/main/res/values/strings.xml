@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Working label only. The final app name is RESERVED (see STATE.md). -->
-    <string name="app_name">river</string>
+    <!-- Decided by the owner via the 2026-07 design mocks (see STATE.md §RESERVED). -->
+    <string name="app_name">Nooz</string>
 </resources>

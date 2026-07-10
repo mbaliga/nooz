@@ -50,10 +50,10 @@ fun EmptyState(
     }
 }
 
-@Preview(backgroundColor = 0xFF121212, showBackground = true)
+@Preview(backgroundColor = 0xFFF7F6F3, showBackground = true)
 @Composable
 private fun EmptyStatePreview() {
-    RiverTheme(dark = true) {
+    RiverTheme {
         EmptyState(
             title = "No sources yet",
             body = "This reader only shows ${Copy.fromSources(0)}. Add a feed to begin — " +

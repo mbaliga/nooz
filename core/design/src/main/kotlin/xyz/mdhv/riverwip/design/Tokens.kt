@@ -46,6 +46,19 @@ object Tokens {
         val hairlineStrong = ComposeColor(0x24FFFFFF)
         val glassPane = ComposeColor(0x850A0809)
 
+        // Paper — the owner's light direction (design mocks, 2026-07): warm
+        // near-white newsprint field, near-black ink, grey bylines, faint
+        // hairlines. These carry the light theme; the dark set above remains
+        // the dark theme.
+        val paperField = ComposeColor(0xFFF7F6F3)
+        val paperRaised = ComposeColor(0xFFFFFFFF)
+        val paperInk = ComposeColor(0xFF141414)
+        val paperInkDim = ComposeColor(0xFF8A8A86)
+        val paperInkFaint = ComposeColor(0xFFC9C8C4)
+        val paperHairline = ComposeColor(0x1F000000)
+        val paperHairlineStrong = ComposeColor(0x33000000)
+        val paperSignalDanger = ComposeColor(0xFFB3261E)
+
         // Feedback. NOTE (colour-vision constraint, §2): the primary user is
         // red–green colourblind. No meaning may ride on danger-vs-success colour
         // alone — these are always paired with icon + text. Kept for surfaces

@@ -1,1 +1,1 @@
-RESERVED — final app name not yet decided (see STATE.md §RESERVED and fastlane/README.md). Working name used internally: river.
+Nooz

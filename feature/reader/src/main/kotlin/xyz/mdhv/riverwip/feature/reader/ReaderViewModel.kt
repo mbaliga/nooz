@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
@@ -54,6 +55,11 @@ class ReaderViewModel(
     /** The honest denominator for this surface's copy. */
     val enabledSourceCount: StateFlow<Int> = sourceRepository.observeEnabledCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
+
+    /** Source id → title, for the "Author | Source" bylines (owner's Stand/Paper mocks). */
+    val sourceTitles: StateFlow<Map<String, String>> = sourceRepository.observeSources()
+        .map { list -> list.associate { it.id to it.title } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
 
     private val _isRefreshing = MutableStateFlow(false)
     /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */

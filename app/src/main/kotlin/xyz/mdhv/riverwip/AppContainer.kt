@@ -7,6 +7,7 @@ import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
+import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
@@ -38,6 +39,7 @@ class AppContainer(appContext: Context) {
     val weeklyAggregateRepository: WeeklyAggregateRepository = data.weeklyAggregateRepository
     val articleRepository: ArticleRepository = data.articleRepository
     val catalogueRepository: CatalogueRepository = data.catalogueRepository
+    val settingsRepository: SettingsRepository = data.settingsRepository
 
     /** Downloaded models live in persistent storage (never purged like a cache), never bundled in the APK. */
     val inferenceRouter: InferenceRouter = InferenceRouter(
