@@ -4,22 +4,40 @@ import androidx.compose.runtime.Composable
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 
 /**
- * The reader surface (brief §P3): article list, tap through to a typography-first
- * reading view with the lens woven in (brief §P5). Selection state lives in
- * [ReaderViewModel] — no cross-module navigation graph needed for this
- * single-feature flow.
+ * The reader surface: the Nooz Stand, tap through to the immersive paper with
+ * the lens woven in. Selection state lives in [ReaderViewModel] — no
+ * cross-module navigation graph needed for this single-feature flow.
  */
 @Composable
 fun ReaderScreen(
     vm: ReaderViewModel,
     lensVm: LensViewModel,
     showReadingTime: Boolean,
+    onOpenEdit: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenLoom: () -> Unit,
+    onBrightnessDelta: (Float) -> Unit,
+    onThemeFlick: () -> Unit,
 ) {
     val selected = vm.selectedItem
     if (selected == null) {
-        ArticleListScreen(vm, onOpenItem = { vm.openItem(it) }, onOpenSettings = onOpenSettings)
+        ArticleListScreen(
+            vm = vm,
+            onOpenItem = { vm.openItem(it) },
+            onOpenEdit = onOpenEdit,
+            onOpenLoom = onOpenLoom,
+        )
     } else {
-        ReaderDetailScreen(vm, lensVm, selected, showReadingTime, onBack = { vm.closeItem() })
+        ReaderDetailScreen(
+            vm = vm,
+            lensVm = lensVm,
+            item = selected,
+            showReadingTime = showReadingTime,
+            onBack = { vm.closeItem() },
+            onOpenSettings = onOpenSettings,
+            onOpenLoom = onOpenLoom,
+            onBrightnessDelta = onBrightnessDelta,
+            onThemeFlick = onThemeFlick,
+        )
     }
 }

@@ -49,6 +49,7 @@ import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.ReaderFont
+import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
 
 class SettingsViewModel(private val repo: SettingsRepository) : ViewModel() {
@@ -58,6 +59,7 @@ class SettingsViewModel(private val repo: SettingsRepository) : ViewModel() {
     fun setTheme(mode: ThemeMode) = viewModelScope.launch { repo.setThemeMode(mode) }
     fun setFont(font: ReaderFont) = viewModelScope.launch { repo.setReaderFont(font) }
     fun setShowReadingTime(show: Boolean) = viewModelScope.launch { repo.setShowReadingTime(show) }
+    fun setTextScale(scale: TextScale) = viewModelScope.launch { repo.setTextScale(scale) }
 
     class Factory(private val repo: SettingsRepository) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -105,24 +107,24 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
             ) {
                 SwatchCircle(
-                    label = "Light theme",
-                    selected = settings.themeMode == ThemeMode.LIGHT,
-                    background = Tokens.Palette.paperRaised,
+                    label = "White theme",
+                    selected = settings.themeMode == ThemeMode.WHITE,
+                    background = Color(0xFFFFFFFF),
                     letterColor = Tokens.Palette.paperInk,
-                    onClick = { vm.setTheme(ThemeMode.LIGHT) },
+                    onClick = { vm.setTheme(ThemeMode.WHITE) },
                 )
                 SwatchCircle(
-                    label = "Follow system theme",
-                    selected = settings.themeMode == ThemeMode.SYSTEM,
+                    label = "Paper theme",
+                    selected = settings.themeMode == ThemeMode.PAPER,
                     background = Tokens.Palette.paperField,
-                    letterColor = Tokens.Palette.paperInkDim,
-                    onClick = { vm.setTheme(ThemeMode.SYSTEM) },
+                    letterColor = Tokens.Palette.paperInk,
+                    onClick = { vm.setTheme(ThemeMode.PAPER) },
                 )
                 SwatchCircle(
                     label = "Dark theme",
                     selected = settings.themeMode == ThemeMode.DARK,
-                    background = Tokens.Palette.fieldRaised,
-                    letterColor = Tokens.Palette.inkPure,
+                    background = Color(0xFF262624),
+                    letterColor = Color(0xFFECEAE6),
                     onClick = { vm.setTheme(ThemeMode.DARK) },
                 )
             }
@@ -161,6 +163,36 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                     fontFamily = FontFamily.Default,
                     onClick = { vm.setFont(ReaderFont.SYSTEM) },
                 )
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            Text(
+                "Text Size",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(
+                modifier = Modifier.selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+            ) {
+                for (scale in TextScale.entries) {
+                    Text(
+                        scale.label,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (settings.textScale == scale) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier
+                            .selectable(
+                                selected = settings.textScale == scale,
+                                role = Role.RadioButton,
+                                onClick = { vm.setTextScale(scale) },
+                            )
+                            .padding(vertical = Tokens.Spacing.xxs),
+                    )
+                }
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 

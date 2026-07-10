@@ -22,6 +22,8 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:design"))
     implementation(project(":core:data"))
+    // The Region & Topics tab hosts the metrics block (CrossSectionPanel).
+    implementation(project(":feature:river"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

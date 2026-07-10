@@ -35,4 +35,15 @@ class WeeklyAggregateRepository(
         val aggregates = WeeklyAggregator.aggregate(items, reads, periodDays)
         for (agg in aggregates) weeklyAggregateDao.upsert(agg.toEntity())
     }
+
+    /**
+     * Day-grained aggregates for the loom (owner's day-loom flow), computed on
+     * demand from raw rows (period is a parameter per the brief — the persisted
+     * roll-up stays weekly). Bounded by Item retention (~60 days).
+     */
+    suspend fun dailyAggregates(): List<WeeklyAggregate> {
+        val items = itemDao.allOnce().map { it.toDomain() }
+        val reads = readEventDao.allOnce().map { it.toDomain() }
+        return WeeklyAggregator.aggregate(items, reads, periodDays = 1)
+    }
 }

@@ -1,30 +1,29 @@
 package xyz.mdhv.riverwip.feature.reader
 
 import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -33,7 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.feature.lens.LensAnnotatedParagraph
@@ -49,13 +50,13 @@ private fun readingMinutes(paragraphs: List<String>): Int {
 }
 
 /**
- * The paper (owner's Paper mock, 2026-07): a big serif headline over a
- * "Source | Author" byline, quiet body text, and a bottom utility bar —
- * share / open-in-browser on the left, an estimated reading time on the right
- * (Settings-toggleable). The lens stays woven into every paragraph (brief §P5);
- * the mock's struck-through "Show Progress" is deliberately absent.
+ * The immersive paper (owner's Paper mock + flow map): no chrome above the
+ * article — just the piece, over a slim utility bar (lens toggle, open in
+ * browser, share, estimated reading time, and the day bar, which opens the
+ * loom). Swipe right returns to the stand, swipe left opens settings; a
+ * two-finger vertical drag slides brightness and a two-finger flick steps the
+ * theme (see [readerGestures]). The lens stays woven into every paragraph.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderDetailScreen(
     vm: ReaderViewModel,
@@ -63,84 +64,48 @@ fun ReaderDetailScreen(
     item: Item,
     showReadingTime: Boolean,
     onBack: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenLoom: () -> Unit,
+    onBrightnessDelta: (Float) -> Unit,
+    onThemeFlick: () -> Unit,
 ) {
     val state by vm.articleState.collectAsStateWithLifecycle()
     val sourceTitles by vm.sourceTitles.collectAsStateWithLifecycle()
+    val todayMix by vm.todayMix.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val topic = Classifier.dominantTopic(item.topics)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(topic.placeholderLabel, style = MaterialTheme.typography.labelLarge, color = topic.toComposeColor()) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back to list")
-                    }
-                },
-                actions = {
-                    // Instantly-discoverable lens toggle (brief §P5): default ON, one tap OFF.
-                    IconButton(onClick = { lensVm.updateUnderlinesEnabled(!lensVm.underlinesEnabled) }) {
-                        Icon(
-                            if (lensVm.underlinesEnabled) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = if (lensVm.underlinesEnabled) "Hide flagged language" else "Show flagged language",
-                        )
-                    }
-                },
-            )
-        },
-        bottomBar = {
-            Column {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Tokens.Spacing.xs, vertical = Tokens.Spacing.xxs),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    IconButton(onClick = {
-                        context.startActivity(
-                            Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, "${item.title}\n${item.canonicalUrl}")
-                            }.let { Intent.createChooser(it, null) },
-                        )
-                    }) {
-                        Icon(Icons.Filled.Share, contentDescription = "Share")
-                    }
-                    IconButton(onClick = {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(item.canonicalUrl)))
-                    }) {
-                        Icon(Icons.Filled.Public, contentDescription = "Open in browser")
-                    }
-                    Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                        val s = state
-                        if (showReadingTime && s is ArticleUiState.Loaded) {
-                            val minutes = remember(s.paragraphs) { readingMinutes(s.paragraphs) }
-                            Text(
-                                "$minutes min",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier
-                                    .padding(end = Tokens.Spacing.sm)
-                                    .semantics { contentDescription = "Estimated reading time $minutes minutes" },
-                            )
-                        }
-                    }
-                }
-            }
-        },
-    ) { padding ->
+    Column(
+        Modifier
+            .fillMaxSize()
+            .readerGestures(
+                onSwipeRight = onBack,
+                onSwipeLeft = onOpenSettings,
+                onBrightnessDelta = onBrightnessDelta,
+                onThemeFlick = onThemeFlick,
+            ),
+    ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(Tokens.Spacing.md),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(
+                start = Tokens.Spacing.md,
+                end = Tokens.Spacing.md,
+                top = Tokens.Spacing.xxl,
+                bottom = Tokens.Spacing.md,
+            ),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
-                    // The Paper mock's voice: an oversized serif headline...
+                    // Colour never alone: the dominant topic, named.
+                    Text(
+                        topic.placeholderLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = topic.toComposeColor(),
+                    )
                     Text(item.title, style = MaterialTheme.typography.displayLarge)
-                    // ...over a source | author byline row.
                     val author = item.author
                     val sourceTitle = sourceTitles[item.sourceId]
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -194,6 +159,60 @@ fun ReaderDetailScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Tokens.Spacing.lg),
                 )
+            }
+        }
+
+        // The utility bar (Paper mock's bottom line).
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Tokens.Spacing.xs, vertical = Tokens.Spacing.xxs),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Instantly-discoverable lens toggle (brief §P5): default ON, one tap OFF.
+            IconButton(onClick = { lensVm.updateUnderlinesEnabled(!lensVm.underlinesEnabled) }) {
+                Icon(
+                    if (lensVm.underlinesEnabled) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                    contentDescription = if (lensVm.underlinesEnabled) "Hide flagged language" else "Show flagged language",
+                )
+            }
+            IconButton(onClick = {
+                context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(item.canonicalUrl)))
+            }) {
+                Icon(Icons.Filled.Public, contentDescription = "Open in browser")
+            }
+            IconButton(onClick = {
+                context.startActivity(
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, "${item.title}\n${item.canonicalUrl}")
+                    }.let { Intent.createChooser(it, null) },
+                )
+            }) {
+                Icon(Icons.Filled.Share, contentDescription = "Share")
+            }
+            val s = state
+            if (showReadingTime && s is ArticleUiState.Loaded) {
+                val minutes = remember(s.paragraphs) { readingMinutes(s.paragraphs) }
+                Text(
+                    "$minutes min",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(horizontal = Tokens.Spacing.sm)
+                        .semantics { contentDescription = "Estimated reading time $minutes minutes" },
+                )
+            }
+            if (todayMix.isNotEmpty()) {
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .height(6.dp)
+                        .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },
+                ) {
+                    DayMixBar(todayMix, Modifier.fillMaxSize())
+                }
             }
         }
     }

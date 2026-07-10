@@ -12,11 +12,21 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.CatalogueRepository
+import xyz.mdhv.riverwip.data.repo.ItemRepository
+import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
+import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
+import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.FeedAutodiscovery
+import xyz.mdhv.riverwip.model.ReaderFilter
+import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.ServiceDef
 import xyz.mdhv.riverwip.model.Source
 import xyz.mdhv.riverwip.model.SourceHealth
+import xyz.mdhv.riverwip.model.Starters
+import xyz.mdhv.riverwip.model.Topic
+import xyz.mdhv.riverwip.model.WeeklyAggregate
+import xyz.mdhv.riverwip.model.toSourceOrNull
 
 /** Transient state for the add-by-URL flow. Never persisted. */
 sealed interface AddUiState {
@@ -38,7 +48,51 @@ sealed interface CatalogueRefreshUiState {
 class SourcesViewModel(
     private val repo: SourceRepository,
     private val catalogueRepo: CatalogueRepository,
+    private val settingsRepo: SettingsRepository,
+    itemRepository: ItemRepository,
+    weeklyAggregateRepository: WeeklyAggregateRepository,
 ) : ViewModel() {
+
+    /** The standing region + topics filter (the Region & Topics tab edits a draft of this). */
+    val filter: StateFlow<ReaderFilter> = settingsRepo.observeFilter()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), ReaderFilter())
+
+    fun saveFilter(filter: ReaderFilter) {
+        viewModelScope.launch { settingsRepo.setFilter(filter) }
+    }
+
+    /**
+     * Live topic mix per candidate region — the globe's ring. Real counts from
+     * the current stream (a region's mix = items from sources that would flow
+     * under that region), never invented per-sector numbers.
+     */
+    val mixByRegion: StateFlow<Map<Region, Map<Topic, Int>>> =
+        itemRepository.observeItemsForEnabledSources().map { items ->
+            val out = HashMap<Region, HashMap<Topic, Int>>()
+            for (region in Region.entries) out[region] = HashMap()
+            for (item in items) {
+                val tag = Starters.regionBySourceId[item.sourceId]
+                val topic = Classifier.dominantTopic(item.topics)
+                for (region in Region.entries) {
+                    if (ReaderFilter(region).includesSource(tag)) {
+                        out.getValue(region).merge(topic, 1, Int::plus)
+                    }
+                }
+            }
+            out
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
+
+    /** Weekly aggregates for the metrics block under the globe (coverage/breadth/over-under). */
+    val aggregates: StateFlow<List<WeeklyAggregate>> = weeklyAggregateRepository.observeAggregates()
+        .map { list -> list.sortedBy { it.weekStart } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+
+    /** Starter toggle (the mock's check circle): absent → add, present → remove. */
+    fun toggleStarter(def: ServiceDef) {
+        val id = def.toSourceOrNull(addedAt = 0L)?.id ?: return
+        val existing = sources.value.firstOrNull { it.id == id }
+        if (existing == null) addStarter(def) else remove(existing.id)
+    }
 
     val sources: StateFlow<List<Source>> =
         repo.observeSources().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
@@ -144,8 +198,12 @@ class SourcesViewModel(
     class Factory(
         private val repo: SourceRepository,
         private val catalogueRepo: CatalogueRepository,
+        private val settingsRepo: SettingsRepository,
+        private val itemRepository: ItemRepository,
+        private val weeklyAggregateRepository: WeeklyAggregateRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = SourcesViewModel(repo, catalogueRepo) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            SourcesViewModel(repo, catalogueRepo, settingsRepo, itemRepository, weeklyAggregateRepository) as T
     }
 }

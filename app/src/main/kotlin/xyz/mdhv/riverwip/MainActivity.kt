@@ -1,31 +1,25 @@
 package xyz.mdhv.riverwip
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Timeline
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.background
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
@@ -33,9 +27,9 @@ import xyz.mdhv.riverwip.design.RiverTheme
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.feature.reader.ReaderScreen
 import xyz.mdhv.riverwip.feature.reader.ReaderViewModel
-import xyz.mdhv.riverwip.feature.river.RiverScreen
-import xyz.mdhv.riverwip.feature.river.RiverViewModel
-import xyz.mdhv.riverwip.feature.sources.SourcesScreen
+import xyz.mdhv.riverwip.feature.river.LoomScreen
+import xyz.mdhv.riverwip.feature.river.LoomViewModel
+import xyz.mdhv.riverwip.feature.sources.EditScreen
 import xyz.mdhv.riverwip.feature.sources.SourcesViewModel
 
 class MainActivity : ComponentActivity() {
@@ -46,104 +40,119 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class TopLevelDestination { READER, RIVER, SOURCES }
+private enum class Screen { STAND, EDIT, SETTINGS, LOOM }
 
 private const val SPLASH_MILLIS = 1_100L
 
 /**
- * The app shell: a brief splash (owner's mock), then the bottom-nav switch
- * between Reader (P3), River (P4), and Sources (P1) — kept as-is per the
- * owner's instruction; the mocks restyle the surfaces inside it. Theme and
- * reading font follow the persisted Settings.
+ * The app shell, per the owner's flow map (2026-07): splash → the Nooz Stand.
+ * No bottom navigation — the Stand's plus/EDIT opens the Edit flow (Sources /
+ * Region & Topics), pulling down (or tapping the day bar) opens the loom, and
+ * the reading room swipes right back to the Stand and left into Settings.
+ * Theme tint, reading font, and text size follow the persisted Settings; a
+ * two-finger flick in the reading room steps the tint, and a two-finger drag
+ * slides in-app window brightness (no permission needed — window-level only).
  */
 @Composable
 fun RiverApp() {
-    val container = (LocalContext.current.applicationContext as RiverApplication).container
+    val context = LocalContext.current
+    val container = (context.applicationContext as RiverApplication).container
     val settingsVm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container.settingsRepository))
     val settings by settingsVm.settings.collectAsStateWithLifecycle()
 
-    RiverTheme(themeMode = settings.themeMode, readerFont = settings.readerFont) {
-        // Splash once per process-fresh launch; rememberSaveable keeps rotation
-        // from replaying it.
-        var splashDone by rememberSaveable { mutableStateOf(false) }
-        if (!splashDone) {
-            LaunchedEffect(Unit) {
-                delay(SPLASH_MILLIS)
-                splashDone = true
+    val readerVm: ReaderViewModel = viewModel(
+        factory = ReaderViewModel.Factory(
+            itemRepository = container.itemRepository,
+            sourceRepository = container.sourceRepository,
+            articleRepository = container.articleRepository,
+            readEventRepository = container.readEventRepository,
+            weeklyAggregateRepository = container.weeklyAggregateRepository,
+            settingsRepository = container.settingsRepository,
+        ),
+    )
+    val lensVm: LensViewModel = viewModel(factory = LensViewModel.Factory(container.inferenceRouter))
+    val sourcesVm: SourcesViewModel = viewModel(
+        factory = SourcesViewModel.Factory(
+            repo = container.sourceRepository,
+            catalogueRepo = container.catalogueRepository,
+            settingsRepo = container.settingsRepository,
+            itemRepository = container.itemRepository,
+            weeklyAggregateRepository = container.weeklyAggregateRepository,
+        ),
+    )
+    val loomVm: LoomViewModel = viewModel(
+        factory = LoomViewModel.Factory(
+            weeklyAggregateRepository = container.weeklyAggregateRepository,
+            sourceRepository = container.sourceRepository,
+            settingsRepository = container.settingsRepository,
+        ),
+    )
+
+    // In-app window brightness: per-window, no permission, resets with the app.
+    val activity = context as? Activity
+    val adjustBrightness: (Float) -> Unit = { delta ->
+        activity?.window?.let { w ->
+            val attrs = w.attributes
+            val current = if (attrs.screenBrightness < 0f) 0.5f else attrs.screenBrightness
+            attrs.screenBrightness = (current + delta).coerceIn(0.05f, 1f)
+            w.attributes = attrs
+        }
+    }
+
+    RiverTheme(themeMode = settings.themeMode, readerFont = settings.readerFont, textScale = settings.textScale) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .safeDrawingPadding(),
+        ) {
+            // Splash once per launch; rememberSaveable keeps rotation from replaying it.
+            var splashDone by rememberSaveable { mutableStateOf(false) }
+            if (!splashDone) {
+                LaunchedEffect(Unit) {
+                    delay(SPLASH_MILLIS)
+                    splashDone = true
+                }
+                SplashScreen()
+                return@Box
             }
-            SplashScreen()
-            return@RiverTheme
-        }
 
-        var destination by remember { mutableStateOf(TopLevelDestination.READER) }
-        var showSettings by rememberSaveable { mutableStateOf(false) }
+            var screen by rememberSaveable { mutableStateOf(Screen.STAND) }
 
-        if (showSettings) {
-            BackHandler { showSettings = false }
-            SettingsScreen(vm = settingsVm, onBack = { showSettings = false })
-            return@RiverTheme
-        }
-
-        Scaffold(
-            bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = destination == TopLevelDestination.READER,
-                        onClick = { destination = TopLevelDestination.READER },
-                        icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-                        label = { Text("Reader") },
-                    )
-                    NavigationBarItem(
-                        selected = destination == TopLevelDestination.RIVER,
-                        onClick = { destination = TopLevelDestination.RIVER },
-                        icon = { Icon(Icons.Filled.Timeline, contentDescription = null) },
-                        label = { Text("River") },
-                    )
-                    NavigationBarItem(
-                        selected = destination == TopLevelDestination.SOURCES,
-                        onClick = { destination = TopLevelDestination.SOURCES },
-                        icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-                        label = { Text("Sources") },
-                    )
+            BackHandler(enabled = screen != Screen.STAND) {
+                if (screen == Screen.LOOM && loomVm.showDatePicker) {
+                    loomVm.setDatePickerVisible(false)
+                } else {
+                    screen = Screen.STAND
                 }
-            },
-        ) { padding ->
-            Box(Modifier.fillMaxSize().padding(padding)) {
-                when (destination) {
-                    TopLevelDestination.READER -> {
-                        val vm: ReaderViewModel = viewModel(
-                            factory = ReaderViewModel.Factory(
-                                itemRepository = container.itemRepository,
-                                sourceRepository = container.sourceRepository,
-                                articleRepository = container.articleRepository,
-                                readEventRepository = container.readEventRepository,
-                                weeklyAggregateRepository = container.weeklyAggregateRepository,
-                            ),
-                        )
-                        val lensVm: LensViewModel = viewModel(factory = LensViewModel.Factory(container.inferenceRouter))
-                        ReaderScreen(
-                            vm = vm,
-                            lensVm = lensVm,
-                            showReadingTime = settings.showReadingTime,
-                            onOpenSettings = { showSettings = true },
-                        )
-                    }
-                    TopLevelDestination.RIVER -> {
-                        val vm: RiverViewModel = viewModel(
-                            factory = RiverViewModel.Factory(
-                                weeklyAggregateRepository = container.weeklyAggregateRepository,
-                                sourceRepository = container.sourceRepository,
-                            ),
-                        )
-                        RiverScreen(vm)
-                    }
-                    TopLevelDestination.SOURCES -> {
-                        val vm: SourcesViewModel = viewModel(
-                            factory = SourcesViewModel.Factory(container.sourceRepository, container.catalogueRepository),
-                        )
-                        SourcesScreen(vm = vm, modifier = Modifier.fillMaxSize())
-                    }
-                }
+            }
+
+            when (screen) {
+                Screen.STAND -> ReaderScreen(
+                    vm = readerVm,
+                    lensVm = lensVm,
+                    showReadingTime = settings.showReadingTime,
+                    onOpenEdit = { screen = Screen.EDIT },
+                    onOpenSettings = { screen = Screen.SETTINGS },
+                    onOpenLoom = {
+                        loomVm.reload()
+                        screen = Screen.LOOM
+                    },
+                    onBrightnessDelta = adjustBrightness,
+                    onThemeFlick = { settingsVm.setTheme(settings.themeMode.next()) },
+                )
+                Screen.EDIT -> EditScreen(
+                    vm = sourcesVm,
+                    onDone = {
+                        screen = Screen.STAND
+                        // New sources should show up without waiting on the
+                        // background cadence; conditional GETs keep this cheap.
+                        readerVm.refresh()
+                    },
+                    onOpenSettings = { screen = Screen.SETTINGS },
+                )
+                Screen.SETTINGS -> SettingsScreen(vm = settingsVm, onBack = { screen = Screen.STAND })
+                Screen.LOOM -> LoomScreen(vm = loomVm)
             }
         }
     }

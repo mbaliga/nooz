@@ -121,4 +121,16 @@ object Starters {
     /** One-click concrete feeds, grouped by region for the starters UI. */
     fun feedsByRegion(): Map<String, List<ServiceDef>> =
         verifiedFeeds.groupBy { it.region ?: "other" }
+
+    /**
+     * Region tag by derived source id, for the globe's region filter. Sources
+     * without a starter pedigree (added by URL/OPML) have no declared region
+     * and are treated as global — a feed's geography is not guessable from its
+     * URL, and guessing would be a silent lie.
+     */
+    val regionBySourceId: Map<String, String> by lazy {
+        seed.services.mapNotNull { def ->
+            def.toSourceOrNull(addedAt = 0L)?.let { it.id to (def.region ?: "global") }
+        }.toMap()
+    }
 }

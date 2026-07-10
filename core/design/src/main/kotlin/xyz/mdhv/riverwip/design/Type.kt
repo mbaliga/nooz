@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.model.ReaderFont
+import xyz.mdhv.riverwip.model.TextScale
 
 /**
  * Type scale. Sizes/weights still mirror Hyle `typography.json`; the *families*
@@ -21,15 +22,22 @@ import xyz.mdhv.riverwip.model.ReaderFont
  */
 val DisplayFontFamily: FontFamily = FontFamily.Serif
 
-private fun style(
-    family: FontFamily,
-    sizeSp: Int,
-    weight: FontWeight = FontWeight.Normal,
-    lineSp: Int = (sizeSp * 1.5f).toInt(),
-) = TextStyle(fontFamily = family, fontWeight = weight, fontSize = sizeSp.sp, lineHeight = lineSp.sp)
+/**
+ * Material3 [Typography] for the chosen reader font at the chosen text size
+ * (the Settings mock's three-step scale). Feature code keeps using named roles.
+ */
+fun riverTypography(
+    readerFont: ReaderFont = ReaderFont.SANS,
+    textScale: TextScale = TextScale.STANDARD,
+): Typography {
+    val k = textScale.multiplier
+    fun style(family: FontFamily, sizeSp: Int, weight: FontWeight, lineSp: Int) = TextStyle(
+        fontFamily = family,
+        fontWeight = weight,
+        fontSize = (sizeSp * k).sp,
+        lineHeight = (lineSp * k).sp,
+    )
 
-/** Material3 [Typography] for the chosen reader font. Feature code keeps using named roles. */
-fun riverTypography(readerFont: ReaderFont = ReaderFont.SANS): Typography {
     val body = when (readerFont) {
         ReaderFont.SERIF -> FontFamily.Serif
         ReaderFont.SANS -> FontFamily.SansSerif
@@ -50,5 +58,5 @@ fun riverTypography(readerFont: ReaderFont = ReaderFont.SANS): Typography {
     )
 }
 
-/** Default typography (sans body) — kept for previews and as the pre-settings-load fallback. */
-val AppTypography = riverTypography(ReaderFont.SANS)
+/** Default typography — kept for previews and as the pre-settings-load fallback. */
+val AppTypography = riverTypography()

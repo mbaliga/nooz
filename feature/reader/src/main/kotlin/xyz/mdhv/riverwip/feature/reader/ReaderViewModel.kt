@@ -17,10 +17,17 @@ import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
+import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
+import xyz.mdhv.riverwip.model.Classifier
+import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.DwellBucket
 import xyz.mdhv.riverwip.model.Item
+import xyz.mdhv.riverwip.model.ReaderFilter
+import xyz.mdhv.riverwip.model.Starters
+import xyz.mdhv.riverwip.model.Topic
+import xyz.mdhv.riverwip.model.WeekBucketing
 
 /** The reader's article state, once a reading session has begun. */
 sealed interface ArticleUiState {
@@ -46,11 +53,29 @@ class ReaderViewModel(
     private val articleRepository: ArticleRepository,
     private val readEventRepository: ReadEventRepository,
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
+    settingsRepository: SettingsRepository,
+    private val clock: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
 
-    /** The stream, from the user's currently enabled sources only (brief §1). */
-    val items: StateFlow<List<Item>> = itemRepository.observeItemsForEnabledSources()
+    private val allItems: StateFlow<List<Item>> = itemRepository.observeItemsForEnabledSources()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+
+    /** The standing region + topics filter (set on the globe, persisted). */
+    val filter: StateFlow<ReaderFilter> = settingsRepository.observeFilter()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), ReaderFilter())
+
+    /**
+     * The stand's stream: enabled sources, then the standing filter. Region
+     * matches a source's declared starter region (URL/OPML additions carry no
+     * declared region and count as global); topics match the item's dominant
+     * topic.
+     */
+    val items: StateFlow<List<Item>> = combine(allItems, filter) { list, f ->
+        list.filter { item ->
+            f.includesSource(Starters.regionBySourceId[item.sourceId])
+                && f.matchesTopic(Classifier.dominantTopic(item.topics))
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
 
     /** The honest denominator for this surface's copy. */
     val enabledSourceCount: StateFlow<Int> = sourceRepository.observeEnabledCount()
@@ -60,6 +85,23 @@ class ReaderViewModel(
     val sourceTitles: StateFlow<Map<String, String>> = sourceRepository.observeSources()
         .map { list -> list.associate { it.id to it.title } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
+
+    /**
+     * Today's supply compressed into the day bar (the loom, folded flat):
+     * per-topic shares of everything that flowed today from the region's
+     * source-set. Topics are never filtered out of the bar — supply is the
+     * subject.
+     */
+    val todayMix: StateFlow<List<Pair<Topic, Double>>> = combine(allItems, filter) { list, f ->
+        val dayStart = WeekBucketing.periodStart(clock(), periodDays = 1)
+        val counts = HashMap<String, Int>()
+        for (item in list) {
+            if (item.publishedAt < dayStart) continue
+            if (!f.includesSource(Starters.regionBySourceId[item.sourceId])) continue
+            counts.merge(Classifier.dominantTopic(item.topics).key, 1, Int::plus)
+        }
+        DayLoomLayout.dayMix(counts)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
 
     private val _isRefreshing = MutableStateFlow(false)
     /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */
@@ -71,22 +113,19 @@ class ReaderViewModel(
     init {
         // Fetch once, automatically, the first time the reader is opened with
         // sources added but nothing yet ingested — so adding sources and coming
-        // back to the reader "just works" instead of waiting on the background
-        // cadence (WorkManager's minimum period is 15 min and its first run is
-        // delayed). `.first { it }` suspends until that condition first holds,
-        // then completes — it never re-fires on its own.
+        // back to the stand "just works" instead of waiting on the background
+        // cadence. `.first { it }` suspends until the condition first holds.
         viewModelScope.launch {
-            combine(enabledSourceCount, items) { count, list -> count > 0 && list.isEmpty() }
+            combine(enabledSourceCount, allItems) { count, list -> count > 0 && list.isEmpty() }
                 .first { it }
             if (_lastRefresh.value == null) refresh()
         }
     }
 
     /**
-     * Fetch every enabled source now, ingest, and roll the river's aggregates
-     * forward — the same work the background [xyz.mdhv.riverwip.data.work.FetchWorker]
-     * does, but on demand with visible progress. Per-source failures are isolated
-     * (one dead feed never blocks the rest).
+     * Fetch every enabled source now, ingest, and roll the aggregates forward —
+     * the same work the background FetchWorker does, but on demand with visible
+     * progress. Per-source failures are isolated.
      */
     fun refresh() {
         if (_isRefreshing.value) return
@@ -157,6 +196,7 @@ class ReaderViewModel(
         private val articleRepository: ArticleRepository,
         private val readEventRepository: ReadEventRepository,
         private val weeklyAggregateRepository: WeeklyAggregateRepository,
+        private val settingsRepository: SettingsRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -166,6 +206,7 @@ class ReaderViewModel(
                 articleRepository,
                 readEventRepository,
                 weeklyAggregateRepository,
+                settingsRepository,
             ) as T
     }
 }

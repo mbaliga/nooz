@@ -1,6 +1,5 @@
 package xyz.mdhv.riverwip.design
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -9,6 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import xyz.mdhv.riverwip.model.ReaderFont
+import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
 
 /**
@@ -32,7 +32,7 @@ private val DarkExtended = ExtendedColors(
     textFaint = Tokens.Color.textFaint,
 )
 
-// Provenance hues stay identical in both themes (the convention never inverts);
+// Provenance hues stay identical in every tint (the convention never inverts);
 // they read fine on paper because they always pair with a label/icon anyway.
 private val PaperExtended = ExtendedColors(
     provenanceNative = Tokens.Color.provenanceNative,
@@ -50,58 +50,63 @@ object AppTheme {
         @Composable get() = LocalExtendedColors.current
 }
 
-// The dark theme: Hyle dark-first values, unchanged — now the ThemeMode.DARK
-// option rather than the default. `background` is the raised surface
-// (#121212-class), never pure black (halation).
-private val DarkScheme = darkColorScheme(
-    primary = Tokens.Color.actionPrimary,
-    onPrimary = Tokens.Color.onActionPrimary,
-    secondary = Tokens.Color.actionPrimaryActive,
-    onSecondary = Tokens.Color.onActionPrimary,
-    background = Tokens.Color.backgroundSurface,
-    onBackground = Tokens.Color.textPrimary,
-    surface = Tokens.Color.backgroundSurface,
-    onSurface = Tokens.Color.textPrimary,
-    surfaceVariant = Tokens.Palette.fieldNear,
-    onSurfaceVariant = Tokens.Color.textSecondary,
-    outline = Tokens.Color.borderStrong,
-    error = Tokens.Palette.signalDanger,
-)
-
-// The paper theme (owner's design mocks, 2026-07, now the default): warm
-// near-white newsprint, near-black ink, grey bylines. Ink itself is the accent
-// — the mocks spend colour only on the river's streams and provenance dots.
-private val PaperScheme = lightColorScheme(
+// Three surface tints (owner's three-theme reference, 2026-07): White, Paper,
+// Dark charcoal. Ink is the accent — the mocks spend colour only on the loom's
+// streams and provenance dots.
+private fun inkScheme(field: Color, raised: Color) = lightColorScheme(
     primary = Tokens.Palette.paperInk,
-    onPrimary = Tokens.Palette.paperField,
+    onPrimary = field,
     secondary = Tokens.Palette.paperInkDim,
-    onSecondary = Tokens.Palette.paperField,
-    background = Tokens.Palette.paperField,
+    onSecondary = field,
+    background = field,
     onBackground = Tokens.Palette.paperInk,
-    surface = Tokens.Palette.paperField,
+    surface = field,
     onSurface = Tokens.Palette.paperInk,
-    surfaceVariant = Tokens.Palette.paperRaised,
+    surfaceVariant = raised,
     onSurfaceVariant = Tokens.Palette.paperInkDim,
     outline = Tokens.Palette.paperHairlineStrong,
     outlineVariant = Tokens.Palette.paperHairline,
     error = Tokens.Palette.paperSignalDanger,
 )
 
+private val WhiteScheme = inkScheme(field = Color(0xFFFFFFFF), raised = Tokens.Palette.paperField)
+private val PaperScheme = inkScheme(field = Tokens.Palette.paperField, raised = Color(0xFFFFFFFF))
+
+// The dark tint per the owner's reference is a soft charcoal, not the old
+// near-black Hyle field.
+private val CharcoalScheme = darkColorScheme(
+    primary = Color(0xFFECEAE6),
+    onPrimary = Color(0xFF262624),
+    secondary = Color(0xFF9C9A96),
+    onSecondary = Color(0xFF262624),
+    background = Color(0xFF262624),
+    onBackground = Color(0xFFECEAE6),
+    surface = Color(0xFF262624),
+    onSurface = Color(0xFFECEAE6),
+    surfaceVariant = Color(0xFF31312F),
+    onSurfaceVariant = Color(0xFF9C9A96),
+    outline = Color(0x40FFFFFF),
+    outlineVariant = Color(0x1FFFFFFF),
+    error = Color(0xFFF2B8B5),
+)
+
 @Composable
 fun RiverTheme(
-    themeMode: ThemeMode = ThemeMode.LIGHT,
+    themeMode: ThemeMode = ThemeMode.PAPER,
     readerFont: ReaderFont = ReaderFont.SANS,
+    textScale: TextScale = TextScale.STANDARD,
     content: @Composable () -> Unit,
 ) {
-    val dark = when (themeMode) {
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
-        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    val scheme = when (themeMode) {
+        ThemeMode.WHITE -> WhiteScheme
+        ThemeMode.PAPER -> PaperScheme
+        ThemeMode.DARK -> CharcoalScheme
     }
-    CompositionLocalProvider(LocalExtendedColors provides if (dark) DarkExtended else PaperExtended) {
+    val extended = if (themeMode == ThemeMode.DARK) DarkExtended else PaperExtended
+    CompositionLocalProvider(LocalExtendedColors provides extended) {
         MaterialTheme(
-            colorScheme = if (dark) DarkScheme else PaperScheme,
-            typography = riverTypography(readerFont),
+            colorScheme = scheme,
+            typography = riverTypography(readerFont, textScale),
             content = content,
         )
     }

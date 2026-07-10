@@ -442,6 +442,32 @@ respect as the CI-caught log above.
   that feature. Still open: final package name (rename is
   install-breaking, deliberately not done), icon, license, taxonomy labels.
 
+- **D6 — The owner's second mock drop (2026-07-11/12) restructures navigation
+  and finalises the three tints.** Flow map (Figma): splash → **Nooz Stand**
+  (no bottom navigation anywhere); the empty Stand's centred plus → **Edit**
+  (tabs: Sources / Region & Topics); reading is **immersive** (swipe right =
+  stand, swipe left = settings); the Stand's day bar — the loom folded flat,
+  candy-cane while empty/fetching — opens the **day loom** by pull-down or
+  tap, and the loom's date opens the scrolling **date picker**. Theme is
+  three literal surface tints (White / Paper / Dark charcoal — the owner's
+  three-theme reference), Paper default; Settings adds a three-step **Text
+  Size**; "Show Article Progress" is struck through again and stays unbuilt.
+  Reader gestures: two-finger vertical = in-app window brightness (no
+  permission — window-level, so text size stays a Settings control),
+  two-finger flick = next tint. The interactive references' **ad-libbed
+  content** (topic lists like "religion"/"entertainment", fake feed URLs,
+  font names like "Hyle Deco Sans", size names "Rice/Peanut/Almond",
+  per-sector mix percentages) was deliberately NOT copied: real taxonomy,
+  real URLs, plain size labels, and the globe ring / loom weave **real
+  counts**. Stream colours remain the CVD-verified palette (same D5
+  precedence). The launcher icon + Play `icon.png` come from the owner's
+  512×512 logo. Region filtering maps sources' declared starter regions to
+  the globe's sectors ("india" → South Asia); URL/OPML additions carry no
+  declared region and count as global rather than guessing. The metrics
+  block (coverage/breadth/over-under, CrossSectionPanel) now lives under the
+  globe on the Region & Topics tab; the weekly columns/hourglass RiverScreen
+  and the bottom-nav shell are superseded and removed.
+
 ## Schema versions
 - Data model: **v1**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`).
