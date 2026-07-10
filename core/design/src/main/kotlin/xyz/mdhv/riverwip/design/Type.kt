@@ -2,6 +2,7 @@ package xyz.mdhv.riverwip.design
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -9,18 +10,28 @@ import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 
 /**
- * Type scale. Sizes/weights still mirror Hyle `typography.json`; the *families*
- * now follow the owner's design mocks (2026-07): display/headline/title roles
- * are always serif — the newspaper voice of the wordmark, article titles, and
- * the viz — while body/label default to the platform sans, switchable via the
- * Settings "Font" preference ([ReaderFont]).
- *
- * Platform families only ([FontFamily.Serif] is Noto Serif on modern Android):
- * bundling the mocks' exact typeface files would require font assets this
- * session cannot verify — same live-verification bar as feeds and model
- * mirrors. Swapping in the final files later touches this file alone.
+ * Type scale. Sizes/weights mirror Hyle `typography.json`; the reading
+ * families are the two Hyle actually ships — **Archivo** (sans, UI voice) and
+ * **JetBrains Mono** (data voice), bundled as verified variable TTFs (OFL,
+ * see `third_party/fonts/`) — plus a serif. Display/headline/title roles stay
+ * serif: the newspaper voice of the wordmark, titles, and the loom. Hyle
+ * defines no serif family, so the serif is the platform's (Noto Serif) until
+ * the owner adds one to Hyle; swapping it in later touches this file alone.
  */
 val DisplayFontFamily: FontFamily = FontFamily.Serif
+
+/** Archivo — Hyle `font.family.sans`. Variable TTF; weight settings resolve per declaration. */
+val HyleSans: FontFamily = FontFamily(
+    Font(R.font.archivo_variable, weight = FontWeight.Normal),
+    Font(R.font.archivo_variable, weight = FontWeight.Medium),
+    Font(R.font.archivo_variable, weight = FontWeight.SemiBold),
+)
+
+/** JetBrains Mono — Hyle `font.family.mono`, the data voice. */
+val HyleMono: FontFamily = FontFamily(
+    Font(R.font.jetbrains_mono_variable, weight = FontWeight.Normal),
+    Font(R.font.jetbrains_mono_variable, weight = FontWeight.Medium),
+)
 
 /**
  * Material3 [Typography] for the chosen reader font at the chosen text size
@@ -40,8 +51,8 @@ fun riverTypography(
 
     val body = when (readerFont) {
         ReaderFont.SERIF -> FontFamily.Serif
-        ReaderFont.SANS -> FontFamily.SansSerif
-        ReaderFont.SYSTEM -> FontFamily.Default
+        ReaderFont.SANS -> HyleSans
+        ReaderFont.MONO -> HyleMono
     }
     return Typography(
         displayLarge = style(DisplayFontFamily, 34, FontWeight.Medium, 40),  // article headline (Paper mock)

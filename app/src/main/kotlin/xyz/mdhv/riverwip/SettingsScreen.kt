@@ -46,6 +46,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
+import xyz.mdhv.riverwip.design.HyleMono
+import xyz.mdhv.riverwip.design.HyleSans
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.ReaderFont
@@ -148,22 +150,27 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                     onClick = { vm.setFont(ReaderFont.SERIF) },
                 )
                 SwatchCircle(
-                    label = "Sans-serif reading font",
+                    label = "Archivo reading font",
                     selected = settings.readerFont == ReaderFont.SANS,
                     background = Tokens.Palette.paperRaised,
                     letterColor = Tokens.Palette.paperInk,
-                    fontFamily = FontFamily.SansSerif,
+                    fontFamily = HyleSans,
                     onClick = { vm.setFont(ReaderFont.SANS) },
                 )
                 SwatchCircle(
-                    label = "System reading font",
-                    selected = settings.readerFont == ReaderFont.SYSTEM,
+                    label = "JetBrains Mono reading font",
+                    selected = settings.readerFont == ReaderFont.MONO,
                     background = Tokens.Palette.paperRaised,
                     letterColor = Tokens.Palette.paperInk,
-                    fontFamily = FontFamily.Default,
-                    onClick = { vm.setFont(ReaderFont.SYSTEM) },
+                    fontFamily = HyleMono,
+                    onClick = { vm.setFont(ReaderFont.MONO) },
                 )
             }
+            Text(
+                "Serif · Archivo · JetBrains Mono — the last two are Hyle's own faces.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             Text(

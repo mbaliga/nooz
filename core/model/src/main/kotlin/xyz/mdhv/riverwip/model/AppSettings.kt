@@ -23,11 +23,21 @@ enum class ThemeMode(val key: String) {
     }
 }
 
-enum class ReaderFont(val key: String) {
-    SERIF("serif"), SANS("sans"), SYSTEM("system");
+/**
+ * Three reading voices (owner's direction, 2026-07): the two families Hyle
+ * actually ships — Archivo (sans, the UI voice) and JetBrains Mono (the data
+ * voice) — plus a serif. Hyle defines no serif family, so the serif is the
+ * platform's until the owner adds one to Hyle; nothing named "Deco" exists in
+ * Hyle and none is used.
+ */
+enum class ReaderFont(val key: String, val label: String) {
+    SERIF("serif", "Serif"),
+    SANS("sans", "Archivo"),
+    MONO("mono", "JetBrains Mono");
 
     companion object {
         private val byKey = entries.associateBy(ReaderFont::key)
+        // "system" is a legacy key from the pre-Hyle-fonts iteration.
         fun fromKey(key: String?): ReaderFont = byKey[key] ?: SANS
     }
 }
