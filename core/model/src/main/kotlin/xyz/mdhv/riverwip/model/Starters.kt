@@ -24,6 +24,16 @@ object Starters {
         url = url, verifiedAt = V,
     )
 
+    private const val V2 = "2026-07-11"
+
+    /** All-region expansion, each fetched and confirmed live on 2026-07-11 (STATE.md log). */
+    private fun rssJul11(
+        id: String, title: String, url: String, region: String,
+    ) = ServiceDef(
+        id = id, kind = "rss", title = title, tier = "A", region = region,
+        url = url, verifiedAt = V2,
+    )
+
     /** Concrete, verified RSS feeds — regionally balanced (global + India). */
     val verifiedFeeds: List<ServiceDef> = listOf(
         // --- Global ---
@@ -48,6 +58,56 @@ object Starters {
         rss("hindustan-times", "Hindustan Times — India", "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml", "india"),
         rss("business-standard", "Business Standard", "https://www.business-standard.com/rss/home_page_top_stories.rss", "india"),
         rss("scroll-in", "Scroll.in", "https://feeds.feedburner.com/ScrollinArticles", "india"),
+        // === All-region expansion — every feed fetched and confirmed live on 2026-07-11 ===
+        // --- Americas ---
+        rssJul11("cbc-news-canada", "CBC News (Canada)", "https://www.cbc.ca/webfeed/rss/rss-topstories", "americas"),
+        rssJul11("mercopress-south-atlantic-ne", "MercoPress (South Atlantic News Agency)", "https://en.mercopress.com/rss/", "americas"),
+        rssJul11("buenos-aires-times-argentina", "Buenos Aires Times (Argentina, English)", "https://www.batimes.com.ar/feed", "americas"),
+        rssJul11("mexico-news-daily", "Mexico News Daily", "https://mexiconewsdaily.com/feed/", "americas"),
+        rssJul11("the-tico-times-costa-rica", "The Tico Times (Costa Rica)", "https://ticotimes.net/feed", "americas"),
+        rssJul11("the-rio-times-brazil", "The Rio Times (Brazil)", "https://www.riotimesonline.com/feed/", "americas"),
+        rssJul11("colombia-reports", "Colombia Reports", "https://colombiareports.com/feed/", "americas"),
+        rssJul11("the-santiago-times-chile", "The Santiago Times (Chile)", "https://santiagotimes.cl/feed/", "americas"),
+        rssJul11("jamaica-gleaner", "Jamaica Gleaner", "https://jamaica-gleaner.com/feed/rss.xml", "americas"),
+        // --- Europe & Africa ---
+        rssJul11("euronews", "Euronews", "https://www.euronews.com/rss", "europe-africa"),
+        rssJul11("euobserver", "EUobserver", "https://euobserver.com/feed/", "europe-africa"),
+        rssJul11("mail-guardian-south-africa", "Mail & Guardian (South Africa)", "https://mg.co.za/rss/", "europe-africa"),
+        rssJul11("daily-maverick-south-africa", "Daily Maverick (South Africa)", "https://www.dailymaverick.co.za/dmrss/", "europe-africa"),
+        rssJul11("allafrica", "AllAfrica", "https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf", "europe-africa"),
+        rssJul11("premium-times-nigeria", "Premium Times (Nigeria)", "https://www.premiumtimesng.com/feed", "europe-africa"),
+        rssJul11("the-africa-report", "The Africa Report", "https://www.theafricareport.com/feed/", "europe-africa"),
+        // --- Middle East & Central Asia ---
+        rssJul11("the-national-uae", "The National (UAE)", "https://www.thenationalnews.com/arc/outboundfeeds/rss/?outputType=xml", "mideast-casia"),
+        rssJul11("middle-east-monitor", "Middle East Monitor", "https://www.middleeastmonitor.com/feed/", "mideast-casia"),
+        rssJul11("al-monitor", "Al-Monitor", "https://www.al-monitor.com/rss", "mideast-casia"),
+        rssJul11("middle-east-eye", "Middle East Eye", "https://www.middleeasteye.net/rss", "mideast-casia"),
+        rssJul11("arab-news", "Arab News", "https://www.arabnews.com/rss.xml", "mideast-casia"),
+        rssJul11("the-astana-times", "The Astana Times", "https://astanatimes.com/feed/", "mideast-casia"),
+        // --- South Asia (beyond India) ---
+        rssJul11("dawn", "Dawn", "https://www.dawn.com/feeds/home", "south-asia"),
+        rssJul11("the-express-tribune", "The Express Tribune", "https://tribune.com.pk/feed/home", "south-asia"),
+        rssJul11("the-daily-star", "The Daily Star", "https://www.thedailystar.net/top-news/rss.xml", "south-asia"),
+        rssJul11("the-kathmandu-post", "The Kathmandu Post", "https://kathmandupost.com/rss", "south-asia"),
+        rssJul11("the-himalayan-times", "The Himalayan Times", "https://thehimalayantimes.com/rssFeed/15", "south-asia"),
+        rssJul11("the-island", "The Island", "https://island.lk/feed/", "south-asia"),
+        // --- East & SE Asia ---
+        rssJul11("the-japan-times", "The Japan Times", "https://www.japantimes.co.jp/feed/", "east-se-asia"),
+        rssJul11("yonhap-news-english", "Yonhap News (English)", "https://en.yna.co.kr/RSS/news.xml", "east-se-asia"),
+        rssJul11("the-korea-herald", "The Korea Herald", "https://www.koreaherald.com/rss/newsAll", "east-se-asia"),
+        rssJul11("south-china-morning-post", "South China Morning Post", "https://www.scmp.com/rss/91/feed", "east-se-asia"),
+        rssJul11("taipei-times", "Taipei Times", "https://www.taipeitimes.com/xml/index.rss", "east-se-asia"),
+        rssJul11("the-straits-times-singapore", "The Straits Times (Singapore)", "https://www.straitstimes.com/news/singapore/rss.xml", "east-se-asia"),
+        rssJul11("vnexpress-international-viet", "VnExpress International (Vietnam)", "https://e.vnexpress.net/rss/news.rss", "east-se-asia"),
+        // --- Australia & Pacific ---
+        rssJul11("abc-news-australia", "ABC News (Australia)", "https://www.abc.net.au/news/feed/1948/rss.xml", "australia-pacific"),
+        rssJul11("the-sydney-morning-herald", "The Sydney Morning Herald", "https://www.smh.com.au/rss/feed.xml", "australia-pacific"),
+        rssJul11("the-guardian-australia", "The Guardian Australia", "https://www.theguardian.com/australia-news/rss", "australia-pacific"),
+        rssJul11("rnz-new-zealand", "RNZ (New Zealand)", "https://www.rnz.co.nz/rss/national.xml", "australia-pacific"),
+        rssJul11("the-new-zealand-herald", "The New Zealand Herald", "https://www.nzherald.co.nz/arc/outboundfeeds/rss/section/nz/?outputType=xml", "australia-pacific"),
+        rssJul11("rnz-pacific", "RNZ Pacific", "https://www.rnz.co.nz/rss/pacific.xml", "australia-pacific"),
+        rssJul11("png-post-courier", "PNG Post-Courier", "https://www.postcourier.com.pg/feed/", "australia-pacific"),
+        rssJul11("the-conversation-australia", "The Conversation (Australia)", "https://theconversation.com/au/articles.atom", "australia-pacific"),
     )
 
     /**
