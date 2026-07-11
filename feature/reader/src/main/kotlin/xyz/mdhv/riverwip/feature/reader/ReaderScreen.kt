@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -35,6 +36,7 @@ fun ReaderScreen(
     lensVm: LensViewModel,
     showReadingTime: Boolean,
     highlightLoadedLanguage: Boolean,
+    immersiveReader: Boolean,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenSettings: () -> Unit,
@@ -66,6 +68,18 @@ fun ReaderScreen(
     var containerWidth by remember { mutableIntStateOf(0) }
     var offsetX by remember { mutableFloatStateOf(0f) }
 
+    // Slide the detail in from the right over the stationary stand (owner's
+    // reference: opening an article slides it in; the list stays still behind).
+    // Runs once per newly-opened item, as soon as the width is known.
+    var enteredId by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(selected.id, containerWidth) {
+        if (containerWidth > 0 && enteredId != selected.id) {
+            offsetX = containerWidth.toFloat()
+            animate(offsetX, 0f, animationSpec = tween(260)) { v, _ -> offsetX = v }
+            enteredId = selected.id
+        }
+    }
+
     // Settle after a drag: commit past ~a third of the width, else snap back.
     fun settle() {
         val w = containerWidth.toFloat()
@@ -82,6 +96,16 @@ fun ReaderScreen(
                 w -> vm.closeItem()
                 -w -> onOpenSettings()
             }
+        }
+    }
+
+    // The visible back control: slide the sheet off to the right, then close —
+    // the same motion the drag-back gesture produces.
+    fun slideBack() {
+        val w = containerWidth.toFloat()
+        scope.launch {
+            if (w > 0f) animate(offsetX, w, animationSpec = tween(220)) { v, _ -> offsetX = v }
+            vm.closeItem()
         }
     }
 
@@ -104,9 +128,11 @@ fun ReaderScreen(
             showReadingTime = showReadingTime,
             lensOn = highlightLoadedLanguage,
             saved = savedIds.contains(selected.id),
+            immersive = immersiveReader,
             offsetX = offsetX,
             onToggleLens = onToggleLens,
             onToggleClip = { vm.toggleClip(selected) },
+            onBack = { slideBack() },
             onDrag = { offsetX += it },
             onDragEnd = { settle() },
             onOpenLoom = onOpenLoom,

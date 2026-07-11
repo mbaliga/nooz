@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.RemoveRedEye
@@ -87,9 +88,11 @@ fun ReaderDetailScreen(
     showReadingTime: Boolean,
     lensOn: Boolean,
     saved: Boolean,
+    immersive: Boolean,
     offsetX: Float,
     onToggleLens: () -> Unit,
     onToggleClip: () -> Unit,
+    onBack: () -> Unit,
     onDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
     onOpenLoom: () -> Unit,
@@ -240,6 +243,23 @@ fun ReaderDetailScreen(
                 onOpenLoom = onOpenLoom,
                 modifier = Modifier.align(Alignment.BottomCenter),
             )
+
+            // Owner's #22: an obvious back control, on by default. Immersive mode
+            // hides it (and everything else fades into the gestures-only page).
+            if (!immersive) {
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(Tokens.Spacing.xs),
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back to the stand",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
     }
 }

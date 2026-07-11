@@ -76,6 +76,7 @@ class SettingsViewModel(
     fun setShowReadingTime(show: Boolean) = viewModelScope.launch { repo.setShowReadingTime(show) }
     fun setTextScale(scale: TextScale) = viewModelScope.launch { repo.setTextScale(scale) }
     fun setHighlightLoadedLanguage(on: Boolean) = viewModelScope.launch { repo.setHighlightLoadedLanguage(on) }
+    fun setImmersiveReader(on: Boolean) = viewModelScope.launch { repo.setImmersiveReader(on) }
 
     // Dictionary lens: one-click download of a chosen dictionary (owner's spec).
     val dictionaryOptions: List<DictionaryOption> = dictionaryRepo.options
@@ -285,13 +286,40 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = settings.immersiveReader,
+                        onValueChange = { vm.setImmersiveReader(it) },
+                        role = Role.Switch,
+                    )
+                    .padding(vertical = Tokens.Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Immersive reading",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        "Hides the back button and controls for a bare page. Off by default — swipe right or tap back to return.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = settings.immersiveReader, onCheckedChange = null)
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
             Text(
                 "Dictionary",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                "Download a dictionary to underline uncommon words as you read (blue) and tap them for a meaning.",
+                "Download a dictionary, then long-press any word as you read for its meaning — Kindle-style.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

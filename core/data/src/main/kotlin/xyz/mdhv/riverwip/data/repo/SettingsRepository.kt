@@ -30,6 +30,7 @@ class SettingsRepository(private val context: Context) {
         val READING_TIME = booleanPreferencesKey("show_reading_time")
         val TEXT_SCALE = stringPreferencesKey("text_scale")
         val LENS_HIGHLIGHT = booleanPreferencesKey("highlight_loaded_language")
+        val IMMERSIVE = booleanPreferencesKey("immersive_reader")
         val REGION = stringPreferencesKey("filter_region")
         val TOPICS = stringSetPreferencesKey("filter_topics")
     }
@@ -41,6 +42,7 @@ class SettingsRepository(private val context: Context) {
             showReadingTime = prefs[Keys.READING_TIME] ?: true,
             textScale = TextScale.fromKey(prefs[Keys.TEXT_SCALE]),
             highlightLoadedLanguage = prefs[Keys.LENS_HIGHLIGHT] ?: false,
+            immersiveReader = prefs[Keys.IMMERSIVE] ?: false,
         )
     }
 
@@ -69,6 +71,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setHighlightLoadedLanguage(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.LENS_HIGHLIGHT] = enabled }
+    }
+
+    suspend fun setImmersiveReader(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.IMMERSIVE] = enabled }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {

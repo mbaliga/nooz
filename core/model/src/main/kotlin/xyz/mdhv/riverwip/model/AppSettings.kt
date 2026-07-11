@@ -81,6 +81,13 @@ data class AppSettings(
      * turns it on. Detection is real; the rewrite stays honestly stubbed.
      */
     val highlightLoadedLanguage: Boolean = false,
+    /**
+     * Reader chrome (owner: the back control must be obvious by default, with an
+     * immersive mode as the opt-in). `false` shows the visible back affordance
+     * and utility bar; `true` hides them for a gestures-only page. Introduced in
+     * onboarding; toggleable in Settings.
+     */
+    val immersiveReader: Boolean = false,
 )
 
 /**
