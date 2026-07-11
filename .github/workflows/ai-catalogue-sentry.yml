@@ -1,0 +1,82 @@
+name: ai-catalogue sentry
+
+# CI-side sentry for ai-catalogue/ (unrelated to catalogue/, the news-source sentry): keeps the
+# shared open-source/downloadable-model + cloud-free-tier data honest without ever fabricating a
+# fact. Two independent checks, run on one schedule:
+#   - models.json: HEAD-probes every entry's downloadUrl (skips null ones) and opens a PR when
+#     an entry's liveness changed — a factual liveness check, safe to automate.
+#   - free-tiers.json: age-checks staleness and opens a reminder issue — provider limits are
+#     business-policy facts, never auto-rewritten.
+# See ai-catalogue/README.md.
+
+on:
+  schedule:
+    - cron: '23 6 * * 3' # weekly, Wednesday ~06:23 UTC (staggered from catalogue-sentry's Monday slot)
+  workflow_dispatch:
+    inputs:
+      simulate_drift:
+        description: >-
+          Force one model entry to appear drifted, to exercise the PR-opening path end to end.
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  sentry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Probe models.json and check free-tiers.json freshness
+        id: sentry
+        env:
+          SIMULATE_DRIFT: ${{ (inputs.simulate_drift && '1') || '0' }}
+        run: python3 .github/scripts/ai_catalogue_sentry.py
+        continue-on-error: true
+
+      - name: Open a PR with the re-verified model catalog
+        if: steps.sentry.outputs.models_drifted == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ai-catalogue-sentry/drift-${{ github.run_number }}
+          commit-message: "ai-catalogue-sentry: model availability drift detected"
+          title: "ai-catalogue drift detected: ${{ steps.sentry.outputs.models_summary }}"
+          body-path: ai-catalogue/DRIFT_REPORT.md
+          add-paths: |
+            ai-catalogue/models.json
+            ai-catalogue/DRIFT_REPORT.md
+
+      - name: Open a reminder issue if free-tiers.json is stale
+        if: steps.sentry.outputs.free_tiers_stale == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const age = '${{ steps.sentry.outputs.free_tiers_age }}';
+            const title = 'Refresh ai-catalogue/free-tiers.json';
+            const body = [
+              `ai-catalogue/free-tiers.json is stale (age: ${age} days).`,
+              '',
+              'Refresh each figure **against its `sourceUrl`** (never invent numbers — see',
+              'ai-catalogue/README.md "Honesty rules"), bump `lastUpdated`, and update `_note`',
+              'if the upstream cross-reference changed. The run logged an upstream snapshot from',
+              'github.com/cheahjs/free-llm-api-resources to diff against.',
+            ].join('\n');
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'ai-catalogue',
+            });
+            if (existing.data.some(i => i.title === title)) {
+              core.info('reminder issue already open');
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo, title, body, labels: ['ai-catalogue'],
+            });
