@@ -55,6 +55,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.NoozWordmark
@@ -155,17 +157,18 @@ private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
         Text(
             label,
             style = MaterialTheme.typography.titleMedium,
-            color = if (active) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+            color = if (active) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
         )
-        if (active) {
-            Box(
-                Modifier
-                    .padding(top = Tokens.Spacing.xxs)
-                    .fillMaxWidth()
-                    .height(2.dp)
-                    .background(MaterialTheme.colorScheme.onBackground),
-            )
-        }
+        // A visible active underline (thicker than the hairline divider under
+        // the row) so which tab you're on reads at a glance (owner: #6).
+        Box(
+            Modifier
+                .padding(top = Tokens.Spacing.xxs)
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(if (active) MaterialTheme.colorScheme.onBackground else Color.Transparent),
+        )
     }
 }
 
