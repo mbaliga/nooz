@@ -1,7 +1,5 @@
 package xyz.mdhv.riverwip.feature.reader
 
-import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,11 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -46,13 +40,11 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
@@ -86,9 +78,10 @@ fun ReaderDetailScreen(
     item: Item,
     showReadingTime: Boolean,
     lensOn: Boolean,
+    offsetX: Float,
     onToggleLens: () -> Unit,
-    onBack: () -> Unit,
-    onOpenSettings: () -> Unit,
+    onDrag: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onOpenLoom: () -> Unit,
     onBrightnessDelta: (Float) -> Unit,
     onThemeFlick: () -> Unit,
@@ -100,31 +93,9 @@ fun ReaderDetailScreen(
     val topic = Classifier.dominantTopic(item.topics)
     val background = MaterialTheme.colorScheme.background
 
-    val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    var containerWidth by remember { mutableIntStateOf(0) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
 
-    // Settle the sheet after a drag: commit past ~a third of the width, else snap back.
-    fun settle() {
-        val w = containerWidth.toFloat()
-        val threshold = w * 0.32f
-        val target = when {
-            w <= 0f -> 0f
-            offsetX > threshold -> w
-            offsetX < -threshold -> -w
-            else -> 0f
-        }
-        scope.launch {
-            animate(offsetX, target, animationSpec = tween(220)) { v, _ -> offsetX = v }
-            when (target) {
-                w -> onBack()
-                -w -> onOpenSettings()
-            }
-        }
-    }
-
-    Box(Modifier.fillMaxSize().onSizeChanged { containerWidth = it.width }) {
+    Box(Modifier.fillMaxSize()) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -137,8 +108,8 @@ fun ReaderDetailScreen(
                 }
                 .background(background)
                 .readerGestures(
-                    onDrag = { d -> offsetX += d },
-                    onDragEnd = { settle() },
+                    onDrag = onDrag,
+                    onDragEnd = onDragEnd,
                     onBrightnessDelta = onBrightnessDelta,
                     onThemeFlick = onThemeFlick,
                 ),
