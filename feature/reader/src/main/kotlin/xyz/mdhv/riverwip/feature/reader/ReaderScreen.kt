@@ -94,6 +94,7 @@ fun ReaderScreen(
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
                 onOpenLoom = onOpenLoom,
+                onOpenClippings = onOpenClippings,
             )
         }
         ReaderDetailScreen(
