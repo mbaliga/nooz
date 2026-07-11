@@ -15,13 +15,15 @@ fun ReaderScreen(
     lensVm: LensViewModel,
     showReadingTime: Boolean,
     highlightLoadedLanguage: Boolean,
+    onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenLoom: () -> Unit,
     onBrightnessDelta: (Float) -> Unit,
     onThemeFlick: () -> Unit,
 ) {
-    // The lens's underlines follow the persisted Setting, not a reader toggle.
+    // The lens's underlines follow the persisted Setting; the reader's eye
+    // toggle flips that same setting, so the two never disagree.
     LaunchedEffect(highlightLoadedLanguage) {
         lensVm.updateUnderlinesEnabled(highlightLoadedLanguage)
     }
@@ -40,6 +42,8 @@ fun ReaderScreen(
             lensVm = lensVm,
             item = selected,
             showReadingTime = showReadingTime,
+            lensOn = highlightLoadedLanguage,
+            onToggleLens = onToggleLens,
             onBack = { vm.closeItem() },
             onOpenSettings = onOpenSettings,
             onOpenLoom = onOpenLoom,

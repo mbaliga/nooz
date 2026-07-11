@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -84,6 +85,8 @@ fun ReaderDetailScreen(
     lensVm: LensViewModel,
     item: Item,
     showReadingTime: Boolean,
+    lensOn: Boolean,
+    onToggleLens: () -> Unit,
     onBack: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenLoom: () -> Unit,
@@ -224,6 +227,8 @@ fun ReaderDetailScreen(
                 todayMix = todayMix,
                 listState = listState,
                 background = background,
+                lensOn = lensOn,
+                onToggleLens = onToggleLens,
                 onOpenBrowser = {
                     context.startActivity(
                         android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(item.canonicalUrl)),
@@ -252,6 +257,8 @@ private fun ReaderUtilityBar(
     todayMix: List<Pair<Topic, Double>>,
     listState: LazyListState,
     background: Color,
+    lensOn: Boolean,
+    onToggleLens: () -> Unit,
     onOpenBrowser: () -> Unit,
     onShare: () -> Unit,
     onOpenLoom: () -> Unit,
@@ -279,6 +286,20 @@ private fun ReaderUtilityBar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ProgressDial(progress = progress)
+            // The lens: an unmistakable eye — bold ink when on, dimmed when off
+            // (never the crossed-out incognito look). Toggles the loaded-language
+            // highlighting, the same persisted setting Settings shows.
+            IconButton(onClick = onToggleLens) {
+                Icon(
+                    Icons.Filled.RemoveRedEye,
+                    contentDescription = if (lensOn) "Turn off the lens (loaded-language highlighting)" else "Turn on the lens (loaded-language highlighting)",
+                    tint = if (lensOn) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+                    },
+                )
+            }
             IconButton(onClick = onOpenBrowser) {
                 Icon(Icons.Filled.Public, contentDescription = "Open in browser")
             }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -139,40 +140,28 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Row(
-                modifier = Modifier.selectableGroup(),
-                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
-            ) {
-                SwatchCircle(
-                    label = "Grotesk Classic reading font",
+            // The owner's Settings mock: a list of the font names, each set in
+            // its own face, a check on the chosen one (not colour swatches).
+            Column(modifier = Modifier.selectableGroup()) {
+                FontRow(
+                    name = "Hyle Grotesk Classic",
+                    family = HyleGroteskClassic,
                     selected = settings.readerFont == ReaderFont.GROTESK_CLASSIC,
-                    background = Tokens.Palette.paperRaised,
-                    letterColor = Tokens.Palette.paperInk,
-                    fontFamily = HyleGroteskClassic,
                     onClick = { vm.setFont(ReaderFont.GROTESK_CLASSIC) },
                 )
-                SwatchCircle(
-                    label = "Grotesk Plus reading font",
+                FontRow(
+                    name = "Hyle Grotesk Plus",
+                    family = HyleGroteskPlus,
                     selected = settings.readerFont == ReaderFont.GROTESK_PLUS,
-                    background = Tokens.Palette.paperRaised,
-                    letterColor = Tokens.Palette.paperInk,
-                    fontFamily = HyleGroteskPlus,
                     onClick = { vm.setFont(ReaderFont.GROTESK_PLUS) },
                 )
-                SwatchCircle(
-                    label = "Print reading font",
+                FontRow(
+                    name = "Hyle Print",
+                    family = HylePrint,
                     selected = settings.readerFont == ReaderFont.PRINT,
-                    background = Tokens.Palette.paperRaised,
-                    letterColor = Tokens.Palette.paperInk,
-                    fontFamily = HylePrint,
                     onClick = { vm.setFont(ReaderFont.PRINT) },
                 )
             }
-            Text(
-                "Grotesk Classic · Grotesk Plus · Print — Hyle's own two sans and one serif.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             Text(
@@ -256,7 +245,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
     }
 }
 
-/** One circular "T" swatch (the mock's selector idiom). Selection = ring, never colour alone. */
+/** One circular "T" swatch (the mock's theme selector). Selection = ring + a check badge, never colour alone. */
 @Composable
 private fun SwatchCircle(
     label: String,
@@ -267,20 +256,80 @@ private fun SwatchCircle(
     fontFamily: FontFamily = HyleGroteskClassic,
 ) {
     val ring = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outlineVariant
-    Box(
+    Box(modifier = Modifier.size(62.dp)) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .align(Alignment.Center)
+                .clip(CircleShape)
+                .background(background)
+                .border(if (selected) Tokens.Border.thick else Tokens.Border.thin, ring, CircleShape)
+                .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+                .semantics { contentDescription = label },
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                "T",
+                style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
+                color = letterColor,
+            )
+        }
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(22.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onBackground),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.Check,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.background,
+                    modifier = Modifier.size(14.dp),
+                )
+            }
+        }
+    }
+}
+
+/** One reading-font choice: the family's own name, set in that family, checked when chosen. */
+@Composable
+private fun FontRow(
+    name: String,
+    family: FontFamily,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
         modifier = Modifier
-            .size(56.dp)
-            .clip(CircleShape)
-            .background(background)
-            .border(if (selected) Tokens.Border.thick else Tokens.Border.thin, ring, CircleShape)
+            .fillMaxWidth()
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
-            .semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
+            .padding(vertical = Tokens.Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "T",
-            style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
-            color = letterColor,
+            name,
+            style = MaterialTheme.typography.headlineSmall.copy(fontFamily = family),
+            color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
         )
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .size(26.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onBackground),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.Check,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.background,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
     }
 }

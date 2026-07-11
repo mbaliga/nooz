@@ -138,6 +138,7 @@ fun RiverApp() {
                     lensVm = lensVm,
                     showReadingTime = settings.showReadingTime,
                     highlightLoadedLanguage = settings.highlightLoadedLanguage,
+                    onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                     onOpenEdit = { screen = Screen.EDIT },
                     onOpenSettings = { screen = Screen.SETTINGS },
                     onOpenLoom = {
