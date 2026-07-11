@@ -46,8 +46,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
-import xyz.mdhv.riverwip.design.HyleMono
-import xyz.mdhv.riverwip.design.HyleSans
+import xyz.mdhv.riverwip.design.HyleGroteskClassic
+import xyz.mdhv.riverwip.design.HyleGroteskPlus
+import xyz.mdhv.riverwip.design.HylePrint
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.ReaderFont
@@ -62,6 +63,7 @@ class SettingsViewModel(private val repo: SettingsRepository) : ViewModel() {
     fun setFont(font: ReaderFont) = viewModelScope.launch { repo.setReaderFont(font) }
     fun setShowReadingTime(show: Boolean) = viewModelScope.launch { repo.setShowReadingTime(show) }
     fun setTextScale(scale: TextScale) = viewModelScope.launch { repo.setTextScale(scale) }
+    fun setHighlightLoadedLanguage(on: Boolean) = viewModelScope.launch { repo.setHighlightLoadedLanguage(on) }
 
     class Factory(private val repo: SettingsRepository) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -142,32 +144,32 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
             ) {
                 SwatchCircle(
-                    label = "Serif reading font",
-                    selected = settings.readerFont == ReaderFont.SERIF,
+                    label = "Grotesk Classic reading font",
+                    selected = settings.readerFont == ReaderFont.GROTESK_CLASSIC,
                     background = Tokens.Palette.paperRaised,
                     letterColor = Tokens.Palette.paperInk,
-                    fontFamily = FontFamily.Serif,
-                    onClick = { vm.setFont(ReaderFont.SERIF) },
+                    fontFamily = HyleGroteskClassic,
+                    onClick = { vm.setFont(ReaderFont.GROTESK_CLASSIC) },
                 )
                 SwatchCircle(
-                    label = "Archivo reading font",
-                    selected = settings.readerFont == ReaderFont.SANS,
+                    label = "Grotesk Plus reading font",
+                    selected = settings.readerFont == ReaderFont.GROTESK_PLUS,
                     background = Tokens.Palette.paperRaised,
                     letterColor = Tokens.Palette.paperInk,
-                    fontFamily = HyleSans,
-                    onClick = { vm.setFont(ReaderFont.SANS) },
+                    fontFamily = HyleGroteskPlus,
+                    onClick = { vm.setFont(ReaderFont.GROTESK_PLUS) },
                 )
                 SwatchCircle(
-                    label = "JetBrains Mono reading font",
-                    selected = settings.readerFont == ReaderFont.MONO,
+                    label = "Print reading font",
+                    selected = settings.readerFont == ReaderFont.PRINT,
                     background = Tokens.Palette.paperRaised,
                     letterColor = Tokens.Palette.paperInk,
-                    fontFamily = HyleMono,
-                    onClick = { vm.setFont(ReaderFont.MONO) },
+                    fontFamily = HylePrint,
+                    onClick = { vm.setFont(ReaderFont.PRINT) },
                 )
             }
             Text(
-                "Serif · Archivo · JetBrains Mono — the last two are Hyle's own faces.",
+                "Grotesk Classic · Grotesk Plus · Print — Hyle's own two sans and one serif.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -223,6 +225,33 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 Switch(checked = settings.showReadingTime, onCheckedChange = null)
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = settings.highlightLoadedLanguage,
+                        onValueChange = { vm.setHighlightLoadedLanguage(it) },
+                        role = Role.Switch,
+                    )
+                    .padding(vertical = Tokens.Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Highlight loaded language",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        "Underlines charged wording as you read; tap it for the evidence.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = settings.highlightLoadedLanguage, onCheckedChange = null)
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
     }
 }
@@ -235,7 +264,7 @@ private fun SwatchCircle(
     background: Color,
     letterColor: Color,
     onClick: () -> Unit,
-    fontFamily: FontFamily = FontFamily.Serif,
+    fontFamily: FontFamily = HyleGroteskClassic,
 ) {
     val ring = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outlineVariant
     Box(

@@ -93,8 +93,8 @@ private val CharcoalScheme = darkColorScheme(
 @Composable
 fun RiverTheme(
     themeMode: ThemeMode = ThemeMode.PAPER,
-    readerFont: ReaderFont = ReaderFont.SANS,
-    textScale: TextScale = TextScale.STANDARD,
+    readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
+    textScale: TextScale = TextScale.PEANUT,
     content: @Composable () -> Unit,
 ) {
     val scheme = when (themeMode) {

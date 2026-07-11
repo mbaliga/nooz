@@ -1,0 +1,22 @@
+# Bundled fonts
+
+The reading and display type is Hyle's own three internal families, taken from
+the Hyle Design System's `fonts/` source-of-truth (owner-supplied, 2026-07):
+
+| App role | Family | File(s) | Built on |
+| --- | --- | --- | --- |
+| Sans reading voice (default) | **Hyle Grotesk Classic** | `hyle_grotesk_classic_{regular,medium,bold}.ttf` | Space Grotesk + Archivo letterforms |
+| Sans reading voice (alt) | **Hyle Grotesk Plus** | `hyle_grotesk_plus_{regular,medium,bold}.ttf` | Grotesk Classic + Deco-sweep N/R |
+| Serif reading + all display/headline | **Hyle Print** | `hyle_print_{regular,medium,heavy}.ttf` | Literata + Deco letterforms |
+
+These are the "two sans serif, one serif — all from Hyle, not Hyle Deco" the
+owner specified. Hyle Classic and **Hyle Deco Pro** (the two Bitstream-derived
+families) are deliberately not bundled — Deco is excluded by name per the owner.
+
+Each family is an SIL Open Font License 1.1 derivative work; the per-family
+provenance notes are `Hyle*-LICENSE-NOTE.txt` and the license body is
+`OFL-1.1.txt`. Every file was verified with `fonttools` (real family name +
+weight class) before bundling, not trusted by filename.
+
+The `.ttf` binaries live next to the code that references them, under
+`core/design/src/main/res/font/`, so they compile into both flavors.

@@ -39,8 +39,12 @@ class LensViewModel(private val inferenceRouter: InferenceRouter) : ViewModel() 
 
     private val overrides: SnapshotStateMap<SpanKey, AffectSpanUiState> = mutableStateMapOf()
 
-    /** Reader-chrome toggle: pre-underline detected spans. Default ON, instantly discoverable OFF (brief §P5). */
-    var underlinesEnabled: Boolean by mutableStateOf(true)
+    /**
+     * Pre-underline detected spans. Driven by the persisted "Highlight loaded
+     * language" Setting (owner: the reader's always-on eye toggle was confusing
+     * and off-mock), so it defaults OFF and the reader syncs it from Settings.
+     */
+    var underlinesEnabled: Boolean by mutableStateOf(false)
         private set
 
     /** Global "sterile lens": batch-applies the same per-span pipeline to every span. Off by default. */

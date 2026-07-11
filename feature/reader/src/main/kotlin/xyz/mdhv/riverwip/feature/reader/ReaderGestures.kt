@@ -12,20 +12,22 @@ import kotlin.math.abs
 
 /**
  * The reading room's gestures (owner's spec, 2026-07):
- *  - one-finger horizontal swipe: right = back to the stand, left = settings;
+ *  - one-finger horizontal drag: the paper follows the finger and slides as a
+ *    rigid sheet ([onDrag] per-frame, [onDragEnd] to settle) — right reveals
+ *    the stand, left reveals settings;
  *  - two-finger vertical drag: a sliding brightness scale (in-app window
  *    brightness — needs no permission);
  *  - two-finger horizontal flick: next theme tint (one flick, one step).
  *
  * Two-finger handling watches the Initial pass and consumes its events so the
- * article's own vertical scroll doesn't fight the drag. Every gesture here has
- * a visible, accessible equivalent elsewhere (back = system back; theme and
- * brightness live in Settings/quick settings) — gestures are shortcuts, never
- * the only door.
+ * article's own vertical scroll (and the one-finger slide) don't fight the
+ * drag. Every gesture here has a visible, accessible equivalent elsewhere
+ * (back = system back; theme and brightness live in Settings) — gestures are
+ * shortcuts, never the only door.
  */
 fun Modifier.readerGestures(
-    onSwipeRight: () -> Unit,
-    onSwipeLeft: () -> Unit,
+    onDrag: (Float) -> Unit,
+    onDragEnd: () -> Unit,
     onBrightnessDelta: (Float) -> Unit,
     onThemeFlick: () -> Unit,
 ): Modifier = this
@@ -58,25 +60,20 @@ fun Modifier.readerGestures(
                     event.changes.forEach { it.consume() }
                 } else if (twoFinger) {
                     // Finger lifted mid-gesture: keep consuming until all are up
-                    // so the list doesn't inherit a phantom scroll.
+                    // so neither the list nor the slide inherits a phantom drag.
                     event.changes.forEach { it.consume() }
                 }
             }
         }
     }
     .pointerInput(Unit) {
-        // One-finger horizontal navigation.
-        val navThresholdPx = 110.dp.toPx()
-        var total = 0f
+        // One-finger horizontal slide: forward each frame's delta so the sheet
+        // tracks the finger, then settle on release.
         detectHorizontalDragGestures(
-            onDragStart = { total = 0f },
-            onDragEnd = {
-                when {
-                    total > navThresholdPx -> onSwipeRight()
-                    total < -navThresholdPx -> onSwipeLeft()
-                }
-            },
-        ) { _, dragAmount ->
-            total += dragAmount
+            onDragEnd = onDragEnd,
+            onDragCancel = onDragEnd,
+        ) { change, dragAmount ->
+            onDrag(dragAmount)
+            change.consume()
         }
     }

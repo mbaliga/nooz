@@ -10,36 +10,54 @@ import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 
 /**
- * Type scale. Sizes/weights mirror Hyle `typography.json`; the reading
- * families are the two Hyle actually ships — **Archivo** (sans, UI voice) and
- * **JetBrains Mono** (data voice), bundled as verified variable TTFs (OFL,
- * see `third_party/fonts/`) — plus a serif. Display/headline/title roles stay
- * serif: the newspaper voice of the wordmark, titles, and the loom. Hyle
- * defines no serif family, so the serif is the platform's (Noto Serif) until
- * the owner adds one to Hyle; swapping it in later touches this file alone.
+ * Type scale. Sizes/weights mirror Hyle `typography.json`; the three reading
+ * families are Hyle's own — the two sans (**Hyle Grotesk Classic** and **Hyle
+ * Grotesk Plus**) and the one serif (**Hyle Print**, a Literata derivative),
+ * bundled as verified TTFs (OFL, see `third_party/fonts/`). Display, headline,
+ * and title roles are Hyle Print — the newspaper voice of the wordmark, the
+ * masthead titles, and the loom.
  */
-val DisplayFontFamily: FontFamily = FontFamily.Serif
 
-/** Archivo — Hyle `font.family.sans`. Variable TTF; weight settings resolve per declaration. */
-val HyleSans: FontFamily = FontFamily(
-    Font(R.font.archivo_variable, weight = FontWeight.Normal),
-    Font(R.font.archivo_variable, weight = FontWeight.Medium),
-    Font(R.font.archivo_variable, weight = FontWeight.SemiBold),
+/** Hyle Grotesk Classic — the default sans reading + UI voice. */
+val HyleGroteskClassic: FontFamily = FontFamily(
+    Font(R.font.hyle_grotesk_classic_regular, weight = FontWeight.Normal),
+    Font(R.font.hyle_grotesk_classic_medium, weight = FontWeight.Medium),
+    Font(R.font.hyle_grotesk_classic_bold, weight = FontWeight.Bold),
 )
 
-/** JetBrains Mono — Hyle `font.family.mono`, the data voice. */
-val HyleMono: FontFamily = FontFamily(
-    Font(R.font.jetbrains_mono_variable, weight = FontWeight.Normal),
-    Font(R.font.jetbrains_mono_variable, weight = FontWeight.Medium),
+/** Hyle Grotesk Plus — the alternate sans (Classic with the Deco N/R sweep). */
+val HyleGroteskPlus: FontFamily = FontFamily(
+    Font(R.font.hyle_grotesk_plus_regular, weight = FontWeight.Normal),
+    Font(R.font.hyle_grotesk_plus_medium, weight = FontWeight.Medium),
+    Font(R.font.hyle_grotesk_plus_bold, weight = FontWeight.Bold),
 )
+
+/** Hyle Print — the serif reading voice and every display/masthead role. */
+val HylePrint: FontFamily = FontFamily(
+    Font(R.font.hyle_print_regular, weight = FontWeight.Normal),
+    Font(R.font.hyle_print_medium, weight = FontWeight.Medium),
+    Font(R.font.hyle_print_heavy, weight = FontWeight.ExtraBold),
+)
+
+/** The newspaper voice: titles, headlines, the wordmark, the loom's numerals. */
+val DisplayFontFamily: FontFamily = HylePrint
+
+/** UI chrome (labels, buttons, captions) stays on the default sans. */
+val HyleSans: FontFamily = HyleGroteskClassic
+
+fun ReaderFont.family(): FontFamily = when (this) {
+    ReaderFont.GROTESK_CLASSIC -> HyleGroteskClassic
+    ReaderFont.GROTESK_PLUS -> HyleGroteskPlus
+    ReaderFont.PRINT -> HylePrint
+}
 
 /**
  * Material3 [Typography] for the chosen reader font at the chosen text size
  * (the Settings mock's three-step scale). Feature code keeps using named roles.
  */
 fun riverTypography(
-    readerFont: ReaderFont = ReaderFont.SANS,
-    textScale: TextScale = TextScale.STANDARD,
+    readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
+    textScale: TextScale = TextScale.PEANUT,
 ): Typography {
     val k = textScale.multiplier
     fun style(family: FontFamily, sizeSp: Int, weight: FontWeight, lineSp: Int) = TextStyle(
@@ -49,11 +67,7 @@ fun riverTypography(
         lineHeight = (lineSp * k).sp,
     )
 
-    val body = when (readerFont) {
-        ReaderFont.SERIF -> FontFamily.Serif
-        ReaderFont.SANS -> HyleSans
-        ReaderFont.MONO -> HyleMono
-    }
+    val body = readerFont.family()
     return Typography(
         displayLarge = style(DisplayFontFamily, 34, FontWeight.Medium, 40),  // article headline (Paper mock)
         headlineMedium = style(DisplayFontFamily, 24, FontWeight.Medium, 30),

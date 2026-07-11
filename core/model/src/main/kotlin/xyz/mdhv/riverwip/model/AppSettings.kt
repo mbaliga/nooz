@@ -24,45 +24,63 @@ enum class ThemeMode(val key: String) {
 }
 
 /**
- * Three reading voices (owner's direction, 2026-07): the two families Hyle
- * actually ships — Archivo (sans, the UI voice) and JetBrains Mono (the data
- * voice) — plus a serif. Hyle defines no serif family, so the serif is the
- * platform's until the owner adds one to Hyle; nothing named "Deco" exists in
- * Hyle and none is used.
+ * Three reading voices — Hyle's own three internal families the owner named
+ * (2026-07): the two sans, **Hyle Grotesk Classic** and **Hyle Grotesk Plus**,
+ * and the one serif, **Hyle Print**. Verified against the Hyle Design System's
+ * `fonts/` source-of-truth and bundled as OFL TTFs. Hyle Deco Pro is
+ * deliberately excluded — "don't use Hyle Deco," per the owner.
  */
 enum class ReaderFont(val key: String, val label: String) {
-    SERIF("serif", "Serif"),
-    SANS("sans", "Archivo"),
-    MONO("mono", "JetBrains Mono");
+    GROTESK_CLASSIC("grotesk-classic", "Grotesk Classic"),
+    GROTESK_PLUS("grotesk-plus", "Grotesk Plus"),
+    PRINT("print", "Print");
 
     companion object {
         private val byKey = entries.associateBy(ReaderFont::key)
-        // "system" is a legacy key from the pre-Hyle-fonts iteration.
-        fun fromKey(key: String?): ReaderFont = byKey[key] ?: SANS
+        fun fromKey(key: String?): ReaderFont = when (key) {
+            // Legacy keys from the pre-Hyle-families iterations.
+            "serif" -> PRINT
+            "sans", "system" -> GROTESK_CLASSIC
+            "mono" -> GROTESK_PLUS
+            else -> byKey[key] ?: GROTESK_CLASSIC
+        }
     }
 }
 
 /**
- * Three-step reading size (owner's Settings mock; its size names were ad-libbed
- * placeholders, so the app uses plain labels). Multiplies the type scale.
+ * Three-step reading size (owner's Settings mock). The names are the owner's
+ * own — Rice, Peanut, Almond — real objects in ascending relative size.
+ * Multiplies the type scale.
  */
 enum class TextScale(val key: String, val multiplier: Float, val label: String) {
-    SMALL("small", 0.9f, "Small"),
-    STANDARD("standard", 1.0f, "Standard"),
-    LARGE("large", 1.15f, "Large");
+    RICE("rice", 0.9f, "Rice"),
+    PEANUT("peanut", 1.0f, "Peanut"),
+    ALMOND("almond", 1.15f, "Almond");
 
     companion object {
         private val byKey = entries.associateBy(TextScale::key)
-        fun fromKey(key: String?): TextScale = byKey[key] ?: STANDARD
+        fun fromKey(key: String?): TextScale = when (key) {
+            // Legacy keys from the plain-label iteration.
+            "small" -> RICE
+            "standard" -> PEANUT
+            "large" -> ALMOND
+            else -> byKey[key] ?: PEANUT
+        }
     }
 }
 
 data class AppSettings(
     /** The middle tint carries the check in the owner's mock — Paper is the default. */
     val themeMode: ThemeMode = ThemeMode.PAPER,
-    val readerFont: ReaderFont = ReaderFont.SANS,
+    val readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
     val showReadingTime: Boolean = true,
-    val textScale: TextScale = TextScale.STANDARD,
+    val textScale: TextScale = TextScale.PEANUT,
+    /**
+     * The lens's loaded-language highlighting (owner: the reader's eye toggle
+     * was confusing and off-mock). Off by default; a single Settings switch
+     * turns it on. Detection is real; the rewrite stays honestly stubbed.
+     */
+    val highlightLoadedLanguage: Boolean = false,
 )
 
 /**

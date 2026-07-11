@@ -34,6 +34,8 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":feature:lens"))
 
+    // FileProvider + ResourcesCompat for the newspaper-share image.
+    implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)

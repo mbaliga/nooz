@@ -400,9 +400,9 @@ respect as the CI-caught log above.
   cyan `#35E0FF` cloud, `#121212`-class surfaces). `:core:design/Tokens.kt`
   mirrors Hyle's shared tokens' values. The brief anticipated a re-skin "when
   final tokens land" — they landed. Font family (brief placeholder was Plus
-  Jakarta Sans) is resolved as of D7: Hyle's real Archivo + JetBrains Mono are
-  bundled and verified; only the serif reading voice still binds to the
-  platform ([FontFamily.Serif]), since Hyle ships no serif family at all.
+  Jakarta Sans) is fully resolved as of D7: Hyle's own three internal families
+  are bundled and verified — the two sans (**Hyle Grotesk Classic**, **Hyle
+  Grotesk Plus**) and the serif (**Hyle Print**); no platform fallback remains.
 - **D2 — Pure logic lives in `:core:model`/`:core:inference` (Kotlin/JVM, no
   Android).** All unit-critical algorithms (river decomposition, dedup
   simhash, classifier rules, lens fidelity guard, CVD palette math, model
@@ -468,25 +468,52 @@ respect as the CI-caught log above.
   globe on the Region & Topics tab; the weekly columns/hourglass RiverScreen
   and the bottom-nav shell are superseded and removed.
 
-- **D7 — Three real reading fonts, Hyle-verified (2026-07-12 follow-up to
-  D6).** The owner's follow-up correction: "Three themes, Three font styles
-  (two sans serif, one serif — all from Hyle — don't use Hyle Deco). Three
-  font sizes." The interactive references' font names (e.g. "Hyle Deco
-  Sans") were ad-libbed per the owner's own standing warning — checked
-  against the actual cloned `hyle-design-system` repo's `tokens/typography.json`
-  rather than trusted, which confirmed Hyle defines exactly two families —
-  **Archivo** (sans) and **JetBrains Mono** (mono) — nothing serif, nothing
-  named "Deco," anywhere in that repo. Fix: downloaded Archivo/JetBrains Mono
-  variable TTFs from Google Fonts' own GitHub mirror and verified each with
-  `fonttools` (real family name + real variable axes, not just a trusted
-  filename) before bundling, alongside their real OFL license text
-  (`third_party/fonts/`). `ReaderFont` is now `SERIF` / `SANS` (Archivo) /
-  `MONO` (JetBrains Mono); `Type.kt`'s `HyleSans`/`HyleMono` back the latter
-  two. The serif stays platform ([FontFamily.Serif]) — Hyle ships no serif
-  family, so inventing one would violate the same live-verification standard
-  as D1/D3/D4. Settings shows three plain-labeled sizes (Small/Standard/
-  Large) — the mock's own size names ("Rice/Peanut/Almond") were ad-libbed
-  placeholders and were not copied, same as D6's other ad-lib exclusions.
+- **D7 — Three real reading fonts, Hyle's own (2026-07-11/12).** The owner's
+  direction: "Three font styles (two sans serif, one serif — all from Hyle —
+  don't use Hyle Deco)," then, once the design system shipped the real font
+  source-of-truth, the five family names: HyleGroteskClassic, HyleGroteskPlus,
+  HylePrint, HyleClassic, HyleDecoPro. Ground truth was pulled from the cloned
+  `hyle-design-system` repo's new `fonts/` directory (a fetch past the earlier
+  clone brought commit `efcef1b`, which added 23 TTFs + per-family
+  LICENSE-NOTEs). The three the app uses map exactly to "two sans, one serif,
+  not Deco": **Hyle Grotesk Classic** (Space Grotesk + Archivo letterforms) and
+  **Hyle Grotesk Plus** (Classic + Deco N/R sweep) are the sans; **Hyle Print**
+  (Literata + Deco letterforms) is the serif. HyleClassic and HyleDecoPro (the
+  Bitstream pair) are excluded — Deco by name, per the owner. Each family is an
+  OFL derivative; every TTF was verified with `fonttools` (real family name +
+  weight class, not trusted by filename) before bundling with its LICENSE-NOTE
+  and the OFL body (`third_party/fonts/`). `ReaderFont` is now `GROTESK_CLASSIC`
+  / `GROTESK_PLUS` / `PRINT`; `Type.kt` binds all three plus makes **Hyle Print
+  the display/masthead voice** (wordmark, headlines, list titles, the loom) —
+  the single biggest fidelity gain, replacing the platform-serif stand-in.
+  Text sizes are the owner's real names — **Rice / Peanut / Almond** (ascending
+  real-world size); the earlier plain labels were wrong, and the owner
+  confirmed these were never ad-libbed. (This corrects the prior same-session
+  note, written before the design system shipped `fonts/`, which had wrongly
+  concluded Hyle had no serif and used Archivo/JetBrains Mono.)
+
+- **D8 — Reader "one more cut": fidelity + interaction fixes (2026-07-12).**
+  From the owner's screen-recording reference (the launcher's own back-swipe:
+  a rigid sheet sliding off a stationary underlayer with a crisp, still,
+  shadowed edge) and a bug list. Changes, all in `:feature:reader`/`:app`:
+  (a) **Slide** — the immersive Paper now tracks a one-finger horizontal drag
+  as a rigid sheet (`graphicsLayer` translation + a hard `shadowElevation`
+  edge) and settles past ~a third of the width (right → stand, left → settings),
+  else snaps back — replacing the old instant screen-swap. (b) **Eye icon
+  removed** — the always-on lens toggle wasn't in the mock and confused the
+  owner; the loaded-language highlight moved to a persisted Settings switch
+  (`highlightLoadedLanguage`, default off; detection stays real, rewrite stays
+  stubbed per D3). (c) **Bottom strip → gradient fade** — the divider/strip is
+  gone; controls float over a `verticalGradient` fade of the text, matching the
+  Paper mock: a reading-progress dial + open-in-browser + share + reading time
+  + the day-mix bar (opens the loom). (d) **Share → newspaper clipping** —
+  `NewspaperShare` renders the headline as a paper masthead PNG (Nooz wordmark,
+  double rule, real title in Hyle Print, real source · author · date) via a
+  `FileProvider`, falling back to text if the image can't be written. (e)
+  **Back gesture** — the immersive reader is a sub-state of the Stand, so the
+  shell's `BackHandler` was disabled there and the native back gesture exited
+  the app; it now also fires when an article is open and closes it. Nothing
+  fabricated: the clipping and progress all read from real article/scroll data.
 
 ## Schema versions
 - Data model: **v1**, materialized in Room (`SourceEntity`, `ItemEntity`,

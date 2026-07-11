@@ -29,6 +29,7 @@ class SettingsRepository(private val context: Context) {
         val FONT = stringPreferencesKey("reader_font")
         val READING_TIME = booleanPreferencesKey("show_reading_time")
         val TEXT_SCALE = stringPreferencesKey("text_scale")
+        val LENS_HIGHLIGHT = booleanPreferencesKey("highlight_loaded_language")
         val REGION = stringPreferencesKey("filter_region")
         val TOPICS = stringSetPreferencesKey("filter_topics")
     }
@@ -39,6 +40,7 @@ class SettingsRepository(private val context: Context) {
             readerFont = ReaderFont.fromKey(prefs[Keys.FONT]),
             showReadingTime = prefs[Keys.READING_TIME] ?: true,
             textScale = TextScale.fromKey(prefs[Keys.TEXT_SCALE]),
+            highlightLoadedLanguage = prefs[Keys.LENS_HIGHLIGHT] ?: false,
         )
     }
 
@@ -63,6 +65,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setTextScale(scale: TextScale) {
         context.settingsDataStore.edit { it[Keys.TEXT_SCALE] = scale.key }
+    }
+
+    suspend fun setHighlightLoadedLanguage(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.LENS_HIGHLIGHT] = enabled }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {
