@@ -19,6 +19,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
@@ -44,8 +45,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
@@ -75,6 +78,7 @@ import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.DataExporter
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
+import xyz.mdhv.riverwip.crash.CrashRecovery
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
 import xyz.mdhv.riverwip.design.HyleGroteskClassic
@@ -193,6 +197,8 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 .padding(bottom = Tokens.Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
+            CrashSection()
+
             Text(
                 "Theme",
                 style = MaterialTheme.typography.titleMedium,
@@ -400,6 +406,57 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             AboutSection()
         }
     }
+}
+
+/**
+ * A pending device-only crash report (owner's #17, Hyle crash-recovery). Shown
+ * only when the app crashed last run — headline first, the full trace behind a
+ * toggle, copy-to-clipboard, and dismiss. Nothing is ever transmitted.
+ */
+@Composable
+private fun CrashSection() {
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    var report by remember { mutableStateOf(CrashRecovery.pending(context)) }
+    var showTrace by remember { mutableStateOf(false) }
+    val current = report ?: return
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .border(Tokens.Border.thin, MaterialTheme.colorScheme.error, RoundedCornerShape(Tokens.Radius.sm))
+            .padding(Tokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
+    ) {
+        Text("Nooz closed unexpectedly last time", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(current.headline, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+        Text(
+            "The report stayed on your device — nothing was sent anywhere.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (showTrace) {
+            Text(
+                current.fullReport,
+                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
+            TextButton(onClick = { showTrace = !showTrace }, contentPadding = PaddingValues(0.dp)) {
+                Text(if (showTrace) "Hide details" else "Show details")
+            }
+            TextButton(
+                onClick = { clipboard.setText(AnnotatedString(current.fullReport)) },
+                contentPadding = PaddingValues(0.dp),
+            ) { Text("Copy") }
+            TextButton(
+                onClick = { CrashRecovery.clear(context); report = null },
+                contentPadding = PaddingValues(0.dp),
+            ) { Text("Dismiss") }
+        }
+    }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
 
 /**

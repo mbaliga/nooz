@@ -3,6 +3,7 @@ package xyz.mdhv.riverwip
 import android.app.Application
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import xyz.mdhv.riverwip.crash.CrashRecovery
 import xyz.mdhv.riverwip.data.work.FetchScheduler
 
 /**
@@ -28,6 +29,9 @@ class RiverApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Device-only crash capture (Hyle crash-recovery). Installed first so a
+        // throw from the DI graph or WorkManager init is still captured.
+        CrashRecovery.install(this, appLabel = "Nooz")
         container = AppContainer(this)
         WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(container.workerFactory).build())
         FetchScheduler.schedule(this)

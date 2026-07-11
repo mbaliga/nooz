@@ -38,12 +38,25 @@ android {
 
     buildTypes {
         release {
+            // App optimization (owner's #15): R8 code shrinking + obfuscation and
+            // resource shrinking, so the release download is as light as we can
+            // make it. R8 runs in full mode (AGP 8 default). Debug stays fast to
+            // build and is the only variant CI assembles.
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         debug {
             applicationIdSuffix = ".debug"
         }
+    }
+
+    // Per-device downloads from the App Bundle stay small — one language, one
+    // density, one ABI per install instead of the universal APK.
+    bundle {
+        language { enableSplit = true }
+        density { enableSplit = true }
+        abi { enableSplit = true }
     }
 
     compileOptions {
