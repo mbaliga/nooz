@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,13 +24,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,7 +41,6 @@ import xyz.mdhv.riverwip.model.DayLoomLayout
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlin.math.roundToInt
 
 private val DAY_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
@@ -50,8 +49,9 @@ private val DAY_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy")
  * wordmark and the day's facts sit across the top ("2 Sources · Global · 12
  * July 2026" — the date opens the picker), and the day loom fills the rest,
  * every stream fading into the page top and bottom. Reached by pulling the
- * Stand's day bar down; dismissed by dragging back down past a threshold (the
- * reverse of the open), with a grabber at the top as the accessible equivalent.
+ * Stand's day bar down; dismissed by **swiping back up** — the reverse of the
+ * open — where it lifts, shrinks, and fades as it recedes toward the bar (a
+ * continuous morph), past a threshold. The grabber is the accessible equivalent.
  */
 @Composable
 fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
@@ -77,20 +77,31 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
         }
     }
 
-    var drag by remember { mutableFloatStateOf(0f) }
-    val closeThresholdPx = with(LocalDensity.current) { 140.dp.toPx() }
+    // Swipe up to recede (the reverse of the Stand's pull-down open): the loom
+    // lifts, shrinks, and fades toward the bar it came from — a continuous morph.
+    var lift by remember { mutableFloatStateOf(0f) }
+    val closeThresholdPx = with(LocalDensity.current) { 150.dp.toPx() }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .offset { IntOffset(0, drag.roundToInt().coerceAtLeast(0)) }
+            .graphicsLayer {
+                val p = (lift / closeThresholdPx).coerceIn(0f, 1f)
+                translationY = -lift
+                alpha = 1f - p * 0.55f
+                val s = 1f - p * 0.10f
+                scaleX = s
+                scaleY = s
+                transformOrigin = TransformOrigin(0.5f, 0f)
+            }
             .pointerInput(Unit) {
                 detectVerticalDragGestures(
                     onDragEnd = {
-                        if (drag > closeThresholdPx) onClose()
-                        drag = 0f
+                        if (lift > closeThresholdPx) onClose()
+                        lift = 0f
                     },
-                    onVerticalDrag = { _, dy -> drag = (drag + dy).coerceAtLeast(0f) },
+                    // dy is negative when dragging up; accumulate the upward lift.
+                    onVerticalDrag = { _, dy -> lift = (lift - dy).coerceAtLeast(0f) },
                 )
             }
             .padding(top = Tokens.Spacing.xs),
