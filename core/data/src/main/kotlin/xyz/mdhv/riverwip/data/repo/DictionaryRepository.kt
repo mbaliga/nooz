@@ -90,10 +90,33 @@ class DictionaryRepository(private val context: Context) {
     suspend fun define(word: String): String? {
         val id = observeDownloadedId().first() ?: return null
         val map = ensureLoaded(id) ?: return null
-        return map[word]
-            ?: map[word.lowercase()]
-            ?: map[word.uppercase()]
-            ?: map[word.replaceFirstChar { it.uppercase() }]
+        return lookup(map, word) ?: morphology(word).firstNotNullOfOrNull { lookup(map, it) }
+    }
+
+    /** Try a word in the dictionary's own casing conventions (Webster's keys are UPPERCASE). */
+    private fun lookup(map: Map<String, String>, w: String): String? =
+        map[w] ?: map[w.lowercase()] ?: map[w.uppercase()] ?: map[w.replaceFirstChar { it.uppercase() }]
+
+    /**
+     * Cheap morphological fallbacks so long-pressing an inflected form still
+     * lands its base entry ("running" → "run", "quibbles" → "quibble"). Not a
+     * stemmer — just the handful of English endings that cover most reading.
+     */
+    private fun morphology(word: String): List<String> {
+        val w = word.lowercase()
+        val out = ArrayList<String>(6)
+        fun add(s: String) { if (s.length >= 2) out.add(s) }
+        when {
+            w.endsWith("ies") && w.length > 4 -> add(w.dropLast(3) + "y")
+            w.endsWith("es") && w.length > 3 -> { add(w.dropLast(2)); add(w.dropLast(1)) }
+            w.endsWith("s") && !w.endsWith("ss") && w.length > 3 -> add(w.dropLast(1))
+        }
+        when {
+            w.endsWith("ing") && w.length > 5 -> { add(w.dropLast(3)); add(w.dropLast(3) + "e") }
+            w.endsWith("ed") && w.length > 4 -> { add(w.dropLast(2)); add(w.dropLast(1)) }
+            w.endsWith("ly") && w.length > 4 -> add(w.dropLast(2))
+        }
+        return out
     }
 
     private suspend fun ensureLoaded(id: String): Map<String, String>? {

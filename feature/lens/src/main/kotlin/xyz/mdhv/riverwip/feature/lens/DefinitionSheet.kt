@@ -34,8 +34,8 @@ private sealed interface DefState {
 }
 
 /**
- * The dictionary lens's definition sheet (owner's Kindle-style lookup): tap a
- * blue obscure word → its meaning, right here. Loads from the downloaded
+ * The dictionary lens's definition sheet (owner's Kindle-style lookup):
+ * long-press any word → its meaning, right here. Loads from the downloaded
  * dictionary off the main thread; an honest "no definition" if the word isn't
  * in it. Nothing about the lookup is stored.
  */

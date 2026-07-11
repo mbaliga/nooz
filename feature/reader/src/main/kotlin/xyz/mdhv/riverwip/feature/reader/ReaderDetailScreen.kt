@@ -137,7 +137,13 @@ fun ReaderDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
             ) {
                 item {
-                    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
+                    // Owner's Paper mock: the body begins at the screen's centre,
+                    // with the title sitting just above it — so the header block
+                    // fills the top ~half and its content bottoms out at centre.
+                    Column(
+                        modifier = Modifier.fillParentMaxHeight(0.48f),
+                        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs, Alignment.Bottom),
+                    ) {
                         // Colour never alone: the dominant topic, named.
                         Text(
                             topic.placeholderLabel,

@@ -9,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -18,46 +20,32 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.model.AffectSpanDetector
-import xyz.mdhv.riverwip.model.ObscureWords
 
-// The owner's colour scheme: red for loaded/strong language, blue for obscure
-// words worth a definition. Mid-tones legible on paper, white, and charcoal;
-// red-vs-blue is colour-vision-deficiency safe (the CVD hazard is red/green).
-private val LoadedColor = Color(0xFFD1503F)
-private val ObscureColor = Color(0xFF3E7BE0)
+// The owner's mark for loaded/strong language: a muted red, drawn as a *subtle*
+// underline under otherwise-normal ink — never coloured link-blue text, which
+// read as tappable hyperlinks (owner's note). Obscure words are no longer
+// pre-marked at all; any word is long-pressed for its meaning, Kindle-style.
+private val LoadedUnderline = Color(0xFFC0442F).copy(alpha = 0.6f)
 
-/** A lens mark to render: either a loaded-language span (red) or an obscure word (blue). */
-private sealed interface Mark {
-    val start: Int
-    val end: Int
-
-    data class Affect(val span: AffectSpanDetector.Span) : Mark {
-        override val start get() = span.start
-        override val end get() = span.end
-    }
-
-    data class Obscure(val ws: ObscureWords.WordSpan) : Mark {
-        override val start get() = ws.start
-        override val end get() = ws.end
-    }
-}
-
-private data class RenderedMark(val mark: Mark, val renderedStart: Int, val renderedEnd: Int)
+private data class RenderedMark(
+    val span: AffectSpanDetector.Span,
+    val renderedStart: Int,
+    val renderedEnd: Int,
+)
 
 /**
  * A paragraph with the lens woven in (brief §P5 + owner's dictionary lens):
- * loaded language is underlined red, obscure words blue. Tap a red mark for its
- * defuse sheet; tap a blue word for its definition. Loaded-language marks are
- * gated by the "Highlight loaded language" setting; obscure marks appear once a
- * dictionary is downloaded. Affect marks take priority where the two overlap.
- *
- * NOTE: solid underline (a subtle dotted treatment needs a custom draw pass
- * keyed to `TextLayoutResult`); logged as a visual follow-up in STATE.md.
+ *  - **Loaded language** gets a subtle red underline (gated by the "Highlight
+ *    loaded language" setting); a tap opens its defuse sheet. The text stays in
+ *    normal ink so it never looks like a hyperlink.
+ *  - **Definitions** are Kindle-style: once a dictionary is downloaded,
+ *    long-pressing *any* word opens its definition. Nothing is pre-underlined
+ *    for this — the whole page is a dictionary.
  */
 @Composable
 fun LensAnnotatedParagraph(
@@ -68,24 +56,11 @@ fun LensAnnotatedParagraph(
     modifier: Modifier = Modifier,
 ) {
     val affect = if (vm.underlinesEnabled) remember(text) { vm.detect(text) } else emptyList()
-    val obscure = remember(text, vm.obscureActive) {
-        if (vm.obscureActive) vm.detectObscure(text) else emptyList()
-    }
+    val defineEnabled = vm.dictionaryReady
 
-    if (affect.isEmpty() && obscure.isEmpty()) {
+    if (affect.isEmpty() && !defineEnabled) {
         Text(text = text, style = style, modifier = modifier)
         return
-    }
-
-    // Merge: affect first (priority), then obscure words that don't overlap one.
-    val marks = remember(affect, obscure) {
-        val list = ArrayList<Mark>(affect.size + obscure.size)
-        affect.forEach { list.add(Mark.Affect(it)) }
-        obscure.forEach { ob ->
-            if (affect.none { ob.start < it.end && it.start < ob.end }) list.add(Mark.Obscure(ob))
-        }
-        list.sortBy { it.start }
-        list
     }
 
     // Sterile-lens still applies to loaded language only.
@@ -97,83 +72,97 @@ fun LensAnnotatedParagraph(
     var selectedSpan by remember { mutableStateOf<AffectSpanDetector.Span?>(null) }
     var selectedWord by remember { mutableStateOf<String?>(null) }
 
-    val rendered = remember(text, marks) { mutableListOf<RenderedMark>() }
+    val rendered = remember(text, affect) { mutableListOf<RenderedMark>() }
     // Re-derive when any affect span's state changes (an accepted rewrite can
-    // change length, so the tap-mapping must move with it).
-    val affectStates = marks.mapNotNull { (it as? Mark.Affect)?.let { m -> vm.stateFor(itemId, m.span) } }
-    val annotated = remember(text, marks, affectStates) {
+    // change length, so both the tap-mapping and the underline must move with it).
+    val affectStates = affect.map { vm.stateFor(itemId, it) }
+    val annotated = remember(text, affect, affectStates) {
         rendered.clear()
         buildAnnotatedString {
             var cursor = 0
-            for (mark in marks) {
-                if (mark.start > cursor) append(text.substring(cursor, mark.start))
+            for (span in affect) {
+                if (span.start > cursor) append(text.substring(cursor, span.start))
                 val renderedStart = length
-                when (mark) {
-                    is Mark.Obscure -> {
-                        withStyle(SpanStyle(color = ObscureColor, textDecoration = TextDecoration.Underline)) {
-                            append(text.substring(mark.start, mark.end))
+                when (val state = vm.stateFor(itemId, span)) {
+                    is AffectSpanUiState.Accepted -> {
+                        append(state.rewrittenText)
+                        val dot = if (state.provenance == Provenance.NATIVE) {
+                            Tokens.Color.provenanceNative
+                        } else {
+                            Tokens.Color.provenanceCloud
                         }
+                        withStyle(SpanStyle(color = dot)) { append(" •") }
                     }
-                    is Mark.Affect -> when (val state = vm.stateFor(itemId, mark.span)) {
-                        is AffectSpanUiState.Accepted -> {
-                            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                                append(state.rewrittenText)
-                            }
-                            val dot = if (state.provenance == Provenance.NATIVE) Tokens.Color.provenanceNative else Tokens.Color.provenanceCloud
-                            withStyle(SpanStyle(color = dot)) { append(" •") }
-                        }
-                        is AffectSpanUiState.Dismissed, is AffectSpanUiState.Rejected ->
-                            append(text.substring(mark.start, mark.end))
-                        else -> withStyle(SpanStyle(color = LoadedColor, textDecoration = TextDecoration.Underline)) {
-                            append(text.substring(mark.start, mark.end))
-                        }
-                    }
+                    is AffectSpanUiState.Dismissed, is AffectSpanUiState.Rejected ->
+                        append(text.substring(span.start, span.end))
+                    // Untouched / Loading: plain ink; the subtle underline is
+                    // drawn behind the text (see drawBehind below).
+                    else -> append(text.substring(span.start, span.end))
                 }
-                rendered.add(RenderedMark(mark, renderedStart, length))
-                cursor = mark.end
+                rendered.add(RenderedMark(span, renderedStart, length))
+                cursor = span.end
             }
             if (cursor < text.length) append(text.substring(cursor))
         }
     }
 
+    val underlineStroke = with(androidx.compose.ui.platform.LocalDensity.current) { 1.3.dp.toPx() }
+
     Text(
         text = annotated,
         style = style,
         modifier = modifier
-            .pointerInput(rendered.size) {
-                detectTapGestures { pos ->
-                    val lr = layoutResult ?: return@detectTapGestures
-                    val charOffset = lr.getOffsetForPosition(pos)
-                    val hit = rendered.firstOrNull { charOffset in it.renderedStart until it.renderedEnd }?.mark
-                    when (hit) {
-                        is Mark.Affect -> selectedSpan = hit.span
-                        is Mark.Obscure -> selectedWord = hit.ws.word
-                        null -> {}
+            .drawBehind {
+                val lr = layoutResult ?: return@drawBehind
+                for (r in rendered) {
+                    // Only the still-loaded (un-defused) marks carry the underline.
+                    val state = vm.stateFor(itemId, r.span)
+                    if (state is AffectSpanUiState.Accepted ||
+                        state is AffectSpanUiState.Dismissed ||
+                        state is AffectSpanUiState.Rejected
+                    ) {
+                        continue
                     }
+                    drawSpanUnderline(lr, r.renderedStart, r.renderedEnd, LoadedUnderline, underlineStroke)
                 }
+            }
+            .pointerInput(rendered.size, defineEnabled) {
+                detectTapGestures(
+                    onLongPress = { pos ->
+                        if (!defineEnabled) return@detectTapGestures
+                        val lr = layoutResult ?: return@detectTapGestures
+                        val offset = lr.getOffsetForPosition(pos)
+                        val range = lr.getWordBoundary(offset)
+                        val raw = annotated.text.substring(
+                            range.start.coerceIn(0, annotated.text.length),
+                            range.end.coerceIn(0, annotated.text.length),
+                        )
+                        val word = raw.trim { !it.isLetter() && it != '-' && it != '\'' }
+                        if (word.length >= 2) selectedWord = word
+                    },
+                    onTap = { pos ->
+                        val lr = layoutResult ?: return@detectTapGestures
+                        val charOffset = lr.getOffsetForPosition(pos)
+                        val hit = rendered.firstOrNull { charOffset in it.renderedStart until it.renderedEnd }
+                        if (hit != null) selectedSpan = hit.span
+                    },
+                )
             }
             // TalkBack can't land a raw tap on an exact span; one custom action
             // per mark is the actual way in (brief §P7). Indexed so repeats stay
             // distinguishable.
             .semantics {
                 customActions = rendered.mapIndexed { index, r ->
-                    val (label, action) = when (val mark = r.mark) {
-                        is Mark.Obscure -> "Define “${mark.ws.word}” (${index + 1} of ${rendered.size})" to {
-                            selectedWord = mark.ws.word; true
-                        }
-                        is Mark.Affect -> {
-                            val verb = when (vm.stateFor(itemId, mark.span)) {
-                                is AffectSpanUiState.Accepted -> "Revert suggestion"
-                                is AffectSpanUiState.Rejected -> "Rewrite unavailable"
-                                is AffectSpanUiState.Loading -> "Suggestion loading"
-                                else -> "View suggestion"
-                            }
-                            "${mark.span.evidence} (${index + 1} of ${rendered.size}). $verb." to {
-                                selectedSpan = mark.span; true
-                            }
-                        }
+                    val verb = when (vm.stateFor(itemId, r.span)) {
+                        is AffectSpanUiState.Accepted -> "Revert suggestion"
+                        is AffectSpanUiState.Rejected -> "Rewrite unavailable"
+                        is AffectSpanUiState.Loading -> "Suggestion loading"
+                        else -> "View suggestion"
                     }
-                    CustomAccessibilityAction(label = label, action = action)
+                    CustomAccessibilityAction(
+                        label = "${r.span.evidence} (${index + 1} of ${rendered.size}). $verb.",
+                        action = { selectedSpan = r.span; true },
+                    )
                 }
             },
         onTextLayout = { layoutResult = it },
@@ -198,5 +187,32 @@ fun LensAnnotatedParagraph(
             vm = vm,
             onDismissRequest = { selectedWord = null },
         )
+    }
+}
+
+/**
+ * Draw a subtle underline under the rendered [start, end) range, line by line,
+ * sitting just below the text baseline row. Kept off the glyphs so it reads as
+ * emphasis, not a link.
+ */
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawSpanUnderline(
+    lr: TextLayoutResult,
+    start: Int,
+    end: Int,
+    color: Color,
+    stroke: Float,
+) {
+    if (end <= start) return
+    val last = (end - 1).coerceAtLeast(start)
+    val startLine = lr.getLineForOffset(start)
+    val endLine = lr.getLineForOffset(last)
+    for (line in startLine..endLine) {
+        val ls = maxOf(start, lr.getLineStart(line))
+        val le = minOf(end, lr.getLineEnd(line, visibleEnd = true))
+        if (le <= ls) continue
+        val x1 = lr.getHorizontalPosition(ls, usePrimaryDirection = true)
+        val x2 = lr.getHorizontalPosition(le, usePrimaryDirection = true)
+        val y = lr.getLineBottom(line) - stroke * 2f
+        drawLine(color, Offset(x1, y), Offset(x2, y), strokeWidth = stroke)
     }
 }
