@@ -399,10 +399,10 @@ respect as the CI-caught log above.
   defaults (dark-first, violet `#8E7BFF`, provenance radium `#C7EF9E` on-device /
   cyan `#35E0FF` cloud, `#121212`-class surfaces). `:core:design/Tokens.kt`
   mirrors Hyle's shared tokens' values. The brief anticipated a re-skin "when
-  final tokens land" — they landed. Font family is the one open swap-point (Hyle
-  ships Archivo; brief placeholder was Plus Jakarta Sans) — bound to platform sans
-  via `AppFontFamily` until the RESERVED font asset is dropped. This is reversible:
-  revert to placeholder values in `Tokens.kt` alone.
+  final tokens land" — they landed. Font family (brief placeholder was Plus
+  Jakarta Sans) is resolved as of D7: Hyle's real Archivo + JetBrains Mono are
+  bundled and verified; only the serif reading voice still binds to the
+  platform ([FontFamily.Serif]), since Hyle ships no serif family at all.
 - **D2 — Pure logic lives in `:core:model`/`:core:inference` (Kotlin/JVM, no
   Android).** All unit-critical algorithms (river decomposition, dedup
   simhash, classifier rules, lens fidelity guard, CVD palette math, model
@@ -468,6 +468,26 @@ respect as the CI-caught log above.
   globe on the Region & Topics tab; the weekly columns/hourglass RiverScreen
   and the bottom-nav shell are superseded and removed.
 
+- **D7 — Three real reading fonts, Hyle-verified (2026-07-12 follow-up to
+  D6).** The owner's follow-up correction: "Three themes, Three font styles
+  (two sans serif, one serif — all from Hyle — don't use Hyle Deco). Three
+  font sizes." The interactive references' font names (e.g. "Hyle Deco
+  Sans") were ad-libbed per the owner's own standing warning — checked
+  against the actual cloned `hyle-design-system` repo's `tokens/typography.json`
+  rather than trusted, which confirmed Hyle defines exactly two families —
+  **Archivo** (sans) and **JetBrains Mono** (mono) — nothing serif, nothing
+  named "Deco," anywhere in that repo. Fix: downloaded Archivo/JetBrains Mono
+  variable TTFs from Google Fonts' own GitHub mirror and verified each with
+  `fonttools` (real family name + real variable axes, not just a trusted
+  filename) before bundling, alongside their real OFL license text
+  (`third_party/fonts/`). `ReaderFont` is now `SERIF` / `SANS` (Archivo) /
+  `MONO` (JetBrains Mono); `Type.kt`'s `HyleSans`/`HyleMono` back the latter
+  two. The serif stays platform ([FontFamily.Serif]) — Hyle ships no serif
+  family, so inventing one would violate the same live-verification standard
+  as D1/D3/D4. Settings shows three plain-labeled sizes (Small/Standard/
+  Large) — the mock's own size names ("Rice/Peanut/Almond") were ad-libbed
+  placeholders and were not copied, same as D6's other ad-lib exclusions.
+
 ## Schema versions
 - Data model: **v1**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`).
@@ -505,13 +525,17 @@ respect as the CI-caught log above.
 ---
 
 ## RESERVED — never decide, never suggest in-product
-Still reserved: final package; license; icon & any visual metaphor language;
-final taxonomy labels; any mythological/metaphorical naming; Tier B paid-key
+Still reserved: final package; license; any visual metaphor language; final
+taxonomy labels; any mythological/metaphorical naming; Tier B paid-key
 decisions. No Marvel/Loki/TVA references anywhere (loom image guides form only,
 never copy).
 
-**Decided by the owner** (not by this build): the app name — **"Nooz"** —
-delivered via the owner's own design mocks on 2026-07-10 and applied per
-decision D5. The applicationId/package stays `xyz.mdhv.riverwip` until the
-owner schedules the rename (changing it breaks in-place upgrades of installed
-test builds).
+**Decided by the owner** (not by this build):
+- The app name — **"Nooz"** — delivered via the owner's own design mocks on
+  2026-07-10 and applied per decision D5.
+- The app icon — the owner's 512×512 logo (2026-07-11/12 mock drop), applied
+  per decision D6 (launcher mipmaps + `fastlane/.../images/icon.png`). No
+  longer reserved/open.
+
+The applicationId/package stays `xyz.mdhv.riverwip` until the owner schedules
+the rename (changing it breaks in-place upgrades of installed test builds).
