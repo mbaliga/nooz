@@ -21,6 +21,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FilterChip
@@ -42,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -165,62 +168,169 @@ private fun SourcesTab(vm: SourcesViewModel) {
     val sources by vm.sources.collectAsStateWithLifecycle()
     val health by vm.health.collectAsStateWithLifecycle()
     val startersByRegion by vm.startersByRegion.collectAsStateWithLifecycle()
+    val builders by vm.builders.collectAsStateWithLifecycle()
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = Tokens.Spacing.md),
-    ) {
-        val addedIds = remember(sources) { sources.map { it.id }.toSet() }
-        for ((region, defs) in startersByRegion) {
-            Row(
-                Modifier.fillMaxWidth().padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    "One-click starters",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    region.replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    var query by rememberSaveable { mutableStateOf("") }
+    var regionFilter by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val addedIds = remember(sources) { sources.map { it.id }.toSet() }
+    val q = query.trim().lowercase()
+    val regions = remember(startersByRegion) { startersByRegion.keys.sorted() }
+    val flatStarters = remember(startersByRegion) {
+        startersByRegion.entries.sortedBy { it.key }.flatMap { (region, defs) -> defs.map { region to it } }
+    }
+    val filteredStarters = flatStarters.filter { (region, def) ->
+        (regionFilter == null || region == regionFilter) && (q.isEmpty() || def.title.lowercase().contains(q))
+    }
+    val filteredBuilders = if (regionFilter != null) emptyList() else builders.filter { q.isEmpty() || it.title.lowercase().contains(q) }
+
+    Column(Modifier.fillMaxSize()) {
+        // Region filter chips — narrow the (now large) list by sector.
+        Row(
+            Modifier
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
+        ) {
+            FilterChip(selected = regionFilter == null, onClick = { regionFilter = null }, label = { Text("All") })
+            for (r in regions) {
+                FilterChip(
+                    selected = regionFilter == r,
+                    onClick = { regionFilter = if (regionFilter == r) null else r },
+                    label = { Text(r.replaceFirstChar { it.uppercase() }) },
                 )
             }
-            for (def in defs) {
+        }
+
+        Column(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Tokens.Spacing.md),
+        ) {
+            if (filteredStarters.isEmpty() && filteredBuilders.isEmpty()) {
+                Text(
+                    "No sources match your search.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = Tokens.Spacing.lg),
+                )
+            }
+            for ((region, def) in filteredStarters) {
                 val id = remember(def) { def.toSourceOrNull(addedAt = 0L)?.id }
                 StarterRow(
                     def = def,
+                    region = if (regionFilter == null) region else null,
                     added = id != null && id in addedIds,
                     unhealthy = id != null && (health[id]?.status == HealthStatus.FAILING || health[id]?.status == HealthStatus.RATE_LIMITED),
                     onToggle = { vm.toggleStarter(def) },
                 )
             }
+
+            if (filteredBuilders.isNotEmpty()) {
+                Text(
+                    "News APIs & builders",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
+                )
+                for (b in filteredBuilders) {
+                    BuilderRow(def = b, onAdd = { vm.addByUrl(it) })
+                }
+            }
+
             HorizontalDivider(
                 color = MaterialTheme.colorScheme.outlineVariant,
                 modifier = Modifier.padding(top = Tokens.Spacing.md),
             )
+            AddByUrlSection(vm)
+            Row(
+                Modifier.padding(vertical = Tokens.Spacing.md),
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
+            ) {
+                OpmlButtons(vm)
+            }
+            CatalogueCard(vm)
+            Spacer(Modifier.height(Tokens.Spacing.xl))
         }
 
-        AddByUrlSection(vm)
-
-        // Quiet utilities below the mock's fold: the user's data stays the user's.
-        Row(
-            Modifier.padding(vertical = Tokens.Spacing.md),
-            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
-        ) {
-            OpmlButtons(vm)
-        }
-        CatalogueCard(vm)
-        Spacer(Modifier.height(Tokens.Spacing.xl))
+        // The search bar, docked to the bottom (owner's spec).
+        SourcesSearchBar(query = query, onQueryChange = { query = it })
     }
 }
 
 @Composable
-private fun StarterRow(def: ServiceDef, added: Boolean, unhealthy: Boolean, onToggle: () -> Unit) {
+private fun SourcesSearchBar(query: String, onQueryChange: (String) -> Unit) {
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
+    ) {
+        Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Box(Modifier.weight(1f)) {
+            if (query.isEmpty()) {
+                Text(
+                    "Search sources",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                singleLine = true,
+                textStyle = TextStyle.Default.merge(MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground)),
+                cursorBrush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.onBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { contentDescription = "Search sources" },
+            )
+        }
+        if (query.isNotEmpty()) {
+            IconButton(onClick = { onQueryChange("") }) {
+                Icon(Icons.Filled.Close, contentDescription = "Clear search")
+            }
+        }
+    }
+}
+
+@Composable
+private fun BuilderRow(def: ServiceDef, onAdd: (String) -> Unit) {
+    val context = LocalContext.current
+    val example = def.example
+    val oneTap = example != null && !example.contains("{")
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(def.title, style = MaterialTheme.typography.titleMedium)
+            val line = def.notes ?: def.homepage
+            if (line != null) {
+                Text(
+                    if (def.requiresKey) "Needs a free API key. $line" else line,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                )
+            }
+        }
+        when {
+            def.requiresKey && def.keySignupUrl != null -> TextButton(onClick = {
+                context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(def.keySignupUrl)))
+            }) { Text("Get a key") }
+            oneTap -> OutlinedButton(onClick = { onAdd(example!!) }) { Text("Add") }
+            else -> {}
+        }
+    }
+}
+
+@Composable
+private fun StarterRow(def: ServiceDef, region: String?, added: Boolean, unhealthy: Boolean, onToggle: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -230,7 +340,9 @@ private fun StarterRow(def: ServiceDef, added: Boolean, unhealthy: Boolean, onTo
     ) {
         Column(Modifier.weight(1f)) {
             Text(def.title, style = MaterialTheme.typography.titleMedium)
-            val line = def.url ?: def.notes
+            val line = listOfNotNull(region?.replaceFirstChar { it.uppercase() }, def.url ?: def.notes)
+                .joinToString(" · ")
+                .ifBlank { null }
             if (line != null) {
                 Text(
                     line,
