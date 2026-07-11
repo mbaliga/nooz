@@ -45,10 +45,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.CandyCaneBar
 import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.DayMixBar
+import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.Item
 import java.time.LocalDate
@@ -124,7 +126,7 @@ fun ArticleListScreen(
                 .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Nooz", style = MaterialTheme.typography.headlineMedium)
+            NoozWordmark(fontSize = 30.sp)
             Spacer(Modifier.weight(1f))
             Text(
                 STAND_DATE.format(LocalDate.now(ZoneId.systemDefault())),

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -42,13 +43,17 @@ fun DayMixBar(
     ) {
         val gap = 3.dp.toPx()
         val totalGap = gap * (segments.size - 1).coerceAtLeast(0)
+        // Each segment is a pill: fully rounded ends (radius = half the height),
+        // matching the mock's capsule bars top and bottom of the page.
+        val radius = CornerRadius(size.height / 2f, size.height / 2f)
         var x = 0f
         for ((topic, fraction) in segments) {
             val w = ((size.width - totalGap) * fraction).toFloat()
-            drawRect(
+            drawRoundRect(
                 color = topic.toComposeColor(),
                 topLeft = Offset(x, 0f),
                 size = Size(w, size.height),
+                cornerRadius = radius,
             )
             x += w + gap
         }

@@ -55,7 +55,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.feature.river.CrossSectionPanel
 import xyz.mdhv.riverwip.model.GlobeModel
@@ -101,11 +103,15 @@ fun EditScreen(
                 .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Nooz", style = MaterialTheme.typography.headlineMedium)
+            NoozWordmark(fontSize = 30.sp)
             Text(
-                "  EDIT",
-                style = MaterialTheme.typography.headlineMedium,
+                "EDIT",
+                style = MaterialTheme.typography.labelLarge,
+                letterSpacing = 2.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .align(Alignment.Bottom)
+                    .padding(start = Tokens.Spacing.sm, bottom = 6.dp),
             )
             Spacer(Modifier.weight(1f))
             IconButton(onClick = onOpenSettings) {

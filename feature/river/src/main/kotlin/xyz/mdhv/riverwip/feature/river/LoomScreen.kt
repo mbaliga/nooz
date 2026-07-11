@@ -2,10 +2,11 @@ package xyz.mdhv.riverwip.feature.river
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,9 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -26,19 +25,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import java.time.Instant
@@ -49,12 +46,12 @@ import kotlin.math.roundToInt
 private val DAY_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
 /**
- * The loom surface (owner's Viz flow): wordmark, the day's facts across the
- * top ("2 Sources · Global · 12 July 2026" — the date opens the picker), and
- * the day loom beneath. Reached by pulling the Stand's day bar down; and
- * dismissed the same way in reverse — an overscroll pull-down here past the
- * threshold sends it back up to the Stand (so the gesture is symmetric), with
- * a grabber at the top as the visible, accessible equivalent.
+ * The loom surface (owner's Viz flow): a single fixed screen — no scroll. The
+ * wordmark and the day's facts sit across the top ("2 Sources · Global · 12
+ * July 2026" — the date opens the picker), and the day loom fills the rest,
+ * every stream fading into the page top and bottom. Reached by pulling the
+ * Stand's day bar down; dismissed by dragging back down past a threshold (the
+ * reverse of the open), with a grabber at the top as the accessible equivalent.
  */
 @Composable
 fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
@@ -80,39 +77,25 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
         }
     }
 
-    val scrollState = rememberScrollState()
-    var pull by remember { mutableFloatStateOf(0f) }
-    val closeThresholdPx = with(LocalDensity.current) { 120.dp.toPx() }
-
-    // Reverse of the Stand's pull-to-open: overscroll down at the top gives a
-    // little, and releasing past the threshold retracts the loom to the Stand.
-    val dismissConnection = remember(closeThresholdPx) {
-        object : NestedScrollConnection {
-            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
-                if (available.y > 0 && scrollState.value == 0) {
-                    pull = (pull + available.y).coerceAtMost(closeThresholdPx * 1.5f)
-                    return Offset(0f, available.y)
-                }
-                return Offset.Zero
-            }
-
-            override suspend fun onPreFling(available: Velocity): Velocity {
-                if (pull > closeThresholdPx) onClose()
-                pull = 0f
-                return Velocity.Zero
-            }
-        }
-    }
+    var drag by remember { mutableFloatStateOf(0f) }
+    val closeThresholdPx = with(LocalDensity.current) { 140.dp.toPx() }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(dismissConnection)
-            .verticalScroll(scrollState)
-            .offset { IntOffset(0, pull.roundToInt()) }
+            .offset { IntOffset(0, drag.roundToInt().coerceAtLeast(0)) }
+            .pointerInput(Unit) {
+                detectVerticalDragGestures(
+                    onDragEnd = {
+                        if (drag > closeThresholdPx) onClose()
+                        drag = 0f
+                    },
+                    onVerticalDrag = { _, dy -> drag = (drag + dy).coerceAtLeast(0f) },
+                )
+            }
             .padding(top = Tokens.Spacing.xs),
     ) {
-        // Grabber: the pull-to-dismiss made visible, and tappable as its a11y equivalent.
+        // Grabber: the drag-to-dismiss made visible, and tappable as its a11y equivalent.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -137,16 +120,21 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
                 .fillMaxWidth()
                 .padding(horizontal = Tokens.Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
-            Text("Nooz", style = MaterialTheme.typography.headlineMedium)
-            Spacer(Modifier.weight(1f))
+            NoozWordmark(fontSize = 34.sp)
             Text(
-                "$enabledCount Sources · ${filter.region.label}",
+                "$enabledCount Sources",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                "  ·  " + (aggregate?.let { DAY_FORMAT.format(Instant.ofEpochMilli(it.weekStart).atZone(ZoneId.systemDefault())) } ?: "—"),
+                filter.region.label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                aggregate?.let { DAY_FORMAT.format(Instant.ofEpochMilli(it.weekStart).atZone(ZoneId.systemDefault())) } ?: "—",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
@@ -158,17 +146,22 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
         }
 
         if (aggregate == null || loom.totalFlowed == 0) {
-            Text(
-                "Nothing flowed this day. The loom weaves once your sources do.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(Tokens.Spacing.xl),
-            )
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    "Nothing flowed this day. The loom weaves once your sources do.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(Tokens.Spacing.xl),
+                )
+            }
         } else {
             DayLoomCanvas(
                 loom = loom,
                 enabledSourceCount = enabledCount,
-                modifier = Modifier.padding(top = Tokens.Spacing.sm),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = Tokens.Spacing.sm),
             )
         }
     }

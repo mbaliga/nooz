@@ -7,8 +7,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +21,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -66,14 +70,14 @@ fun DayLoomCanvas(
     ) {
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio((DayLoomLayout.W / DayLoomLayout.H).toFloat())
             .semantics(mergeDescendants = true) { contentDescription = description },
     ) {
         Canvas(
             Modifier
-                .fillMaxWidth()
-                .aspectRatio((DayLoomLayout.W / DayLoomLayout.H).toFloat())
+                .fillMaxSize()
+                // Composite offscreen so the DstIn fade mask erases only the
+                // tubes (not the paper behind), fading each end to transparent.
+                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
                 .pointerInput(loom) {
                     detectTapGestures { pos ->
                         val sx = size.width / w
@@ -101,6 +105,18 @@ fun DayLoomCanvas(
                     size = Size(size.width, size.height * (1f - revealed)),
                 )
             }
+            // Fade the tube ends to transparent at the very top and bottom, so
+            // every stream dissolves into the page (owner's Viz: no hard stubs).
+            val fade = 0.11f
+            drawRect(
+                brush = Brush.verticalGradient(
+                    0f to Color.Transparent,
+                    fade to Color.Black,
+                    1f - fade to Color.Black,
+                    1f to Color.Transparent,
+                ),
+                blendMode = BlendMode.DstIn,
+            )
         }
 
         // Numbers + captions (real text; the container's description carries the a11y story).

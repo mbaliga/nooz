@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
 import java.time.LocalDate
 import java.time.YearMonth
@@ -69,7 +71,7 @@ fun LoomDatePicker(
                 .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Nooz", style = MaterialTheme.typography.headlineMedium)
+            NoozWordmark(fontSize = 30.sp)
             Spacer(Modifier.weight(1f))
             Text(
                 "Pick a day",
