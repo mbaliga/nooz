@@ -85,3 +85,22 @@ data class WeeklyAggregateEntity(
     val readCountsByTopicJson: String,
     val sourceCountsJson: String,
 )
+
+/**
+ * A saved clipping (owner's Clippings section). Denormalized snapshot keyed by
+ * [itemId] — one clipping per article, so re-saving replaces rather than
+ * duplicates, and the clipping outlives the item's retention window.
+ */
+@Entity(tableName = "clippings", indices = [Index(value = ["savedAt"])])
+data class ClippingEntity(
+    @PrimaryKey val itemId: String,
+    val title: String,
+    val sourceId: String,
+    val sourceTitle: String?,
+    val author: String?,
+    val canonicalUrl: String,
+    val topicKey: String,
+    val publishedAt: Long,
+    val savedAt: Long,
+    val excerpt: String?,
+)

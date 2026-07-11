@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -80,6 +81,7 @@ fun ArticleListScreen(
     onOpenItem: (Item) -> Unit,
     onOpenEdit: () -> Unit,
     onOpenLoom: () -> Unit,
+    onOpenClippings: () -> Unit,
 ) {
     val items by vm.items.collectAsStateWithLifecycle()
     val enabledCount by vm.enabledSourceCount.collectAsStateWithLifecycle()
@@ -162,6 +164,9 @@ fun ArticleListScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.weight(1f))
+            IconButton(onClick = onOpenClippings) {
+                Icon(Icons.Filled.Bookmarks, contentDescription = "Open your clippings")
+            }
             if (isRefreshing) {
                 CircularProgressIndicator(
                     modifier = Modifier

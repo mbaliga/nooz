@@ -20,9 +20,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -78,8 +80,10 @@ fun ReaderDetailScreen(
     item: Item,
     showReadingTime: Boolean,
     lensOn: Boolean,
+    saved: Boolean,
     offsetX: Float,
     onToggleLens: () -> Unit,
+    onToggleClip: () -> Unit,
     onDrag: (Float) -> Unit,
     onDragEnd: () -> Unit,
     onOpenLoom: () -> Unit,
@@ -199,7 +203,9 @@ fun ReaderDetailScreen(
                 listState = listState,
                 background = background,
                 lensOn = lensOn,
+                saved = saved,
                 onToggleLens = onToggleLens,
+                onToggleClip = onToggleClip,
                 onOpenBrowser = {
                     context.startActivity(
                         android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(item.canonicalUrl)),
@@ -229,7 +235,9 @@ private fun ReaderUtilityBar(
     listState: LazyListState,
     background: Color,
     lensOn: Boolean,
+    saved: Boolean,
     onToggleLens: () -> Unit,
+    onToggleClip: () -> Unit,
     onOpenBrowser: () -> Unit,
     onShare: () -> Unit,
     onOpenLoom: () -> Unit,
@@ -273,6 +281,13 @@ private fun ReaderUtilityBar(
             }
             IconButton(onClick = onOpenBrowser) {
                 Icon(Icons.Filled.Public, contentDescription = "Open in browser")
+            }
+            IconButton(onClick = onToggleClip) {
+                Icon(
+                    if (saved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+                    contentDescription = if (saved) "Remove clipping" else "Save as a clipping",
+                    tint = if (saved) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             IconButton(onClick = onShare) {
                 Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping")

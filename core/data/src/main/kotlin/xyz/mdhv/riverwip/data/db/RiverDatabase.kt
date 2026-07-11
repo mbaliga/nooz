@@ -11,8 +11,8 @@ import androidx.room.RoomDatabase
  * unshipped); flip to true with a schema dir before the first release migration.
  */
 @Database(
-    entities = [SourceEntity::class, ItemEntity::class, ReadEventEntity::class, WeeklyAggregateEntity::class],
-    version = 1,
+    entities = [SourceEntity::class, ItemEntity::class, ReadEventEntity::class, WeeklyAggregateEntity::class, ClippingEntity::class],
+    version = 2,
     exportSchema = false,
 )
 abstract class RiverDatabase : RoomDatabase() {
@@ -20,6 +20,7 @@ abstract class RiverDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun readEventDao(): ReadEventDao
     abstract fun weeklyAggregateDao(): WeeklyAggregateDao
+    abstract fun clippingDao(): ClippingDao
 
     companion object {
         fun build(context: Context): RiverDatabase =

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
+import xyz.mdhv.riverwip.data.repo.ClippingRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
@@ -53,9 +54,25 @@ class ReaderViewModel(
     private val articleRepository: ArticleRepository,
     private val readEventRepository: ReadEventRepository,
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
+    private val clippingRepository: ClippingRepository,
     settingsRepository: SettingsRepository,
     private val clock: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
+
+    /** Which items are clipped, so the reader's bookmark shows filled/empty. */
+    val savedIds: StateFlow<Set<String>> = clippingRepository.observeSavedIds()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
+
+    /** Save or unsave the article as a Nooz-paper clipping. */
+    fun toggleClip(item: Item) {
+        viewModelScope.launch {
+            if (savedIds.value.contains(item.id)) {
+                clippingRepository.remove(item.id)
+            } else {
+                clippingRepository.save(item, sourceTitles.value[item.sourceId])
+            }
+        }
+    }
 
     private val allItems: StateFlow<List<Item>> = itemRepository.observeItemsForEnabledSources()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
@@ -196,6 +213,7 @@ class ReaderViewModel(
         private val articleRepository: ArticleRepository,
         private val readEventRepository: ReadEventRepository,
         private val weeklyAggregateRepository: WeeklyAggregateRepository,
+        private val clippingRepository: ClippingRepository,
         private val settingsRepository: SettingsRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -206,6 +224,7 @@ class ReaderViewModel(
                 articleRepository,
                 readEventRepository,
                 weeklyAggregateRepository,
+                clippingRepository,
                 settingsRepository,
             ) as T
     }

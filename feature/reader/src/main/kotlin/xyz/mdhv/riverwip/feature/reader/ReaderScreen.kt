@@ -14,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 
@@ -38,6 +39,7 @@ fun ReaderScreen(
     onOpenEdit: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenLoom: () -> Unit,
+    onOpenClippings: () -> Unit,
     onBrightnessDelta: (Float) -> Unit,
     onThemeFlick: () -> Unit,
 ) {
@@ -54,10 +56,12 @@ fun ReaderScreen(
             onOpenItem = { vm.openItem(it) },
             onOpenEdit = onOpenEdit,
             onOpenLoom = onOpenLoom,
+            onOpenClippings = onOpenClippings,
         )
         return
     }
 
+    val savedIds by vm.savedIds.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var containerWidth by remember { mutableIntStateOf(0) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -98,8 +102,10 @@ fun ReaderScreen(
             item = selected,
             showReadingTime = showReadingTime,
             lensOn = highlightLoadedLanguage,
+            saved = savedIds.contains(selected.id),
             offsetX = offsetX,
             onToggleLens = onToggleLens,
+            onToggleClip = { vm.toggleClip(selected) },
             onDrag = { offsetX += it },
             onDragEnd = { settle() },
             onOpenLoom = onOpenLoom,

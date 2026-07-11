@@ -25,6 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import xyz.mdhv.riverwip.design.RiverTheme
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
+import xyz.mdhv.riverwip.feature.reader.ClippingsScreen
+import xyz.mdhv.riverwip.feature.reader.ClippingsViewModel
 import xyz.mdhv.riverwip.feature.reader.ReaderScreen
 import xyz.mdhv.riverwip.feature.reader.ReaderViewModel
 import xyz.mdhv.riverwip.feature.river.LoomScreen
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class Screen { STAND, EDIT, SETTINGS, LOOM }
+private enum class Screen { STAND, EDIT, SETTINGS, LOOM, CLIPPINGS }
 
 private const val SPLASH_MILLIS = 1_100L
 
@@ -67,6 +69,7 @@ fun RiverApp() {
             articleRepository = container.articleRepository,
             readEventRepository = container.readEventRepository,
             weeklyAggregateRepository = container.weeklyAggregateRepository,
+            clippingRepository = container.clippingRepository,
             settingsRepository = container.settingsRepository,
         ),
     )
@@ -86,6 +89,9 @@ fun RiverApp() {
             sourceRepository = container.sourceRepository,
             settingsRepository = container.settingsRepository,
         ),
+    )
+    val clippingsVm: ClippingsViewModel = viewModel(
+        factory = ClippingsViewModel.Factory(container.clippingRepository),
     )
 
     // In-app window brightness: per-window, no permission, resets with the app.
@@ -145,6 +151,7 @@ fun RiverApp() {
                         loomVm.reload()
                         screen = Screen.LOOM
                     },
+                    onOpenClippings = { screen = Screen.CLIPPINGS },
                     onBrightnessDelta = adjustBrightness,
                     onThemeFlick = { settingsVm.setTheme(settings.themeMode.next()) },
                 )
@@ -160,6 +167,7 @@ fun RiverApp() {
                 )
                 Screen.SETTINGS -> SettingsScreen(vm = settingsVm, onBack = { screen = Screen.STAND })
                 Screen.LOOM -> LoomScreen(vm = loomVm, onClose = { screen = Screen.STAND })
+                Screen.CLIPPINGS -> ClippingsScreen(vm = clippingsVm, onBack = { screen = Screen.STAND })
             }
         }
     }
