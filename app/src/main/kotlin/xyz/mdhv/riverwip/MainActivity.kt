@@ -159,7 +159,7 @@ fun RiverApp() {
                     onOpenSettings = { screen = Screen.SETTINGS },
                 )
                 Screen.SETTINGS -> SettingsScreen(vm = settingsVm, onBack = { screen = Screen.STAND })
-                Screen.LOOM -> LoomScreen(vm = loomVm)
+                Screen.LOOM -> LoomScreen(vm = loomVm, onClose = { screen = Screen.STAND })
             }
         }
     }
