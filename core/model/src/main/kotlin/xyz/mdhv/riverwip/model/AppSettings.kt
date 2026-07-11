@@ -95,6 +95,8 @@ data class AppSettings(
      */
     val twoFingerBrightness: Boolean = true,
     val twoFingerThemeFlick: Boolean = true,
+    /** First-run onboarding has been completed or skipped (owner's #19). */
+    val onboarded: Boolean = false,
 )
 
 /**

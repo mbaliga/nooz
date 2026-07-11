@@ -64,6 +64,7 @@ fun RiverApp() {
             container.settingsRepository,
             container.dictionaryRepository,
             container.dataExporter,
+            container.byokConfigStore,
         ),
     )
     val settings by settingsVm.settings.collectAsStateWithLifecycle()
@@ -128,6 +129,17 @@ fun RiverApp() {
                     splashDone = true
                 }
                 SplashScreen()
+                return@Box
+            }
+
+            // First-run onboarding (owner's #19). The splash delay covers the
+            // DataStore load, so `onboarded` is settled by the time we're here.
+            if (!settings.onboarded) {
+                OnboardingScreen(
+                    onFinish = { settingsVm.completeOnboarding() },
+                    onSaveByok = { url, key, model -> settingsVm.saveByok(url, key, model) },
+                    onSetImmersive = { settingsVm.setImmersiveReader(it) },
+                )
                 return@Box
             }
 

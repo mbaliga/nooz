@@ -16,6 +16,7 @@ import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
 import xyz.mdhv.riverwip.inference.InferenceRouter
 import xyz.mdhv.riverwip.inference.ProviderFactory
+import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
 
 /**
  * The manual DI composition root (house style: constructor injection, no
@@ -51,6 +52,9 @@ class AppContainer(appContext: Context) {
     val inferenceRouter: InferenceRouter = InferenceRouter(
         ProviderFactory.build(appContext, File(appContext.filesDir, "models")),
     )
+
+    /** The user's own OpenAI-compatible endpoint config (BYOK, #18). Shared with the provider by prefs name. */
+    val byokConfigStore: ByokConfigStore = ByokConfigStore(appContext)
 
     /** For `Configuration.Provider` on [RiverApplication] — never touched by feature UI. */
     val workerFactory: RiverWorkerFactory = data.workerFactory

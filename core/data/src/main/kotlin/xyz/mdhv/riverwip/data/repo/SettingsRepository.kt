@@ -33,6 +33,7 @@ class SettingsRepository(private val context: Context) {
         val IMMERSIVE = booleanPreferencesKey("immersive_reader")
         val GESTURE_BRIGHTNESS = booleanPreferencesKey("gesture_brightness")
         val GESTURE_THEME_FLICK = booleanPreferencesKey("gesture_theme_flick")
+        val ONBOARDED = booleanPreferencesKey("onboarded")
         val REGION = stringPreferencesKey("filter_region")
         val TOPICS = stringSetPreferencesKey("filter_topics")
     }
@@ -47,6 +48,7 @@ class SettingsRepository(private val context: Context) {
             immersiveReader = prefs[Keys.IMMERSIVE] ?: false,
             twoFingerBrightness = prefs[Keys.GESTURE_BRIGHTNESS] ?: true,
             twoFingerThemeFlick = prefs[Keys.GESTURE_THEME_FLICK] ?: true,
+            onboarded = prefs[Keys.ONBOARDED] ?: false,
         )
     }
 
@@ -87,6 +89,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setTwoFingerThemeFlick(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.GESTURE_THEME_FLICK] = enabled }
+    }
+
+    suspend fun setOnboarded(done: Boolean) {
+        context.settingsDataStore.edit { it[Keys.ONBOARDED] = done }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {
