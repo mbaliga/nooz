@@ -11,7 +11,9 @@ class StartersTest {
         for (s in Starters.verifiedFeeds) {
             assertNotNull("kind resolves: ${s.id}", s.sourceKind)
             assertTrue("has url: ${s.id}", !s.url.isNullOrBlank())
-            assertEquals("verified stamp: ${s.id}", "2026-07-07", s.verifiedAt)
+            // Every feed carries a real ISO verification date (feeds were verified
+            // across more than one run — 2026-07-07 seed, 2026-07-11 all-region expansion).
+            assertTrue("verified stamp: ${s.id}", s.verifiedAt?.matches(Regex("\\d{4}-\\d{2}-\\d{2}")) == true)
             assertNotNull("addable: ${s.id}", s.toSourceOrNull(addedAt = 1L))
         }
     }
