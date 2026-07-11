@@ -574,6 +574,43 @@ respect as the CI-caught log above.
   not author it and defers to it rather than duplicating; a research fan-out
   here independently verified an overlapping model set, kept as cross-check.
 
+- **D14 — Owner feedback round: fidelity, lens, BYOK, onboarding (2026-07-12).**
+  A 22-item pass against the owner's mocks and asks:
+  - **Fidelity.** Splash rewritten to bleed greeked newsprint off both edges at
+    the measured grey (≈0.32), no highlight box; one shared `NoozWordmark`
+    (Hyle Print) for every masthead (Stand, loom, Edit, date-picker, splash);
+    Edit header resized (large wordmark + small baseline EDIT). `DayMixBar`
+    segments are rounded pills. The loom is a single fixed screen (no scroll)
+    whose streams fade to transparent at both ends (DstIn mask), and it recedes
+    **upward** into the bar on swipe-up (reverse of the pull-down open). Reader
+    body now begins at screen centre with the title just above it; opening an
+    article slides it in from the right over a stationary stand.
+  - **Lens.** Definitions went Kindle-style: with a dictionary present,
+    long-press *any* word (removed the fragile blue-link tap). Loaded language
+    is a subtle drawn red underline over normal ink, not link-styled text.
+    `define()` gained morphological fallbacks; the loaded-language lexicon was
+    expanded across all four categories.
+  - **Reader chrome.** An obvious back control on by default; an **immersive**
+    setting hides it. Configurable two-finger gestures (on/off). 
+  - **Data & about.** `DataExporter` writes the whole local profile (settings,
+    filter, sources, clippings, coarse read log) to a JSON file; an About
+    section links mdhv.xyz + siblings.
+  - **Intelligence (#18).** A real **BYOK** provider (OpenAI-compatible chat
+    completions) wired first in both flavor orders; config in private prefs
+    (never exported), CLOUD-marked, still vetted by `FidelityGuard`. On-device
+    model *execution* stays honestly unwired (no llama.cpp binding), so
+    `ModelCatalog` URLs remain unpopulated here even though the sibling's
+    `ai-catalogue/models.json` now has probed ones — a download with no runtime
+    would mislead. **Follow-up:** move the BYOK key into the Keystore.
+  - **Onboarding (#19).** First-run flow (candy-cane "loading", Quick vs
+    Advanced, always-Skip), persisted via an `onboarded` flag; Advanced walks
+    BYOK + immersive.
+  - **Build & reliability.** Release adds resource shrinking + App-Bundle splits
+    atop the existing R8. Ported Hyle's device-only crash-recovery (uncaught
+    handler → private file; surfaced in Settings; never transmitted).
+  - **Edit.** Catalogue is now a plain line/text section (no boxed card);
+    clearer active-tab indicator.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
