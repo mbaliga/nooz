@@ -58,6 +58,12 @@ fun DayLoomCanvas(
     val w = DayLoomLayout.W.toFloat()
     val h = DayLoomLayout.H.toFloat()
 
+    // Pin the label overlay to LTR so its BiasAlignment matches the Canvas's
+    // always-LTR coordinate space (DrawScope never mirrors) — otherwise SOURCE
+    // and CONSUMPTION flip to the wrong side in an RTL locale.
+    androidx.compose.runtime.CompositionLocalProvider(
+        androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr,
+    ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -138,6 +144,7 @@ fun DayLoomCanvas(
             color = dim,
             modifier = Modifier.align(BiasAlignment(0f, 0.97f)),
         )
+    }
     }
 }
 

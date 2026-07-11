@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -140,6 +141,7 @@ fun ArticleListScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .minimumInteractiveComponentSize() // >=48dp tap target; the thin bar centres inside
                 .padding(horizontal = Tokens.Spacing.md)
                 .height(barHeight)
                 .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },

@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -37,7 +38,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -208,20 +212,25 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
             ) {
                 for (scale in TextScale.entries) {
+                    val chosen = settings.textScale == scale
                     Text(
                         scale.label,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = if (settings.textScale == scale) {
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            // Non-colour channel: the chosen size is bold, not just darker.
+                            fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                        ),
+                        color = if (chosen) {
                             MaterialTheme.colorScheme.onBackground
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         },
                         modifier = Modifier
                             .selectable(
-                                selected = settings.textScale == scale,
+                                selected = chosen,
                                 role = Role.RadioButton,
                                 onClick = { vm.setTextScale(scale) },
                             )
+                            .minimumInteractiveComponentSize()
                             .padding(vertical = Tokens.Spacing.xxs),
                     )
                 }
@@ -321,18 +330,21 @@ private fun DictionaryRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        when {
-            downloading -> androidx.compose.material3.CircularProgressIndicator(
-                modifier = Modifier.size(22.dp),
-                strokeWidth = 2.dp,
-            )
-            downloaded -> Icon(
-                Icons.Filled.Check,
-                contentDescription = "Downloaded",
-                tint = MaterialTheme.colorScheme.onBackground,
-            )
-            else -> androidx.compose.material3.TextButton(onClick = onDownload) {
-                Text("Download")
+        // Live region: the download status change is spoken, not silent.
+        Box(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }, contentAlignment = Alignment.Center) {
+            when {
+                downloading -> androidx.compose.material3.CircularProgressIndicator(
+                    modifier = Modifier.size(22.dp).semantics { contentDescription = "Downloading dictionary" },
+                    strokeWidth = 2.dp,
+                )
+                downloaded -> Icon(
+                    Icons.Filled.Check,
+                    contentDescription = "Downloaded",
+                    tint = MaterialTheme.colorScheme.onBackground,
+                )
+                else -> androidx.compose.material3.TextButton(onClick = onDownload) {
+                    Text("Download")
+                }
             }
         }
     }

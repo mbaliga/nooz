@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -45,8 +46,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -140,8 +143,7 @@ fun EditScreen(
 private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .clickable(onClickLabel = label, onClick = onClick)
-            .semantics { role = Role.Tab }
+            .selectable(selected = active, role = Role.Tab, onClick = onClick)
             .padding(vertical = Tokens.Spacing.xs),
     ) {
         Text(
@@ -423,13 +425,17 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
             "Couldn't add: ${state.message}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+            modifier = Modifier
+                .semantics { liveRegion = LiveRegionMode.Assertive }
+                .padding(top = Tokens.Spacing.xxs),
         )
         is AddUiState.Added -> Text(
             "Added “${state.title}”.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+            modifier = Modifier
+                .semantics { liveRegion = LiveRegionMode.Polite }
+                .padding(top = Tokens.Spacing.xxs),
         )
         is AddUiState.Choices -> Column {
             Text("This page declares more than one feed — pick one:", style = MaterialTheme.typography.bodySmall)

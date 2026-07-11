@@ -3,6 +3,10 @@ package xyz.mdhv.riverwip.feature.river
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +33,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private val MONTH_FORMAT = DateTimeFormatter.ofPattern("MMMM")
+private val DAY_DESC = DateTimeFormatter.ofPattern("d MMMM yyyy")
 private val DOW = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
 
 /**
@@ -126,6 +131,8 @@ private fun MonthGrid(month: YearMonth, today: LocalDate, selected: LocalDate?, 
                             val isSelected = date == selected
                             val isToday = date == today
                             val isFuture = date.isAfter(today)
+                            val dayLabel = DAY_DESC.format(date) +
+                                when { isSelected -> ", selected"; isFuture -> ", not yet available"; else -> "" }
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -139,7 +146,13 @@ private fun MonthGrid(month: YearMonth, today: LocalDate, selected: LocalDate?, 
                                             Modifier
                                         },
                                     )
-                                    .clickable(enabled = !isFuture) { onPick(date) },
+                                    .selectable(
+                                        selected = isSelected,
+                                        enabled = !isFuture,
+                                        role = Role.Button,
+                                        onClick = { onPick(date) },
+                                    )
+                                    .semantics { contentDescription = dayLabel },
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(

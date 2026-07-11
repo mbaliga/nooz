@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +47,13 @@ private const val GREEK_SMALL =
 fun SplashScreen() {
     val paperGrey = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.24f)
     Box(Modifier.fillMaxSize().clipToBounds()) {
-        Column(Modifier.fillMaxSize().padding(vertical = Tokens.Spacing.lg)) {
+        // Decorative newsprint — hidden from TalkBack so it isn't read as gibberish.
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(vertical = Tokens.Spacing.lg)
+                .clearAndSetSemantics {},
+        ) {
             Text(
                 text = GREEK_TOP,
                 fontFamily = DisplayFontFamily,

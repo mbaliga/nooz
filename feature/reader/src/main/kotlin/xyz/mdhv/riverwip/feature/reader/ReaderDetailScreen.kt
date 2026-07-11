@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,8 +44,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.DayMixBar
@@ -160,7 +166,12 @@ fun ReaderDetailScreen(
                 when (val s = state) {
                     is ArticleUiState.Loading -> item {
                         Box(Modifier.fillMaxWidth().padding(top = Tokens.Spacing.xxl), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(modifier = Modifier.semantics { contentDescription = "Loading article" })
+                            CircularProgressIndicator(
+                                modifier = Modifier.semantics {
+                                    contentDescription = "Loading article"
+                                    liveRegion = LiveRegionMode.Polite
+                                },
+                            )
                         }
                     }
                     is ArticleUiState.Loaded -> items(s.paragraphs) { para ->
@@ -268,16 +279,30 @@ private fun ReaderUtilityBar(
             // The lens: an unmistakable eye — bold ink when on, dimmed when off
             // (never the crossed-out incognito look). Toggles the loaded-language
             // highlighting, the same persisted setting Settings shows.
-            IconButton(onClick = onToggleLens) {
-                Icon(
-                    Icons.Filled.RemoveRedEye,
-                    contentDescription = if (lensOn) "Turn off the lens (loaded-language highlighting)" else "Turn on the lens (loaded-language highlighting)",
-                    tint = if (lensOn) {
-                        MaterialTheme.colorScheme.onBackground
+            IconButton(
+                onClick = onToggleLens,
+                modifier = Modifier.semantics { stateDescription = if (lensOn) "On" else "Off" },
+            ) {
+                // Non-colour channel: a filled pill behind the eye when on.
+                Box(
+                    modifier = if (lensOn) {
+                        Modifier.clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer)
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+                        Modifier
                     },
-                )
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Filled.RemoveRedEye,
+                        contentDescription = "Lens: loaded-language highlighting",
+                        tint = if (lensOn) {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+                        },
+                        modifier = Modifier.padding(Tokens.Spacing.xxs),
+                    )
+                }
             }
             IconButton(onClick = onOpenBrowser) {
                 Icon(Icons.Filled.Public, contentDescription = "Open in browser")
@@ -307,13 +332,15 @@ private fun ReaderUtilityBar(
                 Spacer(Modifier.width(Tokens.Spacing.sm))
             }
             if (todayMix.isNotEmpty()) {
+                // 6dp bar, but a 48dp tap target (the bar is centred inside it).
                 Box(
                     Modifier
                         .weight(1f)
-                        .height(6.dp)
+                        .heightIn(min = 48.dp)
                         .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },
+                    contentAlignment = Alignment.Center,
                 ) {
-                    DayMixBar(todayMix, Modifier.fillMaxSize())
+                    DayMixBar(todayMix, Modifier.fillMaxWidth())
                 }
             } else {
                 Spacer(Modifier.weight(1f))

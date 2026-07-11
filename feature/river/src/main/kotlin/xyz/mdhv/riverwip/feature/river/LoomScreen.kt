@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -114,7 +116,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = Tokens.Spacing.xs)
+                .heightIn(min = 48.dp)
                 .semantics {
                     contentDescription = "Close the loom"
                     role = Role.Button
@@ -148,8 +150,9 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
-                    .clickable { vm.setDatePickerVisible(true) }
+                    .clickable(onClickLabel = "Open the date picker") { vm.setDatePickerVisible(true) }
                     .semantics { role = Role.Button }
+                    .minimumInteractiveComponentSize()
                     .padding(vertical = Tokens.Spacing.xxs),
             )
         }

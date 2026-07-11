@@ -139,7 +139,7 @@ private fun ClippingCard(
         modifier = Modifier
             .fillMaxWidth()
             .border(Tokens.Border.thin, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(Tokens.Radius.sm))
-            .clickable(onClick = onOpen)
+            .clickable(onClickLabel = "Open article in browser", onClick = onOpen)
             .padding(Tokens.Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
     ) {
@@ -166,10 +166,10 @@ private fun ClippingCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = onShare, modifier = Modifier.size(40.dp)) {
+            IconButton(onClick = onShare) {
                 Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping", modifier = Modifier.size(20.dp))
             }
-            IconButton(onClick = onRemove, modifier = Modifier.size(40.dp)) {
+            IconButton(onClick = onRemove) {
                 Icon(Icons.Filled.Bookmark, contentDescription = "Remove clipping", modifier = Modifier.size(20.dp))
             }
         }
