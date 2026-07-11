@@ -9,6 +9,7 @@ import xyz.mdhv.riverwip.data.net.HttpClient
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
+import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.HttpArticleFetcher
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
@@ -32,6 +33,7 @@ class RiverData private constructor(
     val articleRepository: ArticleRepository,
     val catalogueRepository: CatalogueRepository,
     val clippingRepository: ClippingRepository,
+    val dictionaryRepository: DictionaryRepository,
     val settingsRepository: SettingsRepository,
     /** For `Configuration.Provider` on the Application — see `RiverApplication`. */
     val workerFactory: RiverWorkerFactory,
@@ -61,6 +63,7 @@ class RiverData private constructor(
                 articleRepository = articleRepository,
                 catalogueRepository = CatalogueRepository(context = appContext, http = http),
                 clippingRepository = ClippingRepository(dao = db.clippingDao()),
+                dictionaryRepository = DictionaryRepository(appContext),
                 settingsRepository = SettingsRepository(appContext),
                 workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository),
             )

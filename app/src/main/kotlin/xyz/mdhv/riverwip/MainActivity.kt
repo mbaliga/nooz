@@ -59,7 +59,9 @@ private const val SPLASH_MILLIS = 1_100L
 fun RiverApp() {
     val context = LocalContext.current
     val container = (context.applicationContext as RiverApplication).container
-    val settingsVm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(container.settingsRepository))
+    val settingsVm: SettingsViewModel = viewModel(
+        factory = SettingsViewModel.Factory(container.settingsRepository, container.dictionaryRepository),
+    )
     val settings by settingsVm.settings.collectAsStateWithLifecycle()
 
     val readerVm: ReaderViewModel = viewModel(
@@ -73,7 +75,9 @@ fun RiverApp() {
             settingsRepository = container.settingsRepository,
         ),
     )
-    val lensVm: LensViewModel = viewModel(factory = LensViewModel.Factory(container.inferenceRouter))
+    val lensVm: LensViewModel = viewModel(
+        factory = LensViewModel.Factory(container.inferenceRouter, container.dictionaryRepository),
+    )
     val sourcesVm: SourcesViewModel = viewModel(
         factory = SourcesViewModel.Factory(
             repo = container.sourceRepository,

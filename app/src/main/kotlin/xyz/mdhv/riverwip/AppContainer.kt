@@ -6,6 +6,7 @@ import xyz.mdhv.riverwip.data.RiverData
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
+import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
@@ -41,6 +42,7 @@ class AppContainer(appContext: Context) {
     val articleRepository: ArticleRepository = data.articleRepository
     val catalogueRepository: CatalogueRepository = data.catalogueRepository
     val clippingRepository: ClippingRepository = data.clippingRepository
+    val dictionaryRepository: DictionaryRepository = data.dictionaryRepository
     val settingsRepository: SettingsRepository = data.settingsRepository
 
     /** Downloaded models live in persistent storage (never purged like a cache), never bundled in the APK. */

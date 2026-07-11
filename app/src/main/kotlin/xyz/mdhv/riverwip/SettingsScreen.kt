@@ -28,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,17 +48,22 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.design.HyleGroteskClassic
 import xyz.mdhv.riverwip.design.HyleGroteskPlus
 import xyz.mdhv.riverwip.design.HylePrint
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.AppSettings
+import xyz.mdhv.riverwip.model.DictionaryOption
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
 
-class SettingsViewModel(private val repo: SettingsRepository) : ViewModel() {
+class SettingsViewModel(
+    private val repo: SettingsRepository,
+    private val dictionaryRepo: DictionaryRepository,
+) : ViewModel() {
     val settings: StateFlow<AppSettings> =
         repo.observeSettings().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), AppSettings())
 
@@ -66,9 +73,35 @@ class SettingsViewModel(private val repo: SettingsRepository) : ViewModel() {
     fun setTextScale(scale: TextScale) = viewModelScope.launch { repo.setTextScale(scale) }
     fun setHighlightLoadedLanguage(on: Boolean) = viewModelScope.launch { repo.setHighlightLoadedLanguage(on) }
 
-    class Factory(private val repo: SettingsRepository) : ViewModelProvider.Factory {
+    // Dictionary lens: one-click download of a chosen dictionary (owner's spec).
+    val dictionaryOptions: List<DictionaryOption> = dictionaryRepo.options
+    val downloadedDictionaryId: StateFlow<String?> =
+        dictionaryRepo.observeDownloadedId().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), null)
+
+    var downloadingDictionaryId: String? by mutableStateOf(null)
+        private set
+    var dictionaryError: String? by mutableStateOf(null)
+        private set
+
+    fun downloadDictionary(option: DictionaryOption) {
+        if (downloadingDictionaryId != null) return
+        downloadingDictionaryId = option.id
+        dictionaryError = null
+        viewModelScope.launch {
+            val result = dictionaryRepo.download(option)
+            downloadingDictionaryId = null
+            if (result.isFailure) {
+                dictionaryError = result.exceptionOrNull()?.message ?: "Couldn't download the dictionary."
+            }
+        }
+    }
+
+    class Factory(
+        private val repo: SettingsRepository,
+        private val dictionaryRepo: DictionaryRepository,
+    ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = SettingsViewModel(repo) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = SettingsViewModel(repo, dictionaryRepo) as T
     }
 }
 
@@ -82,6 +115,7 @@ class SettingsViewModel(private val repo: SettingsRepository) : ViewModel() {
 @Composable
 fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
     val settings by vm.settings.collectAsStateWithLifecycle()
+    val downloadedDictId by vm.downloadedDictionaryId.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -241,6 +275,65 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 Switch(checked = settings.highlightLoadedLanguage, onCheckedChange = null)
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            Text(
+                "Dictionary",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                "Download a dictionary to underline uncommon words as you read (blue) and tap them for a meaning.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            for (option in vm.dictionaryOptions) {
+                DictionaryRow(
+                    option = option,
+                    downloaded = downloadedDictId == option.id,
+                    downloading = vm.downloadingDictionaryId == option.id,
+                    onDownload = { vm.downloadDictionary(option) },
+                )
+            }
+            vm.dictionaryError?.let { err ->
+                Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        }
+    }
+}
+
+@Composable
+private fun DictionaryRow(
+    option: xyz.mdhv.riverwip.model.DictionaryOption,
+    downloaded: Boolean,
+    downloading: Boolean,
+    onDownload: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(option.name, style = MaterialTheme.typography.titleMedium)
+            Text(
+                "${option.sizeHuman} · ${option.license}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        when {
+            downloading -> androidx.compose.material3.CircularProgressIndicator(
+                modifier = Modifier.size(22.dp),
+                strokeWidth = 2.dp,
+            )
+            downloaded -> Icon(
+                Icons.Filled.Check,
+                contentDescription = "Downloaded",
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
+            else -> androidx.compose.material3.TextButton(onClick = onDownload) {
+                Text("Download")
+            }
         }
     }
 }
