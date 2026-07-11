@@ -5,9 +5,15 @@ Living build state. Updated every session (brief §0).
 - **Working register:** omission. Name: **Nooz** (owner-decided 2026-07-10, see
   D5). License, taxonomy labels, metaphor language remain **RESERVED** — see
   §RESERVED. Package placeholder `xyz.mdhv.riverwip` (rename still pending).
-- **Current phase:** P0–P7 substantially built. P7's a11y pass, F-Droid/Play
-  metadata skeleton, and screenshot script are in; baseline profiles are an
-  honestly-logged gap (see P7 section below).
+- **Current phase:** P0–P7 substantially built, plus the owner's 2026-07-11/12
+  feature round (see D9–D13): the reader "one more cut" (real Hyle fonts,
+  interactive sheet-slide, newspaper share, back-gesture fix), **Clippings**,
+  the **dictionary lens** (blue obscure-word definitions + one-click
+  dictionaries, non-generative), an **all-region feed expansion** (63 verified
+  feeds) with **bottom-docked search/filter** and surfaced **News APIs**, and a
+  sibling session's shared **ai-catalogue/** (open models + free-tier data).
+  P7's a11y pass, F-Droid/Play metadata skeleton, and screenshot script are in;
+  baseline profiles remain an honestly-logged gap (see P7 section below).
 
 ---
 
@@ -515,9 +521,62 @@ respect as the CI-caught log above.
   the app; it now also fires when an article is open and closes it. Nothing
   fabricated: the clipping and progress all read from real article/scroll data.
 
+- **D9 — Corrections after the owner tried the build (2026-07-12).** (a) The
+  **eye/lens icon is back** in the reader (unmistakable filled eye, dimmed when
+  off — not the crossed-out incognito look), wired to the same persisted
+  highlight setting Settings shows. (b) The **font picker** matches the mock: a
+  vertical list of family names each set in its own face, checkmark on the
+  selected — using the real Hyle names, not the ad-libbed "Hyle Deco Sans"
+  placeholder. (c) The **splash** matches the mock (legible grey greeked serif
+  newsprint, top rule, big left-bleeding lines, fine-print block, wordmark over
+  a soft highlight) — it was near-invisible at 7% alpha before. (d) The
+  **slide-out is completed**: the real stand list renders stationary behind the
+  sliding paper (state hoisted to `ReaderScreen`). (e) The **loom** gained a
+  symmetric reverse — an overscroll pull-down dismisses it back to the Stand,
+  mirroring pull-to-open, plus a grabber handle.
+
+- **D10 — Clippings (2026-07-12).** A new saved-articles section. A clipping is
+  a denormalized snapshot (survives item retention), keyed by item id; Room
+  bumped to **v2** (destructive fallback until first release). A bookmark toggle
+  in the reader saves/removes; the Clippings shelf (reached from the Stand's
+  action row) shows each as a newspaper clipping card, tap to reopen, share
+  re-issues the newspaper PNG.
+
+- **D11 — Dictionary lens, non-generative (2026-07-12, per owner's answer).**
+  Kindle-style: obscure words underlined **blue**, tap for a meaning; loaded
+  language stays **red** (red-vs-blue is CVD-safe). `ObscureWords` (pure,
+  tested) gates on a bundled top-30k common-word list (Norvig MIT, trimmed).
+  Definitions are **downloaded on request, never bundled or fabricated** —
+  `DictionaryCatalog` lists Webster's 1913 (flat JSON, live-verified,
+  public-domain); `DictionaryRepository` streams the download (past
+  `HttpClient`'s body cap) and lazily looks it up. Blue marks appear once a
+  dictionary is downloaded (Settings → Dictionary). No model involved — the
+  generative rewrite stays stubbed per D3. **Device-unverified**: the 22 MB
+  download + in-memory map is implemented and compiles but wasn't run on a
+  device here.
+
+- **D12 — All-region feed expansion + finding tools (2026-07-11).** 43 more
+  feeds, each fetched and confirmed live (an all-region verification fan-out),
+  covering Americas, Europe & Africa, Middle East & C. Asia, South Asia (beyond
+  India), East & SE Asia, Australia & Pacific — 63 verified feeds total, stamped
+  `2026-07-11` (`StartersTest` now accepts per-run dates). The larger Sources
+  list gained a **bottom-docked search bar**, region **filter chips**, and a
+  surfaced **News APIs & builders** section (keyless providers add in one tap
+  from their verified example; keyed ones link to key signup). The
+  `catalogue.snapshot.json` mirror is left for the P6 sentry to reconcile.
+
+- **D13 — Shared open-resource catalogue (sibling session, 2026-07-11).** A
+  parallel Claude session (Sonnet 5) added top-level **`ai-catalogue/`**
+  (`models.json` — downloadable GGUF + SD models with live-probed HF URLs;
+  `free-tiers.json`; a README consumer-contract and a weekly drift sentry) as
+  the constellation's shared source of downloadable-AI-model + free-tier facts
+  — the owner's "in-repo JSON catalogue other apps consume." This session did
+  not author it and defers to it rather than duplicating; a research fan-out
+  here independently verified an overlapping model set, kept as cross-check.
+
 ## Schema versions
-- Data model: **v1**, materialized in Room (`SourceEntity`, `ItemEntity`,
-  `ReadEventEntity`, `WeeklyAggregateEntity`).
+- Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
+  `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
 - Source registry schema: **v1** (mirrors provider-catalogue `services[]`).
 - Catalogue consumption (`catalogue.json`): **built** (P6) — user-supplied URL
   only, no baked-in default (see D4).
