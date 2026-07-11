@@ -12,12 +12,13 @@
 #   - the app already launched at least once (so sources/data exist —
 #     screenshots of an empty first-run state aren't useful store images)
 #
-# The app is a single Activity with in-memory Compose navigation between its
-# three tabs (Reader/River/Sources) and no deep-link support to jump straight
-# to one, so this script captures whatever is currently on screen rather than
-# driving navigation itself: launch the app, get it into the state you want
-# (tap to the tab, open an article, scrub a river week — whatever the shot
-# calls for), then run this script once per shot.
+# The app is a single Activity with in-memory Compose navigation (Stand /
+# Edit / immersive reader / day loom — no bottom nav, no deep links to jump
+# straight to a screen), so this script captures whatever is currently on
+# screen rather than driving navigation itself: launch the app, get it into
+# the state you want (open an article, pull down into the day loom, open
+# Edit's globe — whatever the shot calls for), then run this script once per
+# shot.
 set -euo pipefail
 
 OUT_DIR="${1:-fastlane/metadata/android/en-US/images/phoneScreenshots}"
