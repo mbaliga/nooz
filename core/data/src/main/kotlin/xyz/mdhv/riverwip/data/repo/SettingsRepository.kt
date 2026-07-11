@@ -31,6 +31,8 @@ class SettingsRepository(private val context: Context) {
         val TEXT_SCALE = stringPreferencesKey("text_scale")
         val LENS_HIGHLIGHT = booleanPreferencesKey("highlight_loaded_language")
         val IMMERSIVE = booleanPreferencesKey("immersive_reader")
+        val GESTURE_BRIGHTNESS = booleanPreferencesKey("gesture_brightness")
+        val GESTURE_THEME_FLICK = booleanPreferencesKey("gesture_theme_flick")
         val REGION = stringPreferencesKey("filter_region")
         val TOPICS = stringSetPreferencesKey("filter_topics")
     }
@@ -43,6 +45,8 @@ class SettingsRepository(private val context: Context) {
             textScale = TextScale.fromKey(prefs[Keys.TEXT_SCALE]),
             highlightLoadedLanguage = prefs[Keys.LENS_HIGHLIGHT] ?: false,
             immersiveReader = prefs[Keys.IMMERSIVE] ?: false,
+            twoFingerBrightness = prefs[Keys.GESTURE_BRIGHTNESS] ?: true,
+            twoFingerThemeFlick = prefs[Keys.GESTURE_THEME_FLICK] ?: true,
         )
     }
 
@@ -75,6 +79,14 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setImmersiveReader(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.IMMERSIVE] = enabled }
+    }
+
+    suspend fun setTwoFingerBrightness(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.GESTURE_BRIGHTNESS] = enabled }
+    }
+
+    suspend fun setTwoFingerThemeFlick(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.GESTURE_THEME_FLICK] = enabled }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {

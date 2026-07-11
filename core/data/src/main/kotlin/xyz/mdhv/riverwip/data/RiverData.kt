@@ -9,6 +9,7 @@ import xyz.mdhv.riverwip.data.net.HttpClient
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
+import xyz.mdhv.riverwip.data.repo.DataExporter
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.HttpArticleFetcher
 import xyz.mdhv.riverwip.data.repo.ItemRepository
@@ -35,6 +36,7 @@ class RiverData private constructor(
     val clippingRepository: ClippingRepository,
     val dictionaryRepository: DictionaryRepository,
     val settingsRepository: SettingsRepository,
+    val dataExporter: DataExporter,
     /** For `Configuration.Provider` on the Application — see `RiverApplication`. */
     val workerFactory: RiverWorkerFactory,
 ) {
@@ -55,16 +57,26 @@ class RiverData private constructor(
             val articleRepository = ArticleRepository(
                 itemDao = db.itemDao(), fetcher = HttpArticleFetcher(http), cache = fullTextCache,
             )
+            val sourceRepository = SourceRepository(dao = db.sourceDao(), probe = probe)
+            val readEventRepository = ReadEventRepository(dao = db.readEventDao())
+            val clippingRepository = ClippingRepository(dao = db.clippingDao())
+            val settingsRepository = SettingsRepository(appContext)
             return RiverData(
-                sourceRepository = SourceRepository(dao = db.sourceDao(), probe = probe),
+                sourceRepository = sourceRepository,
                 itemRepository = itemRepository,
-                readEventRepository = ReadEventRepository(dao = db.readEventDao()),
+                readEventRepository = readEventRepository,
                 weeklyAggregateRepository = weeklyAggregateRepository,
                 articleRepository = articleRepository,
                 catalogueRepository = CatalogueRepository(context = appContext, http = http),
-                clippingRepository = ClippingRepository(dao = db.clippingDao()),
+                clippingRepository = clippingRepository,
                 dictionaryRepository = DictionaryRepository(appContext),
-                settingsRepository = SettingsRepository(appContext),
+                settingsRepository = settingsRepository,
+                dataExporter = DataExporter(
+                    settingsRepository = settingsRepository,
+                    sourceRepository = sourceRepository,
+                    clippingRepository = clippingRepository,
+                    readEventRepository = readEventRepository,
+                ),
                 workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository),
             )
         }

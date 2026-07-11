@@ -1,8 +1,12 @@
 package xyz.mdhv.riverwip
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +20,10 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,10 +34,19 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +68,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import xyz.mdhv.riverwip.data.repo.DataExporter
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.design.HyleGroteskClassic
@@ -67,6 +84,7 @@ import xyz.mdhv.riverwip.model.ThemeMode
 class SettingsViewModel(
     private val repo: SettingsRepository,
     private val dictionaryRepo: DictionaryRepository,
+    private val dataExporter: DataExporter,
 ) : ViewModel() {
     val settings: StateFlow<AppSettings> =
         repo.observeSettings().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), AppSettings())
@@ -77,6 +95,8 @@ class SettingsViewModel(
     fun setTextScale(scale: TextScale) = viewModelScope.launch { repo.setTextScale(scale) }
     fun setHighlightLoadedLanguage(on: Boolean) = viewModelScope.launch { repo.setHighlightLoadedLanguage(on) }
     fun setImmersiveReader(on: Boolean) = viewModelScope.launch { repo.setImmersiveReader(on) }
+    fun setTwoFingerBrightness(on: Boolean) = viewModelScope.launch { repo.setTwoFingerBrightness(on) }
+    fun setTwoFingerThemeFlick(on: Boolean) = viewModelScope.launch { repo.setTwoFingerThemeFlick(on) }
 
     // Dictionary lens: one-click download of a chosen dictionary (owner's spec).
     val dictionaryOptions: List<DictionaryOption> = dictionaryRepo.options
@@ -101,12 +121,17 @@ class SettingsViewModel(
         }
     }
 
+    /** Assemble the user's whole profile as JSON, for the export-to-file action (#9). */
+    suspend fun exportJson(): String = dataExporter.exportJson(System.currentTimeMillis())
+
     class Factory(
         private val repo: SettingsRepository,
         private val dictionaryRepo: DictionaryRepository,
+        private val dataExporter: DataExporter,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = SettingsViewModel(repo, dictionaryRepo) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            SettingsViewModel(repo, dictionaryRepo, dataExporter) as T
     }
 }
 
@@ -138,7 +163,9 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = Tokens.Spacing.md),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Tokens.Spacing.md)
+                .padding(bottom = Tokens.Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
             Text(
@@ -335,9 +362,180 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            GesturesSection(settings, vm)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            YourDataSection(vm)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            AboutSection()
         }
     }
 }
+
+/**
+ * Configurable reader gestures (owner's #11). Collapsed by default — a
+ * "Gestures" disclosure that opens the second-level toggles, since the defaults
+ * are fine and most readers never need them.
+ */
+@Composable
+private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
+    var expanded by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text("Gestures", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Two-finger reader gestures. Defaults are on.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = if (expanded) "Collapse gestures" else "Expand gestures",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (expanded) {
+        SettingSwitchRow(
+            title = "Two-finger drag → brightness",
+            subtitle = "Slide two fingers up or down to dim or brighten the page.",
+            checked = settings.twoFingerBrightness,
+            onCheckedChange = { vm.setTwoFingerBrightness(it) },
+        )
+        SettingSwitchRow(
+            title = "Two-finger flick → theme",
+            subtitle = "Flick two fingers sideways to step the paper tint.",
+            checked = settings.twoFingerThemeFlick,
+            onCheckedChange = { vm.setTwoFingerThemeFlick(it) },
+        )
+    }
+}
+
+@Composable
+private fun SettingSwitchRow(title: String, subtitle: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, onValueChange = onCheckedChange, role = Role.Switch)
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Switch(checked = checked, onCheckedChange = null)
+    }
+}
+
+/**
+ * The user's data is the user's (owner's #9 + brief §4). One tap writes the
+ * whole local profile — settings, filter, sources, clippings, and the coarse
+ * read log — to a JSON file the user picks. Local only; no keys, no upload.
+ */
+@Composable
+private fun YourDataSection(vm: SettingsViewModel) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var exporting by remember { mutableStateOf(false) }
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri ->
+        if (uri != null) {
+            exporting = true
+            scope.launch {
+                val json = vm.exportJson()
+                withContext(Dispatchers.IO) {
+                    context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+                }
+                exporting = false
+            }
+        }
+    }
+
+    Text(
+        "Your data",
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Text(
+        "Export everything as open JSON — preferences, your region and topics, your sources, your clippings, and the coarse read log. Local only; API keys are never included.",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    TextButton(
+        onClick = { exportLauncher.launch("nooz-data.json") },
+        enabled = !exporting,
+        contentPadding = PaddingValues(0.dp),
+    ) {
+        Text(if (exporting) "Exporting…" else "Export everything")
+    }
+}
+
+/**
+ * About (owner's #16): Nooz is one of the mdhv.xyz apps. Point curious readers
+ * at the studio and its siblings — quietly, no tracking, just links.
+ */
+@Composable
+private fun AboutSection() {
+    val uriHandler = LocalUriHandler.current
+    Text(
+        "About",
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Text(
+        "Nooz is a news reader whose subject is omission — what got left out. It's made by mdhv.xyz, a small studio of focused, quiet apps.",
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onBackground,
+    )
+    TextButton(onClick = { uriHandler.openUri("https://mdhv.xyz") }, contentPadding = PaddingValues(0.dp)) {
+        Text("Visit mdhv.xyz")
+    }
+    Text(
+        "More from the studio",
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    for (app in SISTER_APPS) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { uriHandler.openUri(app.url) }
+                .padding(vertical = Tokens.Spacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(app.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                Text(app.blurb, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Icon(
+                Icons.AutoMirrored.Filled.OpenInNew,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+    }
+}
+
+private data class SisterApp(val name: String, val blurb: String, val url: String)
+
+// The mdhv.xyz family the owner named (#16). Blurbs are deliberately spare;
+// links point at the studio's own pages, not third-party stores.
+private val SISTER_APPS = listOf(
+    SisterApp("Animalcules", "A microcosm you keep.", "https://mdhv.xyz/animalcules"),
+    SisterApp("Clackpad", "A keyboard that feels like one.", "https://mdhv.xyz/clackpad"),
+    SisterApp("FoneBru", "Your phone, brewed down.", "https://mdhv.xyz/fonebru"),
+)
 
 @Composable
 private fun DictionaryRow(

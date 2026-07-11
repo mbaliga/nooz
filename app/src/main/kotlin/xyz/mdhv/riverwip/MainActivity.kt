@@ -60,7 +60,11 @@ fun RiverApp() {
     val context = LocalContext.current
     val container = (context.applicationContext as RiverApplication).container
     val settingsVm: SettingsViewModel = viewModel(
-        factory = SettingsViewModel.Factory(container.settingsRepository, container.dictionaryRepository),
+        factory = SettingsViewModel.Factory(
+            container.settingsRepository,
+            container.dictionaryRepository,
+            container.dataExporter,
+        ),
     )
     val settings by settingsVm.settings.collectAsStateWithLifecycle()
 
@@ -157,8 +161,12 @@ fun RiverApp() {
                         screen = Screen.LOOM
                     },
                     onOpenClippings = { screen = Screen.CLIPPINGS },
-                    onBrightnessDelta = adjustBrightness,
-                    onThemeFlick = { settingsVm.setTheme(settings.themeMode.next()) },
+                    onBrightnessDelta = if (settings.twoFingerBrightness) adjustBrightness else { _ -> },
+                    onThemeFlick = if (settings.twoFingerThemeFlick) {
+                        { settingsVm.setTheme(settings.themeMode.next()) }
+                    } else {
+                        {}
+                    },
                 )
                 Screen.EDIT -> EditScreen(
                     vm = sourcesVm,

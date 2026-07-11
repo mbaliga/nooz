@@ -88,6 +88,13 @@ data class AppSettings(
      * onboarding; toggleable in Settings.
      */
     val immersiveReader: Boolean = false,
+    /**
+     * Configurable two-finger reader gestures (owner's #11: defaults are fine,
+     * but they must be optional — second-level). Both default on; a reader for
+     * whom they misfire can switch either off in Settings › Gestures.
+     */
+    val twoFingerBrightness: Boolean = true,
+    val twoFingerThemeFlick: Boolean = true,
 )
 
 /**
