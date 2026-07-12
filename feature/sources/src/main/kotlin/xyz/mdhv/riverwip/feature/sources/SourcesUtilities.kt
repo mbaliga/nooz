@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 
 /** OPML import/export — the user's data is the user's file. */
@@ -100,11 +101,7 @@ fun CatalogueCard(vm: SourcesViewModel) {
         modifier = Modifier.fillMaxWidth().padding(top = Tokens.Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
     ) {
-        Text(
-            "Catalogue",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        SectionHeading("Catalogue")
         Text(
             "Optionally point this at a catalogue.json to refresh starters and free-tier " +
                 "limits without an app update. Nothing is fetched unless you tap refresh — " +

@@ -174,5 +174,27 @@ enum class Region(val key: String, val label: String, val fromLon: Double, val t
             "india" -> SOUTH_ASIA
             else -> byKey[tag.lowercase()] ?: GLOBAL
         }
+
+        /**
+         * Every sector a band centred on [centerLonDeg] with half-width
+         * [bandHalfDeg] touches, widest-first-hit order (owner's #8: widening
+         * the globe's pinch band used to have no effect at all short of the
+         * full-global snap, so the picker only ever showed one sector or
+         * "Global" — nothing in between). Built by sampling [forLongitude]
+         * across the band rather than re-deriving sector-boundary/wraparound
+         * math a second time, so it can never disagree with the single-point
+         * lookup every other caller already relies on.
+         */
+        fun forBand(centerLonDeg: Double, bandHalfDeg: Double): List<Region> {
+            if (bandHalfDeg >= GlobeModel.GLOBAL_BAND_THRESHOLD) return listOf(GLOBAL)
+            val hit = LinkedHashSet<Region>()
+            val step = 2.0
+            var d = -bandHalfDeg
+            while (d <= bandHalfDeg) {
+                hit.add(forLongitude(centerLonDeg + d))
+                d += step
+            }
+            return hit.toList()
+        }
     }
 }

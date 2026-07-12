@@ -84,6 +84,7 @@ import xyz.mdhv.riverwip.inference.local.StorageBudget
 import xyz.mdhv.riverwip.design.HyleGroteskClassic
 import xyz.mdhv.riverwip.design.HyleGroteskPlus
 import xyz.mdhv.riverwip.design.HylePrint
+import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.DictionaryOption
@@ -256,11 +257,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
         ) {
             CrashSection()
 
-            Text(
-                "Theme",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            SectionHeading("Theme")
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -289,11 +286,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            Text(
-                "Font",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            SectionHeading("Font")
             // The owner's Settings mock: a list of the font names, each set in
             // its own face, a check on the chosen one (not colour swatches).
             Column(modifier = Modifier.selectableGroup()) {
@@ -318,11 +311,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            Text(
-                "Text Size",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            SectionHeading("Text Size")
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -367,7 +356,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 Text(
                     "Show Reading Time",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f),
                 )
                 Switch(checked = settings.showReadingTime, onCheckedChange = null)
@@ -389,7 +378,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                     Text(
                         "Highlight loaded language",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
                         "Underlines charged wording as you read; tap it for the evidence.",
@@ -416,7 +405,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                     Text(
                         "Immersive reading",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
                         "Hides the back button and controls for a bare page. Off by default — swipe right or tap back to return.",
@@ -428,11 +417,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            Text(
-                "Dictionary",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            SectionHeading("Dictionary")
             Text(
                 "Download a dictionary, then long-press any word as you read for its meaning — Kindle-style.",
                 style = MaterialTheme.typography.bodySmall,
@@ -539,7 +524,7 @@ private fun IntelligenceSection(vm: SettingsViewModel) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text("Reader intelligence", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            SectionHeading("Reader intelligence")
             Text(
                 if (config.isComplete) "Bring-your-own-key: ${config.model}" else "On-device first · three ways to add more",
                 style = MaterialTheme.typography.bodySmall,
@@ -590,7 +575,7 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text("Gestures", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            SectionHeading("Gestures")
             Text(
                 "Two-finger reader gestures. Defaults are on.",
                 style = MaterialTheme.typography.bodySmall,
@@ -661,11 +646,7 @@ private fun YourDataSection(vm: SettingsViewModel) {
         }
     }
 
-    Text(
-        "Your data",
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+    SectionHeading("Your data")
     Text(
         "Export everything as open JSON — preferences, your region and topics, your sources, your clippings, and the coarse read log. Local only; API keys are never included.",
         style = MaterialTheme.typography.bodySmall,
@@ -687,11 +668,7 @@ private fun YourDataSection(vm: SettingsViewModel) {
 @Composable
 private fun AboutSection() {
     val uriHandler = LocalUriHandler.current
-    Text(
-        "About",
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+    SectionHeading("About")
     Text(
         "Nooz is a news reader whose subject is omission — what got left out. It's made by mdhv.xyz, a small studio of focused, quiet apps.",
         style = MaterialTheme.typography.bodyMedium,

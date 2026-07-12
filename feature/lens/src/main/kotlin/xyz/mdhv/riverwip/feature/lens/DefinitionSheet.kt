@@ -120,7 +120,11 @@ private fun SenseRow(sense: DictionaryFormatting.Sense) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val ink = MaterialTheme.colorScheme.onBackground
     val topSpace = if (sense.startsNewGroup) Tokens.Spacing.sm else 0.dp
-    val hangingIndent = TextIndent(restLine = 22.sp)
+    // Only a "1. " or "Syn. — " lead-in pushes the first line in; a lone
+    // unnumbered sense (the whole entry is one Sense with no marker at all)
+    // has nothing for a hanging indent to hang from, so its wrapped lines
+    // must stay flush with the first line instead of drifting right of it.
+    val hangingIndent = TextIndent(restLine = if (sense.number != null || sense.isSynonymBlock) 22.sp else 0.sp)
 
     if (sense.isSynonymBlock) {
         Text(

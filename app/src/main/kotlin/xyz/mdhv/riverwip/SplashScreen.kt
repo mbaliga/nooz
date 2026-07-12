@@ -1,5 +1,6 @@
 package xyz.mdhv.riverwip
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -100,11 +101,20 @@ fun SplashScreen() {
             }
         }
         // The owner's decided name (design mocks, 2026-07): plain black serif,
-        // dead-centre, no box behind it.
-        NoozWordmark(
-            fontSize = 46.sp,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.align(Alignment.Center),
-        )
+        // dead-centre. No *visible* box — but a page-coloured one is still
+        // there behind it, sized with breathing room, so it cleanly occludes
+        // whatever greeked backdrop text the centred mark happens to land on
+        // top of instead of visibly colliding with it (owner's #7).
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
+        ) {
+            NoozWordmark(
+                fontSize = 46.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        }
     }
 }

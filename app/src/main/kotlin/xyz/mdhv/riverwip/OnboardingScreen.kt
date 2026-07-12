@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.design.CandyCaneBar
 import xyz.mdhv.riverwip.design.NoozWordmark
+import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
 
@@ -155,7 +156,7 @@ private fun AdvancedStep(
     )
 
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    Text("Reading mode", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    SectionHeading("Reading mode")
     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
         ModeChip("Controls shown", !immersive) { immersive = false }
         ModeChip("Immersive", immersive) { immersive = true }

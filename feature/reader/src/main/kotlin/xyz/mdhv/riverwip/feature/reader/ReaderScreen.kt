@@ -15,6 +15,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
@@ -63,6 +65,9 @@ fun ReaderScreen(
     var containerWidth by remember { mutableIntStateOf(0) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var enteredId by remember { mutableStateOf<String?>(null) }
+    // How much of the sheet's edge stays on screen at the drag-right rest
+    // position (owner's #3).
+    val peekPx = with(LocalDensity.current) { 40.dp.toPx() }
 
     // The one place the rig resets: whenever there's no open article, at rest,
     // regardless of which of the several exits (drag-settle, the back button,
@@ -98,16 +103,24 @@ fun ReaderScreen(
         }
     }
 
-    // Settle after a drag: commit past ~a third of the width, else snap back.
-    // Both commit directions leave the reader (right to the Stand, left to
-    // Settings) — the article doesn't stay "open" either way.
+    // Settle after a drag. Left (to Settings) is unchanged: past a third of
+    // the width commits all the way and leaves. Right (back towards the
+    // Stand) now has a middle rest position: past a third, but short of
+    // ~85%, the sheet parks with a sliver still showing instead of going
+    // fully off-screen (owner's #3 — it used to vanish completely the moment
+    // a drag committed). The article stays open at that rest position — a
+    // further drag past ~85%, or the explicit back control (`slideBack`),
+    // is what actually closes it.
     fun settle() {
         val w = containerWidth.toFloat()
-        val threshold = w * 0.32f
+        val backThreshold = w * 0.32f
+        val closeThreshold = w * 0.85f
+        val peekTarget = (w - peekPx).coerceAtLeast(0f)
         val target = when {
             w <= 0f -> 0f
-            offsetX > threshold -> w
-            offsetX < -threshold -> -w
+            offsetX > closeThreshold -> w
+            offsetX > backThreshold -> peekTarget
+            offsetX < -backThreshold -> -w
             else -> 0f
         }
         scope.launch {
@@ -118,6 +131,7 @@ fun ReaderScreen(
                     vm.closeItem()
                     onOpenSettings()
                 }
+                // peekTarget or 0f: the article stays open, resting there.
             }
         }
     }

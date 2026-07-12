@@ -60,6 +60,22 @@ class GlobeModelTest {
         assertEquals(Region.AUSTRALIA_PACIFIC, Region.forLongitude(-175.0)) // antimeridian wrap
     }
 
+    @Test fun regionForBandIsSingleSectorWhenNarrow() {
+        // A narrow band well inside one sector's span touches only that sector.
+        assertEquals(listOf(Region.EUROPE_AFRICA), Region.forBand(10.0, 8.0))
+    }
+
+    @Test fun regionForBandSpansAdjacentSectorsWhenWidened() {
+        // Centred right on the Europe/Africa <-> Mideast-C.Asia seam (45deg):
+        // a wide-enough band touches both, in first-hit (left-to-right) order.
+        val hit = Region.forBand(45.0, 20.0)
+        assertEquals(listOf(Region.EUROPE_AFRICA, Region.MIDEAST_CASIA), hit)
+    }
+
+    @Test fun regionForBandAtGlobalThresholdIsGlobalOnly() {
+        assertEquals(listOf(Region.GLOBAL), Region.forBand(0.0, GlobeModel.GLOBAL_BAND_THRESHOLD))
+    }
+
     @Test fun sourceTagMapping() {
         assertEquals(Region.GLOBAL, Region.forSourceTag("global"))
         assertEquals(Region.GLOBAL, Region.forSourceTag(null))

@@ -254,10 +254,8 @@ private fun SourcesTab(vm: SourcesViewModel) {
             }
 
             if (filteredBuilders.isNotEmpty()) {
-                Text(
+                SectionHeading(
                     "News APIs & builders",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
                 )
                 for (b in filteredBuilders) {
@@ -411,10 +409,8 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
     var url by rememberSaveable { mutableStateOf("") }
     val state = vm.addState
 
-    Text(
+    SectionHeading(
         "Add by URL",
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
     )
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -502,10 +498,33 @@ private fun RegionTopicsTab(
         mutableDoubleStateOf(if (savedRegion == Region.GLOBAL) 180.0 else 16.0)
     }
 
+    // The single region the drag/pinch gesture actually commits (unchanged
+    // contract with the caller): whichever sector the exact band centre sits
+    // in, or Global past the threshold.
     val aimedRegion = if (bandHalf >= GlobeModel.GLOBAL_BAND_THRESHOLD) {
         Region.GLOBAL
     } else {
         Region.forLongitude(GlobeModel.centerLongitude(yaw))
+    }
+    // Everything the band actually *touches* — for display only (owner's #8:
+    // widening the band used to visibly grow the guide lines while the aimed
+    // region and ring stayed frozen on one sector until the band hit the
+    // global threshold, so the picker read as a binary one-region/Global
+    // switch with nothing in between). A widened band now names every sector
+    // it spans and blends their real topic counts into one ring, so the
+    // in-between states the gesture already drew are also the ones it shows.
+    val bandRegions = Region.forBand(GlobeModel.centerLongitude(yaw), bandHalf)
+    val bandRingMix = if (bandRegions.size <= 1) {
+        mixByRegion[bandRegions.first()].orEmpty()
+    } else {
+        buildMap {
+            for (r in bandRegions) mixByRegion[r]?.forEach { (topic, count) -> merge(topic, count, Int::plus) }
+        }
+    }
+    val bandLabel = when {
+        bandRegions.size <= 1 -> aimedRegion.label
+        bandRegions.size <= 3 -> bandRegions.joinToString(" + ") { it.label }
+        else -> "${bandRegions.first().label} +${bandRegions.size - 1} more"
     }
 
     Column(
@@ -515,7 +534,7 @@ private fun RegionTopicsTab(
             .padding(horizontal = Tokens.Spacing.md),
     ) {
         Text(
-            "Drag to spin · pinch to widen · ring shows this region's topic mix",
+            "Drag to spin · pinch to widen · ring shows the band's topic mix",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -525,7 +544,7 @@ private fun RegionTopicsTab(
             yaw = yaw,
             pitch = pitch,
             bandHalf = bandHalf,
-            ringMix = mixByRegion[aimedRegion].orEmpty(),
+            ringMix = bandRingMix,
             onSpin = { dYaw, dPitch ->
                 yaw += dYaw
                 pitch = (pitch + dPitch).coerceIn(-70.0, 70.0)
@@ -544,7 +563,7 @@ private fun RegionTopicsTab(
             modifier = Modifier.padding(horizontal = Tokens.Spacing.xl),
         )
         Text(
-            aimedRegion.label,
+            bandLabel,
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth().padding(top = Tokens.Spacing.sm),
@@ -566,10 +585,8 @@ private fun RegionTopicsTab(
         }
 
         // Topics: the filter's other half. Chips, not gestures — no hidden doors.
-        Text(
+        SectionHeading(
             "Topics",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Tokens.Spacing.sm, bottom = Tokens.Spacing.xxs),
         )
         Row(
