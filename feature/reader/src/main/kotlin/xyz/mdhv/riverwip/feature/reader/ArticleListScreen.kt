@@ -50,9 +50,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.CandyCaneBar
 import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.DayMixBar
+import xyz.mdhv.riverwip.design.DensitySlider
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.Item
+import xyz.mdhv.riverwip.model.ListDensity
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -82,6 +86,9 @@ private fun emptyBody(enabledCount: Int, isRefreshing: Boolean, last: RefreshRes
 fun ArticleListScreen(
     vm: ReaderViewModel,
     noozFlashEnabled: Boolean,
+    immersive: Boolean,
+    density: ListDensity,
+    onDensityChange: (ListDensity) -> Unit,
     onOpenItem: (Item) -> Unit,
     onOpenEdit: () -> Unit,
     onOpenLoom: () -> Unit,
@@ -203,6 +210,17 @@ fun ArticleListScreen(
             FlashCard(vm = vm, modifier = Modifier.padding(horizontal = Tokens.Spacing.md))
         }
 
+        // The density slider (owner's #1) hides in immersive mode — a pinch on
+        // the stand itself steps density there instead, so the control never
+        // disappears with no replacement.
+        if (!immersive) {
+            DensitySlider(
+                density = density,
+                onDensityChange = onDensityChange,
+                modifier = Modifier.padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xxs),
+            )
+        }
+
         if (items.isEmpty()) {
             EmptyStand(
                 enabledCount = enabledCount,
@@ -213,29 +231,61 @@ fun ArticleListScreen(
                 onRetry = { vm.refresh() },
             )
         } else {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .nestedScroll(pullConnection),
-                contentPadding = PaddingValues(vertical = Tokens.Spacing.xs),
-            ) {
-                items(items, key = { it.id }) { item ->
-                    ItemRow(item, sourceTitles[item.sourceId], onClick = { onOpenItem(item) })
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            val pinchModifier = densityPinchModifier(density, onDensityChange, enabled = immersive)
+            when (density) {
+                ListDensity.DETAIL -> LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize().nestedScroll(pullConnection).then(pinchModifier),
+                    contentPadding = PaddingValues(vertical = Tokens.Spacing.xs),
+                ) {
+                    items(items, key = { it.id }) { item ->
+                        ItemRow(item, sourceTitles[item.sourceId], onClick = { onOpenItem(item) })
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    }
+                    item { EndOfFeed() }
                 }
-                item {
-                    // The river has banks (brief §3): an explicit end, never infinite backfill.
-                    Box(Modifier.fillMaxWidth().padding(Tokens.Spacing.lg), contentAlignment = Alignment.Center) {
-                        Text(
-                            Copy.END_OF_FEED,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ListDensity.LIST -> LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize().nestedScroll(pullConnection).then(pinchModifier),
+                    contentPadding = PaddingValues(vertical = Tokens.Spacing.xs),
+                ) {
+                    items(items, key = { it.id }) { item ->
+                        CompactRow(
+                            title = item.title,
+                            topicColor = Classifier.dominantTopic(item.topics).toComposeColor(),
+                            onClick = { onOpenItem(item) },
                         )
                     }
+                    item { EndOfFeed() }
+                }
+                ListDensity.SMALL_TILES, ListDensity.BIG_TILES -> DensityGridShell(
+                    density = density,
+                    modifier = pinchModifier,
+                ) {
+                    densityTiles(
+                        items = items,
+                        density = density,
+                        key = { it.id },
+                        title = { it.title },
+                        subtitle = { byline(it, sourceTitles[it.sourceId]) },
+                        topicColor = { Classifier.dominantTopic(it.topics).toComposeColor() },
+                        onClick = { onOpenItem(it) },
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun EndOfFeed() {
+    // The river has banks (brief §3): an explicit end, never infinite backfill.
+    Box(Modifier.fillMaxWidth().padding(Tokens.Spacing.lg), contentAlignment = Alignment.Center) {
+        Text(
+            Copy.END_OF_FEED,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

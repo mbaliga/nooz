@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
+import xyz.mdhv.riverwip.model.ListDensity
 
 /**
  * The reader surface: the Nooz Stand, tap through to the immersive paper with
@@ -40,6 +41,8 @@ fun ReaderScreen(
     highlightLoadedLanguage: Boolean,
     immersiveReader: Boolean,
     noozFlashEnabled: Boolean,
+    listDensity: ListDensity,
+    onDensityChange: (ListDensity) -> Unit,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenSettings: () -> Unit,
@@ -85,6 +88,9 @@ fun ReaderScreen(
         ArticleListScreen(
             vm = vm,
             noozFlashEnabled = noozFlashEnabled,
+            immersive = immersiveReader,
+            density = listDensity,
+            onDensityChange = onDensityChange,
             onOpenItem = { vm.openItem(it) },
             onOpenEdit = onOpenEdit,
             onOpenLoom = onOpenLoom,
@@ -157,6 +163,9 @@ fun ReaderScreen(
             ArticleListScreen(
                 vm = vm,
                 noozFlashEnabled = noozFlashEnabled,
+                immersive = immersiveReader,
+                density = listDensity,
+                onDensityChange = onDensityChange,
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
                 onOpenLoom = onOpenLoom,

@@ -1,10 +1,11 @@
 package xyz.mdhv.riverwip.feature.reader
 
 import android.content.Intent
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
@@ -27,8 +28,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,12 +47,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
+import xyz.mdhv.riverwip.design.DensitySlider
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.model.Clipping
+import xyz.mdhv.riverwip.model.ListDensity
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 class ClippingsViewModel(private val repo: ClippingRepository) : ViewModel() {
     val clippings: StateFlow<List<Clipping>> =
@@ -64,14 +72,21 @@ class ClippingsViewModel(private val repo: ClippingRepository) : ViewModel() {
 private val CLIP_DATE = DateTimeFormatter.ofPattern("d MMM yyyy")
 
 /**
- * The Clippings shelf (owner's Clippings section): the articles the reader kept,
- * each shown as a Nooz-paper clipping — source masthead, serif headline, byline
- * and the date it was clipped. Tap to reopen in the browser; the bookmark
- * removes it, and share re-issues the newspaper clipping.
+ * The Clippings shelf (owner's #2: "out is like a board with these physical
+ * looking clippings, in is a simple compact list"). Detail is the board — each
+ * clipping torn-edged, faintly rotated, on the app's own paper tone regardless
+ * of the active theme, since a clipping is paper first; List collapses to one
+ * plain line per clipping; the two tile steps share the Stand's grid.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClippingsScreen(vm: ClippingsViewModel, onBack: () -> Unit) {
+fun ClippingsScreen(
+    vm: ClippingsViewModel,
+    immersive: Boolean,
+    density: ListDensity,
+    onDensityChange: (ListDensity) -> Unit,
+    onBack: () -> Unit,
+) {
     val clippings by vm.clippings.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -87,68 +102,112 @@ fun ClippingsScreen(vm: ClippingsViewModel, onBack: () -> Unit) {
             )
         },
     ) { padding ->
-        if (clippings.isEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(Tokens.Spacing.xl),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    "No clippings yet.\nTap the bookmark on any article to keep it here.",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
+        Column(Modifier.fillMaxSize().padding(padding)) {
+            if (!immersive) {
+                DensitySlider(
+                    density = density,
+                    onDensityChange = onDensityChange,
+                    modifier = Modifier.padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
                 )
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(Tokens.Spacing.md),
-                verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
-            ) {
-                items(clippings, key = { it.itemId }) { clip ->
-                    ClippingCard(
-                        clip = clip,
-                        onOpen = {
-                            context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(clip.url)))
-                        },
-                        onShare = {
-                            NewspaperShare.share(context, clip.title, clip.sourceTitle, clip.author, clip.url)
-                        },
-                        onRemove = { vm.remove(clip.itemId) },
+            if (clippings.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(Tokens.Spacing.xl),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        "No clippings yet.\nTap the bookmark on any article to keep it here.",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
                     )
+                }
+            } else {
+                val pinchModifier = densityPinchModifier(density, onDensityChange, enabled = immersive)
+                when (density) {
+                    ListDensity.DETAIL -> LazyColumn(
+                        modifier = Modifier.fillMaxSize().then(pinchModifier),
+                        contentPadding = PaddingValues(Tokens.Spacing.lg),
+                        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg),
+                    ) {
+                        items(clippings, key = { it.itemId }) { clip ->
+                            TornClippingCard(
+                                clip = clip,
+                                onOpen = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(clip.url))) },
+                                onShare = { NewspaperShare.share(context, clip.title, clip.sourceTitle, clip.author, clip.url) },
+                                onRemove = { vm.remove(clip.itemId) },
+                            )
+                        }
+                    }
+                    ListDensity.LIST -> LazyColumn(
+                        modifier = Modifier.fillMaxSize().then(pinchModifier),
+                    ) {
+                        items(clippings, key = { it.itemId }) { clip ->
+                            CompactRow(
+                                title = clip.title,
+                                topicColor = clip.topic.toComposeColor(),
+                                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(clip.url))) },
+                            )
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        }
+                    }
+                    ListDensity.SMALL_TILES, ListDensity.BIG_TILES -> DensityGridShell(
+                        density = density,
+                        modifier = pinchModifier,
+                    ) {
+                        densityTiles(
+                            items = clippings,
+                            density = density,
+                            key = { it.itemId },
+                            title = { it.title },
+                            subtitle = { byline(it) },
+                            topicColor = { it.topic.toComposeColor() },
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(it.url))) },
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * One clipping, cut from the page (owner's #2, reference photos of scattered
+ * physical clippings): a jagged top/bottom tear via [tornEdgeShape], a small
+ * deterministic rotation seeded from the clipping's own id — stable across
+ * recompositions, never re-rolled — and the app's own paper tone regardless
+ * of the active theme, since a clipping is paper first.
+ */
 @Composable
-private fun ClippingCard(
+private fun TornClippingCard(
     clip: Clipping,
     onOpen: () -> Unit,
     onShare: () -> Unit,
     onRemove: () -> Unit,
 ) {
+    val seed = remember(clip.itemId) { clip.itemId.hashCode().toLong() }
+    val angle = remember(seed) { ((seed % 5) - 2) * 0.9f }
+    val shape = remember(seed) { tornEdgeShape(seed) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(Tokens.Border.thin, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(Tokens.Radius.sm))
+            .graphicsLayer { rotationZ = angle }
+            .shadow(4.dp, shape, clip = false)
+            .clip(shape)
+            .background(Tokens.Palette.paperField)
             .clickable(onClickLabel = "Open article in browser", onClick = onOpen)
-            .padding(Tokens.Spacing.md),
+            .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
     ) {
-        // Source masthead + topic, tracked small caps — never colour alone.
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 (clip.sourceTitle ?: "Nooz").uppercase(),
                 style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 2.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Tokens.Palette.paperInkDim,
                 modifier = Modifier.weight(1f),
             )
             Text(
@@ -157,23 +216,46 @@ private fun ClippingCard(
                 color = clip.topic.toComposeColor(),
             )
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        Text(clip.title, style = MaterialTheme.typography.headlineSmall, maxLines = 3)
+        HorizontalDivider(color = Tokens.Palette.paperInkFaint)
+        Text(clip.title, style = MaterialTheme.typography.headlineSmall, color = Tokens.Palette.paperInk, maxLines = 3)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 byline(clip),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Tokens.Palette.paperInkDim,
                 modifier = Modifier.weight(1f),
             )
             IconButton(onClick = onShare) {
-                Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping", modifier = Modifier.size(20.dp))
+                Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping", tint = Tokens.Palette.paperInkDim, modifier = Modifier.size(20.dp))
             }
             IconButton(onClick = onRemove) {
-                Icon(Icons.Filled.Bookmark, contentDescription = "Remove clipping", modifier = Modifier.size(20.dp))
+                Icon(Icons.Filled.Bookmark, contentDescription = "Remove clipping", tint = Tokens.Palette.paperInkDim, modifier = Modifier.size(20.dp))
             }
         }
     }
+}
+
+/** A jagged, deterministic tear along the top and bottom edges only — sides stay straight, as a torn newspaper column would. */
+private fun tornEdgeShape(seed: Long) = GenericShape { size, _ ->
+    val rnd = Random(seed)
+    val notch = (size.height * 0.015f).coerceIn(2f, 10f)
+    val step = (size.width / 16f).coerceAtLeast(8f)
+
+    moveTo(0f, 0f)
+    var x = 0f
+    while (x < size.width) {
+        val nx = (x + step).coerceAtMost(size.width)
+        lineTo(nx, (rnd.nextFloat() - 0.5f) * 2 * notch)
+        x = nx
+    }
+    lineTo(size.width, size.height)
+    x = size.width
+    while (x > 0f) {
+        val nx = (x - step).coerceAtLeast(0f)
+        lineTo(nx, size.height + (rnd.nextFloat() - 0.5f) * 2 * notch)
+        x = nx
+    }
+    close()
 }
 
 private fun byline(clip: Clipping): String {
