@@ -61,6 +61,28 @@ class LoomViewModel(
         showDatePicker = false
     }
 
+    /**
+     * Explicit day navigation (owner's #8: a tap-to-open month grid wasn't
+     * discoverable as "date navigation"). Steps by whole calendar days,
+     * bounded so it can never move past today.
+     */
+    fun stepDay(deltaDays: Int, days: List<WeeklyAggregate>) {
+        val today = WeekBucketing.periodStart(System.currentTimeMillis(), periodDays = 1)
+        val current = selectedDayStart ?: days.lastOrNull()?.weekStart ?: today
+        val stepped = WeekBucketing.periodStart(
+            current + deltaDays * MILLIS_PER_DAY,
+            periodDays = 1,
+        )
+        selectedDayStart = stepped.coerceAtMost(today)
+    }
+
+    /** Whether [stepDay] can still move forward from the currently-shown day. */
+    fun canStepForward(days: List<WeeklyAggregate>): Boolean {
+        val today = WeekBucketing.periodStart(System.currentTimeMillis(), periodDays = 1)
+        val current = selectedDayStart ?: days.lastOrNull()?.weekStart ?: today
+        return current < today
+    }
+
     fun setDatePickerVisible(visible: Boolean) {
         showDatePicker = visible
     }
@@ -70,6 +92,10 @@ class LoomViewModel(
         val selected = selectedDayStart ?: return days.lastOrNull()
         return days.firstOrNull { it.weekStart == selected }
             ?: WeeklyAggregate(selected, emptyMap(), emptyMap(), emptyMap())
+    }
+
+    companion object {
+        private const val MILLIS_PER_DAY = 86_400_000L
     }
 
     class Factory(

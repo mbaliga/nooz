@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -144,16 +149,34 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+
+        // Date navigation (owner's #8): previous/next chevrons flanking the
+        // date, which still opens the full month picker on its own tap — the
+        // old tap-only date text didn't read as navigable at all.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Tokens.Spacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            IconButton(onClick = { vm.stepDay(-1, days) }) {
+                Icon(Icons.Filled.ChevronLeft, contentDescription = "Previous day")
+            }
             Text(
                 aggregate?.let { DAY_FORMAT.format(Instant.ofEpochMilli(it.weekStart).atZone(ZoneId.systemDefault())) } ?: "—",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .clickable(onClickLabel = "Open the date picker") { vm.setDatePickerVisible(true) }
                     .semantics { role = Role.Button }
                     .minimumInteractiveComponentSize()
-                    .padding(vertical = Tokens.Spacing.xxs),
+                    .padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
             )
+            IconButton(onClick = { vm.stepDay(1, days) }, enabled = vm.canStepForward(days)) {
+                Icon(Icons.Filled.ChevronRight, contentDescription = "Next day")
+            }
         }
 
         if (aggregate == null || loom.totalFlowed == 0) {
