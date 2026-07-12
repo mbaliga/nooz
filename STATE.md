@@ -641,6 +641,37 @@ respect as the CI-caught log above.
   logged here so the next session in this repo knows the honesty-rules contract in
   `ai-catalogue/README.md` now has a live reader.
 
+- **D17 — First real free-tier verification pass, done by an agent per the sentry's own precedent
+  (2026-07-12).** With a real consumer now reading `ai-catalogue/free-tiers.json` (D16), the owner
+  asked that Nooz actually *maintain* the free-tier mix and limits, not just host a static copy.
+  `ai_catalogue_sentry.py`'s own docstring already anticipates this — staleness "opens a reminder
+  issue... a human (or a future agent) can diff and refresh the figures by hand, with sources" — so
+  this session did that pass directly rather than waiting on the 35-day staleness window: fetched
+  each of the 11 existing providers' own `sourceUrl` (or, where that page withheld numbers or
+  errored, searched for corroborating current evidence), and only overwrote a figure where the
+  fresh evidence was solid. Net effect: **groq** and **openrouter** reconfirmed byte-for-byte
+  accurate; **cerebras** and **github_models** got refined, more specific summaries (Cerebras's
+  free-tier model lineup has changed entirely since it was last checked); **cohere** was corrected
+  from a flat "~100 req/day" to its real monthly-cap structure (20 req/min, ~1,000 calls/month);
+  **deepseek** was corrected from "~10M tokens" to "~5M tokens, 30-day validity" (converging
+  secondary sources, primary page was unreachable this pass — flagged as such); **anthropic** and
+  **openai**'s `sourceUrl`s were updated to the pages their old links now redirect to (dead-link
+  hygiene, caught because this pass actually followed the redirects rather than trusting the old
+  URL). **google_gemini**, **mistral**, **together** were deliberately left unchanged — the primary
+  source no longer publishes a hard number (Gemini defers to a live per-account dashboard) or the
+  only fresh evidence was secondary and internally conflicting (Together's reported trial-credit
+  amount ranged from $1 to $50 across sources found this pass) — overwriting on weak evidence would
+  violate this file's own honesty rule 2 as much as fabricating from nothing would. One new entry,
+  **Cloudflare Workers AI** (10,000 Neurons/day, verified against Cloudflare's own pricing docs),
+  broadens the mix; its `providerKind` is left `null` rather than guessed, since it isn't a general
+  OpenAI-compatible endpoint like the others. `lastUpdated` bumped to `2026-07-12` with a `_note`
+  paragraph recording exactly what was and wasn't reconfirmed, so the next pass (human or agent)
+  knows which figures still need a from-scratch check. **Lesson for the next pass**: several
+  provider docs pages now defer numbers to a live dashboard or return errors to automated probes
+  (Gemini, Mistral, DeepSeek all did this) — the sentry's per-entry HTTP probe (built for
+  `models.json`'s binary "does this URL still resolve" check) can't do this kind of verification;
+  it stays a job for whoever (human or agent) does the periodic hand-diff.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
