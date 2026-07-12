@@ -1,5 +1,7 @@
 package xyz.mdhv.riverwip.data.repo
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import xyz.mdhv.riverwip.data.db.ReadEventDao
 import xyz.mdhv.riverwip.data.mapping.toDomain
 import xyz.mdhv.riverwip.data.mapping.toEntity
@@ -20,4 +22,7 @@ class ReadEventRepository(
 
     /** Every recorded read, for the user's own data export (brief §4: their trace is theirs). */
     suspend fun allOnce(): List<ReadEvent> = dao.allOnce().map { it.toDomain() }
+
+    /** Live version of [allOnce] (the Stand's day-mix bar reflects a read the moment it happens). */
+    fun observeAll(): Flow<List<ReadEvent>> = dao.observeAll().map { list -> list.map { it.toDomain() } }
 }

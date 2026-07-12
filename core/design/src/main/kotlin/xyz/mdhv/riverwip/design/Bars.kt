@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -28,6 +30,10 @@ import xyz.mdhv.riverwip.model.Topic
  * real per-topic shares (see `DayLoomLayout.dayMix`); colours are the
  * CVD-verified topic palette. Colour is never the only channel: the bar always
  * carries a spoken description, and tapping it opens the full loom.
+ *
+ * The bar reads as **one** capsule: only its two outer ends are rounded (a
+ * whole-bar clip), and segments butt directly against each other with a hard
+ * edge — not a row of individually-pilled, gapped beads (owner's #4).
  */
 @Composable
 fun DayMixBar(
@@ -41,21 +47,27 @@ fun DayMixBar(
             .height(6.dp)
             .semantics { contentDescription = description },
     ) {
-        val gap = 3.dp.toPx()
-        val totalGap = gap * (segments.size - 1).coerceAtLeast(0)
-        // Each segment is a pill: fully rounded ends (radius = half the height),
-        // matching the mock's capsule bars top and bottom of the page.
         val radius = CornerRadius(size.height / 2f, size.height / 2f)
-        var x = 0f
-        for ((topic, fraction) in segments) {
-            val w = ((size.width - totalGap) * fraction).toFloat()
-            drawRoundRect(
-                color = topic.toComposeColor(),
-                topLeft = Offset(x, 0f),
-                size = Size(w, size.height),
-                cornerRadius = radius,
+        val silhouette = Path().apply {
+            addRoundRect(
+                RoundRect(
+                    left = 0f, top = 0f, right = size.width, bottom = size.height,
+                    topLeftCornerRadius = radius, topRightCornerRadius = radius,
+                    bottomRightCornerRadius = radius, bottomLeftCornerRadius = radius,
+                ),
             )
-            x += w + gap
+        }
+        clipPath(silhouette) {
+            var x = 0f
+            for ((topic, fraction) in segments) {
+                val w = (size.width * fraction).toFloat()
+                drawRect(
+                    color = topic.toComposeColor(),
+                    topLeft = Offset(x, 0f),
+                    size = Size(w, size.height),
+                )
+                x += w
+            }
         }
     }
 }

@@ -120,6 +120,25 @@ class ReaderViewModel(
         DayLoomLayout.dayMix(counts)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
 
+    /**
+     * Today's *reading* distribution (owner's #5: the Stand's top bar must
+     * show what the reader actually read, not what merely flowed). Joins each
+     * read event back to its item's dominant topic; a read counts regardless
+     * of the standing filter at read time — same "never hide" principle
+     * [todayMix] applies to supply, applied here to consumption instead.
+     */
+    val todayReadMix: StateFlow<List<Pair<Topic, Double>>> = combine(allItems, readEventRepository.observeAll()) { list, reads ->
+        val dayStart = WeekBucketing.periodStart(clock(), periodDays = 1)
+        val itemsById = list.associateBy { it.id }
+        val counts = HashMap<String, Int>()
+        for (event in reads) {
+            if (event.openedAt < dayStart) continue
+            val item = itemsById[event.itemId] ?: continue
+            counts.merge(Classifier.dominantTopic(item.topics).key, 1, Int::plus)
+        }
+        DayLoomLayout.dayMix(counts)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+
     private val _isRefreshing = MutableStateFlow(false)
     /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */
     val isRefreshing: StateFlow<Boolean> = _isRefreshing

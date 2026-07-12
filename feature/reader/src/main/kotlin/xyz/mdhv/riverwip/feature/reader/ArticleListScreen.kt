@@ -92,7 +92,10 @@ fun ArticleListScreen(
     val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
     val lastRefresh by vm.lastRefresh.collectAsStateWithLifecycle()
     val filter by vm.filter.collectAsStateWithLifecycle()
-    val todayMix by vm.todayMix.collectAsStateWithLifecycle()
+    // The Stand's top bar shows what was actually read today, not what merely
+    // flowed (owner's #5) — the reader's own bottom utility bar keeps the
+    // supply-based mix as ambient context while reading.
+    val todayReadMix by vm.todayReadMix.collectAsStateWithLifecycle()
 
     val listState = rememberLazyListState()
     var pull by remember { mutableFloatStateOf(0f) }
@@ -148,10 +151,10 @@ fun ArticleListScreen(
                 .height(barHeight)
                 .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },
         ) {
-            if (todayMix.isEmpty() || isRefreshing) {
+            if (todayReadMix.isEmpty() || isRefreshing) {
                 CandyCaneBar(Modifier.fillMaxSize())
             } else {
-                DayMixBar(todayMix, Modifier.fillMaxSize())
+                DayMixBar(todayReadMix, Modifier.fillMaxSize())
             }
         }
 
