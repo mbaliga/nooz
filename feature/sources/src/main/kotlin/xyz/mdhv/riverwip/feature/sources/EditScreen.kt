@@ -6,6 +6,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -105,15 +106,19 @@ fun EditScreen(
                 .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            NoozWordmark(fontSize = 30.sp)
+            // Sized and baseline-locked to the mock's measured ratio (EDIT's cap
+            // height ≈0.61× Nooz's; the two sit on the same baseline) — a fixed
+            // bottom-padding guess doesn't track the font's real metrics.
+            NoozWordmark(fontSize = 30.sp, modifier = Modifier.alignByBaseline())
             Text(
                 "EDIT",
                 style = MaterialTheme.typography.labelLarge,
+                fontSize = 18.sp,
                 letterSpacing = 2.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .align(Alignment.Bottom)
-                    .padding(start = Tokens.Spacing.sm, bottom = 6.dp),
+                    .alignByBaseline()
+                    .padding(start = Tokens.Spacing.sm),
             )
             Spacer(Modifier.weight(1f))
             IconButton(onClick = onOpenSettings) {
@@ -150,7 +155,16 @@ fun EditScreen(
 @Composable
 private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
     Column(
+        // IntrinsicSize.Min sizes this Column to its widest child's own natural
+        // width — without it, the underline Box's fillMaxWidth() below expands
+        // to fill the *Row's* remaining space instead of just this label's
+        // width, since an unconstrained Column hands its loose incoming max
+        // width straight through. That silently ate the whole header row: the
+        // "Sources" tab's underline claimed all the space, leaving nothing for
+        // "Region & Topics" to lay out in (owner's #6 — the globe wasn't
+        // "missing", it had nowhere left to render).
         modifier = Modifier
+            .width(IntrinsicSize.Min)
             .selectable(selected = active, role = Role.Tab, onClick = onClick)
             .padding(vertical = Tokens.Spacing.xs),
     ) {
