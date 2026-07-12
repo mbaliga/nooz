@@ -5,7 +5,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Box
@@ -55,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -63,8 +61,6 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -470,9 +466,9 @@ private fun CrashSection() {
 private fun IntelligenceSection(vm: SettingsViewModel) {
     val config = vm.byokConfig
     var expanded by remember { mutableStateOf(config.isComplete) }
-    var baseUrl by remember(config) { mutableStateOf(config.baseUrl) }
-    var apiKey by remember(config) { mutableStateOf(config.apiKey) }
-    var model by remember(config) { mutableStateOf(config.model) }
+    var modelPath by remember(config.isComplete) {
+        mutableStateOf(if (config.isComplete) ModelPath.BYOK else ModelPath.ON_DEVICE)
+    }
 
     Row(
         modifier = Modifier
@@ -484,7 +480,7 @@ private fun IntelligenceSection(vm: SettingsViewModel) {
         Column(Modifier.weight(1f)) {
             Text("Reader intelligence", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                if (config.isComplete) "Bring-your-own-key: ${config.model}" else "On-device first · bring your own key (optional)",
+                if (config.isComplete) "Bring-your-own-key: ${config.model}" else "On-device first · three ways to add more",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -496,55 +492,13 @@ private fun IntelligenceSection(vm: SettingsViewModel) {
         )
     }
     if (expanded) {
-        Text(
-            "The lens defuses loaded language on-device by default. On-device model execution is still being wired in — until then, defuse can route to your own OpenAI-compatible endpoint. Cloud rewrites are always marked cloud, and your key stays on the device (never exported).",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        ModelChoicePanel(
+            path = modelPath,
+            onPathChange = { modelPath = it },
+            byokConfig = config,
+            onSaveByok = { url, key, model -> vm.saveByok(url, key, model) },
+            onClearByok = { vm.clearByok() },
         )
-        UnderlinedField("Base URL", baseUrl, "https://api.openai.com/v1", onValueChange = { baseUrl = it })
-        UnderlinedField("API key", apiKey, "sk-…", masked = true, onValueChange = { apiKey = it })
-        UnderlinedField("Model", model, "gpt-4o-mini", onValueChange = { model = it })
-        Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
-            TextButton(
-                onClick = { vm.saveByok(baseUrl, apiKey, model) },
-                enabled = baseUrl.isNotBlank() && apiKey.isNotBlank() && model.isNotBlank(),
-                contentPadding = PaddingValues(0.dp),
-            ) { Text("Save key") }
-            if (config.isComplete) {
-                TextButton(onClick = { vm.clearByok() }, contentPadding = PaddingValues(0.dp)) {
-                    Text("Remove key")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun UnderlinedField(
-    label: String,
-    value: String,
-    placeholder: String,
-    masked: Boolean = false,
-    onValueChange: (String) -> Unit,
-) {
-    Column(Modifier.fillMaxWidth().padding(top = Tokens.Spacing.xs)) {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
-            visualTransformation = if (masked) PasswordVisualTransformation() else VisualTransformation.None,
-            modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xxs),
-            decorationBox = { inner ->
-                if (value.isEmpty()) {
-                    Text(placeholder, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
-                }
-                inner()
-            },
-        )
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

@@ -136,8 +136,10 @@ fun RiverApp() {
             // DataStore load, so `onboarded` is settled by the time we're here.
             if (!settings.onboarded) {
                 OnboardingScreen(
+                    byokConfig = settingsVm.byokConfig,
                     onFinish = { settingsVm.completeOnboarding() },
                     onSaveByok = { url, key, model -> settingsVm.saveByok(url, key, model) },
+                    onClearByok = { settingsVm.clearByok() },
                     onSetImmersive = { settingsVm.setImmersiveReader(it) },
                 )
                 return@Box

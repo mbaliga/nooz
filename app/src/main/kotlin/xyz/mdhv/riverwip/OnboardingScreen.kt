@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -25,13 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.design.CandyCaneBar
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.inference.byok.ByokConfig
 
 private enum class OnbStep { WELCOME, ADVANCED }
 
@@ -40,13 +37,18 @@ private enum class OnbStep { WELCOME, ADVANCED }
  * warming up — a candy-cane bar standing in for stories loading — and is
  * offered two doors. **Quick setup** takes the honest defaults (on-device
  * first, controls shown) and drops straight into the Stand. **Advanced** opens
- * a short wizard: bring your own key, and choose immersive vs. controls-shown.
- * A **Skip** is always present — onboarding is never a wall.
+ * a short wizard: the same three-path [ModelChoicePanel] Settings' Reader
+ * intelligence uses (on-device / download a model / bring your own key — a
+ * cross-repo consumer of Nooz's catalogue flagged the fake-button risk this
+ * avoids), and a choice of immersive vs. controls-shown. A **Skip** is always
+ * present — onboarding is never a wall.
  */
 @Composable
 fun OnboardingScreen(
+    byokConfig: ByokConfig,
     onFinish: () -> Unit,
     onSaveByok: (baseUrl: String, apiKey: String, model: String) -> Unit,
+    onClearByok: () -> Unit,
     onSetImmersive: (Boolean) -> Unit,
 ) {
     var step by remember { mutableStateOf(OnbStep.WELCOME) }
@@ -86,9 +88,11 @@ fun OnboardingScreen(
                     onSkip = onFinish,
                 )
                 OnbStep.ADVANCED -> AdvancedStep(
+                    byokConfig = byokConfig,
                     onBack = { step = OnbStep.WELCOME },
                     onFinish = onFinish,
                     onSaveByok = onSaveByok,
+                    onClearByok = onClearByok,
                     onSetImmersive = onSetImmersive,
                 )
             }
@@ -121,31 +125,30 @@ private fun WelcomeStep(onQuick: () -> Unit, onAdvanced: () -> Unit, onSkip: () 
 
 @Composable
 private fun AdvancedStep(
+    byokConfig: ByokConfig,
     onBack: () -> Unit,
     onFinish: () -> Unit,
     onSaveByok: (String, String, String) -> Unit,
+    onClearByok: () -> Unit,
     onSetImmersive: (Boolean) -> Unit,
 ) {
-    var baseUrl by remember { mutableStateOf("") }
-    var apiKey by remember { mutableStateOf("") }
-    var model by remember { mutableStateOf("") }
+    var modelPath by remember { mutableStateOf(if (byokConfig.isComplete) ModelPath.BYOK else ModelPath.ON_DEVICE) }
     var immersive by remember { mutableStateOf(false) }
 
     Text("Advanced setup", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
 
     Text(
-        "Bring your own key (optional)",
+        "How should the lens think?",
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Text(
-        "Route defuse rewrites to your own OpenAI-compatible endpoint. Cloud results are always marked cloud; your key stays on the device.",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    ModelChoicePanel(
+        path = modelPath,
+        onPathChange = { modelPath = it },
+        byokConfig = byokConfig,
+        onSaveByok = onSaveByok,
+        onClearByok = onClearByok,
     )
-    OnbField("Base URL", baseUrl, "https://api.openai.com/v1") { baseUrl = it }
-    OnbField("API key", apiKey, "sk-…", masked = true) { apiKey = it }
-    OnbField("Model", model, "gpt-4o-mini") { model = it }
 
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     Text("Reading mode", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -161,9 +164,6 @@ private fun AdvancedStep(
 
     Button(
         onClick = {
-            if (baseUrl.isNotBlank() && apiKey.isNotBlank() && model.isNotBlank()) {
-                onSaveByok(baseUrl, apiKey, model)
-            }
             onSetImmersive(immersive)
             onFinish()
         },
@@ -184,31 +184,3 @@ private fun ModeChip(label: String, selected: Boolean, onClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun OnbField(
-    label: String,
-    value: String,
-    placeholder: String,
-    masked: Boolean = false,
-    onValueChange: (String) -> Unit,
-) {
-    Column(Modifier.fillMaxWidth()) {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
-            visualTransformation = if (masked) PasswordVisualTransformation() else VisualTransformation.None,
-            modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xxs),
-            decorationBox = { inner ->
-                if (value.isEmpty()) {
-                    Text(placeholder, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
-                }
-                inner()
-            },
-        )
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    }
-}

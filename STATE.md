@@ -611,6 +611,19 @@ respect as the CI-caught log above.
   - **Edit.** Catalogue is now a plain line/text section (no boxed card);
     clearer active-tab indicator.
 
+- **D15 — Shared model-choice panel (cross-repo feedback, 2026-07-12).** A
+  consumer of Nooz's model catalogue independently found the same gap D14
+  already logged — no verified download URL/checksum for either
+  `ModelCatalog` entry — and, rather than a fake one-tap download button,
+  built an honest 3-path chooser in their own onboarding. Applied the same fix
+  here: a single `ModelChoicePanel` (on-device / download a model — listed
+  with size, explicitly "not available in this build" / bring your own key)
+  now backs **both** onboarding's Advanced step and Settings' Reader
+  intelligence section — previously only Settings had a (BYOK-only) panel and
+  onboarding didn't surface the on-device/download paths at all. Implemented
+  as inline stanzas under a chip selector rather than separate screens, to
+  stay consistent with the rest of Settings' disclosure pattern.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
