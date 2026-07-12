@@ -647,6 +647,44 @@ respect as the CI-caught log above.
   `canDownload` now takes a raw size, not a `ModelSpec`). Execution is still
   the honest gap (§ above) — a downloaded model sits on disk, not yet run.
 
+- **D19 — Owner feedback round: Hyle Print glyph fix + 9 numbered bugs
+  (2026-07-12).** (a) **Font glyphs, not a missing image.** The owner's
+  splash/Edit-header complaint ("still does not use the right image") and the
+  "alphabets not in caps as they need to be" complaint are the same root
+  cause: Hyle Print's bundled TTFs had a foreign glyph spliced into "N" and a
+  mirrored "R" (D7's font drop carried the defect in silently). Every
+  wordmark/headline on screen renders through Hyle Print, so the one glyph
+  bug looked like several different bugs. Re-bundled the corrected TTFs from
+  `hyle-design-system@4c63219`; there was never a raster logo asset to find,
+  and none was added. (b) **Reader flow** breaks: the Settings-drag exit
+  never called `closeItem()`, and the slide-offset remember was declared
+  behind an early return with no reset path on a system-back close; both
+  fixed with one unconditional `LaunchedEffect(selected)`. (c) **Loom empty
+  day**: draws a dotted silhouette fan when `totalRead == 0` instead of
+  nothing. (d) **NewspaperShare**: bylines stack and ellipsize instead of
+  colliding; the bitmap height formula now shares the exact constants the
+  draw pass uses. (e) **DayMixBar**: clips to one capsule silhouette so
+  internal segments are contiguous and hard-edged (only the two end-caps
+  rounded); the reader's top bar now plots the day's *read* mix, not the
+  supply mix. (f) **Edit globe "missing"**: root-caused, not cosmetic —
+  `TabLabel`'s underline `fillMaxWidth()` sat in an unconstrained `Column`,
+  which passes the parent Row's whole remaining width straight through, so
+  "Sources" claimed the entire row and "Region & Topics" (and the globe
+  under it) had zero width left to lay out in; fixed with one
+  `Modifier.width(IntrinsicSize.Min)`. This is the same defect the owner had
+  already flagged once before — the earlier pass addressed tab *visibility*
+  without catching this constraint-propagation cause, hence "after repeated
+  specific requests." (g) **Date nav**: explicit prev/next-day chevrons in
+  the loom header, bounded to never step past today. (h) **Dictionary
+  formatting**: new `DictionaryFormatting` parser recovers the bundled
+  Webster's-1913 text's real structure — numbered senses restart at 1 per
+  part-of-speech; "Syn. --" closes a group — from what ships as one flat run
+  with no line breaks at all; `DefinitionSheet` renders it with a hanging
+  indent, bold sense numbers, italic domain tags and synonym blocks. (i) Two
+  prose fixes from a full-app spellcheck pass (aspell + manual read): "site
+  url" → "site URL"; a broken sentence in the model download stanza's
+  description.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
