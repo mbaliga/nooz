@@ -71,12 +71,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import xyz.mdhv.riverwip.data.repo.CatalogueModel
 import xyz.mdhv.riverwip.data.repo.DataExporter
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
+import xyz.mdhv.riverwip.data.repo.ModelCatalogueRepository
+import xyz.mdhv.riverwip.data.repo.ModelDownloadState
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.crash.CrashRecovery
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
+import xyz.mdhv.riverwip.inference.local.StorageBudget
 import xyz.mdhv.riverwip.design.HyleGroteskClassic
 import xyz.mdhv.riverwip.design.HyleGroteskPlus
 import xyz.mdhv.riverwip.design.HylePrint
@@ -92,7 +96,63 @@ class SettingsViewModel(
     private val dictionaryRepo: DictionaryRepository,
     private val dataExporter: DataExporter,
     private val byokStore: ByokConfigStore,
+    private val modelCatalogueRepo: ModelCatalogueRepository,
 ) : ViewModel() {
+
+    // On-device model download (#18 follow-up): the real ai-catalogue list.
+    val modelCatalogue: StateFlow<List<CatalogueModel>> = modelCatalogueRepo.observeCatalogue()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+    val modelCatalogueLastRefreshedAt: StateFlow<Long?> = modelCatalogueRepo.observeLastRefreshedAt()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), null)
+
+    var modelDownloadStates: Map<String, ModelDownloadState> by mutableStateOf(emptyMap())
+        private set
+    var modelCatalogueRefreshing: Boolean by mutableStateOf(false)
+        private set
+    var modelCatalogueError: String? by mutableStateOf(null)
+        private set
+
+    fun downloadableModels(models: List<CatalogueModel>): List<CatalogueModel> = modelCatalogueRepo.downloadable(models)
+
+    /** Cheap file-existence check — called straight from composition, no cached/stale copy to keep in sync. */
+    fun isModelDownloaded(model: CatalogueModel): Boolean = modelCatalogueRepo.isDownloaded(model)
+
+    fun refreshModelCatalogue() {
+        if (modelCatalogueRefreshing) return
+        modelCatalogueRefreshing = true
+        modelCatalogueError = null
+        viewModelScope.launch {
+            val result = modelCatalogueRepo.refresh()
+            modelCatalogueRefreshing = false
+            if (result.isFailure) {
+                modelCatalogueError = result.exceptionOrNull()?.message ?: "Couldn't refresh the model list."
+            }
+        }
+    }
+
+    fun downloadModel(model: CatalogueModel) {
+        if (modelDownloadStates[model.id] is ModelDownloadState.Downloading) return
+        val available = modelCatalogueRepo.availableStorageBytes()
+        if (!StorageBudget.canDownload(model.sizeBytes, available)) {
+            modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Failed("Not enough free storage for this model."))
+            return
+        }
+        modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Downloading(0f))
+        viewModelScope.launch {
+            val result = modelCatalogueRepo.download(model) { progress ->
+                modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Downloading(progress))
+            }
+            modelDownloadStates = modelDownloadStates + (model.id to
+                if (result.isSuccess) ModelDownloadState.Ready
+                else ModelDownloadState.Failed(result.exceptionOrNull()?.message ?: "Download failed.")
+                )
+        }
+    }
+
+    fun deleteModel(model: CatalogueModel) {
+        modelCatalogueRepo.delete(model)
+        modelDownloadStates = modelDownloadStates - model.id
+    }
 
     // BYOK (#18): the user's own OpenAI-compatible endpoint. SharedPreferences
     // isn't reactive, so mirror it into Compose state and refresh on save/clear.
@@ -153,10 +213,11 @@ class SettingsViewModel(
         private val dictionaryRepo: DictionaryRepository,
         private val dataExporter: DataExporter,
         private val byokStore: ByokConfigStore,
+        private val modelCatalogueRepo: ModelCatalogueRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            SettingsViewModel(repo, dictionaryRepo, dataExporter, byokStore) as T
+            SettingsViewModel(repo, dictionaryRepo, dataExporter, byokStore, modelCatalogueRepo) as T
     }
 }
 
@@ -492,12 +553,23 @@ private fun IntelligenceSection(vm: SettingsViewModel) {
         )
     }
     if (expanded) {
+        val catalogue by vm.modelCatalogue.collectAsStateWithLifecycle()
         ModelChoicePanel(
             path = modelPath,
             onPathChange = { modelPath = it },
             byokConfig = config,
             onSaveByok = { url, key, model -> vm.saveByok(url, key, model) },
             onClearByok = { vm.clearByok() },
+            download = ModelDownloadUi(
+                models = vm.downloadableModels(catalogue),
+                downloadStates = vm.modelDownloadStates,
+                isDownloaded = { vm.isModelDownloaded(it) },
+                onDownload = { vm.downloadModel(it) },
+                onDelete = { vm.deleteModel(it) },
+                onRefresh = { vm.refreshModelCatalogue() },
+                refreshing = vm.modelCatalogueRefreshing,
+                error = vm.modelCatalogueError,
+            ),
         )
     }
 }

@@ -9,6 +9,7 @@ import xyz.mdhv.riverwip.data.repo.ClippingRepository
 import xyz.mdhv.riverwip.data.repo.DataExporter
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
+import xyz.mdhv.riverwip.data.repo.ModelCatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
@@ -55,6 +56,9 @@ class AppContainer(appContext: Context) {
 
     /** The user's own OpenAI-compatible endpoint config (BYOK, #18). Shared with the provider by prefs name. */
     val byokConfigStore: ByokConfigStore = ByokConfigStore(appContext)
+
+    /** Real one-click downloadable models (owner's #18 follow-up) — shares `models/` with [inferenceRouter]'s LocalLlamaProvider. */
+    val modelCatalogueRepository: ModelCatalogueRepository = ModelCatalogueRepository(appContext)
 
     /** For `Configuration.Provider` on [RiverApplication] — never touched by feature UI. */
     val workerFactory: RiverWorkerFactory = data.workerFactory

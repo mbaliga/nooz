@@ -46,6 +46,7 @@ private enum class OnbStep { WELCOME, ADVANCED }
 @Composable
 fun OnboardingScreen(
     byokConfig: ByokConfig,
+    download: ModelDownloadUi,
     onFinish: () -> Unit,
     onSaveByok: (baseUrl: String, apiKey: String, model: String) -> Unit,
     onClearByok: () -> Unit,
@@ -89,6 +90,7 @@ fun OnboardingScreen(
                 )
                 OnbStep.ADVANCED -> AdvancedStep(
                     byokConfig = byokConfig,
+                    download = download,
                     onBack = { step = OnbStep.WELCOME },
                     onFinish = onFinish,
                     onSaveByok = onSaveByok,
@@ -126,6 +128,7 @@ private fun WelcomeStep(onQuick: () -> Unit, onAdvanced: () -> Unit, onSkip: () 
 @Composable
 private fun AdvancedStep(
     byokConfig: ByokConfig,
+    download: ModelDownloadUi,
     onBack: () -> Unit,
     onFinish: () -> Unit,
     onSaveByok: (String, String, String) -> Unit,
@@ -148,6 +151,7 @@ private fun AdvancedStep(
         byokConfig = byokConfig,
         onSaveByok = onSaveByok,
         onClearByok = onClearByok,
+        download = download,
     )
 
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

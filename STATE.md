@@ -44,16 +44,13 @@ Detection, evidence, the fidelity guard, session-ephemeral defuse state, the
 reader overlay, and the defuse bottom sheet are all real and wired end-to-end.
 What is **honestly stubbed**, and must stay that way until someone can verify
 against the real thing:
-- **LocalLlamaProvider**: model manager (download state, SHA-256 checksum,
-  storage budget) is real. `rewrite()` returns a plain failure — no llama.cpp
+- **LocalLlamaProvider**: `isAvailable()` is real (any `.gguf` on disk); model
+  *download* (real catalogue, streaming + progress, storage budget, delete) is
+  real too — see D18. `rewrite()` still returns a plain failure — no llama.cpp
   JNI binding is integrated in this session, and faking a "successful" rewrite
   would defeat the entire point of `FidelityGuard` (small models fabricate;
-  this app must never pretend one is running when it isn't).
-- **ModelCatalog**: Qwen3-4B-Instruct / Gemma3-4B are named per the brief, but
-  `downloadUrl`/`sha256` are empty. Brief §0 requires live-verifying feed/API
-  URLs at build time; the same standard applies to a multi-GB model mirror,
-  and this session did not verify one. Populate both fields (and re-derive the
-  checksum) once a specific, verified mirror is chosen.
+  this app must never pretend one is running when it isn't). A downloaded
+  model sits on disk, verified-reachable, waiting for that binding.
 - **UrbanaProvider**: real ContentProvider discovery attempt against
   `com.urbana.daemon.discovery` — correctly reports "not discoverable" since no
   real daemon exists to test against here (brief: absent support hides the
@@ -623,6 +620,32 @@ respect as the CI-caught log above.
   onboarding didn't surface the on-device/download paths at all. Implemented
   as inline stanzas under a chip selector rather than separate screens, to
   stay consistent with the rest of Settings' disclosure pattern.
+  **Superseded by D18** — the "Download a model" stanza described here as
+  purely informational is now a real download flow.
+
+- **D18 — Real one-click model downloads, reading this repo's own
+  `ai-catalogue/` (owner feedback, 2026-07-12).** D14/D15 left "Download a
+  model" informational because the two ids `LocalLlamaProvider` hardcoded
+  (`qwen3-4b-instruct-q4`, `gemma3-4b-q4`) never got a verified mirror. What
+  was missed: `ai-catalogue/models.json` — this repo's *own* shared,
+  live-probed catalogue (D13) — already carries 18 *other*, real,
+  HTTP-200-verified entries; the two unverified ids are just two of its many
+  rows, not the whole catalogue. New `:core:data` `ModelCatalogueRepository`
+  bundles a snapshot asset (`ai_catalogue_models.json`) as the offline/
+  first-run default and refreshes from the repo's own raw-GitHub URL only on
+  explicit tap (never automatic — the catalogue's own consumer contract).
+  `ModelChoicePanel`'s download stanza now lists every `policySafe` `LLM_GGUF`
+  entry with a real `downloadUrl` (7 of them, 1.1–9.1 GB; the 3 abliterated/
+  uncensored variants and the SD image checkpoints are filtered out —
+  irrelevant and inappropriate for a neutral-language rewrite feature) with a
+  real streaming download, live progress, a storage-budget check before
+  starting, and delete. `LocalLlamaProvider.isAvailable()` no longer checks a
+  fixed 2-id catalogue — it just asks "is any `.gguf` on disk," so it
+  correctly reflects whatever the repository downloads. The old
+  `core/inference` `ModelCatalog`/`ModelSpec`/`ModelState` types are deleted;
+  `ChecksumVerifier`/`StorageBudget` remain as generic utilities (the latter's
+  `canDownload` now takes a raw size, not a `ModelSpec`). Execution is still
+  the honest gap (§ above) — a downloaded model sits on disk, not yet run.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
@@ -654,9 +677,11 @@ respect as the CI-caught log above.
   mastodon.social (422) so the hashtag timeline is the no-auth default.
 - Guardian Open Platform (keyed, free) and GNews (Tier-B `api` reference) are
   registered as keyed providers; not live-verified (need a key).
-- **Not yet verified**: any GGUF model mirror URL for `ModelCatalog` (P5) — see
-  D3/open questions above. Do not populate `downloadUrl`/`sha256` without
-  actually checking the mirror resolves and the checksum matches.
+- **Resolved by D18**: this app now downloads from `ai-catalogue/models.json`'s
+  real, HTTP-200-verified entries rather than the old unverified 2-id
+  placeholder catalogue. Do not hand-populate a `downloadUrl`/`sha256` outside
+  that shared, sentry-probed file — it's the one place this constellation
+  keeps that honest.
 
 ---
 

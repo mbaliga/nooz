@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,29 +23,47 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import xyz.mdhv.riverwip.data.repo.CatalogueModel
+import xyz.mdhv.riverwip.data.repo.ModelDownloadState
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
-import xyz.mdhv.riverwip.inference.local.ModelCatalog
 import xyz.mdhv.riverwip.inference.local.StorageBudget
 
 /** Which of the lens's three intelligence paths the reader is looking at. */
 enum class ModelPath { ON_DEVICE, DOWNLOAD, BYOK }
 
 /**
+ * The download stanza's data + actions, bundled so [ModelChoicePanel] stays a
+ * single parameter list regardless of which screen hosts it.
+ */
+data class ModelDownloadUi(
+    val models: List<CatalogueModel>,
+    val downloadStates: Map<String, ModelDownloadState>,
+    val isDownloaded: (CatalogueModel) -> Boolean,
+    val onDownload: (CatalogueModel) -> Unit,
+    val onDelete: (CatalogueModel) -> Unit,
+    val onRefresh: () -> Unit,
+    val refreshing: Boolean,
+    val error: String?,
+)
+
+/**
  * The one honest "how should the lens think" chooser (owner's #18; a
- * cross-repo consumer of Nooz's catalogue flagged the same gap: no verified
- * model download URLs or checksums exist yet, so a one-tap "download" button
- * would be fake or broken). Three real paths, shown the same way wherever this
- * question comes up — onboarding's Advanced step and Settings' Reader
- * intelligence share this exact panel, so a reader who skips it in onboarding
- * finds the identical doors later rather than a diminished version.
+ * cross-repo consumer of Nooz's catalogue flagged the same gap: the two
+ * models this app once hardcoded had no verified download URL, so a one-tap
+ * "download" button for THEM would be fake or broken). This app now reads the
+ * constellation's own real, live-probed `ai-catalogue/models.json` instead —
+ * three real paths, shown the same way wherever this question comes up:
+ * onboarding's Advanced step and Settings' Reader intelligence share this
+ * exact panel, so a reader who skips it in onboarding finds the identical
+ * doors later rather than a diminished version.
  *
  * - **On-device**: the default, nothing to configure — stated plainly that
- *   this build has no local model runtime wired in yet.
- * - **Download a model**: lists the catalogue's named models with their size,
- *   but honestly, since no live/checksummed mirror is verified for either —
- *   informational, not a button that pretends to work.
- * - **Bring your own key**: the one path that actually runs today.
+ *   this build has no local model *runtime* wired in yet (downloading a model
+ *   here doesn't change that; it just has the weights ready for when it is).
+ * - **Download a model**: the catalogue's real, policy-safe LLM entries —
+ *   sized, one tap, a real progress bar, a real file on disk afterward.
+ * - **Bring your own key**: the one path that runs end-to-end today.
  */
 @Composable
 fun ModelChoicePanel(
@@ -53,6 +72,7 @@ fun ModelChoicePanel(
     byokConfig: ByokConfig,
     onSaveByok: (baseUrl: String, apiKey: String, model: String) -> Unit,
     onClearByok: () -> Unit,
+    download: ModelDownloadUi,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
@@ -63,7 +83,7 @@ fun ModelChoicePanel(
         }
         when (path) {
             ModelPath.ON_DEVICE -> OnDeviceStanza()
-            ModelPath.DOWNLOAD -> DownloadStanza()
+            ModelPath.DOWNLOAD -> DownloadStanza(download)
             ModelPath.BYOK -> ByokStanza(byokConfig, onSaveByok, onClearByok)
         }
     }
@@ -77,27 +97,81 @@ private fun PathChip(label: String, selected: Boolean, onClick: () -> Unit) {
 @Composable
 private fun OnDeviceStanza() {
     Text(
-        "Nooz tries your device first, automatically — nothing to set up. This build doesn't yet include a local model runtime, so until one lands (or you add a key below), the lens honestly reports \"unavailable\" instead of guessing.",
+        "Nooz tries your device first, automatically — nothing to set up. This build doesn't yet include a local model runtime, so until one lands (or you add a key below), the lens honestly reports \"unavailable\" instead of guessing — even for a model you've downloaded below.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 
 @Composable
-private fun DownloadStanza() {
+private fun DownloadStanza(ui: ModelDownloadUi) {
     Text(
-        "Nooz hasn't verified a live, checksummed download source for either model yet — so instead of a one-tap button that might fail or fetch the wrong file, here's the honest state:",
+        "Real, open-source models this app's own catalogue has verified download — not run yet (see On-device), but on disk and ready.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    for (spec in ModelCatalog.all) {
-        Column(Modifier.padding(top = Tokens.Spacing.xs)) {
-            Text(spec.displayName, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
-            Text(
-                "${StorageBudget.humanReadable(spec.approxSizeBytes)} · not available in this build",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+    for (model in ui.models) {
+        ModelRow(model, ui)
+    }
+    if (ui.models.isEmpty()) {
+        Text(
+            "No models available.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Tokens.Spacing.xs),
+        )
+    }
+    TextButton(
+        onClick = ui.onRefresh,
+        enabled = !ui.refreshing,
+        contentPadding = PaddingValues(0.dp),
+        modifier = Modifier.padding(top = Tokens.Spacing.xs),
+    ) { Text(if (ui.refreshing) "Refreshing…" else "Refresh list") }
+    ui.error?.let {
+        Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+    }
+}
+
+@Composable
+private fun ModelRow(model: CatalogueModel, ui: ModelDownloadUi) {
+    val state = ui.downloadStates[model.id]
+    val downloaded = state is ModelDownloadState.Ready || (state == null && ui.isDownloaded(model))
+    Column(Modifier.fillMaxWidth().padding(top = Tokens.Spacing.sm)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Column(Modifier.weight(1f)) {
+                Text(model.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                Text(
+                    listOfNotNull(StorageBudget.humanReadable(model.sizeBytes), model.hfRepo).joinToString(" · "),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                )
+                model.note?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
+                }
+            }
+            when {
+                state is ModelDownloadState.Downloading -> Text(
+                    "${(state.progress * 100).toInt()}%",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                downloaded -> TextButton(onClick = { ui.onDelete(model) }, contentPadding = PaddingValues(0.dp)) {
+                    Text("Delete")
+                }
+                else -> TextButton(onClick = { ui.onDownload(model) }, contentPadding = PaddingValues(0.dp)) {
+                    Text("Download")
+                }
+            }
+        }
+        if (state is ModelDownloadState.Downloading) {
+            LinearProgressIndicator(
+                progress = { state.progress },
+                modifier = Modifier.fillMaxWidth().padding(top = Tokens.Spacing.xxs),
             )
+        }
+        if (state is ModelDownloadState.Failed) {
+            Text(state.reason, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         }
     }
 }

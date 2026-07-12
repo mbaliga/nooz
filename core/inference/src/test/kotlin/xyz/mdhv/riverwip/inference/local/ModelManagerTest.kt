@@ -28,21 +28,15 @@ class ModelManagerTest {
     }
 
     @Test fun storageBudgetRespectsMargin() {
-        val spec = ModelCatalog.QWEN3_4B_INSTRUCT_Q4
-        assertTrue(StorageBudget.canDownload(spec, availableBytes = spec.approxSizeBytes + 1_000_000_000L))
-        assertFalse(StorageBudget.canDownload(spec, availableBytes = spec.approxSizeBytes)) // no margin left
-        assertFalse(StorageBudget.canDownload(spec, availableBytes = spec.approxSizeBytes / 2))
+        val size = 2_600_000_000L
+        assertTrue(StorageBudget.canDownload(size, availableBytes = size + 1_000_000_000L))
+        assertFalse(StorageBudget.canDownload(size, availableBytes = size)) // no margin left
+        assertFalse(StorageBudget.canDownload(size, availableBytes = size / 2))
     }
 
     @Test fun humanReadableSizes() {
         assertEquals("512 B", StorageBudget.humanReadable(512))
         assertEquals("1.0 KB", StorageBudget.humanReadable(1024))
         assertEquals("2.5 GB", StorageBudget.humanReadable((2.5 * 1024 * 1024 * 1024).toLong()))
-    }
-
-    @Test fun cataloguesBothNamedModels() {
-        assertEquals(2, ModelCatalog.all.size)
-        assertTrue(ModelCatalog.all.any { it.id == "qwen3-4b-instruct-q4" })
-        assertTrue(ModelCatalog.all.any { it.id == "gemma3-4b-q4" })
     }
 }

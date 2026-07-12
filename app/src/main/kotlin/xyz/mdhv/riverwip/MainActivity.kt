@@ -65,6 +65,7 @@ fun RiverApp() {
             container.dictionaryRepository,
             container.dataExporter,
             container.byokConfigStore,
+            container.modelCatalogueRepository,
         ),
     )
     val settings by settingsVm.settings.collectAsStateWithLifecycle()
@@ -135,8 +136,19 @@ fun RiverApp() {
             // First-run onboarding (owner's #19). The splash delay covers the
             // DataStore load, so `onboarded` is settled by the time we're here.
             if (!settings.onboarded) {
+                val modelCatalogue by settingsVm.modelCatalogue.collectAsStateWithLifecycle()
                 OnboardingScreen(
                     byokConfig = settingsVm.byokConfig,
+                    download = ModelDownloadUi(
+                        models = settingsVm.downloadableModels(modelCatalogue),
+                        downloadStates = settingsVm.modelDownloadStates,
+                        isDownloaded = { settingsVm.isModelDownloaded(it) },
+                        onDownload = { settingsVm.downloadModel(it) },
+                        onDelete = { settingsVm.deleteModel(it) },
+                        onRefresh = { settingsVm.refreshModelCatalogue() },
+                        refreshing = settingsVm.modelCatalogueRefreshing,
+                        error = settingsVm.modelCatalogueError,
+                    ),
                     onFinish = { settingsVm.completeOnboarding() },
                     onSaveByok = { url, key, model -> settingsVm.saveByok(url, key, model) },
                     onClearByok = { settingsVm.clearByok() },
