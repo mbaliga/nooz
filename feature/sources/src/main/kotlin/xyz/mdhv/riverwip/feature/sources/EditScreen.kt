@@ -471,7 +471,7 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
         else -> {}
     }
     Text(
-        "Paste a feed or a site url - The app finds the feed; fetches only what you add.",
+        "Paste a feed or a site URL - The app finds the feed; fetches only what you add.",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = Tokens.Spacing.xs),

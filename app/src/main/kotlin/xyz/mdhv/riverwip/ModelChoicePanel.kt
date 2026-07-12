@@ -106,7 +106,7 @@ private fun OnDeviceStanza() {
 @Composable
 private fun DownloadStanza(ui: ModelDownloadUi) {
     Text(
-        "Real, open-source models this app's own catalogue has verified download — not run yet (see On-device), but on disk and ready.",
+        "Real, open-source models verified by this app's own catalogue. Download them here — they won't run automatically (see On-device), but once downloaded they're on disk and ready.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
