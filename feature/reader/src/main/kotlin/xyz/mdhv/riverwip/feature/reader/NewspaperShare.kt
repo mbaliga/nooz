@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
+import android.text.TextUtils
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import java.io.File
@@ -63,6 +64,21 @@ object NewspaperShare {
     private val INK = Color.rgb(0x1A, 0x1A, 0x1A)
     private val MUTED = Color.rgb(0x6B, 0x66, 0x5E)
 
+    // The vertical rhythm, as literal gaps between one draw and the next. Used
+    // to both size the bitmap and lay out the canvas from the *same* numbers,
+    // so the two can never drift apart (a prior version sized the bitmap from
+    // a rough separate estimate, and byline height wasn't part of it at all —
+    // fine for a short byline, cramped or clipped against the footer for a
+    // long one).
+    private const val MAST_TO_BASELINE = 116f
+    private const val BASELINE_TO_RULE1 = 40f
+    private const val RULE1_TO_RULE2 = 11f
+    private const val RULE2_TO_HEADLINE = 42f
+    private const val HEADLINE_TO_RULE3 = 34f
+    private const val RULE3_TO_BYLINE = 52f
+    private const val BYLINE_LINE_HEIGHT = 42f
+    private const val BYLINE_TO_FOOTER = 40f
+
     private fun render(context: Context, title: String, source: String?, author: String?): Bitmap {
         val serif = ResourcesCompat.getFont(context, DesignR.font.hyle_print_medium) ?: Typeface.SERIF
         val serifHeavy = ResourcesCompat.getFont(context, DesignR.font.hyle_print_heavy)
@@ -81,11 +97,29 @@ object NewspaperShare {
             .setIncludePad(false)
             .build()
 
-        // Fixed vertical budget for masthead, rules, byline, and footer.
-        val mastheadBlock = 200f
-        val bylineBlock = 120f
-        val footerBlock = 96f
-        val height = (MARGIN + mastheadBlock + headline.height + bylineBlock + footerBlock + MARGIN).toInt()
+        // Byline: source then author, stacked (never side-by-side — a live-blog
+        // byline like "Jonathan Howcroft (now) and Will Magee (later)" ran into
+        // the source when both were drawn on one line, left/right-aligned with
+        // no width bound). Each line is independently ellipsized as a backstop.
+        val bylinePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = MUTED; typeface = sans; textSize = 30f; letterSpacing = 0.06f
+        }
+        val bylineLines = listOfNotNull(source, author)
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .map { TextUtils.ellipsize(it.uppercase(Locale.getDefault()), bylinePaint, contentW.toFloat(), TextUtils.TruncateAt.END) }
+
+        val footer = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = MUTED; typeface = sans; textSize = 28f; textAlign = Paint.Align.CENTER; letterSpacing = 0.08f
+        }
+        val footerMetrics = footer.fontMetrics
+
+        val height = (
+            MARGIN + MAST_TO_BASELINE + BASELINE_TO_RULE1 + RULE1_TO_RULE2 + RULE2_TO_HEADLINE +
+                headline.height + HEADLINE_TO_RULE3 + RULE3_TO_BYLINE +
+                bylineLines.size * BYLINE_LINE_HEIGHT + BYLINE_TO_FOOTER +
+                (footerMetrics.descent - footerMetrics.ascent) + MARGIN
+            ).toInt()
 
         val bmp = Bitmap.createBitmap(W, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
@@ -100,35 +134,27 @@ object NewspaperShare {
         val mast = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = INK; typeface = serifHeavy; textSize = 128f; textAlign = Paint.Align.CENTER
         }
-        y += 116f
+        y += MAST_TO_BASELINE
         canvas.drawText("Nooz", W / 2f, y, mast)
-        y += 40f
-        canvas.drawLine(MARGIN, y, W - MARGIN, y, rule); y += 11f
-        canvas.drawLine(MARGIN, y, W - MARGIN, y, hairline); y += 42f
+        y += BASELINE_TO_RULE1
+        canvas.drawLine(MARGIN, y, W - MARGIN, y, rule); y += RULE1_TO_RULE2
+        canvas.drawLine(MARGIN, y, W - MARGIN, y, hairline); y += RULE2_TO_HEADLINE
 
         // Headline.
         canvas.save(); canvas.translate(MARGIN, y); headline.draw(canvas); canvas.restore()
-        y += headline.height + 34f
-        canvas.drawLine(MARGIN, y, W - MARGIN, y, hairline); y += 52f
+        y += headline.height + HEADLINE_TO_RULE3
+        canvas.drawLine(MARGIN, y, W - MARGIN, y, hairline); y += RULE3_TO_BYLINE
 
-        // Byline: source left, author right (the Paper mock's layout).
-        val bylineLeft = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = MUTED; typeface = sans; textSize = 32f; letterSpacing = 0.1f
+        // Byline: source, then author, stacked — see bylineLines above.
+        for (line in bylineLines) {
+            canvas.drawText(line, 0, line.length, MARGIN, y, bylinePaint)
+            y += BYLINE_LINE_HEIGHT
         }
-        val bylineRight = Paint(bylineLeft).apply { textAlign = Paint.Align.RIGHT }
-        source?.trim()?.takeIf { it.isNotBlank() }?.let {
-            canvas.drawText(it.uppercase(Locale.getDefault()), MARGIN, y, bylineLeft)
-        }
-        author?.trim()?.takeIf { it.isNotBlank() }?.let {
-            canvas.drawText(it.uppercase(Locale.getDefault()), W - MARGIN, y, bylineRight)
-        }
+        y += BYLINE_TO_FOOTER
 
-        // Footer: date + provenance, centred.
-        val footer = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = MUTED; typeface = sans; textSize = 28f; textAlign = Paint.Align.CENTER; letterSpacing = 0.08f
-        }
+        // Footer: date + provenance, centred, immediately below whatever came before.
         val date = LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault()))
-        canvas.drawText("$date  ·  clipped with Nooz", W / 2f, height - MARGIN, footer)
+        canvas.drawText("$date  ·  clipped with Nooz", W / 2f, y - footerMetrics.ascent, footer)
 
         return bmp
     }

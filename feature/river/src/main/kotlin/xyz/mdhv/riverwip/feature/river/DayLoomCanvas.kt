@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
@@ -59,6 +60,7 @@ fun DayLoomCanvas(
 
     val description = describeLoom(loom, enabledSourceCount)
     val curtainColor = MaterialTheme.colorScheme.background
+    val ghostColor = MaterialTheme.colorScheme.onSurfaceVariant
     val w = DayLoomLayout.W.toFloat()
     val h = DayLoomLayout.H.toFloat()
 
@@ -94,6 +96,13 @@ fun DayLoomCanvas(
                     tubePath(band.stations, sx, sy),
                     color = band.topic.toComposeColor().copy(alpha = if (faded) 0.22f else 1f),
                 )
+            }
+            // Nothing read yet today: the bottom half would otherwise be blank
+            // (every band pinches to a point at the waist and stops — brief §1's
+            // honesty, but reading as broken rather than "zero"). A dotted ghost
+            // funnel stands in for the fan reading would draw (owner's #2).
+            if (loom.totalRead == 0) {
+                drawGhostFan(sx, sy, ghostColor)
             }
             // Curtain: a surface-coloured sheet slides down, revealing the loom
             // from the top (the reference's sweep).
@@ -196,6 +205,36 @@ private fun tubePath(stations: List<DayLoomLayout.Station>, sx: Float, sy: Float
     }
     path.close()
     return path
+}
+
+/**
+ * The empty-consumption placeholder (owner's #2): a dot-matrix funnel from the
+ * waist to the bottom edge, widening the way a real read-fan would, at low
+ * alpha so it reads as absence rather than data. Echoes the globe's own
+ * dotted-landmass idiom elsewhere in the app — "nothing here yet" is drawn the
+ * same way twice, not invented fresh per screen.
+ */
+private fun DrawScope.drawGhostFan(sx: Float, sy: Float, color: Color) {
+    val waistY = (DayLoomLayout.WAIST_Y * sy).toFloat()
+    val bottomY = (DayLoomLayout.H * sy).toFloat()
+    val centerX = (DayLoomLayout.W / 2 * sx).toFloat()
+    val halfWidthAtBottom = (70.0 * sx).toFloat()
+    val dotRadius = (1.6 * sx).toFloat().coerceAtLeast(1f)
+    val stepX = (10.0 * sx).toFloat().coerceAtLeast(6f)
+    val stepY = (14.0 * sy).toFloat().coerceAtLeast(8f)
+    val dotColor = color.copy(alpha = 0.35f)
+
+    var y = waistY + stepY
+    while (y < bottomY) {
+        val t = ((y - waistY) / (bottomY - waistY)).coerceIn(0f, 1f)
+        val half = halfWidthAtBottom * t
+        var x = centerX - half
+        while (x <= centerX + half) {
+            drawCircle(color = dotColor, radius = dotRadius, center = Offset(x, y))
+            x += stepX
+        }
+        y += stepY
+    }
 }
 
 /**

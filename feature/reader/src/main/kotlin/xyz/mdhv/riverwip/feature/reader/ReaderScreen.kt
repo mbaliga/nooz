@@ -52,6 +52,28 @@ fun ReaderScreen(
     }
 
     val selected = vm.selectedItem
+
+    // Declared unconditionally (never behind the `selected == null` branch
+    // below) so the slide rig survives every round-trip through the article
+    // list, including exits this composable's own gestures don't know about —
+    // the system back button closes the item straight through the ViewModel
+    // (owner's #1: "the flow still breaks sometimes" — reopening a just-closed
+    // article showed nothing, because the rig was left wherever it last was).
+    val scope = rememberCoroutineScope()
+    var containerWidth by remember { mutableIntStateOf(0) }
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    var enteredId by remember { mutableStateOf<String?>(null) }
+
+    // The one place the rig resets: whenever there's no open article, at rest,
+    // regardless of which of the several exits (drag-settle, the back button,
+    // system back) caused it.
+    LaunchedEffect(selected) {
+        if (selected == null) {
+            offsetX = 0f
+            enteredId = null
+        }
+    }
+
     if (selected == null) {
         ArticleListScreen(
             vm = vm,
@@ -64,14 +86,10 @@ fun ReaderScreen(
     }
 
     val savedIds by vm.savedIds.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    var containerWidth by remember { mutableIntStateOf(0) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
 
     // Slide the detail in from the right over the stationary stand (owner's
     // reference: opening an article slides it in; the list stays still behind).
     // Runs once per newly-opened item, as soon as the width is known.
-    var enteredId by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(selected.id, containerWidth) {
         if (containerWidth > 0 && enteredId != selected.id) {
             offsetX = containerWidth.toFloat()
@@ -81,6 +99,8 @@ fun ReaderScreen(
     }
 
     // Settle after a drag: commit past ~a third of the width, else snap back.
+    // Both commit directions leave the reader (right to the Stand, left to
+    // Settings) — the article doesn't stay "open" either way.
     fun settle() {
         val w = containerWidth.toFloat()
         val threshold = w * 0.32f
@@ -94,7 +114,10 @@ fun ReaderScreen(
             animate(offsetX, target, animationSpec = tween(220)) { v, _ -> offsetX = v }
             when (target) {
                 w -> vm.closeItem()
-                -w -> onOpenSettings()
+                -w -> {
+                    vm.closeItem()
+                    onOpenSettings()
+                }
             }
         }
     }
