@@ -41,8 +41,12 @@ class LoomViewModel(
     val filter: StateFlow<ReaderFilter> = settingsRepository.observeFilter()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), ReaderFilter())
 
-    /** Selected day start (millis). Null = the latest day with data (today, once anything flowed). */
+    /** Selected day start (millis), or the range start when [selectedRangeEnd] is set. Null = the latest day with data (today, once anything flowed). */
     var selectedDayStart: Long? by mutableStateOf(null)
+        private set
+
+    /** Set only when the picker chose a range (owner's #4); the loom then weaves the whole range's totals, summed. */
+    var selectedRangeEnd: Long? by mutableStateOf(null)
         private set
 
     var showDatePicker: Boolean by mutableStateOf(false)
@@ -58,6 +62,18 @@ class LoomViewModel(
 
     fun selectDay(dayStartMillis: Long) {
         selectedDayStart = WeekBucketing.periodStart(dayStartMillis, periodDays = 1)
+        selectedRangeEnd = null
+        showDatePicker = false
+    }
+
+    /** A picked range (owner's #4: "the date picker in loom needs to also allow a range selection"). Order-independent; a same-day "range" just collapses to a single-day selection. */
+    fun selectRange(startMillis: Long, endMillis: Long) {
+        val a = WeekBucketing.periodStart(startMillis, periodDays = 1)
+        val b = WeekBucketing.periodStart(endMillis, periodDays = 1)
+        val start = minOf(a, b)
+        val end = maxOf(a, b)
+        selectedDayStart = start
+        selectedRangeEnd = end.takeIf { it != start }
         showDatePicker = false
     }
 
@@ -68,18 +84,19 @@ class LoomViewModel(
      */
     fun stepDay(deltaDays: Int, days: List<WeeklyAggregate>) {
         val today = WeekBucketing.periodStart(System.currentTimeMillis(), periodDays = 1)
-        val current = selectedDayStart ?: days.lastOrNull()?.weekStart ?: today
+        val current = selectedRangeEnd ?: selectedDayStart ?: days.lastOrNull()?.weekStart ?: today
         val stepped = WeekBucketing.periodStart(
             current + deltaDays * MILLIS_PER_DAY,
             periodDays = 1,
         )
         selectedDayStart = stepped.coerceAtMost(today)
+        selectedRangeEnd = null
     }
 
     /** Whether [stepDay] can still move forward from the currently-shown day. */
     fun canStepForward(days: List<WeeklyAggregate>): Boolean {
         val today = WeekBucketing.periodStart(System.currentTimeMillis(), periodDays = 1)
-        val current = selectedDayStart ?: days.lastOrNull()?.weekStart ?: today
+        val current = selectedRangeEnd ?: selectedDayStart ?: days.lastOrNull()?.weekStart ?: today
         return current < today
     }
 
@@ -87,11 +104,29 @@ class LoomViewModel(
         showDatePicker = visible
     }
 
-    /** The aggregate to weave: the selected day, or the latest day with data, or an empty day. */
+    /**
+     * The aggregate to weave: the selected day, the *summed* totals across a
+     * selected range, the latest day with data, or an empty day. Summing is
+     * plain addition over each day's real per-topic counts — never a second
+     * invented number for the range as a whole.
+     */
     fun aggregateFor(days: List<WeeklyAggregate>): WeeklyAggregate? {
-        val selected = selectedDayStart ?: return days.lastOrNull()
-        return days.firstOrNull { it.weekStart == selected }
-            ?: WeeklyAggregate(selected, emptyMap(), emptyMap(), emptyMap())
+        val start = selectedDayStart ?: return days.lastOrNull()
+        val end = selectedRangeEnd
+        if (end == null) {
+            return days.firstOrNull { it.weekStart == start }
+                ?: WeeklyAggregate(start, emptyMap(), emptyMap(), emptyMap())
+        }
+        val inRange = days.filter { it.weekStart in start..end }
+        val stream = HashMap<String, Int>()
+        val read = HashMap<String, Int>()
+        val sources = HashMap<String, Int>()
+        for (day in inRange) {
+            day.streamCountsByTopic.forEach { (k, v) -> stream.merge(k, v, Int::plus) }
+            day.readCountsByTopic.forEach { (k, v) -> read.merge(k, v, Int::plus) }
+            day.sourceCounts.forEach { (k, v) -> sources.merge(k, v, Int::plus) }
+        }
+        return WeeklyAggregate(start, stream, read, sources)
     }
 
     companion object {

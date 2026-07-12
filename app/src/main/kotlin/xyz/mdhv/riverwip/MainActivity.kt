@@ -188,6 +188,11 @@ fun RiverApp() {
                         loomVm.reload()
                         screen = Screen.LOOM
                     },
+                    onOpenDatePicker = {
+                        loomVm.reload()
+                        loomVm.setDatePickerVisible(true)
+                        screen = Screen.LOOM
+                    },
                     onOpenClippings = { screen = Screen.CLIPPINGS },
                     onBrightnessDelta = if (settings.twoFingerBrightness) adjustBrightness else { _ -> },
                     onThemeFlick = if (settings.twoFingerThemeFlick) {

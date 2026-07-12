@@ -44,6 +44,7 @@ fun ReaderScreen(
     onOpenEdit: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenLoom: () -> Unit,
+    onOpenDatePicker: () -> Unit,
     onOpenClippings: () -> Unit,
     onBrightnessDelta: (Float) -> Unit,
     onThemeFlick: () -> Unit,
@@ -87,6 +88,7 @@ fun ReaderScreen(
             onOpenItem = { vm.openItem(it) },
             onOpenEdit = onOpenEdit,
             onOpenLoom = onOpenLoom,
+            onOpenDatePicker = onOpenDatePicker,
             onOpenClippings = onOpenClippings,
         )
         return
@@ -158,6 +160,7 @@ fun ReaderScreen(
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
                 onOpenLoom = onOpenLoom,
+                onOpenDatePicker = onOpenDatePicker,
                 onOpenClippings = onOpenClippings,
             )
         }

@@ -85,6 +85,7 @@ fun ArticleListScreen(
     onOpenItem: (Item) -> Unit,
     onOpenEdit: () -> Unit,
     onOpenLoom: () -> Unit,
+    onOpenDatePicker: () -> Unit,
     onOpenClippings: () -> Unit,
 ) {
     val items by vm.items.collectAsStateWithLifecycle()
@@ -136,6 +137,11 @@ fun ArticleListScreen(
                 STAND_DATE.format(LocalDate.now(ZoneId.systemDefault())),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .clickable(onClickLabel = "Open the date picker") { onOpenDatePicker() }
+                    .semantics { role = Role.Button }
+                    .minimumInteractiveComponentSize()
+                    .padding(horizontal = Tokens.Spacing.xs),
             )
         }
 

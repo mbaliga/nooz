@@ -68,7 +68,9 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
         LoomDatePicker(
             days = days,
             selectedDayStart = vm.selectedDayStart ?: days.lastOrNull()?.weekStart,
+            selectedRangeEnd = vm.selectedRangeEnd,
             onPick = { vm.selectDay(it) },
+            onPickRange = { start, end -> vm.selectRange(start, end) },
         )
         return
     }
@@ -164,8 +166,18 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
             IconButton(onClick = { vm.stepDay(-1, days) }) {
                 Icon(Icons.Filled.ChevronLeft, contentDescription = "Previous day")
             }
+            val rangeEnd = vm.selectedRangeEnd
+            val dateLabel = aggregate?.let { agg ->
+                val startLabel = DAY_FORMAT.format(Instant.ofEpochMilli(agg.weekStart).atZone(ZoneId.systemDefault()))
+                if (rangeEnd == null) {
+                    startLabel
+                } else {
+                    val endLabel = DAY_FORMAT.format(Instant.ofEpochMilli(rangeEnd).atZone(ZoneId.systemDefault()))
+                    "$startLabel – $endLabel"
+                }
+            } ?: "—"
             Text(
-                aggregate?.let { DAY_FORMAT.format(Instant.ofEpochMilli(it.weekStart).atZone(ZoneId.systemDefault())) } ?: "—",
+                dateLabel,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
