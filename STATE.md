@@ -685,6 +685,45 @@ respect as the CI-caught log above.
   url" → "site URL"; a broken sentence in the model download stanza's
   description.
 
+- **D20 — Owner feedback round: density slider, clippings board, Nooz Flash,
+  date range, region-band picker (2026-07-12).** (a) **View density**: new
+  `ListDensity` (Detail/List/Small tiles/Big tiles), a shared `DensitySlider`
+  on the Stand and Clippings, hidden in immersive mode where a pinch gesture
+  steps it instead (`pinchDensityDelta`, `densityPinchModifier`). (b)
+  **Clippings board**: Detail is now a torn-paper board — each `Clipping`
+  gets a jagged top/bottom tear (`GenericShape`) and a small rotation, both
+  seeded from its own id so they're stable, not re-rolled every recomposition
+  — on the app's own paper tone regardless of the active theme, since a
+  clipping is paper first; List collapses to one compact line. (c) **Reader
+  peek**: dragging an article back towards the Stand now rests at a partial
+  position instead of going fully off-screen; a further drag or the explicit
+  back control still closes it. (d) **Nooz Flash**: a new `digest()`
+  capability alongside `rewrite()` on `InferenceProvider` — Local/Urbana/
+  MlKit stay honestly stubbed (no real runtime exists for any of them yet),
+  Byok gets a real implementation sharing its HTTP call with `rewrite()`.
+  `AppContainer.flashRouter` is on-device-first with Byok as the *only*
+  fallback, deliberately excluding Urbana — narrower than the main lens's
+  chain. Compresses today's flowed headlines (matching the standing filter)
+  to 10 words or fewer; "go deeper" reveals the real headline list rather
+  than a second, ungrounded generation. (e) **Date picker**: the Stand's date
+  now opens the loom's full picker (previously inert text); today is the
+  filled circle, the standing selection is outlined — the owner's own
+  correction, the two were swapped; a Range chip adds a two-tap range flow,
+  and the loom weaves the range's *summed* totals (plain addition over each
+  real day's counts). (f) **Region-band picker**: `Region.forBand` names and
+  blends every sector a widened pinch band actually spans, by sampling the
+  already-correct `Region.forLongitude` rather than re-deriving wraparound
+  math — before, only the exact-centre sector or "Global" ever showed,
+  nothing in between. (g) **Splash collision**: the wordmark now sits on a
+  page-coloured masking background so it doesn't visibly collide with
+  whatever greeked backdrop text lands behind it. (h) **Section headings**:
+  a shared `SectionHeading` (caps + letter-spaced, the app's own SETTINGS/
+  EDIT chrome voice) replaces plain muted-body-text headings across Settings,
+  Edit, Onboarding, and the loom's month grid. (i) Dictionary: a lone
+  unnumbered sense no longer hangs-indents its wrapped lines past the first
+  line — that indent only makes sense relative to a number the sense doesn't
+  have.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
