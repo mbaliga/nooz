@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.NoozWordmark
+import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.feature.river.CrossSectionPanel
 import xyz.mdhv.riverwip.model.GlobeModel
