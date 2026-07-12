@@ -97,6 +97,13 @@ data class AppSettings(
     val twoFingerThemeFlick: Boolean = true,
     /** First-run onboarding has been completed or skipped (owner's #19). */
     val onboarded: Boolean = false,
+    /**
+     * Nooz Flash (owner's #6): today's flowed headlines compressed to a line of
+     * 10 words or fewer, with a "go deeper" expansion. Off by default, like the
+     * rest of the reader-intelligence tools — it's a standing generation over
+     * everything that flowed, not a one-off the reader asked for.
+     */
+    val noozFlashEnabled: Boolean = false,
 )
 
 /**

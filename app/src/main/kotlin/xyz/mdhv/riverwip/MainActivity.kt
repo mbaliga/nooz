@@ -79,6 +79,7 @@ fun RiverApp() {
             weeklyAggregateRepository = container.weeklyAggregateRepository,
             clippingRepository = container.clippingRepository,
             settingsRepository = container.settingsRepository,
+            flashRouter = container.flashRouter,
         ),
     )
     val lensVm: LensViewModel = viewModel(
@@ -179,6 +180,7 @@ fun RiverApp() {
                     showReadingTime = settings.showReadingTime,
                     highlightLoadedLanguage = settings.highlightLoadedLanguage,
                     immersiveReader = settings.immersiveReader,
+                    noozFlashEnabled = settings.noozFlashEnabled,
                     onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                     onOpenEdit = { screen = Screen.EDIT },
                     onOpenSettings = { screen = Screen.SETTINGS },

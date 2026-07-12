@@ -1,6 +1,8 @@
 package xyz.mdhv.riverwip.inference.local
 
 import java.io.File
+import xyz.mdhv.riverwip.inference.DigestRequest
+import xyz.mdhv.riverwip.inference.DigestResult
 import xyz.mdhv.riverwip.inference.InferenceProvider
 import xyz.mdhv.riverwip.inference.RewriteRequest
 import xyz.mdhv.riverwip.inference.RewriteResult
@@ -26,4 +28,7 @@ class LocalLlamaProvider(private val modelDir: File) : InferenceProvider {
 
     override suspend fun rewrite(request: RewriteRequest): RewriteResult =
         RewriteResult.Failed("on-device model runtime is not yet wired in this build (no llama.cpp binding integrated)")
+
+    override suspend fun digest(request: DigestRequest): DigestResult =
+        DigestResult.Failed("on-device model runtime is not yet wired in this build (no llama.cpp binding integrated)")
 }

@@ -9,13 +9,20 @@ private class FakeProvider(
     override val id: String,
     private val available: Boolean,
     private val result: RewriteResult = RewriteResult.Failed("not configured"),
+    private val digestResult: DigestResult = DigestResult.Failed("not configured"),
 ) : InferenceProvider {
     var rewriteCalls = 0
+        private set
+    var digestCalls = 0
         private set
     override suspend fun isAvailable(): Boolean = available
     override suspend fun rewrite(request: RewriteRequest): RewriteResult {
         rewriteCalls++
         return result
+    }
+    override suspend fun digest(request: DigestRequest): DigestResult {
+        digestCalls++
+        return digestResult
     }
 }
 
@@ -68,5 +75,31 @@ class InferenceRouterTest {
     @Test fun providerOrderReflectsConfiguredSequence() {
         val router = InferenceRouter(listOf(FakeProvider("urbana", true), FakeProvider("local-llama", true)))
         assertEquals(listOf("urbana", "local-llama"), router.providerOrder)
+    }
+
+    @Test fun digestTriesProvidersInOrderAndUsesFirstAvailable() = runTest {
+        val digestReq = DigestRequest(listOf("Storm hits coast", "Markets steady", "Vote passes"))
+        val local = FakeProvider("local-llama", available = false)
+        val byok = FakeProvider(
+            "byok",
+            available = true,
+            digestResult = DigestResult.Success("Storm strikes as vote passes, markets hold.", Provenance.CLOUD),
+        )
+        val router = InferenceRouter(listOf(local, byok))
+
+        val result = router.digest(digestReq)
+        assertTrue(result is DigestResult.Success)
+        assertEquals("Storm strikes as vote passes, markets hold.", (result as DigestResult.Success).flash)
+        assertEquals(0, local.digestCalls)
+        assertEquals(1, byok.digestCalls)
+    }
+
+    @Test fun digestAllUnavailableReportsWhichWereTried() = runTest {
+        val router = InferenceRouter(listOf(FakeProvider("local-llama", false), FakeProvider("byok", false)))
+        val result = router.digest(DigestRequest(listOf("Headline")))
+        assertTrue(result is DigestResult.Failed)
+        val reason = (result as DigestResult.Failed).reason
+        assertTrue(reason.contains("local-llama"))
+        assertTrue(reason.contains("byok"))
     }
 }

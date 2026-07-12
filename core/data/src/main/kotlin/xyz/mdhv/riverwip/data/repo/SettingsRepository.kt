@@ -36,6 +36,7 @@ class SettingsRepository(private val context: Context) {
         val ONBOARDED = booleanPreferencesKey("onboarded")
         val REGION = stringPreferencesKey("filter_region")
         val TOPICS = stringSetPreferencesKey("filter_topics")
+        val NOOZ_FLASH = booleanPreferencesKey("nooz_flash_enabled")
     }
 
     fun observeSettings(): Flow<AppSettings> = context.settingsDataStore.data.map { prefs ->
@@ -49,6 +50,7 @@ class SettingsRepository(private val context: Context) {
             twoFingerBrightness = prefs[Keys.GESTURE_BRIGHTNESS] ?: true,
             twoFingerThemeFlick = prefs[Keys.GESTURE_THEME_FLICK] ?: true,
             onboarded = prefs[Keys.ONBOARDED] ?: false,
+            noozFlashEnabled = prefs[Keys.NOOZ_FLASH] ?: false,
         )
     }
 
@@ -93,6 +95,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setOnboarded(done: Boolean) {
         context.settingsDataStore.edit { it[Keys.ONBOARDED] = done }
+    }
+
+    suspend fun setNoozFlashEnabled(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.NOOZ_FLASH] = enabled }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {

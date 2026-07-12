@@ -39,6 +39,7 @@ fun ReaderScreen(
     showReadingTime: Boolean,
     highlightLoadedLanguage: Boolean,
     immersiveReader: Boolean,
+    noozFlashEnabled: Boolean,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenSettings: () -> Unit,
@@ -82,6 +83,7 @@ fun ReaderScreen(
     if (selected == null) {
         ArticleListScreen(
             vm = vm,
+            noozFlashEnabled = noozFlashEnabled,
             onOpenItem = { vm.openItem(it) },
             onOpenEdit = onOpenEdit,
             onOpenLoom = onOpenLoom,
@@ -152,6 +154,7 @@ fun ReaderScreen(
         if (offsetX > 0f) {
             ArticleListScreen(
                 vm = vm,
+                noozFlashEnabled = noozFlashEnabled,
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
                 onOpenLoom = onOpenLoom,

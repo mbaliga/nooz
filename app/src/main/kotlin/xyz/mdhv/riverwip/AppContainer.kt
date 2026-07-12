@@ -15,6 +15,7 @@ import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
+import xyz.mdhv.riverwip.inference.InferenceProvider
 import xyz.mdhv.riverwip.inference.InferenceRouter
 import xyz.mdhv.riverwip.inference.ProviderFactory
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
@@ -49,9 +50,24 @@ class AppContainer(appContext: Context) {
     val settingsRepository: SettingsRepository = data.settingsRepository
     val dataExporter: DataExporter = data.dataExporter
 
+    private val inferenceProviders: List<InferenceProvider> =
+        ProviderFactory.build(appContext, File(appContext.filesDir, "models"))
+
     /** Downloaded models live in persistent storage (never purged like a cache), never bundled in the APK. */
-    val inferenceRouter: InferenceRouter = InferenceRouter(
-        ProviderFactory.build(appContext, File(appContext.filesDir, "models")),
+    val inferenceRouter: InferenceRouter = InferenceRouter(inferenceProviders)
+
+    /**
+     * Nooz Flash (owner's #6: "on-device only, BYOK optional") — a narrower
+     * router over the same provider instances as [inferenceRouter], deliberately
+     * excluding Urbana/ML Kit: the flash digest never routes to a general cloud
+     * broker the way the main lens's rewrite can, only the device or a key the
+     * user explicitly typed in themselves.
+     */
+    val flashRouter: InferenceRouter = InferenceRouter(
+        listOfNotNull(
+            inferenceProviders.find { it.id == "local-llama" },
+            inferenceProviders.find { it.id == "byok" },
+        ),
     )
 
     /** The user's own OpenAI-compatible endpoint config (BYOK, #18). Shared with the provider by prefs name. */

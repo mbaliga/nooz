@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import xyz.mdhv.riverwip.inference.DigestRequest
+import xyz.mdhv.riverwip.inference.DigestResult
 import xyz.mdhv.riverwip.inference.InferenceProvider
 import xyz.mdhv.riverwip.inference.RewriteRequest
 import xyz.mdhv.riverwip.inference.RewriteResult
@@ -49,6 +51,21 @@ class UrbanaProvider(private val context: Context) : InferenceProvider {
             RewriteResult.Failed("Urbana daemon not discoverable")
         } else {
             RewriteResult.Failed("Urbana routing is not yet wired to a live daemon in this build")
+        }
+    }
+
+    override suspend fun digest(request: DigestRequest): DigestResult = withContext(Dispatchers.IO) {
+        val discovered = try {
+            context.contentResolver.query(discoveryUri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst() && cursor.columnCount > 0) cursor.getString(0) else null
+            }
+        } catch (_: Exception) {
+            null
+        }
+        if (discovered == null) {
+            DigestResult.Failed("Urbana daemon not discoverable")
+        } else {
+            DigestResult.Failed("Urbana routing is not yet wired to a live daemon in this build")
         }
     }
 

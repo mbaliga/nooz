@@ -21,6 +21,10 @@ import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
+import xyz.mdhv.riverwip.inference.DigestRequest
+import xyz.mdhv.riverwip.inference.DigestResult
+import xyz.mdhv.riverwip.inference.InferenceRouter
+import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.DwellBucket
@@ -36,6 +40,16 @@ sealed interface ArticleUiState {
     data class Loaded(val paragraphs: List<String>, val fromCache: Boolean) : ArticleUiState
     /** Extraction failed or yielded nothing — fall back to the feed's own summary, if any. */
     data class Fallback(val summary: String?) : ArticleUiState
+}
+
+/** Nooz Flash's state (owner's #6) — never fetched automatically; the reader asks for it. */
+sealed interface FlashUiState {
+    data object Idle : FlashUiState
+    data object Loading : FlashUiState
+    /** [headlines] is what was actually compressed — "go deeper" is just showing this list, not a second generation. */
+    data class Ready(val flash: String, val provenance: Provenance, val headlines: List<String>) : FlashUiState
+    /** The provider ran but declined or errored — never silent (brief §3). */
+    data class Unavailable(val reason: String) : FlashUiState
 }
 
 /** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
@@ -56,6 +70,7 @@ class ReaderViewModel(
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     private val clippingRepository: ClippingRepository,
     settingsRepository: SettingsRepository,
+    private val flashRouter: InferenceRouter,
     private val clock: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
 
@@ -138,6 +153,35 @@ class ReaderViewModel(
         }
         DayLoomLayout.dayMix(counts)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+
+    private val _flashState = MutableStateFlow<FlashUiState>(FlashUiState.Idle)
+
+    /**
+     * Nooz Flash (owner's #6): today's flowed headlines — matching the standing
+     * filter, same denominator as [todayMix] — compressed to 10 words or fewer.
+     * Headlines only, never full article text, so a flash can't surface a claim
+     * its own headline didn't already make. [flashRouter] tries the device
+     * first and only falls back to a configured key — it never reaches Urbana
+     * or a general cloud broker the way the main lens's rewrite can.
+     */
+    val flashState: StateFlow<FlashUiState> = _flashState
+
+    fun requestFlash() {
+        if (_flashState.value is FlashUiState.Loading) return
+        viewModelScope.launch {
+            _flashState.value = FlashUiState.Loading
+            val dayStart = WeekBucketing.periodStart(clock(), periodDays = 1)
+            val headlines = items.value.filter { it.publishedAt >= dayStart }.map { it.title }
+            if (headlines.isEmpty()) {
+                _flashState.value = FlashUiState.Unavailable("Nothing flowed yet today.")
+                return@launch
+            }
+            _flashState.value = when (val result = flashRouter.digest(DigestRequest(headlines))) {
+                is DigestResult.Success -> FlashUiState.Ready(result.flash, result.provenance, headlines)
+                is DigestResult.Failed -> FlashUiState.Unavailable(result.reason)
+            }
+        }
+    }
 
     private val _isRefreshing = MutableStateFlow(false)
     /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */
@@ -234,6 +278,7 @@ class ReaderViewModel(
         private val weeklyAggregateRepository: WeeklyAggregateRepository,
         private val clippingRepository: ClippingRepository,
         private val settingsRepository: SettingsRepository,
+        private val flashRouter: InferenceRouter,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -245,6 +290,7 @@ class ReaderViewModel(
                 weeklyAggregateRepository,
                 clippingRepository,
                 settingsRepository,
+                flashRouter,
             ) as T
     }
 }

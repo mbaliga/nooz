@@ -182,6 +182,7 @@ class SettingsViewModel(
     fun setTwoFingerBrightness(on: Boolean) = viewModelScope.launch { repo.setTwoFingerBrightness(on) }
     fun setTwoFingerThemeFlick(on: Boolean) = viewModelScope.launch { repo.setTwoFingerThemeFlick(on) }
     fun completeOnboarding() = viewModelScope.launch { repo.setOnboarded(true) }
+    fun setNoozFlashEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozFlashEnabled(on) }
 
     // Dictionary lens: one-click download of a chosen dictionary (owner's spec).
     val dictionaryOptions: List<DictionaryOption> = dictionaryRepo.options
@@ -436,7 +437,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            IntelligenceSection(vm)
+            IntelligenceSection(settings, vm)
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             GesturesSection(settings, vm)
@@ -509,7 +510,7 @@ private fun CrashSection() {
  * stated plainly rather than dressed up.
  */
 @Composable
-private fun IntelligenceSection(vm: SettingsViewModel) {
+private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
     val config = vm.byokConfig
     var expanded by remember { mutableStateOf(config.isComplete) }
     var modelPath by remember(config.isComplete) {
@@ -536,6 +537,31 @@ private fun IntelligenceSection(vm: SettingsViewModel) {
             contentDescription = if (expanded) "Collapse intelligence" else "Expand intelligence",
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(
+                value = settings.noozFlashEnabled,
+                onValueChange = { vm.setNoozFlashEnabled(it) },
+                role = Role.Switch,
+            )
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                "Nooz Flash",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                "Today's news compressed to 10 words or fewer, with a tap to go deeper. On-device first; a bring-your-own key is the only fallback — never a general cloud broker.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(checked = settings.noozFlashEnabled, onCheckedChange = null)
     }
     if (expanded) {
         val catalogue by vm.modelCatalogue.collectAsStateWithLifecycle()

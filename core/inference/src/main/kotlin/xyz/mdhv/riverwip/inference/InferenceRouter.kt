@@ -22,4 +22,13 @@ class InferenceRouter(private val order: List<InferenceProvider>) {
         }
         return RewriteResult.Failed("no available inference provider (tried: ${order.joinToString { it.id }})")
     }
+
+    suspend fun digest(request: DigestRequest): DigestResult {
+        if (order.isEmpty()) return DigestResult.Failed("no inference provider configured")
+        for (provider in order) {
+            if (!provider.isAvailable()) continue
+            return provider.digest(request)
+        }
+        return DigestResult.Failed("no available inference provider (tried: ${order.joinToString { it.id }})")
+    }
 }

@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:design"))
     implementation(project(":core:data"))
+    implementation(project(":core:inference"))
     implementation(project(":feature:lens"))
 
     // FileProvider + ResourcesCompat for the newspaper-share image.

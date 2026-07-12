@@ -81,6 +81,7 @@ private fun emptyBody(enabledCount: Int, isRefreshing: Boolean, last: RefreshRes
 @Composable
 fun ArticleListScreen(
     vm: ReaderViewModel,
+    noozFlashEnabled: Boolean,
     onOpenItem: (Item) -> Unit,
     onOpenEdit: () -> Unit,
     onOpenLoom: () -> Unit,
@@ -190,6 +191,10 @@ fun ArticleListScreen(
             TextButton(onClick = onOpenEdit) {
                 Text("EDIT", style = MaterialTheme.typography.labelLarge)
             }
+        }
+
+        if (noozFlashEnabled) {
+            FlashCard(vm = vm, modifier = Modifier.padding(horizontal = Tokens.Spacing.md))
         }
 
         if (items.isEmpty()) {
