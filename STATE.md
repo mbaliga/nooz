@@ -624,6 +624,23 @@ respect as the CI-caught log above.
   as inline stanzas under a chip selector rather than separate screens, to
   stay consistent with the rest of Settings' disclosure pattern.
 
+- **D16 — Aarso wired up as a real `ai-catalogue/` consumer (cross-repo, 2026-07-12).** Closes
+  the loop D13 opened: Aarso (`mbaliga/Android-IDE-core`) replaced its two hand-maintained
+  `full`/`play` model lists and its own `free_tiers.json` refresh pipeline with a fetch of this
+  repo's `ai-catalogue/models.json` + `ai-catalogue/free-tiers.json` (bundled fallback + a
+  consented "Update" action, same shape as its pre-existing free-tier screen; `policySafe` drives
+  its Play-vs-sideload split at runtime instead of two separate lists). Two implications for this
+  directory going forward: (1) its consumer count just went from "designed for" to "actually one" —
+  the `ai-catalogue-sentry` weekly probe and the free-tier staleness reminder are no longer
+  precautionary, a real app now reads what they keep honest; (2) the raw-URL branch Aarso points at
+  is this repo's *current* GitHub default branch, `claude/app-build-d1f9s6` (`main` stays an empty
+  placeholder here) — if that default branch is ever renamed or `main` becomes real, tell Aarso's
+  session so `SessionStore.DEFAULT_FT_URL`/`DEFAULT_MC_URL` get repointed; a silent rename would
+  otherwise 404 a consumer with no one noticing (that consumer's local bundled snapshot would keep
+  working, just going stale). No files changed in this repo for D16 — it's a downstream fact,
+  logged here so the next session in this repo knows the honesty-rules contract in
+  `ai-catalogue/README.md` now has a live reader.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
