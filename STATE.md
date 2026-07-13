@@ -724,6 +724,42 @@ respect as the CI-caught log above.
   line — that indent only makes sense relative to a number the sense doesn't
   have.
 
+- **D21 — Lift-and-part reader navigation + owner course-correction
+  (2026-07-13).** (a) **Lift-and-part**: replaced the reader's slide-and-peek
+  rig with the owner's spec'd physics — an edge-origin-only one-finger drag
+  (~24dp zone; interior swipes no longer hijack reading) drives one
+  `progress` float directly off the finger (no `animate()` mid-drag): Paper
+  scales toward 90%, rounds its corners, gains a shadow and translates, while
+  the room being entered — Stand left, Settings right — slides in under it
+  at the same rate. Only release triggers an eased `tween(300,
+  FastOutSlowInEasing)` settle, past a 45%-drag or fast-flick threshold, to
+  either a parked floating card (≥64dp always showing, tap/drag-interactive)
+  or back to full Paper. Settings is now an embedded room (a `settingsRoom`
+  slot lambda supplied by the app shell, since `feature:reader` can't depend
+  on wherever `SettingsScreen` lives) rather than a nav-switch destination,
+  so parking towards *either* side never destroys `ReaderDetailScreen`'s
+  `LazyListState` — the reader's exact scroll position survives every trip.
+  Hardware back now unwinds one step at a time (parked → full Paper → closed)
+  via a `BackHandler` owned by `ReaderScreen` itself; the app shell's own
+  `BackHandler` only ever leaves a non-Stand screen. No Aarso/FoneBru
+  precedent existed in this repo to reuse (checked; the only matches were an
+  unrelated sister-app name and an unrelated code comment). (b) **Course
+  correction, owner's direct feedback**: the density slider/pinch feature
+  from D20(a) is fully removed — `ListDensity` (model, DataStore key,
+  `DensitySlider`/`DensityViews`), and the Stand/Clippings back to their
+  single detail-list rendering, per "I like the previous view better with
+  the detailed list. That's default and it's fine." Clippings keeps its
+  D20(b) torn-paper board (that's the detail rendering itself, not the
+  removed control). (c) **Region & Topics tab wrap**: `TabLabel`'s
+  `IntrinsicSize.Min` sized the tab to its *longest word's* width, not its
+  one-line width — invisible for "Sources" (one word) but wrapped "Region &
+  Topics" across lines; fixed to `IntrinsicSize.Max` + `maxLines=1`. (d)
+  **Splash overflow**: the display block's greeked text is longer than its
+  `weight(1f)` box is ever tall on a real phone, and Compose doesn't clip a
+  Text's paint to its own layout bounds by default — the unfit lines were
+  drawing straight through into the fine-print block below. Fixed with an
+  explicit `.clipToBounds()`.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

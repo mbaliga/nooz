@@ -80,9 +80,16 @@ fun SplashScreen() {
                     fontSize = 56.sp,
                     lineHeight = 68.sp,
                     color = paperGrey,
+                    // The greeked string is longer than this weighted box is ever
+                    // tall on a real phone (see SplashScreen audit); Compose does
+                    // not clip a Text's paint to its own bounds by default, so
+                    // without this the unfit lines would draw straight through
+                    // the fine print below instead of stopping at this block's
+                    // edge like the top line's right-hand crop.
                     modifier = Modifier
                         .width(overWidth)
                         .weight(1f)
+                        .clipToBounds()
                         .offset(x = -bleed)
                         .padding(top = Tokens.Spacing.md),
                 )

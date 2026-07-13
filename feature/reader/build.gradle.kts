@@ -37,6 +37,8 @@ dependencies {
 
     // FileProvider + ResourcesCompat for the newspaper-share image.
     implementation(libs.androidx.core.ktx)
+    // BackHandler, for unwinding the lift-and-part parked state one step at a time.
+    implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)

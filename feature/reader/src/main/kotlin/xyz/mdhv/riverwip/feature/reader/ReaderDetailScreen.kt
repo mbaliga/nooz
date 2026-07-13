@@ -40,12 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
@@ -90,11 +90,19 @@ fun ReaderDetailScreen(
     saved: Boolean,
     immersive: Boolean,
     offsetX: Float,
+    // 0f = full Paper, 1f = fully parked — the one value driving scale, shadow,
+    // corner radius and (together with offsetX's sign) translation, read live
+    // during the drag and only eased by the caller's settle animation after
+    // release (owner's brief, 2026-07: never animate() the drag itself).
+    progress: Float,
+    parkedRoom: ReaderRoom?,
     onToggleLens: () -> Unit,
     onToggleClip: () -> Unit,
     onBack: () -> Unit,
+    onRoomDragStart: (ReaderRoom) -> Unit,
     onDrag: (Float) -> Unit,
-    onDragEnd: () -> Unit,
+    onDragEnd: (velocityX: Float) -> Unit,
+    onParkedTap: () -> Unit,
     onOpenLoom: () -> Unit,
     onBrightnessDelta: (Float) -> Unit,
     onThemeFlick: () -> Unit,
@@ -114,15 +122,23 @@ fun ReaderDetailScreen(
                 .fillMaxSize()
                 .graphicsLayer {
                     translationX = offsetX
-                    // A rigid sheet with a hard shadowed edge — crisp as it slides.
-                    shadowElevation = if (offsetX != 0f) 24.dp.toPx() else 0f
-                    shape = RectangleShape
-                    clip = false
+                    // Lift-and-part: Paper shrinks, gains a shadow and rounds
+                    // its corners together, all read directly off `progress`
+                    // — the same value the drag is driving, never a tween.
+                    val scale = 1f - progress * (1f - PAPER_MIN_SCALE)
+                    scaleX = scale
+                    scaleY = scale
+                    shadowElevation = progress * PAPER_MAX_SHADOW_DP.dp.toPx()
+                    shape = RoundedCornerShape((progress * PAPER_MAX_CORNER_DP).dp)
+                    clip = true
                 }
                 .background(background)
                 .readerGestures(
+                    parkedRoom = parkedRoom,
+                    onRoomDragStart = onRoomDragStart,
                     onDrag = onDrag,
                     onDragEnd = onDragEnd,
+                    onParkedTap = onParkedTap,
                     onBrightnessDelta = onBrightnessDelta,
                     onThemeFlick = onThemeFlick,
                 ),

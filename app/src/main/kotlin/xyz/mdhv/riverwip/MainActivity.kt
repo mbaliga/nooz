@@ -160,16 +160,16 @@ fun RiverApp() {
 
             var screen by rememberSaveable { mutableStateOf(Screen.STAND) }
 
-            // The native back gesture must navigate, never exit mid-flow. The
-            // immersive reader is a sub-state of the Stand (a selected item), so
-            // back has to close the article too — otherwise the system pops the
-            // single activity and the app quits (the reported bug).
-            val readingArticle = readerVm.selectedItem != null
-            BackHandler(enabled = screen != Screen.STAND || readingArticle) {
-                when {
-                    screen == Screen.LOOM && loomVm.showDatePicker -> loomVm.setDatePickerVisible(false)
-                    screen != Screen.STAND -> screen = Screen.STAND
-                    readingArticle -> readerVm.closeItem()
+            // The native back gesture must navigate, never exit mid-flow — the
+            // single activity would otherwise just pop and quit (the reported
+            // bug). Closing an open article on back is ReaderScreen's own job
+            // now (it unwinds parked → full Paper → closed one step at a time);
+            // this level only ever needs to leave a non-Stand screen.
+            BackHandler(enabled = screen != Screen.STAND) {
+                if (screen == Screen.LOOM && loomVm.showDatePicker) {
+                    loomVm.setDatePickerVisible(false)
+                } else {
+                    screen = Screen.STAND
                 }
             }
 
@@ -181,11 +181,9 @@ fun RiverApp() {
                     highlightLoadedLanguage = settings.highlightLoadedLanguage,
                     immersiveReader = settings.immersiveReader,
                     noozFlashEnabled = settings.noozFlashEnabled,
-                    listDensity = settings.listDensity,
-                    onDensityChange = { settingsVm.setListDensity(it) },
                     onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                     onOpenEdit = { screen = Screen.EDIT },
-                    onOpenSettings = { screen = Screen.SETTINGS },
+                    settingsRoom = { onBack -> SettingsScreen(vm = settingsVm, onBack = onBack) },
                     onOpenLoom = {
                         loomVm.reload()
                         screen = Screen.LOOM
@@ -217,9 +215,6 @@ fun RiverApp() {
                 Screen.LOOM -> LoomScreen(vm = loomVm, onClose = { screen = Screen.STAND })
                 Screen.CLIPPINGS -> ClippingsScreen(
                     vm = clippingsVm,
-                    immersive = settings.immersiveReader,
-                    density = settings.listDensity,
-                    onDensityChange = { settingsVm.setListDensity(it) },
                     onBack = { screen = Screen.STAND },
                 )
             }

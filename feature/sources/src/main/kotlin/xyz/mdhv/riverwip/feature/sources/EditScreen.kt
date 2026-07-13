@@ -156,16 +156,20 @@ fun EditScreen(
 @Composable
 private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
     Column(
-        // IntrinsicSize.Min sizes this Column to its widest child's own natural
-        // width — without it, the underline Box's fillMaxWidth() below expands
-        // to fill the *Row's* remaining space instead of just this label's
-        // width, since an unconstrained Column hands its loose incoming max
-        // width straight through. That silently ate the whole header row: the
-        // "Sources" tab's underline claimed all the space, leaving nothing for
-        // "Region & Topics" to lay out in (owner's #6 — the globe wasn't
-        // "missing", it had nowhere left to render).
+        // IntrinsicSize.Max sizes this Column to its widest child's own natural
+        // (single-line) width — without it, the underline Box's fillMaxWidth()
+        // below expands to fill the *Row's* remaining space instead of just
+        // this label's width, since an unconstrained Column hands its loose
+        // incoming max width straight through. That silently ate the whole
+        // header row: the "Sources" tab's underline claimed all the space,
+        // leaving nothing for "Region & Topics" to lay out in (owner's #6 —
+        // the globe wasn't "missing", it had nowhere left to render).
+        // Max, not Min: a Text's *minimum* intrinsic width is the width of its
+        // longest unbreakable word, not its one-line width — for "Sources"
+        // (one word) those happen to coincide, which is why the bug hid until
+        // a multi-word label ("Region & Topics") wrapped across three lines.
         modifier = Modifier
-            .width(IntrinsicSize.Min)
+            .width(IntrinsicSize.Max)
             .selectable(selected = active, role = Role.Tab, onClick = onClick)
             .padding(vertical = Tokens.Spacing.xs),
     ) {
@@ -174,6 +178,8 @@ private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
             style = MaterialTheme.typography.titleMedium,
             fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
             color = if (active) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+            maxLines = 1,
+            softWrap = false,
         )
         // A visible active underline (thicker than the hairline divider under
         // the row) so which tab you're on reads at a glance (owner: #6).

@@ -47,11 +47,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
-import xyz.mdhv.riverwip.design.DensitySlider
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.model.Clipping
-import xyz.mdhv.riverwip.model.ListDensity
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -73,18 +71,14 @@ private val CLIP_DATE = DateTimeFormatter.ofPattern("d MMM yyyy")
 
 /**
  * The Clippings shelf (owner's #2: "out is like a board with these physical
- * looking clippings, in is a simple compact list"). Detail is the board — each
- * clipping torn-edged, faintly rotated, on the app's own paper tone regardless
- * of the active theme, since a clipping is paper first; List collapses to one
- * plain line per clipping; the two tile steps share the Stand's grid.
+ * looking clippings"): each clipping torn-edged, faintly rotated, on the
+ * app's own paper tone regardless of the active theme, since a clipping is
+ * paper first.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClippingsScreen(
     vm: ClippingsViewModel,
-    immersive: Boolean,
-    density: ListDensity,
-    onDensityChange: (ListDensity) -> Unit,
     onBack: () -> Unit,
 ) {
     val clippings by vm.clippings.collectAsStateWithLifecycle()
@@ -103,13 +97,6 @@ fun ClippingsScreen(
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            if (!immersive) {
-                DensitySlider(
-                    density = density,
-                    onDensityChange = onDensityChange,
-                    modifier = Modifier.padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
-                )
-            }
             if (clippings.isEmpty()) {
                 Column(
                     modifier = Modifier
@@ -126,46 +113,17 @@ fun ClippingsScreen(
                     )
                 }
             } else {
-                val pinchModifier = densityPinchModifier(density, onDensityChange, enabled = immersive)
-                when (density) {
-                    ListDensity.DETAIL -> LazyColumn(
-                        modifier = Modifier.fillMaxSize().then(pinchModifier),
-                        contentPadding = PaddingValues(Tokens.Spacing.lg),
-                        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg),
-                    ) {
-                        items(clippings, key = { it.itemId }) { clip ->
-                            TornClippingCard(
-                                clip = clip,
-                                onOpen = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(clip.url))) },
-                                onShare = { NewspaperShare.share(context, clip.title, clip.sourceTitle, clip.author, clip.url) },
-                                onRemove = { vm.remove(clip.itemId) },
-                            )
-                        }
-                    }
-                    ListDensity.LIST -> LazyColumn(
-                        modifier = Modifier.fillMaxSize().then(pinchModifier),
-                    ) {
-                        items(clippings, key = { it.itemId }) { clip ->
-                            CompactRow(
-                                title = clip.title,
-                                topicColor = clip.topic.toComposeColor(),
-                                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(clip.url))) },
-                            )
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        }
-                    }
-                    ListDensity.SMALL_TILES, ListDensity.BIG_TILES -> DensityGridShell(
-                        density = density,
-                        modifier = pinchModifier,
-                    ) {
-                        densityTiles(
-                            items = clippings,
-                            density = density,
-                            key = { it.itemId },
-                            title = { it.title },
-                            subtitle = { byline(it) },
-                            topicColor = { it.topic.toComposeColor() },
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(it.url))) },
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(Tokens.Spacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg),
+                ) {
+                    items(clippings, key = { it.itemId }) { clip ->
+                        TornClippingCard(
+                            clip = clip,
+                            onOpen = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(clip.url))) },
+                            onShare = { NewspaperShare.share(context, clip.title, clip.sourceTitle, clip.author, clip.url) },
+                            onRemove = { vm.remove(clip.itemId) },
                         )
                     }
                 }

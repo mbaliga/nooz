@@ -69,23 +69,6 @@ enum class TextScale(val key: String, val multiplier: Float, val label: String) 
     }
 }
 
-/**
- * View density for the Stand and Clippings (owner's #1): a horizontal slider
- * across four steps, detail to compact. Order matters — [ordinal] is the
- * slider's position.
- */
-enum class ListDensity(val key: String, val label: String) {
-    DETAIL("detail", "Detail"),
-    LIST("list", "List"),
-    SMALL_TILES("small-tiles", "Small tiles"),
-    BIG_TILES("big-tiles", "Big tiles");
-
-    companion object {
-        private val byKey = entries.associateBy(ListDensity::key)
-        fun fromKey(key: String?): ListDensity = byKey[key] ?: DETAIL
-    }
-}
-
 data class AppSettings(
     /** The middle tint carries the check in the owner's mock — Paper is the default. */
     val themeMode: ThemeMode = ThemeMode.PAPER,
@@ -121,8 +104,6 @@ data class AppSettings(
      * everything that flowed, not a one-off the reader asked for.
      */
     val noozFlashEnabled: Boolean = false,
-    /** The Stand's and Clippings' shared view density (owner's #1). Detail by default — nothing changes until the reader moves the slider. */
-    val listDensity: ListDensity = ListDensity.DETAIL,
 )
 
 /**
