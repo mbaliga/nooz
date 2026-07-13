@@ -758,7 +758,19 @@ respect as the CI-caught log above.
   `weight(1f)` box is ever tall on a real phone, and Compose doesn't clip a
   Text's paint to its own layout bounds by default — the unfit lines were
   drawing straight through into the fine-print block below. Fixed with an
-  explicit `.clipToBounds()`.
+  explicit `.clipToBounds()`. (e) **Extraction stubs / rendering polish**:
+  `ArticleExtractor` now trusts an explicit semantic content container
+  (`itemprop=articleBody`, common CMS classes, bare `<article>`/`<main>`)
+  before falling back to density scoring, credits a matched element's
+  grandparent at half weight alongside its direct parent (many templates
+  wrap *every* paragraph in its own one-off `<div>`, which previously
+  isolated each paragraph into its own single-item "container" and
+  collapsed extraction to just one paragraph), falls back further to bare
+  leaf `<div>`s when nothing is semantically marked up at all, and keeps
+  `<li>` content (bulleted) instead of silently dropping list-based
+  how-tos/explainers. `ReaderDetailScreen` also adds a touch of extra
+  bottom padding between paragraphs so breaks read as distinct blocks
+  rather than barely-more-than-a-line-gap.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

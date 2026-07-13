@@ -205,6 +205,13 @@ fun ReaderDetailScreen(
                             text = para,
                             vm = lensVm,
                             style = MaterialTheme.typography.bodyLarge,
+                            // A touch more room than the list's base spacedBy
+                            // gap, stacked on top of it: at just Tokens.Spacing.md
+                            // between every item, paragraph breaks read as
+                            // barely more than an extra line — this widens the
+                            // gap specifically between paragraphs so they read
+                            // as distinct blocks (owner's #2, rendering quality).
+                            modifier = Modifier.padding(bottom = Tokens.Spacing.xs),
                         )
                     }
                     is ArticleUiState.Fallback -> item {

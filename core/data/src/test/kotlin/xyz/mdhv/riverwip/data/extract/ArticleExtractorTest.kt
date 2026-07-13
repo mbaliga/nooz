@@ -74,4 +74,61 @@ class ArticleExtractorTest {
         assertEquals(3, result.paragraphs.size)
         assertTrue(result.paragraphs.all { it.contains("actual article content") })
     }
+
+    @Test fun handlesEachParagraphWrappedInItsOwnContainer() {
+        // Many real templates wrap *every* paragraph in a one-off `<div>` (a
+        // per-block component) instead of nesting them as siblings directly
+        // inside the article. A direct-parent-only heuristic would isolate
+        // each paragraph into its own single-item "container" and only one
+        // paragraph would survive extraction — this is the real-world bug
+        // behind sources falling back to "open it in the browser" too often.
+        val html = """
+            <html><body>
+              <article>
+                <h1>Wrapped paragraphs</h1>
+                <div class="block"><p>First real paragraph of the actual article content, long enough to count as substantial for extraction purposes here.</p></div>
+                <div class="block"><p>Second real paragraph continuing the actual article content, also long enough to count as substantial for extraction here.</p></div>
+                <div class="block"><p>Third real paragraph wrapping up the actual article content, once again long enough to count as substantial for extraction.</p></div>
+              </article>
+            </body></html>
+        """.trimIndent()
+        val result = ArticleExtractor.extract(html)
+        assertEquals(3, result.paragraphs.size)
+        assertTrue(result.paragraphs.all { it.contains("actual article content") })
+    }
+
+    @Test fun fallsBackToBareDivsWhenNoSemanticMarkupExists() {
+        // Some older/legacy templates markup body copy with plain `<div>`s
+        // and no `<p>`, `<article>`, `<main>`, or schema.org markup at all.
+        val html = """
+            <html><body>
+              <div class="page">
+                <div class="headline">Some legacy template</div>
+                <div class="body-copy">This is the first paragraph of body copy rendered as a bare div instead of a semantic paragraph tag, which some older templates still do.</div>
+                <div class="body-copy">This is the second paragraph of body copy, also rendered as a bare div, continuing on with enough substantial text to pass the length filter.</div>
+              </div>
+            </body></html>
+        """.trimIndent()
+        val result = ArticleExtractor.extract(html)
+        assertEquals(2, result.paragraphs.size)
+        assertTrue(result.paragraphs.all { it.contains("body copy") })
+    }
+
+    @Test fun listItemsAreKeptWithABulletMarker() {
+        // List content (how-tos, explainers) was previously dropped entirely
+        // since only `<p>` was ever considered a paragraph.
+        val html = """
+            <html><body><article>
+              <h1>A how-to</h1>
+              <p>Here is an introduction paragraph long enough to pass the minimum length threshold for extraction purposes.</p>
+              <ul>
+                <li>First step in the process, described with enough substantial detail to pass the length filter here.</li>
+                <li>Second step in the process, again with enough substantial detail to pass the length filter here too.</li>
+              </ul>
+            </article></body></html>
+        """.trimIndent()
+        val result = ArticleExtractor.extract(html)
+        assertTrue(result.paragraphs.any { it.startsWith("•") && it.contains("First step") })
+        assertTrue(result.paragraphs.any { it.startsWith("•") && it.contains("Second step") })
+    }
 }
