@@ -827,6 +827,53 @@ respect as the CI-caught log above.
   placeholder catalogue. Do not hand-populate a `downloadUrl`/`sha256` outside
   that shared, sentry-probed file — it's the one place this constellation
   keeps that honest.
+- **2026-07-11** — see D12: 43 more feeds fetched and confirmed live in an
+  all-region fan-out (Americas, Europe & Africa, Middle East & C. Asia, South
+  Asia beyond India, East & SE Asia, Australia & Pacific), stamped
+  `2026-07-11`. 63 verified feeds total after this run.
+- **2026-07-13** — depth pass targeting the owner's "list seems too small for a
+  worldwide set of sources" note, focused on the thinnest buckets. Tested ~90
+  candidate URLs (curl through the build proxy, checked for HTTP 200 + a
+  parseable `<rss`/`<feed` body with real `<item>`/`<entry>` elements); **45
+  pass and ship**, stamped `2026-07-13`. 108 verified feeds total after this
+  run. By region:
+  - **Europe (17, new `"europe"` tag)** — `europe-africa` was the thinnest
+    bucket (7 feeds for two continents, no individual country outlets beyond
+    pan-European Euronews/EUobserver). Rather than splitting `europe-africa`
+    in place, new feeds use fresh `"europe"`/`"africa"` tags so the existing
+    tag and its 7 feeds are untouched for anyone already filtering by it.
+    Added: Kyiv Post (Ukraine), Notes from Poland, Hungary Today, The Baltic
+    Times, The Portugal News, ANSA English (Italy), NL Times & DutchNews.nl
+    (Netherlands), Balkan Insight, Emerging Europe, TheJournal.ie, RTE News &
+    The Irish Times (Ireland), The Moscow Times (Russia), Romania Insider,
+    The Olive Press (Spain), Cyprus Mail.
+  - **Africa (9, new `"africa"` tag)** — The Standard (Kenya), MyJoyOnline
+    (Ghana), Egypt Independent, Lusaka Times & Zambia Daily Mail (Zambia), The
+    Namibian, Nyasa Times (Malawi), Club of Mozambique, Eye Radio (South
+    Sudan) — 8 countries beyond the existing South Africa/Nigeria coverage.
+  - **mideast-casia (+11)** — The Jerusalem Post (Israel), Iraqi News, The961
+    (Lebanon), Syria Direct, Daily Sabah & Hurriyet Daily News (Turkey), Civil
+    Georgia, APA & Trend News Agency (Azerbaijan), Asia-Plus (Tajikistan),
+    24.kg (Kyrgyzstan).
+  - **south-asia (+8)** — The News International & Daily Times (Pakistan),
+    Dhaka Tribune & The Business Standard (Bangladesh), Ada Derana (Sri
+    Lanka), Onlinekhabar English (Nepal), Ariana News & Khaama Press
+    (Afghanistan, newly represented in this region).
+  - **Notable exclusions** (plausible URL, failed live check): The Local's
+    DE/FR/IT/ES/SE/DK/NO/CH editions (all HTTP 404 — RSS retired sitewide),
+    Politico Europe & EURACTIV & Greek Reporter & Times of Israel & Al Arabiya
+    English & Jordan Times & EurasiaNet & TOLOnews (HTTP 403, bot-blocked),
+    SWI swissinfo.ch (410 Gone), Kyiv Independent & Kuwait Times & Kazinform &
+    MyRepublica (Nepal) & Kuensel (Bhutan) (404, no resolving path found),
+    Iran International, Rudaw, The Peninsula Qatar, Oman Observer, The
+    Brussels Times, NewsDay & The Citizen (Tanzania) & GhanaWeb & Mmegi
+    (Botswana) & FrontPageAfrica (Liberia) & Business in Cameroon (served
+    HTML/challenge pages at the feed path, no items), The East African &
+    Daily Nation (Kenya), Graphic Online (Ghana), Ahram Online & Egypt Today
+    (Egypt), Morocco World News, Herald & Monitor (Zimbabwe/Uganda), Addis
+    Standard, Sudan Tribune, Daily Mirror & Newsfirst & FT.lk (Sri Lanka),
+    bdnews24 (Bangladesh) (403/HTML on repeated checks — dropped rather than
+    guessed around).
 
 ---
 

@@ -34,6 +34,16 @@ object Starters {
         url = url, verifiedAt = V2,
     )
 
+    private const val V3 = "2026-07-13"
+
+    /** Depth expansion (Europe/Africa split + more countries), fetched and confirmed live on 2026-07-13 (STATE.md log). */
+    private fun rssJul13(
+        id: String, title: String, url: String, region: String,
+    ) = ServiceDef(
+        id = id, kind = "rss", title = title, tier = "A", region = region,
+        url = url, verifiedAt = V3,
+    )
+
     /** Concrete, verified RSS feeds — regionally balanced (global + India). */
     val verifiedFeeds: List<ServiceDef> = listOf(
         // --- Global ---
@@ -108,6 +118,61 @@ object Starters {
         rssJul11("rnz-pacific", "RNZ Pacific", "https://www.rnz.co.nz/rss/pacific.xml", "australia-pacific"),
         rssJul11("png-post-courier", "PNG Post-Courier", "https://www.postcourier.com.pg/feed/", "australia-pacific"),
         rssJul11("the-conversation-australia", "The Conversation (Australia)", "https://theconversation.com/au/articles.atom", "australia-pacific"),
+        // === Depth expansion — every feed fetched and confirmed live on 2026-07-13 ===
+        // "europe-africa" was the thinnest bucket (7 feeds covering two continents,
+        // no individual European country outlets). New feeds below use fresh
+        // "europe" / "africa" region tags instead of splitting "europe-africa" in
+        // place, so the existing tag and its feeds above are untouched for anyone
+        // already filtering by "europe-africa".
+        // --- Europe ---
+        rssJul13("kyiv-post-ukraine", "Kyiv Post (Ukraine)", "https://www.kyivpost.com/feed", "europe"),
+        rssJul13("notes-from-poland", "Notes from Poland", "https://notesfrompoland.com/feed/", "europe"),
+        rssJul13("hungary-today", "Hungary Today", "https://hungarytoday.hu/feed/", "europe"),
+        rssJul13("the-baltic-times", "The Baltic Times", "https://www.baltictimes.com/rss/", "europe"),
+        rssJul13("the-portugal-news", "The Portugal News", "https://www.theportugalnews.com/rss", "europe"),
+        rssJul13("ansa-english-italy", "ANSA English (Italy)", "https://www.ansa.it/english/english_rss.xml", "europe"),
+        rssJul13("nl-times-netherlands", "NL Times (Netherlands)", "https://nltimes.nl/rss", "europe"),
+        rssJul13("dutch-news-netherlands", "DutchNews.nl (Netherlands)", "https://www.dutchnews.nl/feed/", "europe"),
+        rssJul13("balkan-insight", "Balkan Insight", "https://balkaninsight.com/feed/", "europe"),
+        rssJul13("emerging-europe", "Emerging Europe", "https://emerging-europe.com/feed/", "europe"),
+        rssJul13("the-journal-ireland", "TheJournal.ie (Ireland)", "https://www.thejournal.ie/feed/", "europe"),
+        rssJul13("rte-news-ireland", "RTE News (Ireland)", "https://www.rte.ie/feeds/rss/?index=/news/&type=news", "europe"),
+        rssJul13("the-irish-times", "The Irish Times", "https://www.irishtimes.com/cmlink/the-irish-times-news-1.1319192", "europe"),
+        rssJul13("the-moscow-times-russia", "The Moscow Times (Russia)", "https://www.themoscowtimes.com/rss/news", "europe"),
+        rssJul13("romania-insider", "Romania Insider", "https://www.romania-insider.com/feed", "europe"),
+        rssJul13("the-olive-press-spain", "The Olive Press (Spain)", "https://www.theolivepress.es/feed/", "europe"),
+        rssJul13("cyprus-mail", "Cyprus Mail", "https://cyprus-mail.com/feed/", "europe"),
+        // --- Africa ---
+        rssJul13("the-standard-kenya", "The Standard (Kenya)", "https://www.standardmedia.co.ke/rss/headlines.php", "africa"),
+        rssJul13("myjoyonline-ghana", "MyJoyOnline (Ghana)", "https://www.myjoyonline.com/feed/", "africa"),
+        rssJul13("egypt-independent", "Egypt Independent", "https://www.egyptindependent.com/feed/", "africa"),
+        rssJul13("lusaka-times-zambia", "Lusaka Times (Zambia)", "https://www.lusakatimes.com/feed/", "africa"),
+        rssJul13("zambia-daily-mail", "Zambia Daily Mail (Zambia)", "https://www.daily-mail.co.zm/feed/", "africa"),
+        rssJul13("the-namibian", "The Namibian", "https://www.namibian.com.na/feed/", "africa"),
+        rssJul13("nyasa-times-malawi", "Nyasa Times (Malawi)", "https://www.nyasatimes.com/feed/", "africa"),
+        rssJul13("club-of-mozambique", "Club of Mozambique", "https://clubofmozambique.com/feed/", "africa"),
+        rssJul13("eye-radio-south-sudan", "Eye Radio (South Sudan)", "https://www.eyeradio.org/feed/", "africa"),
+        // --- Middle East & Central Asia (depth) ---
+        rssJul13("the-jerusalem-post-israel", "The Jerusalem Post (Israel)", "https://www.jpost.com/rss/rssfeedsfrontpage.aspx", "mideast-casia"),
+        rssJul13("iraqi-news", "Iraqi News (Iraq)", "https://www.iraqinews.com/feed/", "mideast-casia"),
+        rssJul13("the961-lebanon", "The961 (Lebanon)", "https://www.the961.com/feed/", "mideast-casia"),
+        rssJul13("syria-direct", "Syria Direct", "https://syriadirect.org/feed/", "mideast-casia"),
+        rssJul13("daily-sabah-turkey", "Daily Sabah (Turkey)", "https://www.dailysabah.com/rssFeed/newsfeed", "mideast-casia"),
+        rssJul13("hurriyet-daily-news-turkey", "Hurriyet Daily News (Turkey)", "https://www.hurriyetdailynews.com/rss/news", "mideast-casia"),
+        rssJul13("civil-georgia", "Civil Georgia", "https://civil.ge/feed", "mideast-casia"),
+        rssJul13("apa-azerbaijan", "APA (Azerbaijan)", "https://en.apa.az/rss", "mideast-casia"),
+        rssJul13("trend-news-azerbaijan", "Trend News Agency (Azerbaijan)", "https://en.trend.az/rss/", "mideast-casia"),
+        rssJul13("asia-plus-tajikistan", "Asia-Plus (Tajikistan)", "https://asiaplus.news/en/feed/", "mideast-casia"),
+        rssJul13("24kg-kyrgyzstan", "24.kg (Kyrgyzstan, English)", "https://www.24.kg/english/rss/", "mideast-casia"),
+        // --- South Asia (depth) ---
+        rssJul13("the-news-international-pakistan", "The News International (Pakistan)", "https://www.thenews.com.pk/rss/1/1", "south-asia"),
+        rssJul13("daily-times-pakistan", "Daily Times (Pakistan)", "https://dailytimes.com.pk/feed/", "south-asia"),
+        rssJul13("dhaka-tribune-bangladesh", "Dhaka Tribune (Bangladesh)", "https://www.dhakatribune.com/feed/", "south-asia"),
+        rssJul13("the-business-standard-bangladesh", "The Business Standard (Bangladesh)", "https://tbsnews.net/rss.xml", "south-asia"),
+        rssJul13("ada-derana-sri-lanka", "Ada Derana (Sri Lanka)", "https://www.adaderana.lk/rss.php", "south-asia"),
+        rssJul13("onlinekhabar-english-nepal", "Onlinekhabar English (Nepal)", "https://english.onlinekhabar.com/feed", "south-asia"),
+        rssJul13("ariana-news-afghanistan", "Ariana News (Afghanistan)", "https://ariananews.af/feed/", "south-asia"),
+        rssJul13("khaama-press-afghanistan", "Khaama Press (Afghanistan)", "https://www.khaama.com/feed/", "south-asia"),
     )
 
     /**
