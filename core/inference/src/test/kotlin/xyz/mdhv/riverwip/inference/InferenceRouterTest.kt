@@ -2,6 +2,7 @@ package xyz.mdhv.riverwip.inference
 
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -58,13 +59,17 @@ class InferenceRouterTest {
         assertEquals(0, mlkit.rewriteCalls)
     }
 
-    @Test fun allUnavailableReportsWhichWereTried() = runTest {
+    @Test fun allUnavailableFailsCleanlyWithoutLeakingInternalIds() = runTest {
+        // Inspectability moved to providerOrder; the user-facing message never
+        // enumerates internal provider ids (owner: surfacing "tried: urbana,
+        // local-llama" is unseemly).
         val router = InferenceRouter(listOf(FakeProvider("urbana", false), FakeProvider("local-llama", false)))
         val result = router.rewrite(req)
         assertTrue(result is RewriteResult.Failed)
         val reason = (result as RewriteResult.Failed).reason
-        assertTrue(reason.contains("urbana"))
-        assertTrue(reason.contains("local-llama"))
+        assertFalse(reason.contains("urbana"))
+        assertFalse(reason.contains("local-llama"))
+        assertEquals(listOf("urbana", "local-llama"), router.providerOrder)
     }
 
     @Test fun emptyOrderFailsImmediately() = runTest {
@@ -94,12 +99,13 @@ class InferenceRouterTest {
         assertEquals(1, byok.digestCalls)
     }
 
-    @Test fun digestAllUnavailableReportsWhichWereTried() = runTest {
+    @Test fun digestAllUnavailableFailsCleanlyWithoutLeakingInternalIds() = runTest {
         val router = InferenceRouter(listOf(FakeProvider("local-llama", false), FakeProvider("byok", false)))
         val result = router.digest(DigestRequest(listOf("Headline")))
         assertTrue(result is DigestResult.Failed)
         val reason = (result as DigestResult.Failed).reason
-        assertTrue(reason.contains("local-llama"))
-        assertTrue(reason.contains("byok"))
+        assertFalse(reason.contains("local-llama"))
+        assertFalse(reason.contains("byok"))
+        assertEquals(listOf("local-llama", "byok"), router.providerOrder)
     }
 }

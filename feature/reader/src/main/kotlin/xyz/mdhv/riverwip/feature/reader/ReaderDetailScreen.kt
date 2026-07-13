@@ -52,6 +52,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.DayMixBar
@@ -176,17 +178,32 @@ fun ReaderDetailScreen(
                         Text(item.title, style = MaterialTheme.typography.displayLarge)
                         val author = item.author
                         val sourceTitle = sourceTitles[item.sourceId]
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        // Source left, author right — but real bylines run long
+                        // (a live blog can list four names). Each takes half the
+                        // width and wraps/ellipsises within it, so a long author
+                        // never collides with the source (owner: alignment bug).
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
+                            verticalAlignment = Alignment.Top,
+                        ) {
                             Text(
                                 sourceTitle ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f),
                             )
                             if (!author.isNullOrBlank()) {
                                 Text(
                                     author,
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.weight(1f),
                                 )
                             }
                         }
@@ -219,14 +236,29 @@ fun ReaderDetailScreen(
                         )
                     }
                     is ArticleUiState.Fallback -> item {
+                        // Some feeds (aggregators like Google News especially)
+                        // only carry a summary, or link to a redirect page we
+                        // can't read through. Present what we have with dignity
+                        // — the summary as the body, then a plain invitation to
+                        // finish at the source — never an apologetic error line
+                        // (owner: stubs read as broken).
                         Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
-                            if (!s.summary.isNullOrBlank()) {
-                                Text(s.summary, style = MaterialTheme.typography.bodyLarge)
-                            }
                             Text(
-                                "Couldn't extract the full article — open it in the browser to read the rest.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                s.summary?.takeIf { it.isNotBlank() }
+                                    ?: "This source shares only a short summary in its feed.",
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                            Text(
+                                "Read the full story at the source ↗",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .clickable {
+                                        context.startActivity(
+                                            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(item.canonicalUrl)),
+                                        )
+                                    }
+                                    .padding(top = Tokens.Spacing.xs),
                             )
                         }
                     }

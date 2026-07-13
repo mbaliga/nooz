@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -102,7 +102,8 @@ fun ReaderScreen(
     // The floating card's minimum visible band (owner's brief: "at least
     // 64dp"), and the fast-flick velocity that commits a park regardless of
     // distance dragged.
-    val peekPx = with(LocalDensity.current) { 64.dp.toPx() }
+    val peekDp = 64.dp
+    val peekPx = with(LocalDensity.current) { peekDp.toPx() }
     val flickVelocityPx = with(LocalDensity.current) { FLICK_VELOCITY_DP_PER_SEC.dp.toPx() }
 
     // How far Paper's own edge is inset by its parked scale — subtracted out
@@ -219,15 +220,13 @@ fun ReaderScreen(
     }
 
     Box(Modifier.fillMaxSize().onSizeChanged { containerWidth = it.width }) {
-        // The stand, sliding in from off-screen left at the same rate Paper
-        // parts — visible (and interactive) the moment a Stand-ward drag
-        // starts, not only once it's parked.
+        // The stand, sitting still behind the paper (owner's reference: "the
+        // actual stand list, sitting still behind it"). It's inset by the
+        // peek band on the right so its content never renders *under* the
+        // parked paper card — the card lifts and parts to reveal a room laid
+        // out beside it, not a full-width room half-hidden behind it.
         if (offsetX > 0f) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .graphicsLayer { translationX = -(1f - progress) * containerWidth },
-            ) {
+            Box(Modifier.fillMaxSize().padding(end = peekDp)) {
                 ArticleListScreen(
                     vm = vm,
                     noozFlashEnabled = noozFlashEnabled,
@@ -239,15 +238,11 @@ fun ReaderScreen(
                 )
             }
         }
-        // Settings, sliding in from off-screen right the same way — the
-        // symmetric second room, embedded rather than navigated to, so its
-        // own back arrow can un-park instead of tearing this screen down.
+        // Settings, the symmetric second room — embedded rather than navigated
+        // to, so its own back arrow can un-park instead of tearing this screen
+        // down. Inset by the peek band on the *left*, where the paper parks.
         if (offsetX < 0f) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .graphicsLayer { translationX = (1f - progress) * containerWidth },
-            ) {
+            Box(Modifier.fillMaxSize().padding(start = peekDp)) {
                 settingsRoom { unpark() }
             }
         }

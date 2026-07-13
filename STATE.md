@@ -792,6 +792,35 @@ respect as the CI-caught log above.
   feature's own stance) that reads the compressed flash line aloud, tapping
   again stops it early.
 
+- **D23 — Reader/UI polish round from owner screenshots (2026-07-13).** (a)
+  **Room overlap**: the parked lift-and-part card was drawn over a *full-width*
+  revealed room, so the Stand's right edge / Settings' left edge sat hidden
+  behind it (Settings labels visibly clipped). Rooms are now stationary
+  ("sits still behind," per the original mock) and inset by the 64dp peek on
+  the parked side, so the card lifts and parts to reveal a room laid out
+  *beside* it, never behind it. (b) **Byline collision**: source (left) and a
+  long author list (right) overlapped — `SpaceBetween` can't prevent a collision
+  when both are long. Each now takes a weighted half and wraps/ellipsises within
+  it. (c) **Region & Topics tab**: still wrapped to three lines on-device despite
+  the `IntrinsicSize.Max` + `softWrap=false` attempt. Replaced the whole
+  Column+fillMaxWidth-underline+intrinsic approach with a single Text that draws
+  its own underline via `drawBehind` at exactly `size.width` — no intrinsic
+  measurement in the path at all. (d) **Read-distribution skew**: re-opening the
+  same article kept incrementing its topic in the Stand's read bar; `todayReadMix`
+  now counts each article once (the raw events still drive the dwell buckets). (e)
+  **Unseemly errors**: the router no longer enumerates internal provider ids in
+  user-facing failures (`"no reader-intelligence provider is available"`);
+  `FlashUiState.Unavailable` carries a `needsSetup` flag so the card shows an
+  actionable "add one in Settings" hint instead of "tried: local-llama, byok".
+  The article Fallback ("Couldn't extract…") is reworked to present the summary
+  as the body plus a plain "Read the full story at the source ↗" link, rather
+  than an apologetic error line. **Still open** (logged, not built this round):
+  Google-News-style aggregator links are redirect pages we can't read through,
+  so they still fall back to summary-only; and the owner's framing/omission
+  contrast-graph idea (highlight how sources frame the same event differently;
+  configurable viewed-vs-available views) is a larger feature awaiting a scope
+  decision.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

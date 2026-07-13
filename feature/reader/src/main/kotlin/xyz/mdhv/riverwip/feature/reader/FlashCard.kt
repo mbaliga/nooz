@@ -134,12 +134,21 @@ fun FlashCard(vm: ReaderViewModel, modifier: Modifier = Modifier) {
                     }
                 }
             }
-            is FlashUiState.Unavailable -> Text(
-                "Nooz Flash: ${s.reason}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = Tokens.Spacing.xxs),
-            )
+            is FlashUiState.Unavailable -> Column(Modifier.padding(top = Tokens.Spacing.xxs)) {
+                Text(
+                    s.reason,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (s.needsSetup) {
+                    Text(
+                        "Add one in Settings › Reader intelligence.",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+                    )
+                }
+            }
         }
     }
 }

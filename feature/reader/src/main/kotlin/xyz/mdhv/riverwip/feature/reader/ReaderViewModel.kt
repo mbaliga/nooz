@@ -48,8 +48,13 @@ sealed interface FlashUiState {
     data object Loading : FlashUiState
     /** [headlines] is what was actually compressed — "go deeper" is just showing this list, not a second generation. */
     data class Ready(val flash: String, val provenance: Provenance, val headlines: List<String>) : FlashUiState
-    /** The provider ran but declined or errored — never silent (brief §3). */
-    data class Unavailable(val reason: String) : FlashUiState
+    /**
+     * The provider ran but declined or errored — never silent (brief §3).
+     * [needsSetup] distinguishes "you haven't set up any reader-intelligence
+     * provider" (actionable — point at Settings) from a genuine runtime error
+     * worth showing verbatim (e.g. a BYOK endpoint returning HTTP 401).
+     */
+    data class Unavailable(val reason: String, val needsSetup: Boolean = false) : FlashUiState
 }
 
 /** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
@@ -146,9 +151,17 @@ class ReaderViewModel(
         val dayStart = WeekBucketing.periodStart(clock(), periodDays = 1)
         val itemsById = list.associateBy { it.id }
         val counts = HashMap<String, Int>()
+        // Count each article once, not once per open — re-opening the same
+        // story (or bouncing in and out) shouldn't tilt the read-distribution
+        // bar toward its topic (owner: "tapping the same link over and over
+        // changes the distribution"). The raw events still exist for the
+        // dwell buckets; this surface just measures *what* was read, not how
+        // many times.
+        val counted = HashSet<String>()
         for (event in reads) {
             if (event.openedAt < dayStart) continue
             val item = itemsById[event.itemId] ?: continue
+            if (!counted.add(event.itemId)) continue
             counts.merge(Classifier.dominantTopic(item.topics).key, 1, Int::plus)
         }
         DayLoomLayout.dayMix(counts)
@@ -178,7 +191,15 @@ class ReaderViewModel(
             }
             _flashState.value = when (val result = flashRouter.digest(DigestRequest(headlines))) {
                 is DigestResult.Success -> FlashUiState.Ready(result.flash, result.provenance, headlines)
-                is DigestResult.Failed -> FlashUiState.Unavailable(result.reason)
+                is DigestResult.Failed -> {
+                    // "No provider set up" is actionable (point at Settings); a
+                    // real runtime error (a BYOK endpoint 401, say) is shown as-is.
+                    val needsSetup = result.reason.contains("no reader-intelligence provider", ignoreCase = true)
+                    FlashUiState.Unavailable(
+                        reason = if (needsSetup) "Nooz Flash needs an on-device model or your own API key." else result.reason,
+                        needsSetup = needsSetup,
+                    )
+                }
             }
         }
     }

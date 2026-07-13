@@ -6,7 +6,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -56,7 +57,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -155,42 +155,38 @@ fun EditScreen(
 
 @Composable
 private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
-    Column(
-        // IntrinsicSize.Max sizes this Column to its widest child's own natural
-        // (single-line) width — without it, the underline Box's fillMaxWidth()
-        // below expands to fill the *Row's* remaining space instead of just
-        // this label's width, since an unconstrained Column hands its loose
-        // incoming max width straight through. That silently ate the whole
-        // header row: the "Sources" tab's underline claimed all the space,
-        // leaving nothing for "Region & Topics" to lay out in (owner's #6 —
-        // the globe wasn't "missing", it had nowhere left to render).
-        // Max, not Min: a Text's *minimum* intrinsic width is the width of its
-        // longest unbreakable word, not its one-line width — for "Sources"
-        // (one word) those happen to coincide, which is why the bug hid until
-        // a multi-word label ("Region & Topics") wrapped across three lines.
+    // The underline is *drawn* under the text (drawBehind), sized to the text's
+    // own measured width, rather than being a sibling Box whose fillMaxWidth
+    // has to be corralled by intrinsic-width tricks. Earlier attempts pinned
+    // the Column to the text width via IntrinsicSize.Min (sized to the longest
+    // *word*, so "Region & Topics" wrapped to three lines) then IntrinsicSize.Max
+    // (still wrapped on-device). Drawing the rule inside the Text's own bounds
+    // sidesteps intrinsic measurement entirely — the line simply spans size.width,
+    // which is exactly the single-line text width (owner's #6, recurring).
+    val underline = MaterialTheme.colorScheme.onBackground
+    Text(
+        label,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+        color = if (active) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+        maxLines = 1,
+        softWrap = false,
         modifier = Modifier
-            .width(IntrinsicSize.Max)
             .selectable(selected = active, role = Role.Tab, onClick = onClick)
-            .padding(vertical = Tokens.Spacing.xs),
-    ) {
-        Text(
-            label,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (active) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
-            maxLines = 1,
-            softWrap = false,
-        )
-        // A visible active underline (thicker than the hairline divider under
-        // the row) so which tab you're on reads at a glance (owner: #6).
-        Box(
-            Modifier
-                .padding(top = Tokens.Spacing.xxs)
-                .fillMaxWidth()
-                .height(3.dp)
-                .background(if (active) MaterialTheme.colorScheme.onBackground else Color.Transparent),
-        )
-    }
+            .padding(vertical = Tokens.Spacing.xs)
+            .drawBehind {
+                if (active) {
+                    val stroke = 3.dp.toPx()
+                    val y = size.height - stroke / 2f
+                    drawLine(
+                        color = underline,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = stroke,
+                    )
+                }
+            },
+    )
 }
 
 // ---------------------------------------------------------------- Sources tab
