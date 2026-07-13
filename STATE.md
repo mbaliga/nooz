@@ -821,6 +821,20 @@ respect as the CI-caught log above.
   configurable viewed-vs-available views) is a larger feature awaiting a scope
   decision.
 
+- **D24 — Omission contrast dashboard, phase 1 (2026-07-13).** The owner's
+  contrast idea, scoped to three phases (their call: "all three, phased"):
+  (1) an omission dashboard — supply vs consumption, starkly — built now;
+  (2) a filter-vs-reality view; (3) a cross-source framing lens (blocked on
+  real inference). Phase 1: `ContrastPanel` is the loom's stark counterpart —
+  a `Loom | Contrast` toggle in `LoomScreen` swaps the woven canvas for a
+  blunt per-topic ledger reusing the *same* selected-day/range aggregate
+  (`streamCountsByTopic` set against `readCountsByTopic`). Each topic shows a
+  faint "flowed" bar over a solid "read" bar on one shared scale, so the gap
+  is the omission, read at a glance; a headline states the plain ratio ("read
+  N of M — X%"), a callout names the widest blind spot, and a Flowed/Read/Gap
+  sort control is the configurable lever for "what this view is about." Supply
+  is never filtered here, same as the loom — omission is the subject.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

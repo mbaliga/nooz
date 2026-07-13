@@ -25,6 +25,7 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -63,6 +64,9 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
     val days by vm.days.collectAsStateWithLifecycle()
     val enabledCount by vm.enabledSourceCount.collectAsStateWithLifecycle()
     val filter by vm.filter.collectAsStateWithLifecycle()
+    // Two ways to read the same day (owner's contrast idea): the woven Loom, or
+    // its stark ledger counterpart, the Contrast dashboard.
+    var contrast by remember { mutableStateOf(false) }
 
     if (vm.showDatePicker) {
         LoomDatePicker(
@@ -191,7 +195,27 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
             }
         }
 
-        if (aggregate == null || loom.totalFlowed == 0) {
+        // The mode toggle: the same day, woven or laid bare.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = Tokens.Spacing.xxs),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            ModeTab("Loom", !contrast) { contrast = false }
+            ModeTab("Contrast", contrast) { contrast = true }
+        }
+
+        if (contrast) {
+            ContrastPanel(
+                streamByTopic = aggregate?.streamCountsByTopic ?: emptyMap(),
+                readByTopic = aggregate?.readCountsByTopic ?: emptyMap(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = Tokens.Spacing.sm),
+            )
+        } else if (aggregate == null || loom.totalFlowed == 0) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     "Nothing flowed this day. The loom weaves once your sources do.",
@@ -211,4 +235,19 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
             )
         }
     }
+}
+
+/** One of the two loom modes — a plain, inked-when-active text tab. */
+@Composable
+private fun ModeTab(label: String, active: Boolean, onClick: () -> Unit) {
+    Text(
+        label,
+        style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp),
+        color = if (active) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+        modifier = Modifier
+            .clickable(onClickLabel = "Show the $label view") { onClick() }
+            .semantics { role = Role.Tab }
+            .minimumInteractiveComponentSize()
+            .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xxs),
+    )
 }
