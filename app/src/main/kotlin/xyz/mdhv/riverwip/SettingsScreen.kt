@@ -88,6 +88,7 @@ import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.DictionaryOption
+import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
@@ -183,6 +184,7 @@ class SettingsViewModel(
     fun setTwoFingerThemeFlick(on: Boolean) = viewModelScope.launch { repo.setTwoFingerThemeFlick(on) }
     fun completeOnboarding() = viewModelScope.launch { repo.setOnboarded(true) }
     fun setNoozFlashEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozFlashEnabled(on) }
+    fun setPaperGrain(grain: PaperGrain) = viewModelScope.launch { repo.setPaperGrain(grain) }
 
     // Dictionary lens: one-click download of a chosen dictionary (owner's spec).
     val dictionaryOptions: List<DictionaryOption> = dictionaryRepo.options
@@ -335,6 +337,37 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                                 selected = chosen,
                                 role = Role.RadioButton,
                                 onClick = { vm.setTextScale(scale) },
+                            )
+                            .minimumInteractiveComponentSize()
+                            .padding(vertical = Tokens.Spacing.xxs),
+                    )
+                }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            SectionHeading("Paper Grain")
+            Row(
+                modifier = Modifier.selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+            ) {
+                for (grain in PaperGrain.entries) {
+                    val chosen = settings.paperGrain == grain
+                    Text(
+                        grain.label,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            // Non-colour channel: the chosen grain is bold, not just darker.
+                            fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                        ),
+                        color = if (chosen) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier
+                            .selectable(
+                                selected = chosen,
+                                role = Role.RadioButton,
+                                onClick = { vm.setPaperGrain(grain) },
                             )
                             .minimumInteractiveComponentSize()
                             .padding(vertical = Tokens.Spacing.xxs),

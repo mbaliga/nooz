@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import xyz.mdhv.riverwip.model.AppSettings
+import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.Region
@@ -37,6 +38,7 @@ class SettingsRepository(private val context: Context) {
         val REGION = stringPreferencesKey("filter_region")
         val TOPICS = stringSetPreferencesKey("filter_topics")
         val NOOZ_FLASH = booleanPreferencesKey("nooz_flash_enabled")
+        val PAPER_GRAIN = stringPreferencesKey("paper_grain")
     }
 
     fun observeSettings(): Flow<AppSettings> = context.settingsDataStore.data.map { prefs ->
@@ -51,6 +53,7 @@ class SettingsRepository(private val context: Context) {
             twoFingerThemeFlick = prefs[Keys.GESTURE_THEME_FLICK] ?: true,
             onboarded = prefs[Keys.ONBOARDED] ?: false,
             noozFlashEnabled = prefs[Keys.NOOZ_FLASH] ?: false,
+            paperGrain = PaperGrain.fromKey(prefs[Keys.PAPER_GRAIN]),
         )
     }
 
@@ -99,6 +102,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setNoozFlashEnabled(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.NOOZ_FLASH] = enabled }
+    }
+
+    suspend fun setPaperGrain(grain: PaperGrain) {
+        context.settingsDataStore.edit { it[Keys.PAPER_GRAIN] = grain.key }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {

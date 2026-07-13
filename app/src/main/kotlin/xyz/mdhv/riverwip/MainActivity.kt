@@ -181,6 +181,7 @@ fun RiverApp() {
                     highlightLoadedLanguage = settings.highlightLoadedLanguage,
                     immersiveReader = settings.immersiveReader,
                     noozFlashEnabled = settings.noozFlashEnabled,
+                    paperGrain = settings.paperGrain,
                     onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                     onOpenEdit = { screen = Screen.EDIT },
                     settingsRoom = { onBack -> SettingsScreen(vm = settingsVm, onBack = onBack) },
@@ -215,6 +216,7 @@ fun RiverApp() {
                 Screen.LOOM -> LoomScreen(vm = loomVm, onClose = { screen = Screen.STAND })
                 Screen.CLIPPINGS -> ClippingsScreen(
                     vm = clippingsVm,
+                    paperGrain = settings.paperGrain,
                     onBack = { screen = Screen.STAND },
                 )
             }

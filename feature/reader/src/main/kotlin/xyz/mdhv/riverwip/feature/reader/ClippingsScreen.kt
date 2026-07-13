@@ -48,8 +48,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.model.Clipping
+import xyz.mdhv.riverwip.model.PaperGrain
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -79,6 +81,7 @@ private val CLIP_DATE = DateTimeFormatter.ofPattern("d MMM yyyy")
 @Composable
 fun ClippingsScreen(
     vm: ClippingsViewModel,
+    paperGrain: PaperGrain,
     onBack: () -> Unit,
 ) {
     val clippings by vm.clippings.collectAsStateWithLifecycle()
@@ -121,6 +124,7 @@ fun ClippingsScreen(
                     items(clippings, key = { it.itemId }) { clip ->
                         TornClippingCard(
                             clip = clip,
+                            paperGrain = paperGrain,
                             onOpen = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(clip.url))) },
                             onShare = { NewspaperShare.share(context, clip.title, clip.sourceTitle, clip.author, clip.url) },
                             onRemove = { vm.remove(clip.itemId) },
@@ -142,6 +146,7 @@ fun ClippingsScreen(
 @Composable
 private fun TornClippingCard(
     clip: Clipping,
+    paperGrain: PaperGrain,
     onOpen: () -> Unit,
     onShare: () -> Unit,
     onRemove: () -> Unit,
@@ -157,6 +162,7 @@ private fun TornClippingCard(
             .shadow(4.dp, shape, clip = false)
             .clip(shape)
             .background(Tokens.Palette.paperField)
+            .paperGrain(paperGrain, Tokens.Palette.paperInkDim)
             .clickable(onClickLabel = "Open article in browser", onClick = onOpen)
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),

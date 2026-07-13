@@ -56,11 +56,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.feature.lens.LensAnnotatedParagraph
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.Item
+import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.Topic
 import kotlin.math.ceil
 
@@ -89,6 +91,7 @@ fun ReaderDetailScreen(
     lensOn: Boolean,
     saved: Boolean,
     immersive: Boolean,
+    paperGrain: PaperGrain,
     offsetX: Float,
     // 0f = full Paper, 1f = fully parked — the one value driving scale, shadow,
     // corner radius and (together with offsetX's sign) translation, read live
@@ -133,6 +136,7 @@ fun ReaderDetailScreen(
                     clip = true
                 }
                 .background(background)
+                .paperGrain(paperGrain, MaterialTheme.colorScheme.onBackground)
                 .readerGestures(
                     parkedRoom = parkedRoom,
                     onRoomDragStart = onRoomDragStart,

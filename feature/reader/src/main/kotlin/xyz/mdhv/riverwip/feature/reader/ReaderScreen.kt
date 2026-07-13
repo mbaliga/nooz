@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
+import xyz.mdhv.riverwip.model.PaperGrain
 import kotlin.math.abs
 
 private const val PARK_THRESHOLD = 0.45f
@@ -58,6 +59,7 @@ fun ReaderScreen(
     highlightLoadedLanguage: Boolean,
     immersiveReader: Boolean,
     noozFlashEnabled: Boolean,
+    paperGrain: PaperGrain,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     // The right-hand room's content, supplied by the caller so this
@@ -257,6 +259,7 @@ fun ReaderScreen(
             lensOn = highlightLoadedLanguage,
             saved = savedIds.contains(selected.id),
             immersive = immersiveReader,
+            paperGrain = paperGrain,
             offsetX = offsetX,
             progress = progress,
             parkedRoom = parkedRoom,

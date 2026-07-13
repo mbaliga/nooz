@@ -69,6 +69,22 @@ enum class TextScale(val key: String, val multiplier: Float, val label: String) 
     }
 }
 
+/**
+ * Paper texture (owner's ask, 2026-07): three fixed steps, not a slider —
+ * "simplistic and minimal but serving a wide range." Applies to Paper's
+ * background and Clippings' torn cards; None (the default) draws nothing.
+ */
+enum class PaperGrain(val key: String, val label: String) {
+    NONE("none", "None"),
+    FINE("fine", "Fine"),
+    COARSE("coarse", "Coarse");
+
+    companion object {
+        private val byKey = entries.associateBy(PaperGrain::key)
+        fun fromKey(key: String?): PaperGrain = byKey[key] ?: NONE
+    }
+}
+
 data class AppSettings(
     /** The middle tint carries the check in the owner's mock — Paper is the default. */
     val themeMode: ThemeMode = ThemeMode.PAPER,
@@ -104,6 +120,7 @@ data class AppSettings(
      * everything that flowed, not a one-off the reader asked for.
      */
     val noozFlashEnabled: Boolean = false,
+    val paperGrain: PaperGrain = PaperGrain.NONE,
 )
 
 /**

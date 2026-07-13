@@ -772,6 +772,26 @@ respect as the CI-caught log above.
   bottom padding between paragraphs so breaks read as distinct blocks
   rather than barely-more-than-a-line-gap.
 
+- **D22 — Paper grain + Nooz Flash discoverability (2026-07-13).** (a)
+  **Paper grain**: a new `PaperGrain` setting (None/Fine/Coarse — "simplistic
+  and minimal," a fixed three-step choice rather than a slider), a
+  `Modifier.paperGrain()` in `core:design` that seeds a deterministic
+  speckle field once per size via `drawWithCache`/`onDrawBehind` (never
+  re-rolled per recomposition, never drawn over the content itself — behind
+  it, like the background it sits on), applied to Paper's own background in
+  `ReaderDetailScreen` and to Clippings' torn-paper cards (clipped to the
+  same jagged shape as the card itself, so no speckle spills past a torn
+  edge). None is the default; nothing changes until the reader picks a
+  grain in Settings. (b) **Nooz Flash discoverability**: the owner's follow-up
+  — "unfindable" — traced to the feature reading as ordinary muted chrome
+  once enabled, not to the Settings toggle itself (already visible without
+  expanding "Reader intelligence"). `FlashCard` now gets a bordered card
+  container and a bolt mark across every state so it has a distinct
+  silhouette on the Stand. Also added: a Play button (device text-to-speech,
+  `android.speech.tts.TextToSpeech` — on-device, no network, matching the
+  feature's own stance) that reads the compressed flash line aloud, tapping
+  again stops it early.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
