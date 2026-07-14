@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
@@ -150,11 +151,11 @@ fun ContrastPanel(
         )
 
         if (totalFlowed == 0) {
-            Text(
-                "Nothing flowed this day. The contrast appears once your sources do.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = muted,
-                modifier = Modifier.padding(top = Tokens.Spacing.md),
+            EmptyState(
+                title = "Nothing flowed this day",
+                body = "The contrast — what your sources ran against what you read — appears once anything comes in.",
+                fill = false,
+                modifier = Modifier.fillMaxWidth(),
             )
             return@Column
         }

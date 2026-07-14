@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -35,7 +36,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -47,8 +47,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
+import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.paperGrain
+import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.model.Clipping
 import xyz.mdhv.riverwip.model.PaperGrain
@@ -101,23 +103,15 @@ fun ClippingsScreen(
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (clippings.isEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(Tokens.Spacing.xl),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        "No clippings yet.\nTap the bookmark on any article to keep it here.",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                EmptyState(
+                    title = "No clippings yet",
+                    body = "Tap the bookmark on any article to tear it out and keep it on this board.",
+                )
             } else {
+                val listState = rememberLazyListState()
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    state = listState,
+                    modifier = Modifier.fillMaxSize().topFadingEdge(listState.canScrollBackward),
                     contentPadding = PaddingValues(Tokens.Spacing.lg),
                     verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg),
                 ) {

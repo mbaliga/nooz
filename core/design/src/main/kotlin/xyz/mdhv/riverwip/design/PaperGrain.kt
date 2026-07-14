@@ -8,18 +8,31 @@ import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.model.PaperGrain
 import kotlin.random.Random
 
-private class GrainSpec(val cellDp: Float, val dotRadiusDp: Float, val alpha: Float)
+// Each speckle carries its own radius so the field reads as paper fibre, not a
+// stamped polka-dot grid — uniform dots were the "big ugly dots" the owner saw.
+private class GrainSpec(
+    val cellDp: Float,
+    val minRadiusDp: Float,
+    val maxRadiusDp: Float,
+    val alpha: Float,
+)
 
 private fun specFor(grain: PaperGrain): GrainSpec? = when (grain) {
     PaperGrain.NONE -> null
-    PaperGrain.FINE -> GrainSpec(cellDp = 6f, dotRadiusDp = 0.5f, alpha = 0.05f)
-    PaperGrain.COARSE -> GrainSpec(cellDp = 13f, dotRadiusDp = 1.3f, alpha = 0.07f)
+    // Fine: a tight, almost-even mist of sub-pixel specks.
+    PaperGrain.FINE -> GrainSpec(cellDp = 5f, minRadiusDp = 0.3f, maxRadiusDp = 0.7f, alpha = 0.05f)
+    // Coarse: the same fibrous mist, just a larger weave and a touch more
+    // present. It stays dense with varied dot sizes so it reads as a coarser
+    // *grain*, not the sparse, uniform blobs a naive "bigger dots" step gives.
+    PaperGrain.COARSE -> GrainSpec(cellDp = 7f, minRadiusDp = 0.35f, maxRadiusDp = 1.0f, alpha = 0.06f)
 }
 
 // A fixed seed, not one rolled per call site: the grain is a property of the
 // paper texture itself, not of any one article or clipping — it should look
 // identical everywhere it's drawn, not re-rolled screen to screen.
 private const val GRAIN_SEED = 5851L
+
+private class Speckle(val center: Offset, val radius: Float)
 
 /**
  * A speckled paper-grain texture (owner's ask, 2026-07): three fixed steps —
@@ -35,20 +48,22 @@ fun Modifier.paperGrain(grain: PaperGrain, ink: Color): Modifier {
     val color = ink.copy(alpha = spec.alpha)
     return this.drawWithCache {
         val cellPx = spec.cellDp.dp.toPx()
-        val radiusPx = spec.dotRadiusDp.dp.toPx()
+        val minRadiusPx = spec.minRadiusDp.dp.toPx()
+        val radiusSpanPx = (spec.maxRadiusDp - spec.minRadiusDp).dp.toPx()
         val cols = (size.width / cellPx).toInt() + 2
         val rows = (size.height / cellPx).toInt() + 2
         val rnd = Random(GRAIN_SEED)
-        val points = ArrayList<Offset>(cols * rows)
+        val speckles = ArrayList<Speckle>(cols * rows)
         for (row in 0 until rows) {
             for (col in 0 until cols) {
                 val jitterX = rnd.nextFloat() * cellPx
                 val jitterY = rnd.nextFloat() * cellPx
-                points += Offset(col * cellPx + jitterX, row * cellPx + jitterY)
+                val radius = minRadiusPx + rnd.nextFloat() * radiusSpanPx
+                speckles += Speckle(Offset(col * cellPx + jitterX, row * cellPx + jitterY), radius)
             }
         }
         onDrawBehind {
-            for (point in points) drawCircle(color, radiusPx, point)
+            for (speckle in speckles) drawCircle(color, speckle.radius, speckle.center)
         }
     }
 }

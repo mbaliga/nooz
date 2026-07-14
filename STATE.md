@@ -909,6 +909,23 @@ respect as the CI-caught log above.
   can follow. **Still open**: #4 (past-date fetch — RSS-blocked, explained) and a
   polish batch (coarse grain, header gradient falloff, richer empty states,
   squished Edit header).
+- **D28 — Polish batch B1–B4 (2026-07-14).** (a) **B1 coarse grain**:
+  `PaperGrain` speckles now carry a per-dot *varied* radius (a min/max span) and
+  the coarse step is denser (7dp weave) with small dots, so it reads as a coarser
+  paper *grain* rather than the sparse uniform "big ugly dots" a naive bigger-dot
+  step gave. (b) **B2 header falloff**: new `Modifier.topFadingEdge(active)` in
+  `:core:design` — an offscreen `BlendMode.DstIn` alpha mask that dissolves the
+  top of a scrolling region into its header instead of a hard clip line. It's
+  gated on the scroll state's `canScrollBackward` so the top rows stay crisp at
+  rest and only fade once something scrolls up under the header. Applied to the
+  Stand list, Settings, Clippings, and both Edit tabs. (c) **B3 empty states**:
+  the shared `EmptyState` gained a faint **omission emblem** (a blank sheet whose
+  middle rule is a stub — the story that isn't there) and now actually backs the
+  previously-plain-text empties (Clippings, Framings, Contrast — `fill=false`
+  inline, Edit no-match); `EmptyStand`'s big plus already qualified. (d) **B4
+  squished Edit header**: the "Nooz EDIT" masthead is now its own inner
+  baseline-aligned Row (matching the Stand/loom), so the 48dp Settings/DONE
+  controls no longer share a baseline line with it and drag it off-centre.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

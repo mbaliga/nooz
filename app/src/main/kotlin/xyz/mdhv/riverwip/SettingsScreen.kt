@@ -86,6 +86,7 @@ import xyz.mdhv.riverwip.design.HyleGroteskPlus
 import xyz.mdhv.riverwip.design.HylePrint
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.DictionaryOption
 import xyz.mdhv.riverwip.model.PaperGrain
@@ -261,13 +262,15 @@ fun SettingsScreen(
             )
         },
     ) { padding ->
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(rememberScrollState())
+                .topFadingEdge(scrollState.canScrollBackward)
+                .verticalScroll(scrollState)
                 .padding(horizontal = Tokens.Spacing.md)
-                .padding(bottom = Tokens.Spacing.xl),
+                .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
             if (!compact) CrashSection()

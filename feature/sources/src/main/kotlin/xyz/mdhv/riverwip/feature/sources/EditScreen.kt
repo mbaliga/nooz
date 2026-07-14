@@ -64,6 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.feature.river.CrossSectionPanel
 import xyz.mdhv.riverwip.model.GlobeModel
 import xyz.mdhv.riverwip.model.HealthStatus
@@ -108,20 +109,27 @@ fun EditScreen(
                 .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Sized and baseline-locked to the mock's measured ratio (EDIT's cap
-            // height ≈0.61× Nooz's; the two sit on the same baseline) — a fixed
-            // bottom-padding guess doesn't track the font's real metrics.
-            NoozWordmark(fontSize = 30.sp, modifier = Modifier.alignByBaseline())
-            Text(
-                "EDIT",
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 18.sp,
-                letterSpacing = 2.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .alignByBaseline()
-                    .padding(start = Tokens.Spacing.sm),
-            )
+            // The masthead is its own baseline-aligned unit (matching the Stand
+            // and the loom): "Nooz" and "EDIT" share a baseline *inside* this
+            // inner Row, and the inner Row is then centred whole in the header.
+            // Putting alignByBaseline directly on the outer row's children — the
+            // way this used to — made the pair share a baseline with nothing,
+            // so the 48dp Settings/DONE controls dragged the masthead up and it
+            // read as squished/misaligned (owner B4). EDIT's cap height ≈0.61×
+            // Nooz's, so the two still sit on one baseline at 30/18sp.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                NoozWordmark(fontSize = 30.sp, modifier = Modifier.alignByBaseline())
+                Text(
+                    "EDIT",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 18.sp,
+                    letterSpacing = 2.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .alignByBaseline()
+                        .padding(start = Tokens.Spacing.sm),
+                )
+            }
             Spacer(Modifier.weight(1f))
             IconButton(onClick = onOpenSettings) {
                 Icon(Icons.Filled.Settings, contentDescription = "Settings")
@@ -231,19 +239,21 @@ private fun SourcesTab(vm: SourcesViewModel) {
             }
         }
 
+        val listScroll = rememberScrollState()
         Column(
             Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .topFadingEdge(listScroll.canScrollBackward)
+                .verticalScroll(listScroll)
                 .padding(horizontal = Tokens.Spacing.md),
         ) {
             if (filteredStarters.isEmpty() && filteredBuilders.isEmpty()) {
-                Text(
-                    "No sources match your search.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = Tokens.Spacing.lg),
+                EmptyState(
+                    title = "No sources match",
+                    body = "Nothing in the catalogue fits that search and region. Clear the filter, or add any feed by URL below.",
+                    fill = false,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
             for ((region, def) in filteredStarters) {
@@ -537,10 +547,12 @@ private fun RegionTopicsTab(
         else -> "${bandRegions.first().label} +${bandRegions.size - 1} more"
     }
 
+    val scroll = rememberScrollState()
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .topFadingEdge(scroll.canScrollBackward)
+            .verticalScroll(scroll)
             .padding(horizontal = Tokens.Spacing.md),
     ) {
         Text(

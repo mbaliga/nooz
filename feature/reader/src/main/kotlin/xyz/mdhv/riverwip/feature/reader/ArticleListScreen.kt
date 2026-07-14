@@ -52,6 +52,7 @@ import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.Item
 import java.time.LocalDate
 import java.time.ZoneId
@@ -215,7 +216,7 @@ fun ArticleListScreen(
         } else {
             LazyColumn(
                 state = listState,
-                modifier = Modifier.fillMaxSize().nestedScroll(pullConnection),
+                modifier = Modifier.fillMaxSize().topFadingEdge(listState.canScrollBackward).nestedScroll(pullConnection),
                 contentPadding = PaddingValues(vertical = Tokens.Spacing.xs),
             ) {
                 items(items, key = { it.id }) { item ->

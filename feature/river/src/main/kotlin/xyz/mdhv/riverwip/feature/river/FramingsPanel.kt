@@ -13,10 +13,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.StoryClustering
@@ -48,18 +48,11 @@ fun FramingsPanel(
     }
 
     if (clusters.isEmpty()) {
-        Column(
-            modifier.fillMaxSize().padding(Tokens.Spacing.xl),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                "No story here was covered by more than one of your sources yet. Framings appear once two outlets tell the same story.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            )
-        }
+        EmptyState(
+            title = "No overlapping stories yet",
+            body = "Framings appear when two of your sources tell the same story — set side by side, the wording each chose is the contrast.",
+            modifier = modifier,
+        )
         return
     }
 
