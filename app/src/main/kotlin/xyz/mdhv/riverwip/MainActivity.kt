@@ -99,6 +99,7 @@ fun RiverApp() {
             weeklyAggregateRepository = container.weeklyAggregateRepository,
             sourceRepository = container.sourceRepository,
             settingsRepository = container.settingsRepository,
+            itemRepository = container.itemRepository,
         ),
     )
     val clippingsVm: ClippingsViewModel = viewModel(
@@ -213,7 +214,16 @@ fun RiverApp() {
                     onOpenSettings = { screen = Screen.SETTINGS },
                 )
                 Screen.SETTINGS -> SettingsScreen(vm = settingsVm, onBack = { screen = Screen.STAND })
-                Screen.LOOM -> LoomScreen(vm = loomVm, onClose = { screen = Screen.STAND })
+                Screen.LOOM -> LoomScreen(
+                    vm = loomVm,
+                    onClose = { screen = Screen.STAND },
+                    // Tapping a framing opens that article in the reader — the
+                    // loom is where you notice, the Stand is where you read.
+                    onOpenItem = { item ->
+                        readerVm.openItem(item)
+                        screen = Screen.STAND
+                    },
+                )
                 Screen.CLIPPINGS -> ClippingsScreen(
                     vm = clippingsVm,
                     paperGrain = settings.paperGrain,

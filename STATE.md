@@ -835,6 +835,29 @@ respect as the CI-caught log above.
   sort control is the configurable lever for "what this view is about." Supply
   is never filtered here, same as the loom — omission is the subject.
 
+- **D25 — Contrast phases 2–3 + reader bar (2026-07-13).** The owner asked for
+  all three contrast phases; 2 and 3 land here, giving the loom a three-way
+  toggle: **Loom | Contrast | Framings**. (a) **Phase 2 (filter vs reality)**:
+  the Contrast view gains a "Reach" funnel at the top — everything that
+  **flowed** → what your **filter** let through (exact by topic; region shown
+  in the filter label) → what you **read** — as three nested bars on one scale,
+  with the two omissions named in plain counts ("your filter set aside N", "you
+  read R of the M it let through") plus an enabled-vs-delivered-vs-quiet sources
+  line. Reuses the loom's own `filter`/aggregate/`enabledSourceCount`. (b)
+  **Phase 3 (framings)**: `StoryClustering` (`core:model`, pure + unit-tested)
+  groups the selected day's headlines that ≥2 different sources covered, by
+  shared significant words (union-find over keyword overlap, stopwords/short
+  words dropped). `FramingsPanel` shows each such story as a card with every
+  outlet's headline verbatim, side by side — the "invades" vs "cross into"
+  comparison, made by the reader. Clustering is fully on-device; the
+  *automatic* marking of which words are loaded stays the lens's job and waits
+  on a real inference provider (honest stub). `LoomViewModel` gained
+  `itemRepository` (only recent, un-pruned items survive, so framings are a
+  recent-days feature); tapping a framing opens that article in the reader. (c)
+  **Reader bottom bar**: now shows the reader's own today **read** mix
+  (`todayReadMix`), consistent with the Stand's top bar, instead of the ambient
+  supply mix (owner).
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

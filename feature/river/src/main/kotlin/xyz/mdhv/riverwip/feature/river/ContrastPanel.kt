@@ -15,6 +15,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,11 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Topic
 import kotlin.math.roundToInt
 
@@ -51,24 +55,42 @@ private data class ContrastRow(
     val gap: Float get() = flowedShare - readShare
 }
 
+private fun plural(n: Int, one: String, many: String) = if (n == 1) one else many
+
 /**
- * The omission dashboard (owner's contrast idea, phase 1): the loom's stark
- * counterpart. Where the woven canvas is atmospheric, this is a blunt ledger —
- * for the selected day/range, each topic's share of what **flowed** set against
- * its share of what you actually **read**, so the gap between the two (the
- * omission this whole app is about) is impossible to miss. A sort control lets
- * the reader aim the view at what flowed, what they read, or the widest gap.
- * Supply is never filtered here — omission is the subject, not something to
- * hide (same principle the loom holds to).
+ * The omission dashboard (owner's contrast idea, phases 1–2): the loom's stark
+ * counterpart. Where the woven canvas is atmospheric, this is a blunt ledger.
+ *
+ * Two contrasts, top to bottom:
+ *  - **Reach** (phase 2, filter vs reality): a funnel from everything that
+ *    **flowed** from your sources, down through what your **filter** let past,
+ *    down to what you actually **read** — the two omissions (the one you chose
+ *    with your filter, and the one your attention made) named in plain counts.
+ *  - **By topic** (phase 1): each topic's share of the stream set against its
+ *    share of your reading, on one scale, so the gap is impossible to miss.
+ *
+ * Supply is never filtered away here — omission is the subject, same principle
+ * the loom holds to.
  */
 @Composable
 fun ContrastPanel(
     streamByTopic: Map<String, Int>,
     readByTopic: Map<String, Int>,
+    sourceCounts: Map<String, Int>,
+    filter: ReaderFilter,
+    enabledSourceCount: Int,
     modifier: Modifier = Modifier,
 ) {
     val totalFlowed = streamByTopic.values.sum()
     val totalRead = readByTopic.values.sum()
+    val admitted = if (filter.allTopics) {
+        totalFlowed
+    } else {
+        streamByTopic.entries.filter { filter.matchesTopic(Topic.fromKey(it.key)) }.sumOf { it.value }
+    }
+    val setAside = (totalFlowed - admitted).coerceAtLeast(0)
+    val delivered = sourceCounts.count { it.value > 0 }
+    val silent = (enabledSourceCount - delivered).coerceAtLeast(0)
 
     val rows = remember(streamByTopic, readByTopic) {
         val keys = streamByTopic.keys + readByTopic.keys
@@ -93,11 +115,12 @@ fun ContrastPanel(
             ContrastSort.GAP -> rows.sortedByDescending { it.gap }
         }
     }
-    // Both bars share one scale so their lengths are directly comparable — the
-    // longest single share in the whole set fills the row.
     val maxShare = remember(rows) {
         rows.maxOfOrNull { maxOf(it.flowedShare, it.readShare) }?.takeIf { it > 0f } ?: 1f
     }
+
+    val onBg = MaterialTheme.colorScheme.onBackground
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
         modifier
@@ -106,26 +129,56 @@ fun ContrastPanel(
             .padding(horizontal = Tokens.Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
     ) {
-        // The headline: the honest ratio, in plain words.
-        val pct = if (totalFlowed == 0) 0 else (100f * totalRead / totalFlowed).roundToInt()
-        Text(
-            "You read $totalRead of $totalFlowed stories that flowed — $pct%.",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+        if (totalFlowed == 0) {
+            Text(
+                "Nothing flowed this day. The contrast appears once your sources do.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = muted,
+                modifier = Modifier.padding(top = Tokens.Spacing.lg),
+            )
+            return@Column
+        }
 
-        // The biggest blind spot: most flowed, least read (only when you did
-        // read *something*, else the "gap" is just everything).
+        // ---- Reach funnel (phase 2) ----
+        SectionHeading("Reach")
+        Text(
+            "Your filter: ${filter.summary()}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = muted,
+        )
+        FunnelRow("Flowed", totalFlowed, 1f, onBg.copy(alpha = 0.30f))
+        FunnelRow("Your filter let through", admitted, admitted.toFloat() / totalFlowed, onBg.copy(alpha = 0.60f))
+        FunnelRow("You read", totalRead, totalRead.toFloat() / totalFlowed, onBg)
+
+        val sentences = buildList {
+            if (setAside > 0) {
+                add("Your filter set aside $setAside ${plural(setAside, "story", "stories")} before they reached you.")
+            }
+            if (admitted > 0) {
+                add("You read $totalRead of the $admitted it let through.")
+            }
+            val sourceLine = buildString {
+                append("$enabledSourceCount ${plural(enabledSourceCount, "source", "sources")} enabled · $delivered delivered")
+                if (silent > 0) append(" · $silent quiet")
+            }
+            add(sourceLine)
+        }
+        for (line in sentences) {
+            Text(line, style = MaterialTheme.typography.bodyMedium, color = muted)
+        }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+        // ---- By topic (phase 1) ----
+        SectionHeading("By topic")
         val blindSpot = ordered.maxByOrNull { it.gap }
         if (totalRead > 0 && blindSpot != null && blindSpot.gap > 0.08f) {
             Text(
                 "Widest gap: ${blindSpot.topic.placeholderLabel} — ${(blindSpot.flowedShare * 100).roundToInt()}% of the stream, ${(blindSpot.readShare * 100).roundToInt()}% of your reading.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = muted,
             )
         }
-
-        // Sort control — the small lever for "what this view is about".
         Row(
             Modifier.selectableGroup(),
             horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -136,26 +189,37 @@ fun ContrastPanel(
                     option.label,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
-                    color = if (chosen) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (chosen) onBg else muted,
                     modifier = Modifier
                         .selectable(selected = chosen, role = Role.RadioButton, onClick = { sort = option })
                         .padding(vertical = Tokens.Spacing.xxs),
                 )
             }
         }
-
-        if (totalFlowed == 0) {
-            Text(
-                "Nothing flowed this day. The contrast appears once your sources do.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = Tokens.Spacing.lg),
-            )
-        } else {
-            for (row in ordered) {
-                ContrastRowView(row = row, maxShare = maxShare)
-            }
+        for (row in ordered) {
+            ContrastRowView(row = row, maxShare = maxShare)
         }
+    }
+}
+
+/** One funnel stage — a labelled bar on the shared "everything flowed = full width" scale. */
+@Composable
+private fun FunnelRow(label: String, count: Int, fraction: Float, color: Color) {
+    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                "$count",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+        ShareBar(fraction = fraction, color = color)
     }
 }
 
@@ -193,7 +257,7 @@ private fun ContrastRowView(row: ContrastRow, maxShare: Float) {
 }
 
 @Composable
-private fun ShareBar(fraction: Float, color: androidx.compose.ui.graphics.Color) {
+private fun ShareBar(fraction: Float, color: Color) {
     Box(
         Modifier
             .fillMaxWidth()

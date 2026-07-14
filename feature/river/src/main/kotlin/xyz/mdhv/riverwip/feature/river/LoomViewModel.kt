@@ -9,11 +9,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
+import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.WeekBucketing
 import xyz.mdhv.riverwip.model.WeeklyAggregate
@@ -29,6 +32,7 @@ class LoomViewModel(
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     sourceRepository: SourceRepository,
     settingsRepository: SettingsRepository,
+    itemRepository: ItemRepository,
 ) : ViewModel() {
 
     private val _days = MutableStateFlow<List<WeeklyAggregate>>(emptyList())
@@ -40,6 +44,20 @@ class LoomViewModel(
 
     val filter: StateFlow<ReaderFilter> = settingsRepository.observeFilter()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), ReaderFilter())
+
+    /**
+     * Recent items from enabled sources — the raw headlines the Framings view
+     * clusters by story. Only recent items survive (older ones are pruned to
+     * the weekly aggregate), so framing contrasts are a recent-days feature;
+     * the panel shows an empty state for days whose items are gone.
+     */
+    val recentItems: StateFlow<List<Item>> = itemRepository.observeItemsForEnabledSources()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+
+    /** Source id → title, for labelling each framing with its outlet. */
+    val sourceTitles: StateFlow<Map<String, String>> = sourceRepository.observeSources()
+        .map { list -> list.associate { it.id to it.title } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
 
     /** Selected day start (millis), or the range start when [selectedRangeEnd] is set. Null = the latest day with data (today, once anything flowed). */
     var selectedDayStart: Long? by mutableStateOf(null)
@@ -137,9 +155,10 @@ class LoomViewModel(
         private val weeklyAggregateRepository: WeeklyAggregateRepository,
         private val sourceRepository: SourceRepository,
         private val settingsRepository: SettingsRepository,
+        private val itemRepository: ItemRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            LoomViewModel(weeklyAggregateRepository, sourceRepository, settingsRepository) as T
+            LoomViewModel(weeklyAggregateRepository, sourceRepository, settingsRepository, itemRepository) as T
     }
 }

@@ -44,11 +44,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.DayLoomLayout
+import xyz.mdhv.riverwip.model.Item
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private val DAY_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy")
+private const val MILLIS_PER_DAY = 86_400_000L
+
+/** The three ways to read a day: the woven loom, the stark contrast ledger, the framing comparison. */
+private enum class LoomMode { LOOM, CONTRAST, FRAMINGS }
 
 /**
  * The loom surface (owner's Viz flow): a single fixed screen — no scroll. The
@@ -60,13 +65,15 @@ private val DAY_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy")
  * continuous morph), past a threshold. The grabber is the accessible equivalent.
  */
 @Composable
-fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
+fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Unit) {
     val days by vm.days.collectAsStateWithLifecycle()
     val enabledCount by vm.enabledSourceCount.collectAsStateWithLifecycle()
     val filter by vm.filter.collectAsStateWithLifecycle()
-    // Two ways to read the same day (owner's contrast idea): the woven Loom, or
-    // its stark ledger counterpart, the Contrast dashboard.
-    var contrast by remember { mutableStateOf(false) }
+    val recentItems by vm.recentItems.collectAsStateWithLifecycle()
+    val sourceTitles by vm.sourceTitles.collectAsStateWithLifecycle()
+    // Three ways to read the same day (owner's contrast idea): the woven Loom,
+    // the stark Contrast ledger, and the Framings comparison.
+    var mode by remember { mutableStateOf(LoomMode.LOOM) }
 
     if (vm.showDatePicker) {
         LoomDatePicker(
@@ -195,44 +202,64 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit) {
             }
         }
 
-        // The mode toggle: the same day, woven or laid bare.
+        // The mode toggle: the same day, woven, laid bare, or set side by side.
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = Tokens.Spacing.xxs),
             horizontalArrangement = Arrangement.Center,
         ) {
-            ModeTab("Loom", !contrast) { contrast = false }
-            ModeTab("Contrast", contrast) { contrast = true }
+            ModeTab("Loom", mode == LoomMode.LOOM) { mode = LoomMode.LOOM }
+            ModeTab("Contrast", mode == LoomMode.CONTRAST) { mode = LoomMode.CONTRAST }
+            ModeTab("Framings", mode == LoomMode.FRAMINGS) { mode = LoomMode.FRAMINGS }
         }
 
-        if (contrast) {
-            ContrastPanel(
+        when (mode) {
+            LoomMode.CONTRAST -> ContrastPanel(
                 streamByTopic = aggregate?.streamCountsByTopic ?: emptyMap(),
                 readByTopic = aggregate?.readCountsByTopic ?: emptyMap(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(top = Tokens.Spacing.sm),
-            )
-        } else if (aggregate == null || loom.totalFlowed == 0) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    "Nothing flowed this day. The loom weaves once your sources do.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(Tokens.Spacing.xl),
-                )
-            }
-        } else {
-            DayLoomCanvas(
-                loom = loom,
+                sourceCounts = aggregate?.sourceCounts ?: emptyMap(),
+                filter = filter,
                 enabledSourceCount = enabledCount,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .padding(top = Tokens.Spacing.sm),
             )
+            LoomMode.FRAMINGS -> {
+                val windowStart = aggregate?.weekStart ?: 0L
+                val windowEndExclusive = (vm.selectedRangeEnd ?: windowStart) + MILLIS_PER_DAY
+                FramingsPanel(
+                    items = recentItems,
+                    windowStart = windowStart,
+                    windowEndExclusive = windowEndExclusive,
+                    sourceTitles = sourceTitles,
+                    onOpenItem = onOpenItem,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(top = Tokens.Spacing.sm),
+                )
+            }
+            LoomMode.LOOM -> if (aggregate == null || loom.totalFlowed == 0) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        "Nothing flowed this day. The loom weaves once your sources do.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(Tokens.Spacing.xl),
+                    )
+                }
+            } else {
+                DayLoomCanvas(
+                    loom = loom,
+                    enabledSourceCount = enabledCount,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(top = Tokens.Spacing.sm),
+                )
+            }
         }
     }
 }

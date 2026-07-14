@@ -114,7 +114,10 @@ fun ReaderDetailScreen(
 ) {
     val state by vm.articleState.collectAsStateWithLifecycle()
     val sourceTitles by vm.sourceTitles.collectAsStateWithLifecycle()
-    val todayMix by vm.todayMix.collectAsStateWithLifecycle()
+    // The reader's bottom bar is the reader's *own* today mix — what they've
+    // read today (owner), the same read-distribution the Stand's top bar
+    // shows, not the ambient supply mix. Tapping it still opens the loom.
+    val todayMix by vm.todayReadMix.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val topic = Classifier.dominantTopic(item.topics)
     val background = MaterialTheme.colorScheme.background
