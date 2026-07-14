@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -345,11 +346,17 @@ private fun BuilderRow(def: ServiceDef, onAdd: (String) -> Unit) {
                 )
             }
         }
+        // Minimal (owner: "just a big plus icon rather than a button and text"):
+        // a plus adds a one-tap builder; a key opens the free-key signup.
         when {
-            def.requiresKey && def.keySignupUrl != null -> TextButton(onClick = {
+            def.requiresKey && def.keySignupUrl != null -> IconButton(onClick = {
                 context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(def.keySignupUrl)))
-            }) { Text("Get a key") }
-            oneTap -> OutlinedButton(onClick = { onAdd(example!!) }) { Text("Add") }
+            }) {
+                Icon(Icons.Filled.Key, contentDescription = "Get a free key for ${def.title}", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            oneTap -> IconButton(onClick = { onAdd(example!!) }) {
+                Icon(Icons.Filled.Add, contentDescription = "Add ${def.title}")
+            }
             else -> {}
         }
     }

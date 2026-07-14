@@ -90,7 +90,11 @@ fun Modifier.readerGestures(
         // room per edge, so an interior swipe never hijacks the reading
         // gesture. Parked: the whole (small) floating card is fair game, and
         // a drag too short to leave touch-slop resolves as a tap instead.
-        val edgeZonePx = if (parkedRoom == null) 24.dp.toPx() else null
+        // 56dp, not 24dp (owner: "difficult to open") — the wider band gives a
+        // comfortable grab and, crucially, extends past the ~20dp the OS claims
+        // for its own edge-back gesture, so a drag starting just inside still
+        // reaches us instead of being eaten by system navigation.
+        val edgeZonePx = if (parkedRoom == null) 56.dp.toPx() else null
         val touchSlop = viewConfiguration.touchSlop
         awaitEachGesture {
             val down = awaitFirstDown(pass = PointerEventPass.Main)

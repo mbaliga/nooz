@@ -1,6 +1,5 @@
 package xyz.mdhv.riverwip.feature.river
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
@@ -122,27 +117,11 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                     onVerticalDrag = { _, dy -> lift = (lift - dy).coerceAtLeast(0f) },
                 )
             }
-            .padding(top = Tokens.Spacing.xs),
+            .padding(top = Tokens.Spacing.sm),
     ) {
-        // Grabber: the drag-to-dismiss made visible, and tappable as its a11y equivalent.
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .semantics {
-                    contentDescription = "Close the loom"
-                    role = Role.Button
-                }
-                .clickable(onClickLabel = "Close the loom") { onClose() },
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(
-                Modifier
-                    .width(36.dp)
-                    .height(4.dp)
-                    .background(MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(2.dp)),
-            )
-        }
+        // No grabber handle (owner: "immersive, immersive, immersive"). Swipe up
+        // to dismiss — the whole surface takes the gesture — and the system back
+        // control returns to the Stand as the accessible equivalent.
 
         Row(
             modifier = Modifier

@@ -1,5 +1,6 @@
 package xyz.mdhv.riverwip.feature.river
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +26,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,19 +60,19 @@ private data class ContrastRow(
 private fun plural(n: Int, one: String, many: String) = if (n == 1) one else many
 
 /**
- * The omission dashboard (owner's contrast idea, phases 1–2): the loom's stark
- * counterpart. Where the woven canvas is atmospheric, this is a blunt ledger.
+ * The omission dashboard (owner's contrast idea) — the loom's stark counterpart,
+ * redrawn minimal (owner's references): one muted ink, thin marks, wide
+ * whitespace, numbers doing the talking. Two contrasts, top to bottom:
  *
- * Two contrasts, top to bottom:
- *  - **Reach** (phase 2, filter vs reality): a funnel from everything that
- *    **flowed** from your sources, down through what your **filter** let past,
- *    down to what you actually **read** — the two omissions (the one you chose
- *    with your filter, and the one your attention made) named in plain counts.
- *  - **By topic** (phase 1): each topic's share of the stream set against its
- *    share of your reading, on one scale, so the gap is impossible to miss.
+ *  - **Reach**: a single nested bar funnelling everything that **flowed** →
+ *    what your **filter** let through → what you **read**, each a deeper shade
+ *    of the one ink, so the two omissions (the one you chose, the one your
+ *    attention made) are the shrinking of the bar.
+ *  - **By topic**: a dumbbell per topic — a faint dot for its share of the
+ *    stream, a solid dot for its share of your reading, a hairline between
+ *    them. The length of that line is the gap.
  *
- * Supply is never filtered away here — omission is the subject, same principle
- * the loom holds to.
+ * Supply is never filtered away here — omission is the subject.
  */
 @Composable
 fun ContrastPanel(
@@ -119,158 +121,200 @@ fun ContrastPanel(
         rows.maxOfOrNull { maxOf(it.flowedShare, it.readShare) }?.takeIf { it > 0f } ?: 1f
     }
 
-    val onBg = MaterialTheme.colorScheme.onBackground
+    val ink = MaterialTheme.colorScheme.onBackground
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
         modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = Tokens.Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+            .padding(horizontal = Tokens.Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xl),
     ) {
         if (totalFlowed == 0) {
             Text(
                 "Nothing flowed this day. The contrast appears once your sources do.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = muted,
-                modifier = Modifier.padding(top = Tokens.Spacing.lg),
+                modifier = Modifier.padding(top = Tokens.Spacing.xl),
             )
             return@Column
         }
 
-        // ---- Reach funnel (phase 2) ----
-        SectionHeading("Reach")
-        Text(
-            "Your filter: ${filter.summary()}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = muted,
-        )
-        FunnelRow("Flowed", totalFlowed, 1f, onBg.copy(alpha = 0.30f))
-        FunnelRow("Your filter let through", admitted, admitted.toFloat() / totalFlowed, onBg.copy(alpha = 0.60f))
-        FunnelRow("You read", totalRead, totalRead.toFloat() / totalFlowed, onBg)
-
-        val sentences = buildList {
-            if (setAside > 0) {
-                add("Your filter set aside $setAside ${plural(setAside, "story", "stories")} before they reached you.")
-            }
-            if (admitted > 0) {
-                add("You read $totalRead of the $admitted it let through.")
-            }
-            val sourceLine = buildString {
-                append("$enabledSourceCount ${plural(enabledSourceCount, "source", "sources")} enabled · $delivered delivered")
-                if (silent > 0) append(" · $silent quiet")
-            }
-            add(sourceLine)
-        }
-        for (line in sentences) {
-            Text(line, style = MaterialTheme.typography.bodyMedium, color = muted)
-        }
-
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-        // ---- By topic (phase 1) ----
-        SectionHeading("By topic")
-        val blindSpot = ordered.maxByOrNull { it.gap }
-        if (totalRead > 0 && blindSpot != null && blindSpot.gap > 0.08f) {
-            Text(
-                "Widest gap: ${blindSpot.topic.placeholderLabel} — ${(blindSpot.flowedShare * 100).roundToInt()}% of the stream, ${(blindSpot.readShare * 100).roundToInt()}% of your reading.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = muted,
+        // ---- Reach: one nested funnel bar + a spare legend ----
+        Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
+            SectionHeading("Reach")
+            NestedFunnel(
+                filterFraction = admitted.toFloat() / totalFlowed,
+                readFraction = totalRead.toFloat() / totalFlowed,
+                ink = ink,
             )
-        }
-        Row(
-            Modifier.selectableGroup(),
-            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
-        ) {
-            for (option in ContrastSort.entries) {
-                val chosen = sort == option
-                Text(
-                    option.label,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
-                    color = if (chosen) onBg else muted,
-                    modifier = Modifier
-                        .selectable(selected = chosen, role = Role.RadioButton, onClick = { sort = option })
-                        .padding(vertical = Tokens.Spacing.xxs),
+            Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
+                FunnelLegend("Flowed", totalFlowed, ink.copy(alpha = 0.22f), ink)
+                FunnelLegend("Filter", admitted, ink.copy(alpha = 0.5f), ink)
+                FunnelLegend("Read", totalRead, ink, ink)
+            }
+            val sentences = buildList {
+                if (setAside > 0) add("Your filter set aside $setAside ${plural(setAside, "story", "stories")} before they reached you.")
+                if (admitted > 0) add("You read $totalRead of the $admitted it let through.")
+                add(
+                    buildString {
+                        append("$enabledSourceCount ${plural(enabledSourceCount, "source", "sources")} on · $delivered delivered")
+                        if (silent > 0) append(" · $silent quiet")
+                    },
                 )
             }
+            for (line in sentences) {
+                Text(line, style = MaterialTheme.typography.bodyMedium, color = muted)
+            }
         }
-        for (row in ordered) {
-            ContrastRowView(row = row, maxShare = maxShare)
+
+        // ---- By topic: dumbbells + a spare sort lever ----
+        Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SectionHeading("By topic", modifier = Modifier.weight(1f))
+                Row(
+                    Modifier.selectableGroup(),
+                    horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
+                ) {
+                    for (option in ContrastSort.entries) {
+                        val chosen = sort == option
+                        Text(
+                            option.label,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                            color = if (chosen) ink else muted,
+                            modifier = Modifier
+                                .selectable(selected = chosen, role = Role.RadioButton, onClick = { sort = option })
+                                .padding(vertical = Tokens.Spacing.xxs),
+                        )
+                    }
+                }
+            }
+            val blindSpot = ordered.maxByOrNull { it.gap }
+            if (totalRead > 0 && blindSpot != null && blindSpot.gap > 0.08f) {
+                Text(
+                    "Widest gap: ${blindSpot.topic.placeholderLabel} — ${(blindSpot.flowedShare * 100).roundToInt()}% flowed, ${(blindSpot.readShare * 100).roundToInt()}% read.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = muted,
+                )
+            }
+            for (row in ordered) {
+                DumbbellRow(row = row, maxShare = maxShare, ink = ink, muted = muted)
+            }
+            // A whisper of a legend for the two dots.
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = Tokens.Spacing.xs),
+            ) {
+                DotKey(filled = false, label = "flowed", ink = ink, muted = muted)
+                DotKey(filled = true, label = "read", ink = ink, muted = muted)
+            }
         }
     }
 }
 
-/** One funnel stage — a labelled bar on the shared "everything flowed = full width" scale. */
+/**
+ * The funnel as one bar: the whole track is what flowed (faintest), the filter
+ * sits over it (mid), the read sits over that (solid) — nested left-aligned, so
+ * the bar simply *shrinks* through the two omissions.
+ */
 @Composable
-private fun FunnelRow(label: String, count: Int, fraction: Float, color: Color) {
-    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.weight(1f),
-            )
-            Text(
-                "$count",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        }
-        ShareBar(fraction = fraction, color = color)
-    }
-}
-
-@Composable
-private fun ContrastRowView(row: ContrastRow, maxShare: Float) {
-    val color = row.topic.toComposeColor()
-    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(color),
-            )
-            Text(
-                row.topic.placeholderLabel,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = Tokens.Spacing.xs),
-            )
-            Text(
-                "saw ${(row.flowedShare * 100).roundToInt()}%  ·  read ${(row.readShare * 100).roundToInt()}%",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        // Two bars on one scale: the faint one is everything that flowed (the
-        // potential); the solid one is what you actually read. Length apart =
-        // the omission.
-        ShareBar(fraction = row.flowedShare / maxShare, color = color.copy(alpha = 0.28f))
-        ShareBar(fraction = row.readShare / maxShare, color = color)
-    }
-}
-
-@Composable
-private fun ShareBar(fraction: Float, color: Color) {
+private fun NestedFunnel(filterFraction: Float, readFraction: Float, ink: Color) {
     Box(
         Modifier
             .fillMaxWidth()
-            .height(8.dp)
+            .height(14.dp)
             .clip(RoundedCornerShape(Tokens.Radius.sm))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(ink.copy(alpha = 0.22f)),
     ) {
         Box(
             Modifier
-                .fillMaxWidth(fraction.coerceIn(0f, 1f))
-                .height(8.dp)
+                .fillMaxWidth(filterFraction.coerceIn(0f, 1f))
+                .height(14.dp)
                 .clip(RoundedCornerShape(Tokens.Radius.sm))
-                .background(color),
+                .background(ink.copy(alpha = 0.5f)),
         )
+        Box(
+            Modifier
+                .fillMaxWidth(readFraction.coerceIn(0f, 1f))
+                .height(14.dp)
+                .clip(RoundedCornerShape(Tokens.Radius.sm))
+                .background(ink),
+        )
+    }
+}
+
+@Composable
+private fun FunnelLegend(label: String, count: Int, swatch: Color, ink: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
+        Box(Modifier.size(8.dp).clip(CircleShape).background(swatch))
+        Column {
+            Text(label.uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("$count", style = MaterialTheme.typography.titleMedium, color = ink)
+        }
+    }
+}
+
+/**
+ * One topic as a dumbbell: a faint hollow dot at its share of the stream, a
+ * solid dot at its share of your reading, a hairline connecting them. The gap
+ * between the dots is the omission, read at a glance.
+ */
+@Composable
+private fun DumbbellRow(row: ContrastRow, maxShare: Float, ink: Color, muted: Color) {
+    val topicColor = row.topic.toComposeColor()
+    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(7.dp).clip(CircleShape).background(topicColor))
+            Text(
+                row.topic.placeholderLabel,
+                style = MaterialTheme.typography.bodyLarge,
+                color = ink,
+                modifier = Modifier.weight(1f).padding(start = Tokens.Spacing.xs),
+            )
+            Text(
+                "${(row.flowedShare * 100).roundToInt()}% / ${(row.readShare * 100).roundToInt()}%",
+                style = MaterialTheme.typography.labelSmall,
+                color = muted,
+            )
+        }
+        val flowedX = (row.flowedShare / maxShare).coerceIn(0f, 1f)
+        val readX = (row.readShare / maxShare).coerceIn(0f, 1f)
+        Canvas(
+            Modifier
+                .fillMaxWidth()
+                .height(16.dp),
+        ) {
+            val y = size.height / 2f
+            val pad = 5.dp.toPx()
+            val usable = size.width - pad * 2
+            val fx = pad + flowedX * usable
+            val rx = pad + readX * usable
+            // The baseline track.
+            drawLine(muted.copy(alpha = 0.25f), Offset(pad, y), Offset(size.width - pad, y), strokeWidth = 1.dp.toPx())
+            // The connector = the gap.
+            drawLine(topicColor.copy(alpha = 0.5f), Offset(fx, y), Offset(rx, y), strokeWidth = 2.dp.toPx())
+            // Flowed: a hollow ring (the potential).
+            drawCircle(topicColor.copy(alpha = 0.55f), radius = 4.dp.toPx(), center = Offset(fx, y), style = Stroke(width = 1.5.dp.toPx()))
+            // Read: a solid dot (the actual).
+            drawCircle(topicColor, radius = 4.5.dp.toPx(), center = Offset(rx, y))
+        }
+    }
+}
+
+@Composable
+private fun DotKey(filled: Boolean, label: String, ink: Color, muted: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
+        Canvas(Modifier.size(10.dp)) {
+            val c = Offset(size.width / 2f, size.height / 2f)
+            if (filled) {
+                drawCircle(ink, radius = 4.dp.toPx(), center = c)
+            } else {
+                drawCircle(ink, radius = 3.5.dp.toPx(), center = c, style = Stroke(width = 1.5.dp.toPx()))
+            }
+        }
+        Text(label, style = MaterialTheme.typography.labelSmall, color = muted)
     }
 }

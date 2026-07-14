@@ -858,6 +858,34 @@ respect as the CI-caught log above.
   (`todayReadMix`), consistent with the Stand's top bar, instead of the ambient
   supply mix (owner).
 
+- **D26 — Minimal contrast redesign + owner polish batch (2026-07-14).**
+  (a) **Contrast, redrawn minimal** (owner's assessment-report references —
+  one muted ink, thin marks, wide whitespace): the Reach section is now a
+  single *nested funnel bar* (flowed = faintest full width, filter = mid over
+  it, read = solid over that, so the bar just shrinks through the two
+  omissions) with a spare number legend; By-topic is now a *dumbbell* per topic
+  (a hollow dot for its share of the stream, a solid dot for its share of your
+  reading, a hairline between = the gap). Framings dropped its filled cards for
+  hairline-separated groups. (b) **#1 model "wiring error"**: a downloaded model
+  made `LocalLlamaProvider.isAvailable()` true, so the router picked it and its
+  stubbed call failed *every time* — surfacing the raw wiring message. Availability
+  is now gated on a `RUNTIME_WIRED` flag (false until a real llama.cpp binding
+  lands), so the router falls through cleanly to a configured key or the honest
+  "needs setup" message; a model on disk is still detected (`hasModelOnDisk`) for
+  when the runtime lands. The lens's rejected-rewrite copy is muted, not alarming
+  red. (c) **#5** builder/API adds are a bare plus (or key) icon, not a text
+  button. (d) **#6a** the region globe spins horizontally only (vertical pan
+  dropped). (e) **#7** the reader's edge-to-open zone widened 24dp→56dp, past the
+  OS back-gesture strip, so the Stand/Settings rooms open easily. (f) **#10** the
+  loom's grabber handle is gone (swipe-up + system back still dismiss) —
+  immersive. **Logged, not built this batch** (architectural / sequenced next):
+  #8 parked home (list + peeking reader, first-run manual in the pane), #9 one
+  fixed date position, #2 splitting reader-quick vs full settings, #3+#6b moving
+  region/topics into the contrast space with the globe opened as a read-by-region
+  heatmap. **Blocked**: #4 fetching arbitrary past dates — live RSS feeds carry
+  only recent items, so historical days can't be back-filled from them (a GDELT
+  date-query path could cover only GDELT-builder sources).
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

@@ -58,7 +58,10 @@ fun GlobeCanvas(
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
                     if (zoom != 1f) onZoomBand(zoom.toDouble())
-                    if (pan != Offset.Zero) onSpin(pan.x * 0.4, -pan.y * 0.4)
+                    // Horizontal spin only (owner): the earth yaws around its
+                    // axis; it never tips. The vertical pan component is dropped
+                    // so the poles stay put and regions read consistently.
+                    if (pan.x != 0f) onSpin(pan.x * 0.4, 0.0)
                 }
             },
     ) {

@@ -1,25 +1,21 @@
 package xyz.mdhv.riverwip.feature.river
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.Item
@@ -69,8 +65,8 @@ fun FramingsPanel(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),
-        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Tokens.Spacing.lg, vertical = Tokens.Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xl),
     ) {
         items(clusters, key = { it.first.members.first().id }) { (cluster, members) ->
             FramingCard(
@@ -92,31 +88,21 @@ private fun FramingCard(
     sourceTitles: Map<String, String>,
     onOpenItem: (Item) -> Unit,
 ) {
+    // No filled card (owner: minimal): a hairline caps the group, the rough
+    // subject sits above, and each outlet's framing follows — nothing but ink
+    // and space doing the work.
     Column(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(Tokens.Radius.md))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(Tokens.Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
+        Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
     ) {
-        // The rough subject (the shared words) + how many outlets ran it.
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                keywords.joinToString(" · ").ifBlank { "Same story" }.uppercase(),
-                style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-            )
-            Text(
-                "$sourceCount sources",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        // One headline per outlet — the framings, verbatim, to compare.
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Text(
+            (keywords.joinToString(" · ").ifBlank { "same story" } + "  ·  $sourceCount sources").uppercase(),
+            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
         for (item in members) {
             FramingLine(
                 source = sourceTitles[item.sourceId] ?: "",
@@ -132,8 +118,7 @@ private fun FramingLine(source: String, title: String, onClick: () -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = Tokens.Spacing.xxs),
+            .clickable(onClick = onClick),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
     ) {
         if (source.isNotBlank()) {

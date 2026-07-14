@@ -80,10 +80,12 @@ fun DefuseBottomSheet(
                     }
                 }
                 is AffectSpanUiState.Rejected -> {
+                    // Not an error the reader caused — a capability that isn't
+                    // set up yet. Muted, not alarming red (owner).
                     Text(
-                        "Couldn't offer a rewrite: ${state.reason}",
+                        "No neutral rewrite yet — this needs an on-device model or your own key, from Settings › Reader intelligence.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = Tokens.Spacing.xs),
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
