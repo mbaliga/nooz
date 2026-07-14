@@ -232,15 +232,27 @@ class SettingsViewModel(
  * purpose, not forgotten.
  */
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * The settings surface. [compact] is the reader's right room (owner #2: "too
+ * many settings in the reader-side space"): only the reading-appearance quick
+ * controls, then a "More settings" door to the full page. `compact = false` is
+ * the full page, reached from the Edit gear — dictionary, models, gestures,
+ * data, about, all of it.
+ */
 @Composable
-fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
+fun SettingsScreen(
+    vm: SettingsViewModel,
+    onBack: () -> Unit,
+    compact: Boolean = false,
+    onOpenAll: () -> Unit = {},
+) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val downloadedDictId by vm.downloadedDictionaryId.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("SETTINGS", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
+                title = { Text(if (compact) "READING" else "SETTINGS", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -258,7 +270,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 .padding(bottom = Tokens.Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
-            CrashSection()
+            if (!compact) CrashSection()
 
             SectionHeading("Theme")
             Row(
@@ -451,35 +463,55 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Dictionary")
-            Text(
-                "Download a dictionary, then long-press any word as you read for its meaning — Kindle-style.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            for (option in vm.dictionaryOptions) {
-                DictionaryRow(
-                    option = option,
-                    downloaded = downloadedDictId == option.id,
-                    downloading = vm.downloadingDictionaryId == option.id,
-                    onDownload = { vm.downloadDictionary(option) },
+            // Everything below is the *full* settings — heavier, not reading-in-
+            // the-moment stuff. In the reader's compact room it collapses to a
+            // single door (owner #2).
+            if (compact) {
+                Text(
+                    "More settings",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClickLabel = "Open all settings") { onOpenAll() }
+                        .padding(vertical = Tokens.Spacing.sm),
                 )
+                Text(
+                    "Dictionary, reader intelligence and models, gestures, your data, about.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                SectionHeading("Dictionary")
+                Text(
+                    "Download a dictionary, then long-press any word as you read for its meaning — Kindle-style.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                for (option in vm.dictionaryOptions) {
+                    DictionaryRow(
+                        option = option,
+                        downloaded = downloadedDictId == option.id,
+                        downloading = vm.downloadingDictionaryId == option.id,
+                        onDownload = { vm.downloadDictionary(option) },
+                    )
+                }
+                vm.dictionaryError?.let { err ->
+                    Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                IntelligenceSection(settings, vm)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                GesturesSection(settings, vm)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                YourDataSection(vm)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                AboutSection()
             }
-            vm.dictionaryError?.let { err ->
-                Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-            IntelligenceSection(settings, vm)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-            GesturesSection(settings, vm)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-            YourDataSection(vm)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-            AboutSection()
         }
     }
 }

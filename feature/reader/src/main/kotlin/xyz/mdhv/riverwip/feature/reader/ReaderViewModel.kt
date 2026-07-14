@@ -251,15 +251,30 @@ class ReaderViewModel(
     var selectedItem: Item? by mutableStateOf(null)
         private set
 
+    /**
+     * True when the current item was auto-selected to *rest* in the parked home
+     * (owner #8: the Stand list with the reader peeking), not opened to read.
+     * A rest never records a read event — a peeking headline isn't a read — and
+     * only becomes a real session once the reader engages it ([markEngaged]).
+     */
+    var openedAtRest: Boolean by mutableStateOf(false)
+        private set
+
     private val _articleState = MutableStateFlow<ArticleUiState>(ArticleUiState.Loading)
     val articleState: StateFlow<ArticleUiState> = _articleState
 
-    /** Open an item: record a coarse read event (brief §3 — glance/partial/read, never a precise duration) and load its text. */
-    fun openItem(item: Item, viaRiver: Boolean = false) {
+    /**
+     * Open an item. A real open ([rest] false) records a coarse read event
+     * (brief §3 — glance/partial/read, never a precise duration) and loads its
+     * text; a rest open ([rest] true — the parked-home peek) loads the text but
+     * records nothing until the reader actually engages it.
+     */
+    fun openItem(item: Item, viaRiver: Boolean = false, rest: Boolean = false) {
+        openedAtRest = rest
         selectedItem = item
         _articleState.value = ArticleUiState.Loading
         viewModelScope.launch {
-            readEventRepository.record(item.id, DwellBucket.GLANCE, viaRiver)
+            if (!rest) readEventRepository.record(item.id, DwellBucket.GLANCE, viaRiver)
             val text = articleRepository.textFor(item.id, item.canonicalUrl)
             _articleState.value = if (text != null) {
                 ArticleUiState.Loaded(text.paragraphs, text.fromCache)
@@ -267,6 +282,13 @@ class ReaderViewModel(
                 ArticleUiState.Fallback(item.summary)
             }
         }
+    }
+
+    /** The reader brought a resting (peeking) item to full — now it's a real read session; record the glance. */
+    fun markEngaged() {
+        if (!openedAtRest) return
+        openedAtRest = false
+        selectedItem?.let { viewModelScope.launch { readEventRepository.record(it.id, DwellBucket.GLANCE, false) } }
     }
 
     /** The user read past the initial glance — upgrade the dwell bucket (still coarse, never a duration). */
@@ -285,9 +307,11 @@ class ReaderViewModel(
      */
     fun closeItem() {
         val item = selectedItem
-        if (item != null && _articleState.value is ArticleUiState.Loaded) {
+        // A never-engaged resting peek isn't a read — don't count it on close.
+        if (item != null && !openedAtRest && _articleState.value is ArticleUiState.Loaded) {
             markFullyRead(item)
         }
+        openedAtRest = false
         selectedItem = null
     }
 

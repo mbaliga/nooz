@@ -31,25 +31,19 @@ private const val FLICK_VELOCITY_DP_PER_SEC = 1200f
 private const val SETTLE_MS = 300
 
 /**
- * The reader surface: the Nooz Stand, tap through to the immersive paper with
- * the lens woven in. Selection state lives in [ReaderViewModel] — no
- * cross-module navigation graph needed for this single-feature flow.
+ * The reader surface. Home is the parked lift-and-part state (owner #8): the
+ * Stand list with the most-recent article resting as a peeking card on the
+ * right. That rest is a real reader — tap or drag it in to read (its scroll
+ * position is preserved), and it never counts as read until you actually
+ * engage it. Opening any article (tapping the list, a framing) brings it in
+ * full; closing returns to the parked home. With no content yet, the full
+ * Stand shows instead — its empty state is the first-run guidance.
  *
- * Lift-and-part navigation (owner's brief, 2026-07): the immersive paper is a
- * rigid sheet that only starts moving from a drag that *originates* in the
- * ~24dp edge zone — an interior swipe never hijacks the reading gesture. The
- * drag then drives one `progress` value directly off the finger, every
- * frame, no animate() in the loop: Paper shrinks, gains a shadow, rounds its
- * corners and translates away, while the room the drag is heading toward
- * (Stand to the left, Settings to the right) slides in under it at the same
- * rate. Only on release does a single eased tween take over, animating the
- * *remaining* distance to wherever the gesture committed: past ~45% of the
- * drag (or a fast flick) parks Paper as a small floating card — at least
- * 64dp of it always left showing, still tap/drag-interactive to return —
- * otherwise it snaps back to full-screen. Parking never closes the article:
- * the same `ReaderDetailScreen` instance (and its `LazyListState`) stays
- * mounted the whole time, just resized and repositioned, so the reader's
- * exact scroll position survives every trip to either room and back.
+ * Lift-and-part navigation: an edge-origin one-finger drag drives one
+ * `progress` value directly off the finger — Paper shrinks, shadows, rounds
+ * and translates while the room it heads toward (Stand left, Settings right)
+ * sits still behind, inset by the peek so nothing hides under the card. Only
+ * release eases a settle; parking preserves the reader's exact scroll state.
  */
 @Composable
 fun ReaderScreen(
@@ -62,10 +56,9 @@ fun ReaderScreen(
     paperGrain: PaperGrain,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
-    // The right-hand room's content, supplied by the caller so this
-    // feature module never needs a dependency on wherever Settings lives —
-    // `onBack` is this screen's own un-park, wired through so Settings'
-    // own back arrow returns to the floating-card flow, not a nav pop.
+    // The right-hand room's content, supplied by the caller so this feature
+    // module never needs a dependency on wherever Settings lives — `onBack` is
+    // this screen's own un-park.
     settingsRoom: @Composable (onBack: () -> Unit) -> Unit,
     onOpenLoom: () -> Unit,
     onOpenDatePicker: () -> Unit,
@@ -73,60 +66,40 @@ fun ReaderScreen(
     onBrightnessDelta: (Float) -> Unit,
     onThemeFlick: () -> Unit,
 ) {
-    // The lens's underlines follow the persisted Setting; the reader's eye
-    // toggle flips that same setting, so the two never disagree.
     LaunchedEffect(highlightLoadedLanguage) {
         lensVm.updateUnderlinesEnabled(highlightLoadedLanguage)
     }
 
     val selected = vm.selectedItem
+    val items by vm.items.collectAsStateWithLifecycle()
+    val savedIds by vm.savedIds.collectAsStateWithLifecycle()
 
-    // Declared unconditionally (never behind the `selected == null` branch
-    // below) so the slide rig survives every round-trip through the article
-    // list, including exits this composable's own gestures don't know about —
-    // the system back button closes the item straight through the ViewModel
-    // (owner's #1: "the flow still breaks sometimes" — reopening a just-closed
-    // article showed nothing, because the rig was left wherever it last was).
     val scope = rememberCoroutineScope()
     var containerWidth by remember { mutableIntStateOf(0) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var enteredId by remember { mutableStateOf<String?>(null) }
-    // Which room Paper is currently resting over as a floating card — null
-    // while Paper is full-screen (dragging or at rest).
+    // Which room Paper rests over as a floating card — null while full-screen.
     var parkedRoom by remember { mutableStateOf<ReaderRoom?>(null) }
-    // The room a *fresh* edge-origin drag is heading toward, fixed for the
-    // gesture's duration. Stays null while parked — there, the room being
-    // dragged is simply `parkedRoom` itself.
+    // The room a fresh edge drag heads toward, fixed for the gesture's duration.
     var draggingRoom by remember { mutableStateOf<ReaderRoom?>(null) }
 
-    // The floating card's minimum visible band (owner's brief: "at least
-    // 64dp"), and the fast-flick velocity that commits a park regardless of
-    // distance dragged.
     val peekDp = 64.dp
     val peekPx = with(LocalDensity.current) { peekDp.toPx() }
     val flickVelocityPx = with(LocalDensity.current) { FLICK_VELOCITY_DP_PER_SEC.dp.toPx() }
 
-    // How far Paper's own edge is inset by its parked scale — subtracted out
-    // of the drag range so the *visible* strip at full park is really 64dp,
-    // not 64dp minus however much scaling ate off that edge. A plain function
-    // rather than a `val`: the one-finger gesture's `pointerInput` only
-    // relaunches when `parkedRoom` changes, so callbacks it captures can run
-    // for many frames on an old closure — reading `containerWidth` (state)
-    // through a function call, instead of a `val` frozen at some earlier
-    // composition, keeps `settle()`/`onDrag` correct regardless.
+    // A plain function, not a `val`: the gesture's pointerInput relaunches only
+    // when `parkedRoom` changes, so callbacks it captures must read
+    // `containerWidth` (state) live rather than off a stale composition.
     fun dragRange(): Float {
         val scaleInsetPx = containerWidth * (1f - PAPER_MIN_SCALE) / 2f
         return (containerWidth - peekPx - scaleInsetPx).coerceAtLeast(1f)
     }
 
-    // 0f = full Paper, 1f = fully parked. The single value driving Paper's
-    // scale/shadow/corner-radius and the incoming room's slide-in, read live
-    // off `offsetX` every frame — never animated directly during a drag.
+    // 0f = full Paper, 1f = fully parked — drives scale/shadow/corner/slide.
     val progress = (abs(offsetX) / dragRange()).coerceIn(0f, 1f)
 
-    // The one place the rig resets: whenever there's no open article, at rest,
-    // regardless of which of the several exits (drag-settle, the back button,
-    // system back) caused it.
+    // Reset the rig whenever nothing is open (a transient on close, before the
+    // parked home re-selects).
     LaunchedEffect(selected) {
         if (selected == null) {
             offsetX = 0f
@@ -136,41 +109,6 @@ fun ReaderScreen(
         }
     }
 
-    if (selected == null) {
-        ArticleListScreen(
-            vm = vm,
-            noozFlashEnabled = noozFlashEnabled,
-            onOpenItem = { vm.openItem(it) },
-            onOpenEdit = onOpenEdit,
-            onOpenLoom = onOpenLoom,
-            onOpenDatePicker = onOpenDatePicker,
-            onOpenClippings = onOpenClippings,
-        )
-        return
-    }
-
-    val savedIds by vm.savedIds.collectAsStateWithLifecycle()
-
-    // Slide the detail in from the right over the stationary stand (owner's
-    // reference: opening an article slides it in; the list stays still behind).
-    // Runs once per newly-opened item, as soon as the width is known — a fresh
-    // article always opens at full Paper, even if the previous one was parked.
-    LaunchedEffect(selected.id, containerWidth) {
-        if (containerWidth > 0 && enteredId != selected.id) {
-            parkedRoom = null
-            draggingRoom = null
-            offsetX = containerWidth.toFloat()
-            animate(offsetX, 0f, animationSpec = tween(SETTLE_MS, easing = FastOutSlowInEasing)) { v, _ -> offsetX = v }
-            enteredId = selected.id
-        }
-    }
-
-    // Settle after a drag: past ~45% of the drag (or a fast flick), Paper
-    // parks as a floating card over whichever room it was heading toward;
-    // short of that, it snaps back to full-screen. The same logic handles a
-    // drag starting *from* a parked rest, so dragging the floating card back
-    // past halfway returns it to full Paper — parking is never a one-way
-    // trip, and neither direction ever closes the article on its own.
     fun settle(velocityX: Float) {
         val room = draggingRoom ?: parkedRoom ?: return
         if (containerWidth <= 0) return
@@ -187,23 +125,25 @@ fun ReaderScreen(
             animate(offsetX, target, animationSpec = tween(SETTLE_MS, easing = FastOutSlowInEasing)) { v, _ -> offsetX = v }
             parkedRoom = if (committing) room else null
             draggingRoom = null
+            // Settling back to full from a park means the reader engaged the peek.
+            if (!committing) vm.markEngaged()
         }
     }
 
-    // Un-park back to full Paper: the floating card's tap affordance, its own
-    // "back" controls (Settings' app bar arrow), and the hardware back button.
+    // Un-park back to full Paper (the card's tap, Settings' own back, hardware
+    // back). Bringing a resting home peek in full makes it a real read session.
     fun unpark() {
         if (parkedRoom == null) return
         scope.launch {
             animate(offsetX, 0f, animationSpec = tween(SETTLE_MS, easing = FastOutSlowInEasing)) { v, _ -> offsetX = v }
             parkedRoom = null
             draggingRoom = null
+            vm.markEngaged()
         }
     }
 
     // The visible back control: slide the sheet off to the right, then close —
-    // the one affordance that actually ends the reading session, from either
-    // full Paper or parked.
+    // which returns to the parked home (the next re-select).
     fun slideBack() {
         val w = containerWidth.toFloat()
         scope.launch {
@@ -212,19 +152,56 @@ fun ReaderScreen(
         }
     }
 
-    // Hardware back unwinds one step at a time: parked → full Paper, full
-    // Paper → closed. Registered after the `selected == null` return above,
-    // so it's only live while an article is actually open.
+    // Hardware back: parked → full, full → closed (→ parked home).
     BackHandler(enabled = selected != null) {
         if (parkedRoom != null) unpark() else vm.closeItem()
     }
 
     Box(Modifier.fillMaxSize().onSizeChanged { containerWidth = it.width }) {
-        // The stand, sitting still behind the paper (owner's reference: "the
-        // actual stand list, sitting still behind it"). It's inset by the
-        // peek band on the right so its content never renders *under* the
-        // parked paper card — the card lifts and parts to reveal a room laid
-        // out beside it, not a full-width room half-hidden behind it.
+        // Parked home (owner #8): with content and nothing open, rest the most
+        // recent article as a peek over the Stand — never recorded as read.
+        LaunchedEffect(items, selected, containerWidth) {
+            if (selected == null && items.isNotEmpty() && containerWidth > 0) {
+                vm.openItem(items.first(), rest = true)
+            }
+        }
+
+        val sel = selected
+        if (sel == null) {
+            // No article yet: the full Stand. Its empty state is the first-run
+            // guidance (add sources, pull the latest) — the manual when there's
+            // nothing to read.
+            ArticleListScreen(
+                vm = vm,
+                noozFlashEnabled = noozFlashEnabled,
+                onOpenItem = { vm.openItem(it) },
+                onOpenEdit = onOpenEdit,
+                onOpenLoom = onOpenLoom,
+                onOpenDatePicker = onOpenDatePicker,
+                onOpenClippings = onOpenClippings,
+            )
+            return@Box
+        }
+
+        // Entry: a resting home peek parks toward the Stand with no slide; a
+        // real open slides in full from the right.
+        LaunchedEffect(sel.id, containerWidth) {
+            if (containerWidth > 0 && enteredId != sel.id) {
+                draggingRoom = null
+                if (vm.openedAtRest) {
+                    offsetX = dragRange()
+                    parkedRoom = ReaderRoom.STAND
+                } else {
+                    parkedRoom = null
+                    offsetX = containerWidth.toFloat()
+                    animate(offsetX, 0f, animationSpec = tween(SETTLE_MS, easing = FastOutSlowInEasing)) { v, _ -> offsetX = v }
+                }
+                enteredId = sel.id
+            }
+        }
+
+        // The Stand, sitting still behind, inset by the peek so its content
+        // never hides under the parked card.
         if (offsetX > 0f) {
             Box(Modifier.fillMaxSize().padding(end = peekDp)) {
                 ArticleListScreen(
@@ -238,9 +215,7 @@ fun ReaderScreen(
                 )
             }
         }
-        // Settings, the symmetric second room — embedded rather than navigated
-        // to, so its own back arrow can un-park instead of tearing this screen
-        // down. Inset by the peek band on the *left*, where the paper parks.
+        // Settings, the symmetric second room, inset on the left.
         if (offsetX < 0f) {
             Box(Modifier.fillMaxSize().padding(start = peekDp)) {
                 settingsRoom { unpark() }
@@ -249,17 +224,17 @@ fun ReaderScreen(
         ReaderDetailScreen(
             vm = vm,
             lensVm = lensVm,
-            item = selected,
+            item = sel,
             showReadingTime = showReadingTime,
             lensOn = highlightLoadedLanguage,
-            saved = savedIds.contains(selected.id),
+            saved = savedIds.contains(sel.id),
             immersive = immersiveReader,
             paperGrain = paperGrain,
             offsetX = offsetX,
             progress = progress,
             parkedRoom = parkedRoom,
             onToggleLens = onToggleLens,
-            onToggleClip = { vm.toggleClip(selected) },
+            onToggleClip = { vm.toggleClip(sel) },
             onBack = { slideBack() },
             onRoomDragStart = { room -> draggingRoom = room },
             onDrag = { dx ->

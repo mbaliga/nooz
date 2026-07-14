@@ -185,7 +185,16 @@ fun RiverApp() {
                     paperGrain = settings.paperGrain,
                     onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                     onOpenEdit = { screen = Screen.EDIT },
-                    settingsRoom = { onBack -> SettingsScreen(vm = settingsVm, onBack = onBack) },
+                    // The reader's right room is the *compact* reading settings
+                    // (owner #2); "More settings" opens the full page.
+                    settingsRoom = { onBack ->
+                        SettingsScreen(
+                            vm = settingsVm,
+                            onBack = onBack,
+                            compact = true,
+                            onOpenAll = { screen = Screen.SETTINGS },
+                        )
+                    },
                     onOpenLoom = {
                         loomVm.reload()
                         screen = Screen.LOOM
