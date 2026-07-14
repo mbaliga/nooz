@@ -13,11 +13,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ItemRepository
+import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.model.Item
+import xyz.mdhv.riverwip.model.ReadEvent
 import xyz.mdhv.riverwip.model.ReaderFilter
+import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.WeekBucketing
 import xyz.mdhv.riverwip.model.WeeklyAggregate
 
@@ -31,8 +34,9 @@ import xyz.mdhv.riverwip.model.WeeklyAggregate
 class LoomViewModel(
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     sourceRepository: SourceRepository,
-    settingsRepository: SettingsRepository,
+    private val settingsRepository: SettingsRepository,
     itemRepository: ItemRepository,
+    readEventRepository: ReadEventRepository,
 ) : ViewModel() {
 
     private val _days = MutableStateFlow<List<WeeklyAggregate>>(emptyList())
@@ -58,6 +62,23 @@ class LoomViewModel(
     val sourceTitles: StateFlow<Map<String, String>> = sourceRepository.observeSources()
         .map { list -> list.associate { it.id to it.title } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
+
+    /** Every read event, for the Contrast view's read-by-region heatmap (joined to items by the panel). */
+    val readEvents: StateFlow<List<ReadEvent>> = readEventRepository.observeAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
+
+    /** Region and topic interactions now live in the Contrast space (owner #3), writing the same standing filter. */
+    fun setRegion(region: Region) {
+        viewModelScope.launch { settingsRepository.setFilter(filter.value.copy(region = region)) }
+    }
+
+    fun toggleTopic(topicKey: String) {
+        viewModelScope.launch {
+            val current = filter.value
+            val topics = if (topicKey in current.topicKeys) current.topicKeys - topicKey else current.topicKeys + topicKey
+            settingsRepository.setFilter(current.copy(topicKeys = topics))
+        }
+    }
 
     /** Selected day start (millis), or the range start when [selectedRangeEnd] is set. Null = the latest day with data (today, once anything flowed). */
     var selectedDayStart: Long? by mutableStateOf(null)
@@ -156,9 +177,10 @@ class LoomViewModel(
         private val sourceRepository: SourceRepository,
         private val settingsRepository: SettingsRepository,
         private val itemRepository: ItemRepository,
+        private val readEventRepository: ReadEventRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            LoomViewModel(weeklyAggregateRepository, sourceRepository, settingsRepository, itemRepository) as T
+            LoomViewModel(weeklyAggregateRepository, sourceRepository, settingsRepository, itemRepository, readEventRepository) as T
     }
 }

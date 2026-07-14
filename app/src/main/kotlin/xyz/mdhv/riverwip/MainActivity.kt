@@ -100,6 +100,7 @@ fun RiverApp() {
             sourceRepository = container.sourceRepository,
             settingsRepository = container.settingsRepository,
             itemRepository = container.itemRepository,
+            readEventRepository = container.readEventRepository,
         ),
     )
     val clippingsVm: ClippingsViewModel = viewModel(

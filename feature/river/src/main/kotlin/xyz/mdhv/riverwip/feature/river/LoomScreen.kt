@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,8 @@ import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.Item
+import xyz.mdhv.riverwip.model.Region
+import xyz.mdhv.riverwip.model.Starters
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -66,6 +69,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
     val filter by vm.filter.collectAsStateWithLifecycle()
     val recentItems by vm.recentItems.collectAsStateWithLifecycle()
     val sourceTitles by vm.sourceTitles.collectAsStateWithLifecycle()
+    val readEvents by vm.readEvents.collectAsStateWithLifecycle()
     // Three ways to read the same day (owner's contrast idea): the woven Loom,
     // the stark Contrast ledger, and the Framings comparison.
     var mode by remember { mutableStateOf(LoomMode.LOOM) }
@@ -123,61 +127,53 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
         // to dismiss — the whole surface takes the gesture — and the system back
         // control returns to the Stand as the accessible equivalent.
 
+        // One header row, matching the Stand's: the wordmark and source count
+        // baseline-aligned on the left (owner B6 — the small text used to float
+        // off the wordmark's centre), the date always top-right (owner #9 — the
+        // same place it sits on the Stand), with day-step chevrons. The region
+        // no longer lives here — it moved into the Contrast view (owner #3).
+        val rangeEnd = vm.selectedRangeEnd
+        val dateLabel = aggregate?.let { agg ->
+            val startLabel = DAY_FORMAT.format(Instant.ofEpochMilli(agg.weekStart).atZone(ZoneId.systemDefault()))
+            if (rangeEnd == null) {
+                startLabel
+            } else {
+                val endLabel = DAY_FORMAT.format(Instant.ofEpochMilli(rangeEnd).atZone(ZoneId.systemDefault()))
+                "$startLabel – $endLabel"
+            }
+        } ?: "—"
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Tokens.Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
-            NoozWordmark(fontSize = 34.sp)
-            Text(
-                "$enabledCount Sources",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                filter.region.label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        // Date navigation (owner's #8): previous/next chevrons flanking the
-        // date, which still opens the full month picker on its own tap — the
-        // old tap-only date text didn't read as navigable at all.
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Tokens.Spacing.xs),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            IconButton(onClick = { vm.stepDay(-1, days) }) {
-                Icon(Icons.Filled.ChevronLeft, contentDescription = "Previous day")
+            Row {
+                NoozWordmark(fontSize = 30.sp, modifier = Modifier.alignByBaseline())
+                Text(
+                    "$enabledCount ${if (enabledCount == 1) "source" else "sources"}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.alignByBaseline().padding(start = Tokens.Spacing.sm),
+                )
             }
-            val rangeEnd = vm.selectedRangeEnd
-            val dateLabel = aggregate?.let { agg ->
-                val startLabel = DAY_FORMAT.format(Instant.ofEpochMilli(agg.weekStart).atZone(ZoneId.systemDefault()))
-                if (rangeEnd == null) {
-                    startLabel
-                } else {
-                    val endLabel = DAY_FORMAT.format(Instant.ofEpochMilli(rangeEnd).atZone(ZoneId.systemDefault()))
-                    "$startLabel – $endLabel"
+            Spacer(Modifier.weight(1f))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { vm.stepDay(-1, days) }) {
+                    Icon(Icons.Filled.ChevronLeft, contentDescription = "Previous day")
                 }
-            } ?: "—"
-            Text(
-                dateLabel,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .clickable(onClickLabel = "Open the date picker") { vm.setDatePickerVisible(true) }
-                    .semantics { role = Role.Button }
-                    .minimumInteractiveComponentSize()
-                    .padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
-            )
-            IconButton(onClick = { vm.stepDay(1, days) }, enabled = vm.canStepForward(days)) {
-                Icon(Icons.Filled.ChevronRight, contentDescription = "Next day")
+                Text(
+                    dateLabel,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .clickable(onClickLabel = "Open the date picker") { vm.setDatePickerVisible(true) }
+                        .semantics { role = Role.Button }
+                        .padding(horizontal = Tokens.Spacing.xxs, vertical = Tokens.Spacing.xxs),
+                )
+                IconButton(onClick = { vm.stepDay(1, days) }, enabled = vm.canStepForward(days)) {
+                    Icon(Icons.Filled.ChevronRight, contentDescription = "Next day")
+                }
             }
         }
 
@@ -193,21 +189,43 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
             ModeTab("Framings", mode == LoomMode.FRAMINGS) { mode = LoomMode.FRAMINGS }
         }
 
+        // The selected day/range window, shared by the contrast heatmap and framings.
+        val windowStart = aggregate?.weekStart ?: 0L
+        val windowEndExclusive = (vm.selectedRangeEnd ?: windowStart) + MILLIS_PER_DAY
+
         when (mode) {
-            LoomMode.CONTRAST -> ContrastPanel(
-                streamByTopic = aggregate?.streamCountsByTopic ?: emptyMap(),
-                readByTopic = aggregate?.readCountsByTopic ?: emptyMap(),
-                sourceCounts = aggregate?.sourceCounts ?: emptyMap(),
-                filter = filter,
-                enabledSourceCount = enabledCount,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(top = Tokens.Spacing.sm),
-            )
+            LoomMode.CONTRAST -> {
+                // Reads by region for the heatmap: each read event → its item →
+                // its source's region, counted once per article in the window.
+                val readsByRegion = remember(readEvents, recentItems, windowStart, windowEndExclusive) {
+                    val byId = recentItems.associateBy { it.id }
+                    val counted = HashSet<String>()
+                    val counts = HashMap<Region, Int>()
+                    for (event in readEvents) {
+                        if (event.openedAt !in windowStart until windowEndExclusive) continue
+                        val item = byId[event.itemId] ?: continue
+                        if (!counted.add(event.itemId)) continue
+                        val region = Region.forSourceTag(Starters.regionBySourceId[item.sourceId])
+                        counts.merge(region, 1, Int::plus)
+                    }
+                    counts
+                }
+                ContrastPanel(
+                    streamByTopic = aggregate?.streamCountsByTopic ?: emptyMap(),
+                    readByTopic = aggregate?.readCountsByTopic ?: emptyMap(),
+                    sourceCounts = aggregate?.sourceCounts ?: emptyMap(),
+                    filter = filter,
+                    enabledSourceCount = enabledCount,
+                    readsByRegion = readsByRegion,
+                    onSetRegion = { vm.setRegion(it) },
+                    onToggleTopic = { vm.toggleTopic(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(top = Tokens.Spacing.sm),
+                )
+            }
             LoomMode.FRAMINGS -> {
-                val windowStart = aggregate?.weekStart ?: 0L
-                val windowEndExclusive = (vm.selectedRangeEnd ?: windowStart) + MILLIS_PER_DAY
                 FramingsPanel(
                     items = recentItems,
                     windowStart = windowStart,

@@ -886,6 +886,30 @@ respect as the CI-caught log above.
   only recent items, so historical days can't be back-filled from them (a GDELT
   date-query path could cover only GDELT-builder sources).
 
+- **D27 — Architectural cluster from the owner batch (2026-07-14).** (a) **#8
+  parked home**: the Stand's home state is now the parked lift-and-part layout —
+  the list with the most-recent article resting as a peeking card. The rest is a
+  real reader (`openItem(rest=true)` loads text but records no read; `markEngaged`
+  records the glance only when the peek is brought in full; `closeItem` skips a
+  never-engaged peek). No content → the full Stand, whose empty state is the
+  first-run guidance. (b) **#2 settings split**: `SettingsScreen(compact=true)` is
+  the reader's right room — theme/font/size/grain/reading-time/lens/immersive plus
+  a "More settings" door; the full page (dictionary, models, gestures, data,
+  about) stays behind that door and the Edit gear. (c) **#9 date + B5/B6 header**:
+  the loom header is one row matching the Stand — wordmark + "N source(s)"
+  baseline-aligned left, the date always top-right with day-step chevrons; the
+  region label moved out of the header. (d) **#3 + #6b region/topics + globe
+  heatmap into Contrast**: `Region.forSourceTag` now folds the catalogue's
+  europe/africa tags into the EUROPE_AFRICA sector; the Contrast view opens with a
+  "Regions" section — the earth unrolled to a longitude **read-heatmap** (each
+  sector shaded by how much you read from it, aimed sector outlined) plus region
+  and topic chips that write the standing filter (`LoomViewModel.setRegion`/
+  `toggleTopic`, fed by a new `readEvents` flow + `readEventRepository`). The
+  Edit Region & Topics tab still exists as the precise picker; a full relocation
+  can follow. **Still open**: #4 (past-date fetch — RSS-blocked, explained) and a
+  polish batch (coarse grain, header gradient falloff, richer empty states,
+  squished Edit header).
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

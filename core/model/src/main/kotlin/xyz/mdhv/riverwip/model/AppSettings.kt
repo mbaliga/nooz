@@ -196,6 +196,9 @@ enum class Region(val key: String, val label: String, val fromLon: Double, val t
         fun forSourceTag(tag: String?): Region = when (tag?.lowercase()) {
             null, "", "global" -> GLOBAL
             "india" -> SOUTH_ASIA
+            // The catalogue's depth expansion split Europe and Africa into their
+            // own tags; both fold back into the EUROPE_AFRICA display sector.
+            "europe", "africa" -> EUROPE_AFRICA
             else -> byKey[tag.lowercase()] ?: GLOBAL
         }
 

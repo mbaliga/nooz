@@ -2,9 +2,12 @@ package xyz.mdhv.riverwip.feature.river
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
@@ -36,6 +40,7 @@ import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.model.ReaderFilter
+import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.Topic
 import kotlin.math.roundToInt
 
@@ -81,6 +86,9 @@ fun ContrastPanel(
     sourceCounts: Map<String, Int>,
     filter: ReaderFilter,
     enabledSourceCount: Int,
+    readsByRegion: Map<Region, Int>,
+    onSetRegion: (Region) -> Unit,
+    onToggleTopic: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val totalFlowed = streamByTopic.values.sum()
@@ -131,12 +139,22 @@ fun ContrastPanel(
             .padding(horizontal = Tokens.Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xl),
     ) {
+        // ---- Regions: the globe opened up as a read-heatmap + the filter ----
+        RegionsSection(
+            reads = readsByRegion,
+            filter = filter,
+            onSetRegion = onSetRegion,
+            onToggleTopic = onToggleTopic,
+            ink = ink,
+            muted = muted,
+        )
+
         if (totalFlowed == 0) {
             Text(
                 "Nothing flowed this day. The contrast appears once your sources do.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = muted,
-                modifier = Modifier.padding(top = Tokens.Spacing.xl),
+                modifier = Modifier.padding(top = Tokens.Spacing.md),
             )
             return@Column
         }
@@ -211,6 +229,111 @@ fun ContrastPanel(
                 DotKey(filled = false, label = "flowed", ink = ink, muted = muted)
                 DotKey(filled = true, label = "read", ink = ink, muted = muted)
             }
+        }
+    }
+}
+
+/**
+ * The globe opened up (owner #6b): the world as a flat longitude strip, each
+ * region shaded by how much of your reading came from it — darkest is where you
+ * read most, faint where least. Below it, the region and topic filter, moved
+ * here from Edit (owner #3): tap a region to aim there, tap topics to narrow.
+ */
+@Composable
+private fun RegionsSection(
+    reads: Map<Region, Int>,
+    filter: ReaderFilter,
+    onSetRegion: (Region) -> Unit,
+    onToggleTopic: (String) -> Unit,
+    ink: Color,
+    muted: Color,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
+        SectionHeading("Regions")
+        RegionHeatStrip(reads = reads, selected = filter.region, ink = ink)
+        RegionChips(selected = filter.region, onSet = onSetRegion, ink = ink, muted = muted)
+        TopicChips(topicKeys = filter.topicKeys, onToggle = onToggleTopic, ink = ink, muted = muted)
+    }
+}
+
+/** The read-by-region heatmap: the earth unrolled to a longitude bar, each sector shaded by read volume. */
+@Composable
+private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Color) {
+    val maxV = reads.entries.filter { it.key != Region.GLOBAL }.maxOfOrNull { it.value }?.takeIf { it > 0 } ?: 1
+    Canvas(
+        Modifier
+            .fillMaxWidth()
+            .height(26.dp)
+            .clip(RoundedCornerShape(Tokens.Radius.sm)),
+    ) {
+        val w = size.width
+        val h = size.height
+        fun x(lon: Double) = (((lon + 180.0) / 360.0) * w).toFloat()
+        drawRect(ink.copy(alpha = 0.06f), size = size)
+        for (r in Region.entries) {
+            if (r == Region.GLOBAL) continue
+            val left = x(r.fromLon)
+            val right = x(r.toLon)
+            if (right <= left) continue
+            val v = reads[r] ?: 0
+            val a = if (v == 0) 0.06f else 0.16f + 0.6f * (v.toFloat() / maxV)
+            drawRect(ink.copy(alpha = a), topLeft = Offset(left, 0f), size = Size(right - left, h))
+            drawLine(ink.copy(alpha = 0.12f), Offset(right, 0f), Offset(right, h), strokeWidth = 1.dp.toPx())
+        }
+        // Outline the aimed sector (the whole strip when Global).
+        if (selected == Region.GLOBAL) {
+            drawRect(ink.copy(alpha = 0.55f), style = Stroke(1.5.dp.toPx()))
+        } else {
+            val left = x(selected.fromLon)
+            val right = x(selected.toLon)
+            drawRect(ink.copy(alpha = 0.7f), topLeft = Offset(left, 0f), size = Size((right - left).coerceAtLeast(2f), h), style = Stroke(1.5.dp.toPx()))
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RegionChips(selected: Region, onSet: (Region) -> Unit, ink: Color, muted: Color) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
+    ) {
+        for (region in Region.entries) {
+            val chosen = region == selected
+            Text(
+                region.label,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                color = if (chosen) ink else muted,
+                modifier = Modifier
+                    .clickable { onSet(region) }
+                    .padding(vertical = Tokens.Spacing.xxs),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TopicChips(topicKeys: Set<String>, onToggle: (String) -> Unit, ink: Color, muted: Color) {
+    val allTopics = topicKeys.isEmpty()
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
+    ) {
+        for (topic in Topic.entries) {
+            // With no explicit selection every topic is in play, so show them
+            // all lit; once you pick any, only the picked ones read as chosen.
+            val chosen = allTopics || topic.key in topicKeys
+            Text(
+                topic.placeholderLabel,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = if (topic.key in topicKeys) FontWeight.Bold else FontWeight.Normal,
+                color = if (chosen) ink else muted,
+                modifier = Modifier
+                    .clickable { onToggle(topic.key) }
+                    .padding(vertical = Tokens.Spacing.xxs),
+            )
         }
     }
 }
