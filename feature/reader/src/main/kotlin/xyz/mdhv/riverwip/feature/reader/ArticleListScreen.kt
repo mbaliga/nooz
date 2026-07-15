@@ -21,13 +21,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -75,9 +75,11 @@ private fun emptyBody(enabledCount: Int, isRefreshing: Boolean, last: RefreshRes
 /**
  * The Nooz Stand (owner's mocks + flow map, 2026-07): wordmark and date over
  * the day bar — the loom folded flat; candy-cane while empty or fetching —
- * then the region|topics line with EDIT, then the stand itself. Pulling down
- * past the top stretches the bar and lets go into the full day loom; tapping
- * the bar does the same without the theatre.
+ * then the region|topics line, then the stand itself. Pulling down past the
+ * top stretches the bar and lets go into the full day loom; tapping the bar
+ * does the same without the theatre. The region|topics text itself opens
+ * Edit's Sources tab; the settings cog beside it opens Edit's Settings tab —
+ * Edit shows sources, region/topics, *and* settings now, not a separate gear.
  */
 @Composable
 fun ArticleListScreen(
@@ -85,6 +87,7 @@ fun ArticleListScreen(
     noozFlashEnabled: Boolean,
     onOpenItem: (Item) -> Unit,
     onOpenEdit: () -> Unit,
+    onOpenEditSettings: () -> Unit,
     onOpenLoom: () -> Unit,
     onOpenDatePicker: () -> Unit,
     onOpenClippings: () -> Unit,
@@ -166,7 +169,12 @@ fun ArticleListScreen(
             }
         }
 
-        // Region | Topics line with EDIT (and a quiet refresh — utility the mock leaves implicit).
+        // Region | Topics line (owner: tapping it opens the current sources —
+        // Edit's Sources tab), a quiet refresh, and the settings cog, which now
+        // sits where the old "EDIT" text button used to (owner: "let the settings
+        // cog sit where the edit button sits now" — Edit itself shows the other
+        // settings directly, so this cog no longer needs to hide behind a
+        // second tap inside Edit's own header).
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -177,6 +185,10 @@ fun ArticleListScreen(
                 filter.summary(),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .clickable(onClickLabel = "Open your sources") { onOpenEdit() }
+                    .semantics { role = Role.Button }
+                    .padding(vertical = Tokens.Spacing.xxs),
             )
             Spacer(Modifier.weight(1f))
             IconButton(onClick = onOpenClippings) {
@@ -195,8 +207,8 @@ fun ArticleListScreen(
                     Icon(Icons.Filled.Refresh, contentDescription = "Fetch your sources now")
                 }
             }
-            TextButton(onClick = onOpenEdit) {
-                Text("EDIT", style = MaterialTheme.typography.labelLarge)
+            IconButton(onClick = onOpenEditSettings) {
+                Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
         }
 

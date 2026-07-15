@@ -23,23 +23,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.design.EmptyState
+import xyz.mdhv.riverwip.design.GlobeCanvas
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.model.GlobeModel
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.Topic
@@ -235,10 +238,13 @@ fun ContrastPanel(
 }
 
 /**
- * The globe opened up (owner #6b): the world as a flat longitude strip, each
- * region shaded by how much of your reading came from it — darkest is where you
- * read most, faint where least. Below it, the region and topic filter, moved
- * here from Edit (owner #3): tap a region to aim there, tap topics to narrow.
+ * The globe opened up (owner #6b — and, once it went missing in a redesign,
+ * "the contrast view doesn't have the globe"): the *same* interactive globe as
+ * Edit's region picker, its ring and dots shaded by how much of your reading
+ * came from each region instead of by topic mix — darkest is where you read
+ * most. Drag to spin, pinch to widen, same gesture as Edit. Below it, the
+ * region and topic filter, moved here from Edit (owner #3): tap a region chip
+ * to aim there without gestures, tap topics to narrow.
  */
 @Composable
 private fun RegionsSection(
@@ -251,45 +257,48 @@ private fun RegionsSection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
         SectionHeading("Regions")
-        RegionHeatStrip(reads = reads, selected = filter.region, ink = ink)
+        RegionHeatGlobe(reads = reads, region = filter.region, onSetRegion = onSetRegion)
         RegionChips(selected = filter.region, onSet = onSetRegion, ink = ink, muted = muted)
         TopicChips(topicKeys = filter.topicKeys, onToggle = onToggleTopic, ink = ink, muted = muted)
     }
 }
 
-/** The read-by-region heatmap: the earth unrolled to a longitude bar, each sector shaded by read volume. */
+/**
+ * The read-by-region heatmap on the spinnable globe. Local yaw/pitch/band
+ * state mirrors Edit's `RegionTopicsTab` exactly — spin aims a region, pinch
+ * widens toward Global — so the same globe behaves identically in both places.
+ */
 @Composable
-private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Color) {
-    val maxV = reads.entries.filter { it.key != Region.GLOBAL }.maxOfOrNull { it.value }?.takeIf { it > 0 } ?: 1
-    Canvas(
-        Modifier
-            .fillMaxWidth()
-            .height(26.dp)
-            .clip(RoundedCornerShape(Tokens.Radius.sm)),
-    ) {
-        val w = size.width
-        val h = size.height
-        fun x(lon: Double) = (((lon + 180.0) / 360.0) * w).toFloat()
-        drawRect(ink.copy(alpha = 0.06f), size = size)
-        for (r in Region.entries) {
-            if (r == Region.GLOBAL) continue
-            val left = x(r.fromLon)
-            val right = x(r.toLon)
-            if (right <= left) continue
-            val v = reads[r] ?: 0
-            val a = if (v == 0) 0.06f else 0.16f + 0.6f * (v.toFloat() / maxV)
-            drawRect(ink.copy(alpha = a), topLeft = Offset(left, 0f), size = Size(right - left, h))
-            drawLine(ink.copy(alpha = 0.12f), Offset(right, 0f), Offset(right, h), strokeWidth = 1.dp.toPx())
-        }
-        // Outline the aimed sector (the whole strip when Global).
-        if (selected == Region.GLOBAL) {
-            drawRect(ink.copy(alpha = 0.55f), style = Stroke(1.5.dp.toPx()))
-        } else {
-            val left = x(selected.fromLon)
-            val right = x(selected.toLon)
-            drawRect(ink.copy(alpha = 0.7f), topLeft = Offset(left, 0f), size = Size((right - left).coerceAtLeast(2f), h), style = Stroke(1.5.dp.toPx()))
-        }
+private fun RegionHeatGlobe(reads: Map<Region, Int>, region: Region, onSetRegion: (Region) -> Unit) {
+    var yaw by rememberSaveable(region.key) {
+        mutableDoubleStateOf(if (region == Region.GLOBAL) 20.0 else -(region.fromLon + region.toLon) / 2)
     }
+    var pitch by rememberSaveable { mutableDoubleStateOf(-10.0) }
+    var bandHalf by rememberSaveable(region.key) {
+        mutableDoubleStateOf(if (region == Region.GLOBAL) 180.0 else 16.0)
+    }
+    GlobeCanvas(
+        yaw = yaw,
+        pitch = pitch,
+        bandHalf = bandHalf,
+        heatByRegion = reads,
+        onSpin = { dYaw, dPitch ->
+            yaw += dYaw
+            pitch = (pitch + dPitch).coerceIn(-70.0, 70.0)
+            onSetRegion(
+                if (bandHalf >= GlobeModel.GLOBAL_BAND_THRESHOLD) Region.GLOBAL
+                else Region.forLongitude(GlobeModel.centerLongitude(yaw)),
+            )
+        },
+        onZoomBand = { factor ->
+            bandHalf = (bandHalf * factor).coerceIn(8.0, 180.0)
+            onSetRegion(
+                if (bandHalf >= GlobeModel.GLOBAL_BAND_THRESHOLD) Region.GLOBAL
+                else Region.forLongitude(GlobeModel.centerLongitude(yaw)),
+            )
+        },
+        modifier = Modifier.padding(horizontal = Tokens.Spacing.xxl),
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)

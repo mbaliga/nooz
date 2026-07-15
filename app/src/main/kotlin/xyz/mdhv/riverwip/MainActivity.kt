@@ -32,6 +32,7 @@ import xyz.mdhv.riverwip.feature.reader.ReaderViewModel
 import xyz.mdhv.riverwip.feature.river.LoomScreen
 import xyz.mdhv.riverwip.feature.river.LoomViewModel
 import xyz.mdhv.riverwip.feature.sources.EditScreen
+import xyz.mdhv.riverwip.feature.sources.EditTab
 import xyz.mdhv.riverwip.feature.sources.SourcesViewModel
 
 class MainActivity : ComponentActivity() {
@@ -47,10 +48,12 @@ private enum class Screen { STAND, EDIT, SETTINGS, LOOM, CLIPPINGS }
 private const val SPLASH_MILLIS = 1_100L
 
 /**
- * The app shell, per the owner's flow map (2026-07): splash → the Nooz Stand.
- * No bottom navigation — the Stand's plus/EDIT opens the Edit flow (Sources /
- * Region & Topics), pulling down (or tapping the day bar) opens the loom, and
- * the reading room swipes right back to the Stand and left into Settings.
+ * The app shell, per the owner's flow map (2026-07). No bottom navigation —
+ * the Stand's filter-summary text ("Global | All") opens Edit's Sources tab,
+ * the settings cog beside it opens Edit's Settings tab (Edit now carries
+ * Sources, Region & Topics, *and* Settings itself — owner: "it needn't be in
+ * the settings cog"), pulling down (or tapping the day bar) opens the loom,
+ * and the reading room swipes right back to the Stand and left into Settings.
  * Theme tint, reading font, and text size follow the persisted Settings; a
  * two-finger flick in the reading room steps the tint, and a two-finger drag
  * slides in-app window brightness (no permission needed — window-level only).
@@ -161,6 +164,10 @@ fun RiverApp() {
             }
 
             var screen by rememberSaveable { mutableStateOf(Screen.STAND) }
+            // Which Edit tab to land on — the Stand's filter-summary text opens
+            // Sources ("the current sources thing"), the settings cog opens
+            // Settings; Edit shows both inline now, not behind a separate gear.
+            var editStartTab by rememberSaveable { mutableStateOf(EditTab.SOURCES) }
 
             // The native back gesture must navigate, never exit mid-flow — the
             // single activity would otherwise just pop and quit (the reported
@@ -185,7 +192,8 @@ fun RiverApp() {
                     noozFlashEnabled = settings.noozFlashEnabled,
                     paperGrain = settings.paperGrain,
                     onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
-                    onOpenEdit = { screen = Screen.EDIT },
+                    onOpenEdit = { editStartTab = EditTab.SOURCES; screen = Screen.EDIT },
+                    onOpenEditSettings = { editStartTab = EditTab.SETTINGS; screen = Screen.EDIT },
                     // The reader's right room is the *compact* reading settings
                     // (owner #2); "More settings" opens the full page.
                     settingsRoom = { onBack ->
@@ -221,14 +229,18 @@ fun RiverApp() {
                         // background cadence; conditional GETs keep this cheap.
                         readerVm.refresh()
                     },
-                    onOpenSettings = { screen = Screen.SETTINGS },
+                    startTab = editStartTab,
+                    settingsTab = { SettingsBody(vm = settingsVm, compact = false) },
                 )
                 Screen.SETTINGS -> SettingsScreen(vm = settingsVm, onBack = { screen = Screen.STAND })
                 Screen.LOOM -> LoomScreen(
                     vm = loomVm,
                     onClose = { screen = Screen.STAND },
-                    // Tapping a framing opens that article in the reader — the
-                    // loom is where you notice, the Stand is where you read.
+                    // The loom is where you notice, the Stand is where you
+                    // read — tapping any item it surfaces opens it in the
+                    // reader. Currently unused while Framings (the one mode
+                    // that opened items) is disabled; kept live for when it
+                    // returns.
                     onOpenItem = { item ->
                         readerVm.openItem(item)
                         screen = Screen.STAND

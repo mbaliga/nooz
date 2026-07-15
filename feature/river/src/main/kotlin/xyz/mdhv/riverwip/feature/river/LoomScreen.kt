@@ -50,8 +50,13 @@ import java.time.format.DateTimeFormatter
 private val DAY_FORMAT = DateTimeFormatter.ofPattern("d MMMM yyyy")
 private const val MILLIS_PER_DAY = 86_400_000L
 
-/** The three ways to read a day: the woven loom, the stark contrast ledger, the framing comparison. */
-private enum class LoomMode { LOOM, CONTRAST, FRAMINGS }
+/**
+ * The two ways to read a day: the woven loom, the stark contrast ledger.
+ * Framings (a cross-source story-clustering comparison) is disabled for now —
+ * the clustering matched unrelated articles (owner, 2026-07); the code stays
+ * in place (`FramingsPanel.kt`, `StoryClustering.kt`) for whenever it's fixed.
+ */
+private enum class LoomMode { LOOM, CONTRAST }
 
 /**
  * The loom surface (owner's Viz flow): a single fixed screen — no scroll. The
@@ -186,7 +191,6 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
         ) {
             ModeTab("Loom", mode == LoomMode.LOOM) { mode = LoomMode.LOOM }
             ModeTab("Contrast", mode == LoomMode.CONTRAST) { mode = LoomMode.CONTRAST }
-            ModeTab("Framings", mode == LoomMode.FRAMINGS) { mode = LoomMode.FRAMINGS }
         }
 
         // The selected day/range window, shared by the contrast heatmap and framings.
@@ -219,19 +223,6 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                     readsByRegion = readsByRegion,
                     onSetRegion = { vm.setRegion(it) },
                     onToggleTopic = { vm.toggleTopic(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(top = Tokens.Spacing.sm),
-                )
-            }
-            LoomMode.FRAMINGS -> {
-                FramingsPanel(
-                    items = recentItems,
-                    windowStart = windowStart,
-                    windowEndExclusive = windowEndExclusive,
-                    sourceTitles = sourceTitles,
-                    onOpenItem = onOpenItem,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)

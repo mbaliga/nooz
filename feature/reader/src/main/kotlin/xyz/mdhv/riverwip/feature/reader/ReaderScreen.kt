@@ -56,6 +56,7 @@ fun ReaderScreen(
     paperGrain: PaperGrain,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
+    onOpenEditSettings: () -> Unit,
     // The right-hand room's content, supplied by the caller so this feature
     // module never needs a dependency on wherever Settings lives — `onBack` is
     // this screen's own un-park.
@@ -176,6 +177,7 @@ fun ReaderScreen(
                 noozFlashEnabled = noozFlashEnabled,
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
+                onOpenEditSettings = onOpenEditSettings,
                 onOpenLoom = onOpenLoom,
                 onOpenDatePicker = onOpenDatePicker,
                 onOpenClippings = onOpenClippings,
@@ -209,6 +211,7 @@ fun ReaderScreen(
                     noozFlashEnabled = noozFlashEnabled,
                     onOpenItem = { vm.openItem(it) },
                     onOpenEdit = onOpenEdit,
+                    onOpenEditSettings = onOpenEditSettings,
                     onOpenLoom = onOpenLoom,
                     onOpenDatePicker = onOpenDatePicker,
                     onOpenClippings = onOpenClippings,

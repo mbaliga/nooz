@@ -234,11 +234,13 @@ class SettingsViewModel(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 /**
- * The settings surface. [compact] is the reader's right room (owner #2: "too
- * many settings in the reader-side space"): only the reading-appearance quick
- * controls, then a "More settings" door to the full page. `compact = false` is
- * the full page, reached from the Edit gear — dictionary, models, gestures,
- * data, about, all of it.
+ * The settings surface, in its own page with a back arrow. [compact] is the
+ * reader's right room (owner #2: "too many settings in the reader-side
+ * space"): only the reading-appearance quick controls, then a "More settings"
+ * door to the full page. `compact = false` is the full page, reached either
+ * from that door or from Edit's own "Settings" tab (which renders
+ * [SettingsBody] directly, without this wrapper — owner: "let the nooz edit
+ * show the other settings as well, it needn't be in the settings cog").
  */
 @Composable
 fun SettingsScreen(
@@ -247,9 +249,6 @@ fun SettingsScreen(
     compact: Boolean = false,
     onOpenAll: () -> Unit = {},
 ) {
-    val settings by vm.settings.collectAsStateWithLifecycle()
-    val downloadedDictId by vm.downloadedDictionaryId.collectAsStateWithLifecycle()
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -262,17 +261,36 @@ fun SettingsScreen(
             )
         },
     ) { padding ->
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .topFadingEdge(scrollState.canScrollBackward)
-                .verticalScroll(scrollState)
-                .padding(horizontal = Tokens.Spacing.md)
-                .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.xl),
-            verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
-        ) {
+        SettingsBody(vm = vm, compact = compact, onOpenAll = onOpenAll, modifier = Modifier.padding(padding))
+    }
+}
+
+/**
+ * The settings content on its own, without any surrounding chrome (no
+ * Scaffold, no back arrow) — reused by [SettingsScreen]'s own page and by
+ * Edit's inline "Settings" tab, which supplies its own header and DONE button
+ * instead.
+ */
+@Composable
+fun SettingsBody(
+    vm: SettingsViewModel,
+    compact: Boolean,
+    onOpenAll: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    val downloadedDictId by vm.downloadedDictionaryId.collectAsStateWithLifecycle()
+
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .topFadingEdge(scrollState.canScrollBackward)
+            .verticalScroll(scrollState)
+            .padding(horizontal = Tokens.Spacing.md)
+            .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+    ) {
             if (!compact) CrashSection()
 
             SectionHeading("Theme")
@@ -516,7 +534,6 @@ fun SettingsScreen(
                 AboutSection()
             }
         }
-    }
 }
 
 /**

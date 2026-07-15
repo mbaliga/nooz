@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -61,7 +60,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import xyz.mdhv.riverwip.design.EmptyState
+import xyz.mdhv.riverwip.design.GlobeCanvas
+import xyz.mdhv.riverwip.design.NoResultsState
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
@@ -75,23 +75,28 @@ import xyz.mdhv.riverwip.model.ServiceDef
 import xyz.mdhv.riverwip.model.Topic
 import xyz.mdhv.riverwip.model.toSourceOrNull
 
-private enum class EditTab { SOURCES, REGION_TOPICS }
+enum class EditTab { SOURCES, REGION_TOPICS, SETTINGS }
 
 /**
- * Nooz EDIT (owner's mocks + flow map): two tabs. Sources — one-click starters
- * with check-circle toggles and add-by-URL with an honest error state; Region &
- * Topics — the globe, the topic chips, and the metrics block (coverage,
- * breadth, per-topic over/under — every number tap-explained). DONE saves the
- * filter draft and returns to the Stand.
+ * Nooz EDIT (owner's mocks + flow map, extended 2026-07): three tabs. Sources —
+ * one-click starters with check-circle toggles and add-by-URL with an honest
+ * error state; Region & Topics — the globe, the topic chips, and the metrics
+ * block (coverage, breadth, per-topic over/under — every number
+ * tap-explained); Settings — the full app settings, shown here directly
+ * rather than behind a separate gear (owner: "it needn't be in the settings
+ * cog"). [settingsTab] is a caller-supplied slot (the same pattern as
+ * [xyz.mdhv.riverwip.feature.reader.ReaderScreen]'s `settingsRoom`) so this
+ * feature module never needs a dependency on wherever Settings actually
+ * lives. DONE saves the filter draft and returns to the Stand.
  */
 @Composable
 fun EditScreen(
     vm: SourcesViewModel,
     onDone: () -> Unit,
-    onOpenSettings: () -> Unit,
-    startOnRegionTab: Boolean = false,
+    settingsTab: @Composable () -> Unit,
+    startTab: EditTab = EditTab.SOURCES,
 ) {
-    var tab by rememberSaveable { mutableStateOf(if (startOnRegionTab) EditTab.REGION_TOPICS else EditTab.SOURCES) }
+    var tab by rememberSaveable { mutableStateOf(startTab) }
     val savedFilter by vm.filter.collectAsStateWithLifecycle()
 
     // Filter draft: seeded from the saved filter, committed on DONE.
@@ -132,9 +137,6 @@ fun EditScreen(
                 )
             }
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = onOpenSettings) {
-                Icon(Icons.Filled.Settings, contentDescription = "Settings")
-            }
             TextButton(onClick = {
                 vm.saveFilter(ReaderFilter(Region.fromKey(draftRegionKey), draftTopics))
                 onDone()
@@ -143,11 +145,19 @@ fun EditScreen(
             }
         }
 
-        Row(Modifier.fillMaxWidth().padding(horizontal = Tokens.Spacing.md)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = Tokens.Spacing.md),
+        ) {
             TabLabel("Sources", tab == EditTab.SOURCES) { tab = EditTab.SOURCES }
             Spacer(Modifier.width(Tokens.Spacing.xl))
             TabLabel("Region & Topics", tab == EditTab.REGION_TOPICS) { tab = EditTab.REGION_TOPICS }
+            Spacer(Modifier.width(Tokens.Spacing.xl))
+            TabLabel("Settings", tab == EditTab.SETTINGS) { tab = EditTab.SETTINGS }
         }
+        Spacer(Modifier.height(Tokens.Spacing.xs))
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
         when (tab) {
@@ -159,6 +169,7 @@ fun EditScreen(
                 onRegion = { draftRegionKey = it.key },
                 onTopics = { draftTopics = it },
             )
+            EditTab.SETTINGS -> settingsTab()
         }
     }
 }
@@ -183,11 +194,15 @@ private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
         softWrap = false,
         modifier = Modifier
             .selectable(selected = active, role = Role.Tab, onClick = onClick)
-            .padding(vertical = Tokens.Spacing.xs)
+            // More air than before (owner: "the underline beneath the sources
+            // etc is too close, making it cramped") — a visible gap between the
+            // text baseline and its rule, and between that rule and the
+            // HorizontalDivider underneath, so the two lines read as separate.
+            .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.md)
             .drawBehind {
                 if (active) {
                     val stroke = 3.dp.toPx()
-                    val y = size.height - stroke / 2f
+                    val y = size.height - stroke
                     drawLine(
                         color = underline,
                         start = Offset(0f, y),
@@ -250,12 +265,11 @@ private fun SourcesTab(vm: SourcesViewModel) {
                 .padding(horizontal = Tokens.Spacing.md),
         ) {
             if (filteredStarters.isEmpty() && filteredBuilders.isEmpty()) {
-                EmptyState(
-                    title = "No sources match",
-                    body = "Nothing in the catalogue fits that search and region. Clear the filter, or add any feed by URL below.",
-                    fill = false,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                // A literal no-results case (a search/region filter that came up
+                // empty) — the owner's illustration + quote treatment, not the
+                // "why is this empty" EmptyState. "Add by URL" is still right
+                // below, so the way out stays visible either way.
+                NoResultsState(fill = false, modifier = Modifier.fillMaxWidth())
             }
             for ((region, def) in filteredStarters) {
                 val id = remember(def) { def.toSourceOrNull(addedAt = 0L)?.id }

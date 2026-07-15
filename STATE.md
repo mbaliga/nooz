@@ -926,6 +926,50 @@ respect as the CI-caught log above.
   squished Edit header**: the "Nooz EDIT" masthead is now its own inner
   baseline-aligned Row (matching the Stand/loom), so the 48dp Settings/DONE
   controls no longer share a baseline line with it and drag it off-centre.
+- **D29 — Edit/Settings merge, globe restored to Contrast, Framings paused,
+  literal no-results state (2026-07-15).** (a) **Edit absorbs Settings**:
+  `EditTab` gains a third `SETTINGS` case; `EditScreen` takes a caller-supplied
+  `settingsTab: @Composable () -> Unit` slot (the same cross-module pattern as
+  `ReaderScreen`'s `settingsRoom`) instead of an `onOpenSettings` callback, so
+  the full settings render inline as a tab rather than behind a gear (owner:
+  "it needn't be in the settings cog"). `SettingsScreen.kt` splits into a thin
+  `SettingsScreen` (Scaffold + back arrow) and a new `SettingsBody` (the actual
+  content, reusable without that chrome) — MainActivity wires
+  `settingsTab = { SettingsBody(vm = settingsVm, compact = false) }`. (b) **Cog
+  relocates to the Stand**: the region/topics summary text ("Global | All") is
+  now clickable and opens Edit's Sources tab directly ("the current sources
+  thing"); the settings-cog IconButton sits where the old "EDIT" text button
+  was and opens Edit's Settings tab. `MainActivity` tracks `editStartTab`
+  (`EditTab`, `rememberSaveable`) to steer which tab Edit lands on.
+  `ArticleListScreen`/`ReaderScreen` gained an `onOpenEditSettings` callback
+  threaded alongside the existing `onOpenEdit`. (c) **The globe is back in
+  Contrast**: `GlobeCanvas` moved from `feature/sources` into `:core:design`
+  (both `feature/sources` and `feature/river` already depend on it — moving
+  avoided a module cycle) and gained a `heatByRegion: Map<Region, Int>`
+  parameter — when set, the ring draws one arc per region (sized by its real
+  longitude span, shaded by relative read volume) and the dot cloud shades by
+  the same per-region heat instead of by topic-ring band membership. Contrast's
+  `RegionsSection` now spins the *same* globe (local yaw/pitch/bandHalf state
+  mirroring Edit's `RegionTopicsTab` exactly) instead of the flat
+  `RegionHeatStrip` bar, which is removed. (d) **Framings paused**: the
+  clustering matched unrelated articles (a Brazil-sovereignty editorial next
+  to an EU/ICC story; a China car-export report next to an unrelated movie
+  review) — `LoomMode.FRAMINGS` is removed from the mode toggle so the tab is
+  unreachable; `FramingsPanel.kt`/`StoryClustering.kt` are untouched and ready
+  to re-wire once the clustering itself is fixed. (e) **Tab underline
+  breathing room**: `EditScreen`'s `TabLabel` padding grew (top=xs,
+  bottom=md) and a small `Spacer` now separates the tab row from the
+  `HorizontalDivider` beneath it — the rule no longer reads as fused to the
+  divider. The tab row also picked up `horizontalScroll` now that it carries
+  three tabs. (f) **Literal no-results state**: new `NoResultsState` in
+  `:core:design` — the owner's own exclamation-mark illustration (alpha-masked
+  from their upload into `res/drawable-nodpi/img_no_results.png`, tinted via
+  `ColorFilter.tint` so it reads on every theme), a fixed "No results found"
+  headline, and one line drawn from a small set of original, unattributed
+  quotes (never fabricated and pinned to a real person). Distinct from
+  `EmptyState`: that one explains *why* a list is empty with actionable
+  copy (no sources, nothing clipped); `NoResultsState` is for a search/filter
+  that came up genuinely empty — wired into Edit's Sources search-empty case.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
