@@ -119,7 +119,7 @@ fun FlashCard(vm: ReaderViewModel, modifier: Modifier = Modifier) {
                         modifier = Modifier.clickable { expanded = !expanded },
                     )
                     Spacer(Modifier.weight(1f))
-                    PlayFlashButton(text = s.flash)
+                    PlayTextButton(text = s.flash, playLabel = "Read the flash aloud")
                 }
                 AnimatedVisibility(expanded) {
                     Column(Modifier.padding(top = Tokens.Spacing.xs)) {
@@ -155,11 +155,13 @@ fun FlashCard(vm: ReaderViewModel, modifier: Modifier = Modifier) {
 
 /**
  * Reads [text] aloud on tap via the device's own text-to-speech engine —
- * entirely on-device, no network, matching Nooz Flash's own stance. Tapping
- * again while speaking stops it early.
+ * entirely on-device, no network. Shared by Nooz Flash's own "Play" (a ten-word
+ * line) and the reader's per-article "listen" control (the full body text) —
+ * same engine, same on/stop behaviour either way. Tapping again while
+ * speaking stops it early.
  */
 @Composable
-private fun PlayFlashButton(text: String) {
+fun PlayTextButton(text: String, playLabel: String, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var engine by remember { mutableStateOf<TextToSpeech?>(null) }
     var speaking by remember { mutableStateOf(false) }
@@ -180,6 +182,7 @@ private fun PlayFlashButton(text: String) {
     }
 
     IconButton(
+        modifier = modifier,
         onClick = {
             val tts = engine ?: return@IconButton
             if (speaking) {
@@ -187,14 +190,23 @@ private fun PlayFlashButton(text: String) {
                 speaking = false
             } else {
                 tts.setLanguage(Locale.getDefault())
-                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "nooz-flash")
+                // TextToSpeech.speak has a per-call length ceiling on some OEM
+                // engines (historically ~4000 chars); QUEUE_ADD across chunks
+                // plays them back to back as one continuous read instead of
+                // truncating a long article.
+                for ((index, chunk) in text.chunked(TTS_CHUNK_CHARS).withIndex()) {
+                    val mode = if (index == 0) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
+                    tts.speak(chunk, mode, null, "nooz-tts-$index")
+                }
             }
         },
     ) {
         Icon(
             if (speaking) Icons.Filled.Stop else Icons.Filled.PlayArrow,
-            contentDescription = if (speaking) "Stop reading aloud" else "Read the flash aloud",
+            contentDescription = if (speaking) "Stop reading aloud" else playLabel,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
+
+private const val TTS_CHUNK_CHARS = 3_800

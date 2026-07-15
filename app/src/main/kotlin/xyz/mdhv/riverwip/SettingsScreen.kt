@@ -61,6 +61,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -90,6 +91,7 @@ import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.DictionaryOption
 import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
@@ -186,6 +188,8 @@ class SettingsViewModel(
     fun completeOnboarding() = viewModelScope.launch { repo.setOnboarded(true) }
     fun setNoozFlashEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozFlashEnabled(on) }
     fun setPaperGrain(grain: PaperGrain) = viewModelScope.launch { repo.setPaperGrain(grain) }
+    fun setReadMarkStyle(style: ReadMarkStyle) = viewModelScope.launch { repo.setReadMarkStyle(style) }
+    fun setUnreadPinchFilter(enabled: Boolean) = viewModelScope.launch { repo.setUnreadPinchFilter(enabled) }
 
     // Dictionary lens: one-click download of a chosen dictionary (owner's spec).
     val dictionaryOptions: List<DictionaryOption> = dictionaryRepo.options
@@ -401,6 +405,38 @@ fun SettingsBody(
                                 selected = chosen,
                                 role = Role.RadioButton,
                                 onClick = { vm.setPaperGrain(grain) },
+                            )
+                            .minimumInteractiveComponentSize()
+                            .padding(vertical = Tokens.Spacing.xxs),
+                    )
+                }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            SectionHeading("Mark Read Articles As")
+            Row(
+                modifier = Modifier.selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+            ) {
+                for (style in ReadMarkStyle.entries) {
+                    val chosen = settings.readMarkStyle == style
+                    Text(
+                        style.label,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            // Non-colour channel: the chosen style is bold, not just darker.
+                            fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                            textDecoration = if (style == ReadMarkStyle.STRIKETHROUGH) TextDecoration.LineThrough else null,
+                        ),
+                        color = if (chosen) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier
+                            .selectable(
+                                selected = chosen,
+                                role = Role.RadioButton,
+                                onClick = { vm.setReadMarkStyle(style) },
                             )
                             .minimumInteractiveComponentSize()
                             .padding(vertical = Tokens.Spacing.xxs),
@@ -711,6 +747,12 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
             subtitle = "Flick two fingers sideways to step the paper tint.",
             checked = settings.twoFingerThemeFlick,
             onCheckedChange = { vm.setTwoFingerThemeFlick(it) },
+        )
+        SettingSwitchRow(
+            title = "Immersive pinch → unread",
+            subtitle = "On the Stand's list: pinch in to show only unread, pinch out to show everything again.",
+            checked = settings.unreadPinchFilter,
+            onCheckedChange = { vm.setUnreadPinchFilter(it) },
         )
     }
 }

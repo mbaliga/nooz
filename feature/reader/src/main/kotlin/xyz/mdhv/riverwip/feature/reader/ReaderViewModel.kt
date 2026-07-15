@@ -83,6 +83,11 @@ class ReaderViewModel(
     val savedIds: StateFlow<Set<String>> = clippingRepository.observeSavedIds()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
 
+    /** Every item with at least one read event, for the Stand's read marking (owner's ask) and unread filter. */
+    val readIds: StateFlow<Set<String>> = readEventRepository.observeAll()
+        .map { events -> events.map { it.itemId }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
+
     /** Save or unsave the article as a Nooz-paper clipping. */
     fun toggleClip(item: Item) {
         viewModelScope.launch {

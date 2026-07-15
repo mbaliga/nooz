@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.model.ReadMarkStyle
 import kotlin.math.abs
 
 private const val PARK_THRESHOLD = 0.45f
@@ -54,6 +55,8 @@ fun ReaderScreen(
     immersiveReader: Boolean,
     noozFlashEnabled: Boolean,
     paperGrain: PaperGrain,
+    readMarkStyle: ReadMarkStyle,
+    unreadPinchFilter: Boolean,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -175,6 +178,8 @@ fun ReaderScreen(
             ArticleListScreen(
                 vm = vm,
                 noozFlashEnabled = noozFlashEnabled,
+                readMarkStyle = readMarkStyle,
+                unreadPinchFilter = unreadPinchFilter,
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
                 onOpenEditSettings = onOpenEditSettings,
@@ -209,6 +214,8 @@ fun ReaderScreen(
                 ArticleListScreen(
                     vm = vm,
                     noozFlashEnabled = noozFlashEnabled,
+                    readMarkStyle = readMarkStyle,
+                    unreadPinchFilter = unreadPinchFilter,
                     onOpenItem = { vm.openItem(it) },
                     onOpenEdit = onOpenEdit,
                     onOpenEditSettings = onOpenEditSettings,

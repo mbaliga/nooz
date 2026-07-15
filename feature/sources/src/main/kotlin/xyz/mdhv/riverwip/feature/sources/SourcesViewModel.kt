@@ -189,11 +189,31 @@ class SourcesViewModel(
 
     fun remove(id: String) { viewModelScope.launch { repo.remove(id) } }
 
+    /**
+     * Onboarding's "Quick setup" (owner: it "isn't doing any setup at all" —
+     * it used to only skip the Advanced wizard and drop the reader on an
+     * empty Stand). A small, editorially diverse set of verified global
+     * outlets, so a fresh install has something to read immediately.
+     */
+    fun quickSetup() {
+        val existingIds = sources.value.map { it.id }.toSet()
+        for (id in QUICK_SETUP_IDS) {
+            val def = Starters.verifiedFeeds.firstOrNull { it.id == id } ?: continue
+            val sourceId = def.toSourceOrNull(addedAt = 0L)?.id ?: continue
+            if (sourceId !in existingIds) addStarter(def)
+        }
+    }
+
     fun importOpml(xml: String, onDone: (Int) -> Unit) {
         viewModelScope.launch { onDone(repo.importOpml(xml)) }
     }
 
     suspend fun exportOpml(): String = repo.exportOpml()
+
+    companion object {
+        // Broad, editorially varied coverage without overwhelming a first run.
+        private val QUICK_SETUP_IDS = listOf("bbc-top", "npr-news", "guardian-world", "aljazeera-all", "nyt-top")
+    }
 
     class Factory(
         private val repo: SourceRepository,

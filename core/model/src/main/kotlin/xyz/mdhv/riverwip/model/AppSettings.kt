@@ -85,6 +85,21 @@ enum class PaperGrain(val key: String, val label: String) {
     }
 }
 
+/**
+ * How a read article marks itself in the Stand's list (owner's ask, 2026-07):
+ * dimmed to a quieter grey (the default), or struck through — never a third,
+ * separate "read" icon; the title itself carries the mark.
+ */
+enum class ReadMarkStyle(val key: String, val label: String) {
+    GREYED("greyed", "Greyed"),
+    STRIKETHROUGH("strikethrough", "Strikethrough");
+
+    companion object {
+        private val byKey = entries.associateBy(ReadMarkStyle::key)
+        fun fromKey(key: String?): ReadMarkStyle = byKey[key] ?: GREYED
+    }
+}
+
 data class AppSettings(
     /** The middle tint carries the check in the owner's mock — Paper is the default. */
     val themeMode: ThemeMode = ThemeMode.PAPER,
@@ -121,6 +136,15 @@ data class AppSettings(
      */
     val noozFlashEnabled: Boolean = false,
     val paperGrain: PaperGrain = PaperGrain.NONE,
+    /** How a read article marks itself in the list (owner's ask). */
+    val readMarkStyle: ReadMarkStyle = ReadMarkStyle.GREYED,
+    /**
+     * Immersive read-filter gesture on the Stand's list (owner's ask): pinch
+     * in to show only unread, pinch out to show everything again. On by
+     * default, like the reader's other two-finger gestures — an opt-out, not
+     * an opt-in.
+     */
+    val unreadPinchFilter: Boolean = true,
 )
 
 /**

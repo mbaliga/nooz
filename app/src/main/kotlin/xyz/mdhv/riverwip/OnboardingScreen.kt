@@ -37,7 +37,8 @@ private enum class OnbStep { WELCOME, ADVANCED }
  * First-run onboarding (owner's #19): the reader lands on the paper already
  * warming up — a candy-cane bar standing in for stories loading — and is
  * offered two doors. **Quick setup** takes the honest defaults (on-device
- * first, controls shown) and drops straight into the Stand. **Advanced** opens
+ * first, controls shown), adds a small starter set of verified global
+ * outlets so the Stand isn't empty, and drops straight in. **Advanced** opens
  * a short wizard: the same three-path [ModelChoicePanel] Settings' Reader
  * intelligence uses (on-device / download a model / bring your own key — a
  * cross-repo consumer of Nooz's catalogue flagged the fake-button risk this
@@ -49,6 +50,7 @@ fun OnboardingScreen(
     byokConfig: ByokConfig,
     download: ModelDownloadUi,
     onFinish: () -> Unit,
+    onQuickSetup: () -> Unit,
     onSaveByok: (baseUrl: String, apiKey: String, model: String) -> Unit,
     onClearByok: () -> Unit,
     onSetImmersive: (Boolean) -> Unit,
@@ -85,7 +87,11 @@ fun OnboardingScreen(
         ) {
             when (step) {
                 OnbStep.WELCOME -> WelcomeStep(
-                    onQuick = onFinish,
+                    // Quick setup used to just skip Advanced and drop the reader
+                    // on an empty Stand — indistinguishable from Skip (owner: "the
+                    // quick setup isn't doing any setup at all"). It now actually
+                    // adds a small starter set before finishing.
+                    onQuick = { onQuickSetup(); onFinish() },
                     onAdvanced = { step = OnbStep.ADVANCED },
                     onSkip = onFinish,
                 )

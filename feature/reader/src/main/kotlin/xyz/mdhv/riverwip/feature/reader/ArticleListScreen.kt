@@ -1,7 +1,10 @@
 package xyz.mdhv.riverwip.feature.reader
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +17,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,27 +36,39 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.CandyCaneBar
 import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.DayMixBar
+import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.NoozWordmark
+import xyz.mdhv.riverwip.design.R
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
+import xyz.mdhv.riverwip.model.Diversifier
+import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.Item
 import java.time.LocalDate
 import java.time.ZoneId
@@ -85,6 +101,8 @@ private fun emptyBody(enabledCount: Int, isRefreshing: Boolean, last: RefreshRes
 fun ArticleListScreen(
     vm: ReaderViewModel,
     noozFlashEnabled: Boolean,
+    readMarkStyle: ReadMarkStyle,
+    unreadPinchFilter: Boolean,
     onOpenItem: (Item) -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -93,6 +111,7 @@ fun ArticleListScreen(
     onOpenClippings: () -> Unit,
 ) {
     val items by vm.items.collectAsStateWithLifecycle()
+    val readIds by vm.readIds.collectAsStateWithLifecycle()
     val enabledCount by vm.enabledSourceCount.collectAsStateWithLifecycle()
     val sourceTitles by vm.sourceTitles.collectAsStateWithLifecycle()
     val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
@@ -102,6 +121,16 @@ fun ArticleListScreen(
     // flowed (owner's #5) — the reader's own bottom utility bar keeps the
     // supply-based mix as ambient context while reading.
     val todayReadMix by vm.todayReadMix.collectAsStateWithLifecycle()
+
+    // Mix for coverage (owner: "one other control... to mix the articles for
+    // maximum spread/coverage"). A deterministic round-robin-by-source
+    // reorder, not a random shuffle — toggled, not a one-shot re-roll.
+    var diversified by rememberSaveable { mutableStateOf(false) }
+    // Immersive unread filter (owner's ask): pinch in on the list to show only
+    // unread, pinch out to show everything again.
+    var showUnreadOnly by rememberSaveable { mutableStateOf(false) }
+    val unreadFiltered = if (showUnreadOnly) items.filter { it.id !in readIds } else items
+    val displayedItems = if (diversified) remember(unreadFiltered) { Diversifier.spread(unreadFiltered) } else unreadFiltered
 
     val listState = rememberLazyListState()
     var pull by remember { mutableFloatStateOf(0f) }
@@ -191,6 +220,13 @@ fun ArticleListScreen(
                     .padding(vertical = Tokens.Spacing.xxs),
             )
             Spacer(Modifier.weight(1f))
+            IconButton(onClick = { diversified = !diversified }) {
+                Icon(
+                    Icons.Filled.Shuffle,
+                    contentDescription = if (diversified) "Showing the mix for coverage — tap to return to flow order" else "Mix for maximum spread",
+                    tint = if (diversified) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             IconButton(onClick = onOpenClippings) {
                 Icon(Icons.Filled.Bookmarks, contentDescription = "Open your clippings")
             }
@@ -216,6 +252,43 @@ fun ArticleListScreen(
             FlashCard(vm = vm, modifier = Modifier.padding(horizontal = Tokens.Spacing.md))
         }
 
+        // Immersive unread filter (owner's ask): pinch in shows only unread,
+        // pinch out shows everything again. Observes raw pointer positions on
+        // the Initial pass without consuming them, so ordinary single-finger
+        // scrolling on the list underneath is never interrupted — only a
+        // genuine second pointer moves the accumulator at all.
+        val pinchModifier = if (unreadPinchFilter) {
+            Modifier.pointerInput(unreadPinchFilter) {
+                awaitEachGesture {
+                    var referenceDistance = 0f
+                    while (true) {
+                        val event = awaitPointerEvent(pass = PointerEventPass.Initial)
+                        val pointers = event.changes.filter { it.pressed }
+                        if (pointers.size >= 2) {
+                            val distance = (pointers[0].position - pointers[1].position).getDistance()
+                            if (referenceDistance <= 0f) {
+                                referenceDistance = distance
+                            } else {
+                                val ratio = distance / referenceDistance
+                                if (ratio < 0.7f) {
+                                    showUnreadOnly = true
+                                    referenceDistance = distance
+                                } else if (ratio > 1.4f) {
+                                    showUnreadOnly = false
+                                    referenceDistance = distance
+                                }
+                            }
+                        } else {
+                            referenceDistance = 0f
+                        }
+                        if (event.changes.all { !it.pressed }) break
+                    }
+                }
+            }
+        } else {
+            Modifier
+        }
+
         if (items.isEmpty()) {
             EmptyStand(
                 enabledCount = enabledCount,
@@ -225,17 +298,46 @@ fun ArticleListScreen(
                 onAdd = onOpenEdit,
                 onRetry = { vm.refresh() },
             )
+        } else if (displayedItems.isEmpty()) {
+            // showUnreadOnly filtered everything away — an honest, different
+            // state from "no sources"/"nothing flowed": there's plenty here,
+            // all of it read already.
+            Box(Modifier.fillMaxSize().then(pinchModifier)) {
+                EmptyState(
+                    title = "Nothing left unread",
+                    body = "Every story in this list has been opened. Pinch out, or tap here, to see the whole list again.",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(onClickLabel = "Show all articles") { showUnreadOnly = false },
+                )
+            }
         } else {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize().topFadingEdge(listState.canScrollBackward).nestedScroll(pullConnection),
-                contentPadding = PaddingValues(vertical = Tokens.Spacing.xs),
-            ) {
-                items(items, key = { it.id }) { item ->
-                    ItemRow(item, sourceTitles[item.sourceId], onClick = { onOpenItem(item) })
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Box(Modifier.fillMaxSize().then(pinchModifier)) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize().topFadingEdge(listState.canScrollBackward).nestedScroll(pullConnection),
+                    // A touch more bottom padding than the list's usual vertical
+                    // padding, so the last row clears the scroll-position bar
+                    // floating over the bottom edge.
+                    contentPadding = PaddingValues(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg),
+                ) {
+                    items(displayedItems, key = { it.id }) { item ->
+                        ItemRow(
+                            item = item,
+                            sourceTitle = sourceTitles[item.sourceId],
+                            read = item.id in readIds,
+                            readMarkStyle = readMarkStyle,
+                            onClick = { onOpenItem(item) },
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    }
+                    item { EndOfFeed() }
                 }
-                item { EndOfFeed() }
+                // Where you are in the list (owner: "you missed the bottom scroll
+                // bar which tells you where you are in the reading list") — a
+                // thin track+thumb pinned to the bottom, only once there's more
+                // than one screen's worth to be "somewhere in".
+                ScrollPositionBar(listState = listState, modifier = Modifier.align(Alignment.BottomCenter))
             }
         }
     }
@@ -249,6 +351,43 @@ private fun EndOfFeed() {
             Copy.END_OF_FEED,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/**
+ * A thin scroll-position track+thumb pinned to the bottom of the list (owner:
+ * "the bottom scroll bar which tells you where you are in the reading
+ * list"). Hidden once everything already fits on one screen — there's
+ * nowhere to be "somewhere in" yet.
+ */
+@Composable
+private fun ScrollPositionBar(listState: LazyListState, modifier: Modifier = Modifier) {
+    val info = listState.layoutInfo
+    val total = info.totalItemsCount
+    val visible = info.visibleItemsInfo.size
+    if (visible == 0 || total <= visible) return
+    val firstVisible = listState.firstVisibleItemIndex
+    val startFrac = (firstVisible.toFloat() / total).coerceIn(0f, 1f)
+    val sizeFrac = (visible.toFloat() / total).coerceIn(0.06f, 1f)
+    val ink = MaterialTheme.colorScheme.onSurfaceVariant
+    Canvas(
+        modifier
+            .fillMaxWidth()
+            .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs)
+            .height(3.dp),
+    ) {
+        val w = size.width
+        val h = size.height
+        val radius = CornerRadius(h / 2, h / 2)
+        drawRoundRect(ink.copy(alpha = 0.14f), size = size, cornerRadius = radius)
+        val thumbWidth = (sizeFrac * w).coerceAtLeast(h * 3)
+        val thumbLeft = (startFrac * w).coerceAtMost(w - thumbWidth)
+        drawRoundRect(
+            ink.copy(alpha = 0.55f),
+            topLeft = Offset(thumbLeft, 0f),
+            size = Size(thumbWidth, h),
+            cornerRadius = radius,
         )
     }
 }
@@ -274,30 +413,49 @@ private fun EmptyStand(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            modifier = Modifier
-                .size(72.dp)
-                .background(MaterialTheme.colorScheme.onBackground, CircleShape)
-                .clickable(
-                    enabled = !isRefreshing,
-                    onClickLabel = if (addMode) "Add sources" else "Fetch now",
-                ) { if (addMode) onAdd() else onRetry() }
-                .semantics { role = Role.Button },
-            contentAlignment = Alignment.Center,
-        ) {
+        if (addMode) {
+            // The owner's own illustration for a reader who hasn't started yet
+            // (many strands drawn into one thread, through the needle's eye —
+            // the app's own "weave many sources into one stream" idea). The
+            // illustration itself is the tap target, not a separate button.
+            Image(
+                painter = painterResource(R.drawable.img_no_sources),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(enabled = !isRefreshing, onClickLabel = "Add sources") { onAdd() }
+                    .semantics { role = Role.Button }
+                    .padding(horizontal = Tokens.Spacing.lg),
+            )
             if (isRefreshing) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.padding(top = Tokens.Spacing.lg).size(28.dp),
                     strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.background,
                 )
-            } else {
-                Icon(
-                    if (addMode) Icons.Filled.Add else Icons.Filled.Refresh,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.size(32.dp),
-                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .background(MaterialTheme.colorScheme.onBackground, CircleShape)
+                    .clickable(enabled = !isRefreshing, onClickLabel = "Fetch now") { onRetry() }
+                    .semantics { role = Role.Button },
+                contentAlignment = Alignment.Center,
+            ) {
+                if (isRefreshing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.background,
+                    )
+                } else {
+                    Icon(
+                        Icons.Filled.Refresh,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.size(32.dp),
+                    )
+                }
             }
         }
         Text(
@@ -311,7 +469,16 @@ private fun EmptyStand(
 }
 
 @Composable
-private fun ItemRow(item: Item, sourceTitle: String?, onClick: () -> Unit) {
+private fun ItemRow(item: Item, sourceTitle: String?, read: Boolean, readMarkStyle: ReadMarkStyle, onClick: () -> Unit) {
+    // A read article marks itself in place (owner's ask) — no separate icon,
+    // just the title itself dimmed or struck through, per the reader's own
+    // Settings choice.
+    val strike = read && readMarkStyle == ReadMarkStyle.STRIKETHROUGH
+    val titleColor = if (read && readMarkStyle == ReadMarkStyle.GREYED) {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    } else {
+        MaterialTheme.colorScheme.onBackground
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -320,7 +487,14 @@ private fun ItemRow(item: Item, sourceTitle: String?, onClick: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
     ) {
         // Serif title — the Stand mock's voice (headlineSmall is serif by role).
-        Text(item.title, style = MaterialTheme.typography.headlineSmall, maxLines = 3)
+        Text(
+            item.title,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                textDecoration = if (strike) TextDecoration.LineThrough else null,
+            ),
+            color = titleColor,
+            maxLines = 3,
+        )
         Text(
             byline(item, sourceTitle),
             style = MaterialTheme.typography.bodyMedium,

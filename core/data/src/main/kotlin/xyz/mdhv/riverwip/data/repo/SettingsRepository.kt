@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.Region
@@ -39,6 +40,8 @@ class SettingsRepository(private val context: Context) {
         val TOPICS = stringSetPreferencesKey("filter_topics")
         val NOOZ_FLASH = booleanPreferencesKey("nooz_flash_enabled")
         val PAPER_GRAIN = stringPreferencesKey("paper_grain")
+        val READ_MARK_STYLE = stringPreferencesKey("read_mark_style")
+        val UNREAD_PINCH_FILTER = booleanPreferencesKey("unread_pinch_filter")
     }
 
     fun observeSettings(): Flow<AppSettings> = context.settingsDataStore.data.map { prefs ->
@@ -54,6 +57,8 @@ class SettingsRepository(private val context: Context) {
             onboarded = prefs[Keys.ONBOARDED] ?: false,
             noozFlashEnabled = prefs[Keys.NOOZ_FLASH] ?: false,
             paperGrain = PaperGrain.fromKey(prefs[Keys.PAPER_GRAIN]),
+            readMarkStyle = ReadMarkStyle.fromKey(prefs[Keys.READ_MARK_STYLE]),
+            unreadPinchFilter = prefs[Keys.UNREAD_PINCH_FILTER] ?: true,
         )
     }
 
@@ -106,6 +111,14 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setPaperGrain(grain: PaperGrain) {
         context.settingsDataStore.edit { it[Keys.PAPER_GRAIN] = grain.key }
+    }
+
+    suspend fun setReadMarkStyle(style: ReadMarkStyle) {
+        context.settingsDataStore.edit { it[Keys.READ_MARK_STYLE] = style.key }
+    }
+
+    suspend fun setUnreadPinchFilter(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.UNREAD_PINCH_FILTER] = enabled }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {

@@ -970,6 +970,45 @@ respect as the CI-caught log above.
   `EmptyState`: that one explains *why* a list is empty with actionable
   copy (no sources, nothing clipped); `NoResultsState` is for a search/filter
   that came up genuinely empty — wired into Edit's Sources search-empty case.
+- **D30 — Stand-list cluster: coverage mix, scroll position, article TTS,
+  read marking, first-run illustration, quick setup (2026-07-15).**
+  (a) **Globe correction**: D29(c)'s spinnable read-heatmap globe was a
+  misread — the owner meant the *flat* unwrapped strip (`RegionHeatStrip`,
+  restored) with no spin; it "just wasn't showing" because a day with zero
+  reads rendered as near-invisible uniform fill. Fixed: the strip now always
+  draws a visible outline regardless of data, and a day with nothing read
+  yet shows an explicit "No reads yet today" line instead of a blank-looking
+  bar. `GlobeCanvas` reverted to its pre-heatmap form (the `heatByRegion`
+  path had no remaining caller). (b) **Mix for coverage**: new
+  `core/model/Diversifier` — a deterministic round-robin-by-source reorder
+  (not a random shuffle) — toggled from a new shuffle icon on the Stand,
+  next to the settings cog. (c) **Scroll position**: a thin track+thumb
+  (`ScrollPositionBar`) floats over the bottom of the Stand's list, sized to
+  the visible fraction and positioned by scroll offset; hidden once
+  everything already fits one screen. (d) **Per-article listen**: the
+  Flash-only `PlayFlashButton` (FlashCard.kt) generalized into
+  `PlayTextButton(text, playLabel)`, reused by a new play control in
+  `ReaderUtilityBar` that reads the *loaded article body* aloud (chunked past
+  TTS engines' per-call length ceiling), not just Nooz Flash's compressed
+  line — on-device TTS, no network, available regardless of the Flash
+  setting. (e) **Read marking + immersive pinch-filter**: new
+  `AppSettings.readMarkStyle` (`GREYED` default / `STRIKETHROUGH`) and
+  `unreadPinchFilter` (on by default) — `SourcesRepository`-style DataStore
+  keys, a `SettingsBody` selector row, and a `ReaderViewModel.readIds` flow
+  (every item with ≥1 read event). `ItemRow` dims or strikes its own title;
+  a hand-rolled pointer-event pinch detector (`PointerEventPass.Initial`,
+  non-consuming — `detectTransformGestures` would have eaten the list's own
+  scroll drags) toggles an unread-only filter, with its own honest "nothing
+  left unread" state when the filter empties the list. (f) **First-run
+  illustration**: the owner's needle-and-thread image (many strands into one
+  weave — the app's own loom idea) replaces the plus-in-a-circle for the
+  zero-sources `EmptyStand` case; background removed via near-white alpha
+  thresholding (unlike the exclamation mark, colour is kept, not tinted).
+  Tapping the illustration opens Sources. (g) **Quick setup fixed**:
+  onboarding's "Quick setup" used to alias straight to "Skip" (`onQuick =
+  onFinish`, identical to `onSkip`) — it added nothing, matching the owner's
+  "isn't doing any setup at all." `SourcesViewModel.quickSetup()` now adds
+  five verified, editorially varied global outlets before finishing.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

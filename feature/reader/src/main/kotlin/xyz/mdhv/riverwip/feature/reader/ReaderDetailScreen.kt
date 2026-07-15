@@ -406,6 +406,18 @@ private fun ReaderUtilityBar(
                 Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping")
             }
             val s = state
+            // Listen to the article itself (owner: "where is the play button to
+            // hear the article?") — the device's own on-device text-to-speech,
+            // same engine Nooz Flash's own Play uses, reading the full loaded
+            // body rather than a compressed line. Only once real text has
+            // loaded; a fallback summary-only state has nothing worth reading
+            // aloud beyond what's already on screen.
+            if (s is ArticleUiState.Loaded) {
+                PlayTextButton(
+                    text = remember(s.paragraphs) { s.paragraphs.joinToString("\n\n") },
+                    playLabel = "Read the article aloud",
+                )
+            }
             if (showReadingTime && s is ArticleUiState.Loaded) {
                 val minutes = remember(s.paragraphs) { readingMinutes(s.paragraphs) }
                 Text(
