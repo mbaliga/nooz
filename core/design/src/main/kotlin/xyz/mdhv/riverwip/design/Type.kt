@@ -15,8 +15,8 @@ import xyz.mdhv.riverwip.model.TextScale
  * Grotesk Plus**) and the one serif (**Hyle Print**, a Literata derivative),
  * bundled as verified TTFs (OFL, see `third_party/fonts/`). Display, headline,
  * and title roles are Hyle Print — the newspaper voice of the masthead titles
- * and the loom. The "Nooz" wordmark itself is [WordmarkFontFamily], a separate
- * Didone face matching the owner's splash mock.
+ * and the loom. The "Nooz" wordmark itself is [WordmarkFontFamily], PT Serif
+ * Bold per the owner's splash mock, not Hyle Print.
  */
 
 /** Hyle Grotesk Classic — the default sans reading + UI voice. */
@@ -44,13 +44,12 @@ val HylePrint: FontFamily = FontFamily(
 val DisplayFontFamily: FontFamily = HylePrint
 
 /**
- * The "Nooz" wordmark only (owner's splash mock, 2026-07): a high-contrast
- * Didone face — thin hairline diagonals, flat slab serifs, round geometric
- * bowls — structurally different from Hyle Print's Literata chassis, so it
+ * The "Nooz" wordmark only: PT Serif Bold, owner-specified (2026-07, splash
+ * mock) at -2% letter-spacing — see [NoozWordmark]. Not Hyle Print, so it
  * doesn't reuse [DisplayFontFamily]. See `third_party/fonts/README.md`.
  */
 val WordmarkFontFamily: FontFamily = FontFamily(
-    Font(R.font.playfair_display_black, weight = FontWeight.Normal),
+    Font(R.font.pt_serif_bold, weight = FontWeight.Normal),
 )
 
 /** UI chrome (labels, buttons, captions) stays on the default sans. */

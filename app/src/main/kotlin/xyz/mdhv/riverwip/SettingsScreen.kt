@@ -830,6 +830,12 @@ private fun AboutSection() {
     TextButton(onClick = { uriHandler.openUri("https://mdhv.xyz") }, contentPadding = PaddingValues(0.dp)) {
         Text("Visit mdhv.xyz")
     }
+    TextButton(
+        onClick = { uriHandler.openUri("https://github.com/mbaliga/nooz") },
+        contentPadding = PaddingValues(0.dp),
+    ) {
+        Text("View source on GitHub")
+    }
     Text(
         "More from the studio",
         style = MaterialTheme.typography.labelLarge,

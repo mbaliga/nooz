@@ -2,13 +2,14 @@
   drop); the launcher mipmaps under `app/src/main/res/mipmap-*` are downscaled
   from the same file.
 - `featureGraphic.png` — present (1024×500, Play only, opaque RGB — no alpha):
-  plain paperField background, the "Nooz" wordmark in Playfair Display Black
-  (matching the app's actual wordmark — see `third_party/fonts/README.md`),
-  and the short_description.txt tagline beneath it in Hyle Grotesk Classic —
-  written out in full ("from your chosen sources") rather than an em-dashed
-  clause (owner: no em dash). No greeked newsprint bleed — plain paper, just
-  the mark and the line (owner: also drop the text above and below).
-  Bundled fonts only, no external asset. Regenerated 2026-07 when the
-  wordmark font changed from Hyle Print to Playfair Display Black.
+  plain paperField background, the "Nooz" wordmark in PT Serif Bold at -2%
+  letter-spacing (matching the app's actual wordmark — see
+  `third_party/fonts/README.md`), and the short_description.txt tagline
+  beneath it in Hyle Grotesk Classic — written out in full ("from your chosen
+  sources") rather than an em-dashed clause (owner: no em dash). No greeked
+  newsprint bleed — plain paper, just the mark and the line (owner: also drop
+  the text above and below). Bundled fonts only, no external asset.
+  Regenerated 2026-07, twice: first from Hyle Print to a guessed Playfair
+  Display Black, then to PT Serif Bold once the owner gave the exact spec.
 - `phoneScreenshots/` — still empty; populate with
   `scripts/capture_screenshots.sh` on a device/emulator.
