@@ -13,9 +13,10 @@ import androidx.compose.ui.unit.sp
 /**
  * The one true "Nooz" wordmark. Every masthead — the Stand, the loom, the Edit
  * header, the splash — renders through this so the mark is identical everywhere
- * (owner's note: "use the same logo, not ad-hoc text"). Set in Hyle Print, the
- * serif newspaper voice, at a fixed optical weight; callers pass only size and
- * ink so it inherits the surrounding theme.
+ * (owner's note: "use the same logo, not ad-hoc text"). Set in Playfair Display
+ * Black, the high-contrast Didone face matching the owner's splash mock (not
+ * Hyle Print — see [WordmarkFontFamily]); callers pass only size and ink so it
+ * inherits the surrounding theme.
  */
 @Composable
 fun NoozWordmark(
@@ -26,8 +27,8 @@ fun NoozWordmark(
     Text(
         text = "Nooz",
         style = TextStyle(
-            fontFamily = DisplayFontFamily,
-            fontWeight = FontWeight.Medium,
+            fontFamily = WordmarkFontFamily,
+            fontWeight = FontWeight.Normal,
             fontSize = fontSize,
             lineHeight = fontSize * 1.02f,
             letterSpacing = (-0.5).sp,
