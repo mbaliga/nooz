@@ -52,7 +52,12 @@ jobs:
 
       # Keep the built debug APKs so they can be downloaded from the run's
       # "Artifacts" section and sideloaded onto an Android device (API 31+).
-      # Debug-signed (debug keystore) — fine for testing, not for store upload.
+      # Debug-signed with the repo's own fixed app/keystore/debug.keystore
+      # (app/build.gradle.kts), not AGP's implicit per-machine one — this
+      # runner has no persisted ~/.android/debug.keystore, so without a
+      # pinned key every run would sign with a fresh random one and each new
+      # APK would conflict with whatever was installed from the last run
+      # ("App not installed"). Fine for testing, not for store upload.
       - name: Upload debug APKs
         uses: actions/upload-artifact@v4
         with:

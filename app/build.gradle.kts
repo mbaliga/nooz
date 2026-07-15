@@ -36,6 +36,25 @@ android {
         }
     }
 
+    // A fixed debug keystore, committed to the repo (owner: "every time I get
+    // a new apk, I get 'app not installed'"). CI runs on ephemeral runners
+    // with no persisted `~/.android/debug.keystore`, so without this AGP's
+    // implicit debug signingConfig generates a brand-new random key on every
+    // run — a real Android install refuses to update an app whose new APK
+    // isn't signed with the same key as the one already installed, so every
+    // fresh CI build conflicted with whichever build came before it. This
+    // keystore is debug-only (never used for the release build below,
+    // never uploaded anywhere) — standard "androiddebugkey"/"android"
+    // credentials, safe to commit.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("keystore/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             // App optimization (owner's #15): R8 code shrinking + obfuscation and
@@ -48,6 +67,7 @@ android {
         }
         debug {
             applicationIdSuffix = ".debug"
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
