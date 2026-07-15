@@ -81,8 +81,8 @@ object NewspaperShare {
 
     private fun render(context: Context, title: String, source: String?, author: String?): Bitmap {
         val serif = ResourcesCompat.getFont(context, DesignR.font.hyle_print_medium) ?: Typeface.SERIF
-        val wordmarkFace = ResourcesCompat.getFont(context, DesignR.font.pt_serif_bold)
-            ?: Typeface.create(serif, Typeface.BOLD)
+        val wordmarkFace = ResourcesCompat.getFont(context, DesignR.font.pt_serif_regular)
+            ?: Typeface.create(serif, Typeface.NORMAL)
         val sans = ResourcesCompat.getFont(context, DesignR.font.hyle_grotesk_classic_medium) ?: Typeface.SANS_SERIF
 
         val contentW = (W - 2 * MARGIN).toInt()
@@ -130,7 +130,7 @@ object NewspaperShare {
 
         var y = MARGIN
 
-        // Masthead wordmark — PT Serif Bold at -2% letter-spacing, the same
+        // Masthead wordmark — PT Serif Regular at -2% letter-spacing, the same
         // face as NoozWordmark everywhere else (not the Hyle Print body serif).
         val mast = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = INK; typeface = wordmarkFace; textSize = 128f; textAlign = Paint.Align.CENTER

@@ -1,5 +1,5 @@
 PT Serif is licensed under the SIL Open Font License, Version 1.1.
 Copyright (c) 2010, ParaType Ltd. (http://www.paratype.com/public), with
 Reserved Font Names "PT Sans", "PT Serif" and "ParaType". Sourced unmodified
-from Google Fonts (weight 700, "PT Serif Bold"). Free to use, modify, and
+from Google Fonts (weight 400, "PT Serif"). Free to use, modify, and
 redistribute under the OFL.
