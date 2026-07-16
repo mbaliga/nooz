@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -63,7 +65,7 @@ android {
         // actually needs it; every other CI job (debug assemble, unit tests)
         // never touches this config.
         create("release") {
-            val props = java.util.Properties()
+            val props = Properties()
             val propsFile = rootProject.file("keystore.properties")
             if (propsFile.exists()) propsFile.inputStream().use { props.load(it) }
 
