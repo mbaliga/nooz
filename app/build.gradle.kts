@@ -16,7 +16,7 @@ android {
         minSdk = 31
         targetSdk = 35
         versionCode = 1
-        versionName = "0.1.0-dev"
+        versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -43,7 +43,7 @@ android {
     // run — a real Android install refuses to update an app whose new APK
     // isn't signed with the same key as the one already installed, so every
     // fresh CI build conflicted with whichever build came before it. This
-    // keystore is debug-only (never used for the release build below,
+    // keystore is debug-only (never used for the release signingConfig below,
     // never uploaded anywhere) — standard "androiddebugkey"/"android"
     // credentials, safe to commit.
     signingConfigs {
@@ -53,6 +53,26 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
         }
+        // Release signing, deliberately NOT committed to the repo (unlike the
+        // debug keystore above) — this key controls the app's identity on the
+        // Play Store, so it lives only as a local `keystore.properties` (see
+        // `keystore.properties.example`, gitignored) or, in CI, as decoded
+        // GitHub Actions secrets passed through these env vars (see
+        // `.github/workflows/release.yml`). Left unset — not a build failure —
+        // when neither source is present, since only the release-bundling task
+        // actually needs it; every other CI job (debug assemble, unit tests)
+        // never touches this config.
+        create("release") {
+            val props = java.util.Properties()
+            val propsFile = rootProject.file("keystore.properties")
+            if (propsFile.exists()) propsFile.inputStream().use { props.load(it) }
+
+            val path = props.getProperty("storeFile") ?: System.getenv("RELEASE_KEYSTORE_PATH")
+            if (path != null) storeFile = file(path)
+            storePassword = props.getProperty("storePassword") ?: System.getenv("RELEASE_KEYSTORE_PASSWORD")
+            keyAlias = props.getProperty("keyAlias") ?: System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = props.getProperty("keyPassword") ?: System.getenv("RELEASE_KEY_PASSWORD")
+        }
     }
 
     buildTypes {
@@ -60,10 +80,12 @@ android {
             // App optimization (owner's #15): R8 code shrinking + obfuscation and
             // resource shrinking, so the release download is as light as we can
             // make it. R8 runs in full mode (AGP 8 default). Debug stays fast to
-            // build and is the only variant CI assembles.
+            // build and is the only variant the routine CI workflow assembles —
+            // release only builds on-demand, via release.yml.
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             applicationIdSuffix = ".debug"
