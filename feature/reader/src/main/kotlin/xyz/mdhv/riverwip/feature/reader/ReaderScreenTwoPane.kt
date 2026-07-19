@@ -1,0 +1,143 @@
+package xyz.mdhv.riverwip.feature.reader
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.feature.lens.LensViewModel
+import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.model.ReadMarkStyle
+
+/** The Material list-detail breakpoint (≥840dp) — the point past which a phone-width single pane starts wasting real space. */
+val TWO_PANE_MIN_WIDTH = 840.dp
+
+/** The list pane's fixed width once split — the detail pane takes whatever's left. */
+private val LIST_PANE_WIDTH = 400.dp
+
+/**
+ * The tablet/large-screen reading layout (owner: "the list and reading panel
+ * visible together" on larger formats). Same [ReaderViewModel] and the exact
+ * same [ArticleListScreen]/[ReaderDetailScreen] the phone uses underneath —
+ * there's no separate two-pane state to keep in sync, and rotating a
+ * tablet (or resizing a desktop window) across the breakpoint hands the same
+ * selected article straight from one layout to the other.
+ *
+ * The phone's lift-and-part drag doesn't apply here at all — both panes are
+ * simply always on screen, so [ReaderDetailScreen] is driven with a fixed
+ * offset/progress of zero and no-op drag callbacks (its edge-swipe detector
+ * still technically listens, per [readerGestures], but with nothing to swipe
+ * *to* it just quietly does nothing).
+ */
+@Composable
+fun ReaderScreenTwoPane(
+    vm: ReaderViewModel,
+    lensVm: LensViewModel,
+    showReadingTime: Boolean,
+    highlightLoadedLanguage: Boolean,
+    immersiveReader: Boolean,
+    noozFlashEnabled: Boolean,
+    paperGrain: PaperGrain,
+    readMarkStyle: ReadMarkStyle,
+    unreadPinchFilter: Boolean,
+    onToggleLens: () -> Unit,
+    onOpenEdit: () -> Unit,
+    onOpenEditSettings: () -> Unit,
+    onOpenLoom: () -> Unit,
+    onOpenDatePicker: () -> Unit,
+    onOpenClippings: () -> Unit,
+) {
+    LaunchedEffect(highlightLoadedLanguage) {
+        lensVm.updateUnderlinesEnabled(highlightLoadedLanguage)
+    }
+
+    val selected = vm.selectedItem
+    val items by vm.items.collectAsStateWithLifecycle()
+    val savedIds by vm.savedIds.collectAsStateWithLifecycle()
+
+    // Same parked-home convention as the phone (owner #8): rest the most
+    // recent article once there's something to show and nothing chosen yet,
+    // so the detail pane is never blank — but "resting" still isn't a real
+    // read until the reader actually does something with it.
+    LaunchedEffect(items, selected) {
+        if (selected == null && items.isNotEmpty()) {
+            vm.openItem(items.first(), rest = true)
+        }
+    }
+
+    Row(Modifier.fillMaxSize()) {
+        Box(Modifier.width(LIST_PANE_WIDTH).fillMaxHeight()) {
+            ArticleListScreen(
+                vm = vm,
+                noozFlashEnabled = noozFlashEnabled,
+                readMarkStyle = readMarkStyle,
+                unreadPinchFilter = unreadPinchFilter,
+                onOpenItem = { vm.openItem(it) },
+                onOpenEdit = onOpenEdit,
+                onOpenEditSettings = onOpenEditSettings,
+                onOpenLoom = onOpenLoom,
+                onOpenDatePicker = onOpenDatePicker,
+                onOpenClippings = onOpenClippings,
+            )
+        }
+        Box(
+            Modifier
+                .width(1.dp)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.outlineVariant),
+        )
+        Box(Modifier.weight(1f).fillMaxHeight()) {
+            val sel = selected
+            if (sel == null) {
+                // Nothing to rest on yet (an empty library) — the list pane's own
+                // empty state already explains why; this pane just stays quiet.
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        "Select an article to read",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(Tokens.Spacing.xl),
+                    )
+                }
+            } else {
+                ReaderDetailScreen(
+                    vm = vm,
+                    lensVm = lensVm,
+                    item = sel,
+                    showReadingTime = showReadingTime,
+                    lensOn = highlightLoadedLanguage,
+                    saved = savedIds.contains(sel.id),
+                    immersive = immersiveReader,
+                    paperGrain = paperGrain,
+                    offsetX = 0f,
+                    progress = 0f,
+                    parkedRoom = null,
+                    onToggleLens = onToggleLens,
+                    onToggleClip = { vm.toggleClip(sel) },
+                    onBack = { vm.closeItem() },
+                    onRoomDragStart = {},
+                    onDrag = {},
+                    onDragEnd = {},
+                    onParkedTap = {},
+                    onOpenLoom = onOpenLoom,
+                    onBrightnessDelta = {},
+                    onThemeFlick = {},
+                )
+            }
+        }
+    }
+}

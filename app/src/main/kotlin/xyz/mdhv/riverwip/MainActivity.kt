@@ -6,10 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +28,9 @@ import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.feature.reader.ClippingsScreen
 import xyz.mdhv.riverwip.feature.reader.ClippingsViewModel
 import xyz.mdhv.riverwip.feature.reader.ReaderScreen
+import xyz.mdhv.riverwip.feature.reader.ReaderScreenTwoPane
 import xyz.mdhv.riverwip.feature.reader.ReaderViewModel
+import xyz.mdhv.riverwip.feature.reader.TWO_PANE_MIN_WIDTH
 import xyz.mdhv.riverwip.feature.river.LoomScreen
 import xyz.mdhv.riverwip.feature.river.LoomViewModel
 import xyz.mdhv.riverwip.feature.sources.EditScreen
@@ -122,12 +124,19 @@ fun RiverApp() {
     }
 
     RiverTheme(themeMode = settings.themeMode, readerFont = settings.readerFont, textScale = settings.textScale) {
-        Box(
+        BoxWithConstraints(
             Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .safeDrawingPadding(),
         ) {
+            // Tablet/large-screen split (owner: "the list and reading panel
+            // visible together" on larger formats) — Material's own list-detail
+            // breakpoint (840dp). Only the Stand/reader pair splits; Edit,
+            // Settings, the loom, and Clippings stay full-screen at any width —
+            // they're occasional utility screens, not the primary reading flow.
+            val isExpandedWidth = maxWidth >= TWO_PANE_MIN_WIDTH
+
             // Splash once per launch; rememberSaveable keeps rotation from replaying it.
             var splashDone by rememberSaveable { mutableStateOf(false) }
             if (!splashDone) {
@@ -136,7 +145,7 @@ fun RiverApp() {
                     splashDone = true
                 }
                 SplashScreen()
-                return@Box
+                return@BoxWithConstraints
             }
 
             // First-run onboarding (owner's #19). The splash delay covers the
@@ -161,7 +170,7 @@ fun RiverApp() {
                     onClearByok = { settingsVm.clearByok() },
                     onSetImmersive = { settingsVm.setImmersiveReader(it) },
                 )
-                return@Box
+                return@BoxWithConstraints
             }
 
             var screen by rememberSaveable { mutableStateOf(Screen.STAND) }
@@ -183,47 +192,78 @@ fun RiverApp() {
                 }
             }
 
+            // Shared between the phone single-pane and the tablet two-pane Stand
+            // (below) so the two never drift apart on what each control does.
+            val onOpenEdit = { editStartTab = EditTab.SOURCES; screen = Screen.EDIT }
+            val onOpenEditSettings = { editStartTab = EditTab.SETTINGS; screen = Screen.EDIT }
+            val onOpenLoom = {
+                loomVm.reload()
+                screen = Screen.LOOM
+            }
+            val onOpenDatePicker = {
+                loomVm.reload()
+                loomVm.setDatePickerVisible(true)
+                screen = Screen.LOOM
+            }
+            val onOpenClippings = { screen = Screen.CLIPPINGS }
+
             when (screen) {
-                Screen.STAND -> ReaderScreen(
-                    vm = readerVm,
-                    lensVm = lensVm,
-                    showReadingTime = settings.showReadingTime,
-                    highlightLoadedLanguage = settings.highlightLoadedLanguage,
-                    immersiveReader = settings.immersiveReader,
-                    noozFlashEnabled = settings.noozFlashEnabled,
-                    paperGrain = settings.paperGrain,
-                    readMarkStyle = settings.readMarkStyle,
-                    unreadPinchFilter = settings.unreadPinchFilter,
-                    onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
-                    onOpenEdit = { editStartTab = EditTab.SOURCES; screen = Screen.EDIT },
-                    onOpenEditSettings = { editStartTab = EditTab.SETTINGS; screen = Screen.EDIT },
-                    // The reader's right room is the *compact* reading settings
-                    // (owner #2); "More settings" opens the full page.
-                    settingsRoom = { onBack ->
-                        SettingsScreen(
-                            vm = settingsVm,
-                            onBack = onBack,
-                            compact = true,
-                            onOpenAll = { screen = Screen.SETTINGS },
-                        )
-                    },
-                    onOpenLoom = {
-                        loomVm.reload()
-                        screen = Screen.LOOM
-                    },
-                    onOpenDatePicker = {
-                        loomVm.reload()
-                        loomVm.setDatePickerVisible(true)
-                        screen = Screen.LOOM
-                    },
-                    onOpenClippings = { screen = Screen.CLIPPINGS },
-                    onBrightnessDelta = if (settings.twoFingerBrightness) adjustBrightness else { _ -> },
-                    onThemeFlick = if (settings.twoFingerThemeFlick) {
-                        { settingsVm.setTheme(settings.themeMode.next()) }
-                    } else {
-                        {}
-                    },
-                )
+                Screen.STAND -> if (isExpandedWidth) {
+                    // Tablet/large-screen: list and reader are both always on
+                    // screen, so there's no "room" to slide into for Settings —
+                    // its cog already opens the full Edit/Settings screen either way.
+                    ReaderScreenTwoPane(
+                        vm = readerVm,
+                        lensVm = lensVm,
+                        showReadingTime = settings.showReadingTime,
+                        highlightLoadedLanguage = settings.highlightLoadedLanguage,
+                        immersiveReader = settings.immersiveReader,
+                        noozFlashEnabled = settings.noozFlashEnabled,
+                        paperGrain = settings.paperGrain,
+                        readMarkStyle = settings.readMarkStyle,
+                        unreadPinchFilter = settings.unreadPinchFilter,
+                        onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
+                        onOpenEdit = onOpenEdit,
+                        onOpenEditSettings = onOpenEditSettings,
+                        onOpenLoom = onOpenLoom,
+                        onOpenDatePicker = onOpenDatePicker,
+                        onOpenClippings = onOpenClippings,
+                    )
+                } else {
+                    ReaderScreen(
+                        vm = readerVm,
+                        lensVm = lensVm,
+                        showReadingTime = settings.showReadingTime,
+                        highlightLoadedLanguage = settings.highlightLoadedLanguage,
+                        immersiveReader = settings.immersiveReader,
+                        noozFlashEnabled = settings.noozFlashEnabled,
+                        paperGrain = settings.paperGrain,
+                        readMarkStyle = settings.readMarkStyle,
+                        unreadPinchFilter = settings.unreadPinchFilter,
+                        onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
+                        onOpenEdit = onOpenEdit,
+                        onOpenEditSettings = onOpenEditSettings,
+                        // The reader's right room is the *compact* reading settings
+                        // (owner #2); "More settings" opens the full page.
+                        settingsRoom = { onBack ->
+                            SettingsScreen(
+                                vm = settingsVm,
+                                onBack = onBack,
+                                compact = true,
+                                onOpenAll = { screen = Screen.SETTINGS },
+                            )
+                        },
+                        onOpenLoom = onOpenLoom,
+                        onOpenDatePicker = onOpenDatePicker,
+                        onOpenClippings = onOpenClippings,
+                        onBrightnessDelta = if (settings.twoFingerBrightness) adjustBrightness else { _ -> },
+                        onThemeFlick = if (settings.twoFingerThemeFlick) {
+                            { settingsVm.setTheme(settings.themeMode.next()) }
+                        } else {
+                            {}
+                        },
+                    )
+                }
                 Screen.EDIT -> EditScreen(
                     vm = sourcesVm,
                     onDone = {
