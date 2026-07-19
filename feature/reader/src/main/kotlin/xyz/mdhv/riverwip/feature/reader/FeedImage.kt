@@ -1,5 +1,6 @@
 package xyz.mdhv.riverwip.feature.reader
 
+import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -105,21 +106,7 @@ private const val HALFTONE_COLUMNS = 36
 private fun HalftoneImage(imageUrl: String, contentDescription: String?, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val bitmap by produceState<android.graphics.Bitmap?>(initialValue = null, imageUrl) {
-        value = try {
-            val request = ImageRequest.Builder(context).data(imageUrl).allowHardware(false).build()
-            val drawable = (context.imageLoader.execute(request) as? SuccessResult)?.drawable
-            drawable?.let {
-                val w = it.intrinsicWidth.coerceAtLeast(1)
-                val h = it.intrinsicHeight.coerceAtLeast(1)
-                val decoded = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
-                val canvas = android.graphics.Canvas(decoded)
-                it.setBounds(0, 0, w, h)
-                it.draw(canvas)
-                decoded
-            }
-        } catch (_: Exception) {
-            null
-        }
+        value = decodeSoftwareBitmap(context, imageUrl)
     }
 
     val source = bitmap ?: return // still loading, or the decode failed -- reserve nothing, same as no image at all
@@ -160,4 +147,30 @@ private fun HalftoneImage(imageUrl: String, contentDescription: String?, modifie
             }
         }
     }
+}
+
+/**
+ * Decode [imageUrl] into a plain software [android.graphics.Bitmap] (via
+ * Coil's own loader, `allowHardware(false)` so its pixels are readable), or
+ * null on any failure. Pulled out of [HalftoneImage]'s `produceState` block
+ * as its own plain suspend function — not just for readability: Compose
+ * lint's `ProduceStateDoesNotAssignValue` check statically looks for a
+ * direct `value = <expr>` in the producer lambda, and doesn't reliably see
+ * one buried inside a `try/catch` expression body. `value = decodeSoftwareBitmap(...)`
+ * is unambiguous either way.
+ */
+private suspend fun decodeSoftwareBitmap(context: Context, imageUrl: String): android.graphics.Bitmap? = try {
+    val request = ImageRequest.Builder(context).data(imageUrl).allowHardware(false).build()
+    val drawable = (context.imageLoader.execute(request) as? SuccessResult)?.drawable
+    drawable?.let {
+        val w = it.intrinsicWidth.coerceAtLeast(1)
+        val h = it.intrinsicHeight.coerceAtLeast(1)
+        val decoded = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(decoded)
+        it.setBounds(0, 0, w, h)
+        it.draw(canvas)
+        decoded
+    }
+} catch (_: Exception) {
+    null
 }
