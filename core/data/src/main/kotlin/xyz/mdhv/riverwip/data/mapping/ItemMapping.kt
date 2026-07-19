@@ -15,6 +15,8 @@ fun ItemEntity.toDomain(): Item = Item(
     fullTextCached = fullTextCached,
     topics = TopicEvidenceJson.decode(topicsJson),
     simhash = simhash,
+    imageUrl = imageUrl,
+    declaredNsfw = declaredNsfw,
 )
 
 fun Item.toEntity(): ItemEntity = ItemEntity(
@@ -29,4 +31,6 @@ fun Item.toEntity(): ItemEntity = ItemEntity(
     fullTextCached = fullTextCached,
     topicsJson = TopicEvidenceJson.encode(topics),
     simhash = simhash,
+    imageUrl = imageUrl,
+    declaredNsfw = declaredNsfw,
 )

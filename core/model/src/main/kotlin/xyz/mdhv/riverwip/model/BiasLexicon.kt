@@ -13,6 +13,8 @@ object BiasLexicon {
         INTENSIFIER("intensifier"),
         EMOTIVE_ADJECTIVE("emotive adjective"),
         EDITORIALIZING_HEDGE("editorializing hedge"),
+        /** A reader's own added word (Advanced settings), never part of the shipped defaults below. */
+        CUSTOM("custom"),
     }
 
     val terms: Map<Category, List<String>> = mapOf(

@@ -60,9 +60,13 @@ import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import xyz.mdhv.riverwip.feature.lens.LensAnnotatedParagraph
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.Classifier
+import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.Topic
@@ -94,6 +98,9 @@ fun ReaderDetailScreen(
     saved: Boolean,
     immersive: Boolean,
     paperGrain: PaperGrain,
+    showFeedImages: Boolean,
+    hideNsfwImages: Boolean,
+    imageStyle: ImageStyle,
     offsetX: Float,
     // 0f = full Paper, 1f = fully parked — the one value driving scale, shadow,
     // corner radius and (together with offsetX's sign) translation, read live
@@ -210,6 +217,23 @@ fun ReaderDetailScreen(
                                 )
                             }
                         }
+                    }
+                }
+                // The feed's own hero image (owner's ask), where it supplied
+                // one — right under the headline block, above the body.
+                if (showFeedImages) {
+                    item {
+                        FeedImage(
+                            imageUrl = item.imageUrl,
+                            declaredNsfw = item.declaredNsfw,
+                            hideNsfw = hideNsfwImages,
+                            style = imageStyle,
+                            modifier = Modifier
+                                .padding(bottom = Tokens.Spacing.md)
+                                .fillMaxWidth()
+                                .aspectRatio(16f / 9f)
+                                .clip(RoundedCornerShape(Tokens.Radius.md)),
+                        )
                     }
                 }
                 when (val s = state) {

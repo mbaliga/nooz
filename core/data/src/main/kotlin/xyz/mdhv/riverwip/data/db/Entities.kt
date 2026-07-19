@@ -58,6 +58,8 @@ data class ItemEntity(
     val fullTextCached: Boolean,
     val topicsJson: String,
     val simhash: Long,
+    val imageUrl: String? = null,
+    val declaredNsfw: Boolean = false,
 )
 
 /**

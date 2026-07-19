@@ -1,6 +1,7 @@
 package xyz.mdhv.riverwip.model
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -152,5 +153,134 @@ class FeedParserTest {
     @Test fun htmlStripAndUnescape() {
         assertEquals("A & B < C", Html.strip("<p>A &amp; B &lt; C</p>"))
         assertEquals("café — résumé", Html.strip("caf&#233; &mdash; r&#xe9;sum&#233;"))
+    }
+
+    @Test fun rssEnclosureImageTakesPriority() {
+        val body = """
+            <rss version="2.0"><channel><title>t</title>
+              <item>
+                <title>a</title><link>https://ex.com/a</link>
+                <enclosure url="https://ex.com/a.jpg" type="image/jpeg" length="1234"/>
+                <description>&lt;img src="https://ex.com/fallback.jpg"/&gt;</description>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        assertEquals("https://ex.com/a.jpg", FeedParser.parse(body).items[0].imageUrl)
+    }
+
+    @Test fun rssMediaThumbnailAndMediaContentImage() {
+        val thumb = """
+            <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link>
+                <media:thumbnail url="https://ex.com/thumb.jpg"/>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        assertEquals("https://ex.com/thumb.jpg", FeedParser.parse(thumb).items[0].imageUrl)
+
+        val content = """
+            <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link>
+                <media:content url="https://ex.com/vid.mp4" medium="video"/>
+                <media:content url="https://ex.com/content.jpg" medium="image"/>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        // A video-medium media:content must never be picked up as an image.
+        assertEquals("https://ex.com/content.jpg", FeedParser.parse(content).items[0].imageUrl)
+    }
+
+    @Test fun rssFallsBackToFirstImgInDescriptionWhenNoStructuredImage() {
+        val body = """
+            <rss version="2.0"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link>
+                <description>&lt;p&gt;&lt;img src="https://ex.com/inline.jpg" alt="x"/&gt; caption&lt;/p&gt;</description>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        assertEquals("https://ex.com/inline.jpg", FeedParser.parse(body).items[0].imageUrl)
+    }
+
+    @Test fun rssItemWithNoImageAnywhereYieldsNull() {
+        val body = """
+            <rss version="2.0"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link><description>Plain text, no image.</description></item>
+            </channel></rss>
+        """.trimIndent()
+        assertEquals(null, FeedParser.parse(body).items[0].imageUrl)
+    }
+
+    @Test fun atomEnclosureImageLink() {
+        val body = """
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title>t</title>
+              <entry>
+                <title>a</title>
+                <link rel="alternate" href="https://ex.com/a"/>
+                <link rel="enclosure" type="image/png" href="https://ex.com/a.png"/>
+                <summary>x</summary>
+              </entry>
+            </feed>
+        """.trimIndent()
+        assertEquals("https://ex.com/a.png", FeedParser.parse(body).items[0].imageUrl)
+    }
+
+    @Test fun rssMediaRatingAdultIsDeclaredNsfw() {
+        val body = """
+            <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link>
+                <media:rating>adult</media:rating>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        assertTrue(FeedParser.parse(body).items[0].declaredNsfw)
+    }
+
+    @Test fun rssItunesExplicitTrueIsDeclaredNsfw() {
+        val body = """
+            <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link>
+                <itunes:explicit>true</itunes:explicit>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        assertTrue(FeedParser.parse(body).items[0].declaredNsfw)
+    }
+
+    @Test fun rssWithNoRatingOrExplicitTagIsNotDeclaredNsfw() {
+        val body = """
+            <rss version="2.0"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link></item>
+            </channel></rss>
+        """.trimIndent()
+        assertFalse(FeedParser.parse(body).items[0].declaredNsfw)
+    }
+
+    @Test fun rssMediaRatingNonadultAndItunesExplicitFalseAreNotDeclaredNsfw() {
+        val body = """
+            <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+              <channel><title>t</title>
+                <item><title>a</title><link>https://ex.com/a</link>
+                  <media:rating>nonadult</media:rating>
+                  <itunes:explicit>false</itunes:explicit>
+                </item>
+              </channel>
+            </rss>
+        """.trimIndent()
+        assertFalse(FeedParser.parse(body).items[0].declaredNsfw)
+    }
+
+    @Test fun atomFallsBackToImgInSummaryHtml() {
+        val body = """
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title>t</title>
+              <entry>
+                <title>a</title>
+                <link rel="alternate" href="https://ex.com/a"/>
+                <summary>&lt;img src="https://ex.com/atom-inline.jpg"/&gt;</summary>
+              </entry>
+            </feed>
+        """.trimIndent()
+        assertEquals("https://ex.com/atom-inline.jpg", FeedParser.parse(body).items[0].imageUrl)
     }
 }

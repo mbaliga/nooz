@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Bookmarks
@@ -79,6 +81,7 @@ import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.Diversifier
+import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Item
@@ -117,6 +120,9 @@ fun ArticleListScreen(
     noozFlashEnabled: Boolean,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
+    showFeedImages: Boolean,
+    hideNsfwImages: Boolean,
+    imageStyle: ImageStyle,
     onOpenItem: (Item) -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -386,6 +392,9 @@ fun ArticleListScreen(
                                 sourceTitle = sourceTitles[item.sourceId],
                                 read = item.id in readIds,
                                 readMarkStyle = readMarkStyle,
+                                showFeedImages = showFeedImages,
+                                hideNsfwImages = hideNsfwImages,
+                                imageStyle = imageStyle,
                                 onClick = { onOpenItem(item) },
                             )
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -629,7 +638,16 @@ private fun RegionTopicFilterSheet(
 }
 
 @Composable
-private fun ItemRow(item: Item, sourceTitle: String?, read: Boolean, readMarkStyle: ReadMarkStyle, onClick: () -> Unit) {
+private fun ItemRow(
+    item: Item,
+    sourceTitle: String?,
+    read: Boolean,
+    readMarkStyle: ReadMarkStyle,
+    showFeedImages: Boolean,
+    hideNsfwImages: Boolean,
+    imageStyle: ImageStyle,
+    onClick: () -> Unit,
+) {
     // A read article marks itself in place (owner's ask) — no separate icon,
     // just the title itself dimmed or struck through, per the reader's own
     // Settings choice.
@@ -639,28 +657,46 @@ private fun ItemRow(item: Item, sourceTitle: String?, read: Boolean, readMarkSty
     } else {
         MaterialTheme.colorScheme.onBackground
     }
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
+        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
     ) {
-        // Serif title — the Stand mock's voice (headlineSmall is serif by role).
-        Text(
-            item.title,
-            style = MaterialTheme.typography.headlineSmall.copy(
-                textDecoration = if (strike) TextDecoration.LineThrough else null,
-            ),
-            color = titleColor,
-            maxLines = 3,
-        )
-        Text(
-            byline(item, sourceTitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-        )
+        // The feed's own thumbnail (owner's ask), where it supplied one — see
+        // FeedImage for the on/off, style, and source-declared-NSFW checks.
+        if (showFeedImages) {
+            FeedImage(
+                imageUrl = item.imageUrl,
+                declaredNsfw = item.declaredNsfw,
+                hideNsfw = hideNsfwImages,
+                style = imageStyle,
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(Tokens.Radius.sm)),
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
+        ) {
+            // Serif title — the Stand mock's voice (headlineSmall is serif by role).
+            Text(
+                item.title,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    textDecoration = if (strike) TextDecoration.LineThrough else null,
+                ),
+                color = titleColor,
+                maxLines = 3,
+            )
+            Text(
+                byline(item, sourceTitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+            )
+        }
     }
 }
 

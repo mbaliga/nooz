@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class Screen { STAND, EDIT, SETTINGS, LOOM, CLIPPINGS }
+private enum class Screen { STAND, EDIT, SETTINGS, LOOM, CLIPPINGS, LENS_WORDS }
 
 private const val SPLASH_MILLIS = 1_100L
 
@@ -222,6 +222,11 @@ fun RiverApp() {
                         paperGrain = settings.paperGrain,
                         readMarkStyle = settings.readMarkStyle,
                         unreadPinchFilter = settings.unreadPinchFilter,
+                        lensDisabledDefaultTerms = settings.lensDisabledDefaultTerms,
+                        lensCustomTerms = settings.lensCustomTerms,
+                        showFeedImages = settings.showFeedImages,
+                        hideNsfwImages = settings.hideNsfwImages,
+                        imageStyle = settings.imageStyle,
                         onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                         onOpenEdit = onOpenEdit,
                         onOpenEditSettings = onOpenEditSettings,
@@ -240,6 +245,11 @@ fun RiverApp() {
                         paperGrain = settings.paperGrain,
                         readMarkStyle = settings.readMarkStyle,
                         unreadPinchFilter = settings.unreadPinchFilter,
+                        lensDisabledDefaultTerms = settings.lensDisabledDefaultTerms,
+                        lensCustomTerms = settings.lensCustomTerms,
+                        showFeedImages = settings.showFeedImages,
+                        hideNsfwImages = settings.hideNsfwImages,
+                        imageStyle = settings.imageStyle,
                         onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                         onOpenEdit = onOpenEdit,
                         onOpenEditSettings = onOpenEditSettings,
@@ -273,9 +283,20 @@ fun RiverApp() {
                         readerVm.refresh()
                     },
                     startTab = editStartTab,
-                    settingsTab = { SettingsBody(vm = settingsVm, compact = false) },
+                    settingsTab = {
+                        SettingsBody(
+                            vm = settingsVm,
+                            compact = false,
+                            onOpenLensWordList = { screen = Screen.LENS_WORDS },
+                        )
+                    },
                 )
-                Screen.SETTINGS -> SettingsScreen(vm = settingsVm, onBack = { screen = Screen.STAND })
+                Screen.SETTINGS -> SettingsScreen(
+                    vm = settingsVm,
+                    onBack = { screen = Screen.STAND },
+                    onOpenLensWordList = { screen = Screen.LENS_WORDS },
+                )
+                Screen.LENS_WORDS -> LensWordListScreen(vm = settingsVm, onBack = { screen = Screen.STAND })
                 Screen.LOOM -> LoomScreen(
                     vm = loomVm,
                     onClose = { screen = Screen.STAND },

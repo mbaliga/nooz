@@ -12,7 +12,7 @@ import androidx.room.RoomDatabase
  */
 @Database(
     entities = [SourceEntity::class, ItemEntity::class, ReadEventEntity::class, WeeklyAggregateEntity::class, ClippingEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class RiverDatabase : RoomDatabase() {

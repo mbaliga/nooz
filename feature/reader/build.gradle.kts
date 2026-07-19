@@ -37,6 +37,8 @@ dependencies {
 
     // FileProvider + ResourcesCompat for the newspaper-share image.
     implementation(libs.androidx.core.ktx)
+    // Feed images (owner's ask): loads a feed's own enclosure/thumbnail image.
+    implementation(libs.coil.compose)
     // BackHandler, for unwinding the lift-and-part parked state one step at a time.
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

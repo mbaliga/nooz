@@ -24,6 +24,8 @@ object Ingest {
             fullTextCached = false,
             topics = topics,
             simhash = Simhash.of(parsed.title),
+            imageUrl = parsed.imageUrl,
+            declaredNsfw = parsed.declaredNsfw,
         )
     }
 

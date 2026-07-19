@@ -26,12 +26,34 @@ object AffectSpanDetector {
      * Detect non-overlapping affect spans, left to right. When matches overlap,
      * the earlier start wins; ties break toward the longer (phrase) match — so a
      * multi-word term like "so-called" is preferred over any word inside it.
+     *
+     * [disabledDefaultTerms] (Advanced settings: turn individual default words
+     * off) is checked against the shipped [BiasLexicon] terms only — a reader
+     * can silence "very" without silencing every intensifier. [customTerms]
+     * (Advanced settings: a reader's own added words) are matched the same
+     * way as any default term, word-boundary and case-insensitive, tagged
+     * [BiasLexicon.Category.CUSTOM] so they're identifiable in the evidence
+     * line. Both default empty, so an unqualified `detect(text)` call behaves
+     * exactly as before this setting existed.
      */
-    fun detect(text: String): List<Span> {
+    fun detect(
+        text: String,
+        disabledDefaultTerms: Set<String> = emptySet(),
+        customTerms: Set<String> = emptySet(),
+    ): List<Span> {
         val candidates = ArrayList<Span>()
         for ((category, term, regex) in BiasLexicon.matchers) {
+            if (term in disabledDefaultTerms) continue
             for (m in regex.findAll(text)) {
                 candidates.add(Span(m.range.first, m.range.last + 1, m.value, category, term))
+            }
+        }
+        for (raw in customTerms) {
+            val term = raw.trim()
+            if (term.isEmpty()) continue
+            val regex = Regex("\\b" + Regex.escape(term) + "\\b", RegexOption.IGNORE_CASE)
+            for (m in regex.findAll(text)) {
+                candidates.add(Span(m.range.first, m.range.last + 1, m.value, BiasLexicon.Category.CUSTOM, term))
             }
         }
         candidates.sortWith(compareBy({ it.start }, { -(it.end - it.start) }))
@@ -47,5 +69,6 @@ object AffectSpanDetector {
     }
 
     /** Count only, for the reader-chrome toggle badge. */
-    fun count(text: String): Int = detect(text).size
+    fun count(text: String, disabledDefaultTerms: Set<String> = emptySet(), customTerms: Set<String> = emptySet()): Int =
+        detect(text, disabledDefaultTerms, customTerms).size
 }

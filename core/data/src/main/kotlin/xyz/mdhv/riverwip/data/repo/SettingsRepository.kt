@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import xyz.mdhv.riverwip.model.AppSettings
+import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFilter
@@ -42,6 +43,11 @@ class SettingsRepository(private val context: Context) {
         val PAPER_GRAIN = stringPreferencesKey("paper_grain")
         val READ_MARK_STYLE = stringPreferencesKey("read_mark_style")
         val UNREAD_PINCH_FILTER = booleanPreferencesKey("unread_pinch_filter")
+        val SHOW_FEED_IMAGES = booleanPreferencesKey("show_feed_images")
+        val HIDE_NSFW_IMAGES = booleanPreferencesKey("hide_nsfw_images")
+        val IMAGE_STYLE = stringPreferencesKey("image_style")
+        val LENS_DISABLED_DEFAULT_TERMS = stringSetPreferencesKey("lens_disabled_default_terms")
+        val LENS_CUSTOM_TERMS = stringSetPreferencesKey("lens_custom_terms")
     }
 
     fun observeSettings(): Flow<AppSettings> = context.settingsDataStore.data.map { prefs ->
@@ -59,6 +65,11 @@ class SettingsRepository(private val context: Context) {
             paperGrain = PaperGrain.fromKey(prefs[Keys.PAPER_GRAIN]),
             readMarkStyle = ReadMarkStyle.fromKey(prefs[Keys.READ_MARK_STYLE]),
             unreadPinchFilter = prefs[Keys.UNREAD_PINCH_FILTER] ?: true,
+            showFeedImages = prefs[Keys.SHOW_FEED_IMAGES] ?: true,
+            hideNsfwImages = prefs[Keys.HIDE_NSFW_IMAGES] ?: false,
+            imageStyle = ImageStyle.fromKey(prefs[Keys.IMAGE_STYLE]),
+            lensDisabledDefaultTerms = prefs[Keys.LENS_DISABLED_DEFAULT_TERMS] ?: emptySet(),
+            lensCustomTerms = prefs[Keys.LENS_CUSTOM_TERMS] ?: emptySet(),
         )
     }
 
@@ -119,6 +130,43 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setUnreadPinchFilter(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.UNREAD_PINCH_FILTER] = enabled }
+    }
+
+    suspend fun setShowFeedImages(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.SHOW_FEED_IMAGES] = enabled }
+    }
+
+    suspend fun setHideNsfwImages(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.HIDE_NSFW_IMAGES] = enabled }
+    }
+
+    suspend fun setImageStyle(style: ImageStyle) {
+        context.settingsDataStore.edit { it[Keys.IMAGE_STYLE] = style.key }
+    }
+
+    /** Advanced settings: turn one default lexicon term on or off. Read-modify-write against whatever's already stored. */
+    suspend fun setLensTermEnabled(term: String, enabled: Boolean) {
+        context.settingsDataStore.edit { prefs ->
+            val current = prefs[Keys.LENS_DISABLED_DEFAULT_TERMS] ?: emptySet()
+            prefs[Keys.LENS_DISABLED_DEFAULT_TERMS] = if (enabled) current - term else current + term
+        }
+    }
+
+    /** Advanced settings: add a reader's own word/phrase. No-ops on a blank string. */
+    suspend fun addLensCustomTerm(term: String) {
+        val trimmed = term.trim()
+        if (trimmed.isEmpty()) return
+        context.settingsDataStore.edit { prefs ->
+            val current = prefs[Keys.LENS_CUSTOM_TERMS] ?: emptySet()
+            prefs[Keys.LENS_CUSTOM_TERMS] = current + trimmed
+        }
+    }
+
+    suspend fun removeLensCustomTerm(term: String) {
+        context.settingsDataStore.edit { prefs ->
+            val current = prefs[Keys.LENS_CUSTOM_TERMS] ?: emptySet()
+            prefs[Keys.LENS_CUSTOM_TERMS] = current - term
+        }
     }
 
     suspend fun setFilter(filter: ReaderFilter) {

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
+import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import kotlin.math.abs
@@ -57,6 +58,11 @@ fun ReaderScreen(
     paperGrain: PaperGrain,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
+    lensDisabledDefaultTerms: Set<String>,
+    lensCustomTerms: Set<String>,
+    showFeedImages: Boolean,
+    hideNsfwImages: Boolean,
+    imageStyle: ImageStyle,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -72,6 +78,12 @@ fun ReaderScreen(
 ) {
     LaunchedEffect(highlightLoadedLanguage) {
         lensVm.updateUnderlinesEnabled(highlightLoadedLanguage)
+    }
+    LaunchedEffect(lensDisabledDefaultTerms) {
+        lensVm.updateLensDisabledDefaultTerms(lensDisabledDefaultTerms)
+    }
+    LaunchedEffect(lensCustomTerms) {
+        lensVm.updateLensCustomTerms(lensCustomTerms)
     }
 
     val selected = vm.selectedItem
@@ -180,6 +192,9 @@ fun ReaderScreen(
                 noozFlashEnabled = noozFlashEnabled,
                 readMarkStyle = readMarkStyle,
                 unreadPinchFilter = unreadPinchFilter,
+                showFeedImages = showFeedImages,
+                hideNsfwImages = hideNsfwImages,
+                imageStyle = imageStyle,
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
                 onOpenEditSettings = onOpenEditSettings,
@@ -240,6 +255,9 @@ fun ReaderScreen(
             saved = savedIds.contains(sel.id),
             immersive = immersiveReader,
             paperGrain = paperGrain,
+            showFeedImages = showFeedImages,
+            hideNsfwImages = hideNsfwImages,
+            imageStyle = imageStyle,
             offsetX = offsetX,
             progress = progress,
             parkedRoom = parkedRoom,

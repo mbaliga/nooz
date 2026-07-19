@@ -92,6 +92,15 @@ data class Item(
     val fullTextCached: Boolean = false,
     val topics: List<TopicEvidence> = emptyList(),
     val simhash: Long = 0L,
+    /** The feed's own image for this item, if it supplied one — see [FeedParser]. Null means the feed had none. */
+    val imageUrl: String? = null,
+    /**
+     * True only when the *source's own feed* declared this item adult/explicit
+     * — Media RSS's `<media:rating>` or the podcast `<itunes:explicit>` tag
+     * (see [FeedParser]). Never inferred; a source that declares nothing
+     * always reads false, per those specs' own default.
+     */
+    val declaredNsfw: Boolean = false,
 )
 
 /**

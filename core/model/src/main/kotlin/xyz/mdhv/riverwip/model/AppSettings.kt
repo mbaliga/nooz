@@ -100,6 +100,24 @@ enum class ReadMarkStyle(val key: String, val label: String) {
     }
 }
 
+/**
+ * How a feed image renders (owner's ask, 2026-07): plain colour, a tasteful
+ * duotone black & white (not a flat desaturation), or a halftone dot-print
+ * stylization — newsprint's own reproduction technique, in keeping with this
+ * app's whole newspaper metaphor. Mutually exclusive: the owner's ask reads
+ * as "BW, *or* a dot-print stylization," a style choice, not stacked filters.
+ */
+enum class ImageStyle(val key: String, val label: String) {
+    COLOR("color", "Color"),
+    BLACK_AND_WHITE("bw", "Black & white"),
+    HALFTONE("halftone", "Halftone");
+
+    companion object {
+        private val byKey = entries.associateBy(ImageStyle::key)
+        fun fromKey(key: String?): ImageStyle = byKey[key] ?: COLOR
+    }
+}
+
 data class AppSettings(
     /** The middle tint carries the check in the owner's mock — Paper is the default. */
     val themeMode: ThemeMode = ThemeMode.PAPER,
@@ -145,6 +163,34 @@ data class AppSettings(
      * an opt-in.
      */
     val unreadPinchFilter: Boolean = true,
+    /**
+     * Feed images (owner's ask, 2026-07): on by default once a feed supplies
+     * one (enclosure / Media RSS / Atom image link / a first `<img>` in the
+     * body — see [FeedParser]). An opt-out, not an opt-in.
+     */
+    val showFeedImages: Boolean = true,
+    /**
+     * NSFW image filtering (owner's ask): this is **not** an on-device
+     * classifier — it's not this app's judgment to make at all. It hides an
+     * item's image only when the *source's own feed* declared it adult/
+     * explicit, via the two real conventions feeds actually use for this —
+     * Media RSS's `<media:rating>` and the podcast `<itunes:explicit>` tag
+     * (see [Item.declaredNsfw]/[FeedParser]). A source that declares nothing
+     * is never touched or guessed at; absence always means "not flagged,"
+     * exactly as both of those specs themselves define it.
+     */
+    val hideNsfwImages: Boolean = false,
+    val imageStyle: ImageStyle = ImageStyle.COLOR,
+    /**
+     * Advanced settings (owner's ask): the reading lens's default loaded-word
+     * / editorial-hedging terms a reader has individually turned off, by the
+     * exact [BiasLexicon] term string (case-sensitive key, matched
+     * case-insensitively at detect time same as everywhere else). Empty means
+     * every default term is active, i.e. today's unqualified behaviour.
+     */
+    val lensDisabledDefaultTerms: Set<String> = emptySet(),
+    /** Advanced settings: a reader's own added words/phrases, detected the same way as any default term. */
+    val lensCustomTerms: Set<String> = emptySet(),
 )
 
 /**

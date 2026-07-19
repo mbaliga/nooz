@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
+import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 
@@ -54,6 +55,11 @@ fun ReaderScreenTwoPane(
     paperGrain: PaperGrain,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
+    lensDisabledDefaultTerms: Set<String>,
+    lensCustomTerms: Set<String>,
+    showFeedImages: Boolean,
+    hideNsfwImages: Boolean,
+    imageStyle: ImageStyle,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -63,6 +69,12 @@ fun ReaderScreenTwoPane(
 ) {
     LaunchedEffect(highlightLoadedLanguage) {
         lensVm.updateUnderlinesEnabled(highlightLoadedLanguage)
+    }
+    LaunchedEffect(lensDisabledDefaultTerms) {
+        lensVm.updateLensDisabledDefaultTerms(lensDisabledDefaultTerms)
+    }
+    LaunchedEffect(lensCustomTerms) {
+        lensVm.updateLensCustomTerms(lensCustomTerms)
     }
 
     val selected = vm.selectedItem
@@ -86,6 +98,9 @@ fun ReaderScreenTwoPane(
                 noozFlashEnabled = noozFlashEnabled,
                 readMarkStyle = readMarkStyle,
                 unreadPinchFilter = unreadPinchFilter,
+                showFeedImages = showFeedImages,
+                hideNsfwImages = hideNsfwImages,
+                imageStyle = imageStyle,
                 onOpenItem = { vm.openItem(it) },
                 onOpenEdit = onOpenEdit,
                 onOpenEditSettings = onOpenEditSettings,
@@ -124,8 +139,13 @@ fun ReaderScreenTwoPane(
                     item = sel,
                     showReadingTime = showReadingTime,
                     lensOn = highlightLoadedLanguage,
+                    lensDisabledDefaultTerms = lensDisabledDefaultTerms,
+                    lensCustomTerms = lensCustomTerms,
                     saved = savedIds.contains(sel.id),
                     paperGrain = paperGrain,
+                    showFeedImages = showFeedImages,
+                    hideNsfwImages = hideNsfwImages,
+                    imageStyle = imageStyle,
                     columns = columns,
                     onToggleLens = onToggleLens,
                     onToggleClip = { vm.toggleClip(sel) },
@@ -141,6 +161,9 @@ fun ReaderScreenTwoPane(
                     saved = savedIds.contains(sel.id),
                     immersive = immersiveReader,
                     paperGrain = paperGrain,
+                    showFeedImages = showFeedImages,
+                    hideNsfwImages = hideNsfwImages,
+                    imageStyle = imageStyle,
                     offsetX = 0f,
                     progress = 0f,
                     parkedRoom = null,

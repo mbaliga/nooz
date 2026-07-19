@@ -91,6 +91,19 @@ class LensViewModel(
     var sterileLensEnabled: Boolean by mutableStateOf(false)
         private set
 
+    /**
+     * Advanced settings' word-list customization (owner's ask), synced in
+     * from the persisted `AppSettings` the exact same way [underlinesEnabled]
+     * already is — this class stays free of any Room/DataStore dependency of
+     * its own (see the class doc above); the caller (`ReaderScreen`/
+     * `ReaderScreenTwoPane`) reads the real settings and pushes them in via a
+     * `LaunchedEffect`.
+     */
+    var lensDisabledDefaultTerms: Set<String> by mutableStateOf(emptySet())
+        private set
+    var lensCustomTerms: Set<String> by mutableStateOf(emptySet())
+        private set
+
     // Named distinctly from the property (not `setUnderlinesEnabled`/`setSterileLensEnabled`):
     // Kotlin's `private set` still compiles a same-named synthetic setter for a delegated
     // `var`, and a same-signature public function collides with it at the JVM level
@@ -103,7 +116,16 @@ class LensViewModel(
         sterileLensEnabled = enabled
     }
 
-    fun detect(text: String): List<AffectSpanDetector.Span> = AffectSpanDetector.detect(text)
+    fun updateLensDisabledDefaultTerms(terms: Set<String>) {
+        lensDisabledDefaultTerms = terms
+    }
+
+    fun updateLensCustomTerms(terms: Set<String>) {
+        lensCustomTerms = terms
+    }
+
+    fun detect(text: String): List<AffectSpanDetector.Span> =
+        AffectSpanDetector.detect(text, lensDisabledDefaultTerms, lensCustomTerms)
 
     fun stateFor(itemId: String, span: AffectSpanDetector.Span): AffectSpanUiState =
         overrides[SpanKey(itemId, span.start, span.end)] ?: AffectSpanUiState.Untouched

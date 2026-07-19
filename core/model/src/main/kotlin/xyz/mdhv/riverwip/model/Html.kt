@@ -9,9 +9,18 @@ package xyz.mdhv.riverwip.model
 object Html {
     private val TAG = Regex("<[^>]+>")
     private val WS = Regex("\\s+")
+    private val IMG_SRC = Regex("<img\\b[^>]*\\bsrc\\s*=\\s*[\"']([^\"']+)[\"']", RegexOption.IGNORE_CASE)
 
     fun strip(s: String): String =
         unescape(TAG.replace(s, " ")).let { WS.replace(it, " ") }.trim()
+
+    /**
+     * The first `<img src="...">` found in a raw (unstripped) HTML snippet, if
+     * any — the last-resort image source for a feed item whose entry carries
+     * no structured `<enclosure>`/Media RSS/Atom image link, only an `<img>`
+     * buried in its description/content HTML.
+     */
+    fun firstImgSrc(s: String): String? = IMG_SRC.find(s)?.groupValues?.get(1)?.let(::unescape)?.trim()?.ifBlank { null }
 
     fun unescape(s: String): String {
         if ('&' !in s) return s

@@ -127,4 +127,33 @@ class LensGuardTest {
     @Test fun cleanTextHasNoSpans() {
         assertEquals(0, AffectSpanDetector.count("The committee met on Tuesday to review the budget."))
     }
+
+    // ---- Advanced settings: per-word default disable + custom terms ----
+
+    @Test fun disabledDefaultTermIsSilencedButOthersStillFire() {
+        val text = "Modi slammed the opposition in a shocking move."
+        val spans = AffectSpanDetector.detect(text, disabledDefaultTerms = setOf("slammed"))
+        assertFalse(spans.any { it.term == "slammed" })
+        assertTrue(spans.any { it.term == "shocking" && it.category == BiasLexicon.Category.EMOTIVE_ADJECTIVE })
+    }
+
+    @Test fun customTermIsDetectedAndTaggedCustomCategory() {
+        val spans = AffectSpanDetector.detect("The committee met to review the budget.", customTerms = setOf("committee"))
+        val hit = spans.firstOrNull { it.term == "committee" }
+        assertTrue(hit != null)
+        assertEquals(BiasLexicon.Category.CUSTOM, hit!!.category)
+        assertEquals("flagged: 'committee' — custom", hit.evidence)
+    }
+
+    @Test fun blankAndWhitespaceCustomTermsAreIgnoredNotCrashed() {
+        val spans = AffectSpanDetector.detect("Plain text.", customTerms = setOf("", "   "))
+        assertEquals(0, spans.size)
+    }
+
+    @Test fun unqualifiedDetectStillBehavesExactlyAsBefore() {
+        // Regression guard: adding the two new defaulted parameters must never
+        // change behaviour for any existing zero-arg caller.
+        val text = "Modi slammed the opposition in a shocking move."
+        assertEquals(AffectSpanDetector.detect(text), AffectSpanDetector.detect(text, emptySet(), emptySet()))
+    }
 }

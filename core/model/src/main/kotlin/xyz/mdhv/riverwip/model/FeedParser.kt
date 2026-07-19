@@ -30,6 +30,10 @@ object FeedParser {
         val publishedAtMillis: Long? = null,
         val summary: String? = null,
         val categories: List<String> = emptyList(),
+        /** The feed's own image for this item, if any — see [rssImageUrl]/[atomImageUrl]. */
+        val imageUrl: String? = null,
+        /** The feed's own adult/explicit declaration for this item, if any — see [declaredNsfw]. */
+        val declaredNsfw: Boolean = false,
     )
 
     data class ParsedFeed(val title: String?, val items: List<ParsedItem>)
@@ -87,7 +91,32 @@ object FeedParser {
             publishedAtMillis = parseDate(date),
             summary = summaryRaw?.let { Html.strip(it).ifBlank { null } },
             categories = categories,
+            imageUrl = rssImageUrl(item, summaryRaw),
+            declaredNsfw = declaredNsfw(item),
         )
+    }
+
+    /**
+     * An RSS/RDF item's image, checked in order of how explicitly it's marked
+     * an image: `<enclosure type="image/...">`, Media RSS `<media:thumbnail>`
+     * (always an image by definition), `<media:content medium="image">`
+     * (unlike thumbnail, `<media:content>` can just as easily be video/audio,
+     * so only trust it when `medium` says image explicitly), and finally the
+     * first `<img>` found in the item's own description/content:encoded HTML.
+     */
+    private fun rssImageUrl(item: Element, rawHtml: String?): String? {
+        item.childrenByLocal("enclosure")
+            .firstOrNull { it.attrOrNull("type")?.startsWith("image/", ignoreCase = true) == true }
+            ?.attrOrNull("url")?.trim()?.ifBlank { null }
+            ?.let { return it }
+        item.childrenByLocal("thumbnail").firstOrNull()
+            ?.attrOrNull("url")?.trim()?.ifBlank { null }
+            ?.let { return it }
+        item.childrenByLocal("content")
+            .firstOrNull { it.attrOrNull("medium") == "image" }
+            ?.attrOrNull("url")?.trim()?.ifBlank { null }
+            ?.let { return it }
+        return rawHtml?.let(Html::firstImgSrc)
     }
 
     private fun parseAtomEntry(entry: Element): ParsedItem? {
@@ -109,7 +138,39 @@ object FeedParser {
             publishedAtMillis = parseDate(date),
             summary = summaryRaw?.let { Html.strip(it).ifBlank { null } },
             categories = categories,
+            imageUrl = atomImageUrl(entry, summaryRaw),
+            declaredNsfw = declaredNsfw(entry),
         )
+    }
+
+    /** An Atom entry's image: an explicit `<link rel="enclosure" type="image/...">`, or the first `<img>` in its own summary/content HTML. */
+    private fun atomImageUrl(entry: Element, rawHtml: String?): String? {
+        entry.childrenByLocal("link")
+            .firstOrNull { it.attrOrNull("rel") == "enclosure" && it.attrOrNull("type")?.startsWith("image/", ignoreCase = true) == true }
+            ?.attrOrNull("href")?.trim()?.ifBlank { null }
+            ?.let { return it }
+        return rawHtml?.let(Html::firstImgSrc)
+    }
+
+    /**
+     * Whether the *source's own feed* declared this entry adult/explicit —
+     * never this app's own judgment. Checks the two real conventions feeds
+     * use for this: Media RSS's `<media:rating>` (local name "rating";
+     * "adult" under the default `urn:simple` scheme, the vocabulary almost
+     * every feed that uses this element at all actually uses) and the
+     * podcast namespace's `<itunes:explicit>` (local name "explicit"; "true"
+     * per Apple's current spec, "yes" tolerated from its older one). A feed
+     * that supplies neither element reads false — absence is exactly what
+     * both specs themselves define as "not flagged," never a guess.
+     */
+    private fun declaredNsfw(item: Element): Boolean {
+        item.firstChildByLocal("rating")?.textContent?.trim()?.let {
+            if (it.equals("adult", ignoreCase = true)) return true
+        }
+        item.firstChildByLocal("explicit")?.textContent?.trim()?.let {
+            if (it.equals("true", ignoreCase = true) || it.equals("yes", ignoreCase = true)) return true
+        }
+        return false
     }
 
     // ---- JSON (Mastodon / GDELT) ----------------------------------------

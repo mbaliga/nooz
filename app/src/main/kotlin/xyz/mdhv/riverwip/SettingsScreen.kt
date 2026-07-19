@@ -90,6 +90,7 @@ import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.DictionaryOption
+import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFont
@@ -190,6 +191,12 @@ class SettingsViewModel(
     fun setPaperGrain(grain: PaperGrain) = viewModelScope.launch { repo.setPaperGrain(grain) }
     fun setReadMarkStyle(style: ReadMarkStyle) = viewModelScope.launch { repo.setReadMarkStyle(style) }
     fun setUnreadPinchFilter(enabled: Boolean) = viewModelScope.launch { repo.setUnreadPinchFilter(enabled) }
+    fun setShowFeedImages(on: Boolean) = viewModelScope.launch { repo.setShowFeedImages(on) }
+    fun setHideNsfwImages(on: Boolean) = viewModelScope.launch { repo.setHideNsfwImages(on) }
+    fun setImageStyle(style: ImageStyle) = viewModelScope.launch { repo.setImageStyle(style) }
+    fun setLensTermEnabled(term: String, enabled: Boolean) = viewModelScope.launch { repo.setLensTermEnabled(term, enabled) }
+    fun addLensCustomTerm(term: String) = viewModelScope.launch { repo.addLensCustomTerm(term) }
+    fun removeLensCustomTerm(term: String) = viewModelScope.launch { repo.removeLensCustomTerm(term) }
 
     // Dictionary lens: one-click download of a chosen dictionary (owner's spec).
     val dictionaryOptions: List<DictionaryOption> = dictionaryRepo.options
@@ -252,6 +259,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
     compact: Boolean = false,
     onOpenAll: () -> Unit = {},
+    onOpenLensWordList: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -265,7 +273,13 @@ fun SettingsScreen(
             )
         },
     ) { padding ->
-        SettingsBody(vm = vm, compact = compact, onOpenAll = onOpenAll, modifier = Modifier.padding(padding))
+        SettingsBody(
+            vm = vm,
+            compact = compact,
+            onOpenAll = onOpenAll,
+            onOpenLensWordList = onOpenLensWordList,
+            modifier = Modifier.padding(padding),
+        )
     }
 }
 
@@ -280,6 +294,7 @@ fun SettingsBody(
     vm: SettingsViewModel,
     compact: Boolean,
     onOpenAll: () -> Unit = {},
+    onOpenLensWordList: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
@@ -564,6 +579,12 @@ fun SettingsBody(
                 GesturesSection(settings, vm)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
+                ImagesSection(settings, vm)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                AdvancedSection(onOpenLensWordList = onOpenLensWordList)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
                 YourDataSection(vm)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
@@ -754,6 +775,167 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
             checked = settings.unreadPinchFilter,
             onCheckedChange = { vm.setUnreadPinchFilter(it) },
         )
+    }
+}
+
+/**
+ * Feed images (owner's ask, 2026-07): on/off, a style choice — colour, a
+ * tasteful black & white, or a halftone dot-print stylization (see
+ * `FeedImage.kt` in `:feature:reader`) — and hiding images the *source's own
+ * feed* declared adult/explicit (never this app's own judgment; see
+ * [AppSettings.hideNsfwImages]'s own doc for exactly what that checks).
+ * Visible by default, not buried — a mainstream visual preference, unlike
+ * the power-reader tools in [AdvancedSection] below.
+ */
+@Composable
+private fun ImagesSection(settings: AppSettings, vm: SettingsViewModel) {
+    SectionHeading("Images")
+    SettingSwitchRow(
+        title = "Show feed images",
+        subtitle = "Article thumbnails and hero images, wherever a source's feed supplies one.",
+        checked = settings.showFeedImages,
+        onCheckedChange = { vm.setShowFeedImages(it) },
+    )
+    if (settings.showFeedImages) {
+        Row(
+            modifier = Modifier.selectableGroup(),
+            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+        ) {
+            for (style in ImageStyle.entries) {
+                val chosen = settings.imageStyle == style
+                Text(
+                    style.label,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        // Non-colour channel: the chosen style is bold, not just darker.
+                        fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                    ),
+                    color = if (chosen) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier
+                        .selectable(
+                            selected = chosen,
+                            role = Role.RadioButton,
+                            onClick = { vm.setImageStyle(style) },
+                        )
+                        .minimumInteractiveComponentSize()
+                        .padding(vertical = Tokens.Spacing.xxs),
+                )
+            }
+        }
+        SettingSwitchRow(
+            title = "Hide source-flagged images",
+            subtitle = "Hides an item's image only when its own feed declared it adult/explicit — never this app's own judgment, and never touches a source that declares nothing.",
+            checked = settings.hideNsfwImages,
+            onCheckedChange = { vm.setHideNsfwImages(it) },
+        )
+    }
+}
+
+/**
+ * Buried on purpose (owner's ask): the reading lens's default/custom word
+ * list, and feedback — power-reader and one-off tools most readers never
+ * need to open, unlike [ImagesSection] above. Collapsed by default, same
+ * disclosure shape as [GesturesSection].
+ */
+@Composable
+private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            SectionHeading("Advanced")
+            Text(
+                "Loaded-language word list, feedback.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = if (expanded) "Collapse advanced" else "Expand advanced",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (expanded) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClickLabel = "Open the loaded-language word list", onClick = onOpenLensWordList)
+                .padding(vertical = Tokens.Spacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    "Loaded-language word list",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Text(
+                    "Turn off individual default flags, or add your own words to watch for.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Icon(
+                Icons.AutoMirrored.Filled.OpenInNew,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        FeedbackRow()
+    }
+}
+
+/** No dev contact existed anywhere in this app before — this is it, a plain mailto. */
+private const val FEEDBACK_EMAIL = "nooz@asystemofcells.com"
+
+/**
+ * Feedback (owner's ask): composes an email via whatever mail app is
+ * installed. [LocalUriHandler]'s default Android implementation rethrows a
+ * missing-mail-app failure as [IllegalArgumentException] (wrapping the
+ * underlying `ActivityNotFoundException`) rather than silently no-op'ing —
+ * caught here so a device with no mail client configured gets an honest
+ * fallback (the address copied to the clipboard) instead of a crash.
+ */
+@Composable
+private fun FeedbackRow() {
+    val uriHandler = LocalUriHandler.current
+    val clipboard = LocalClipboardManager.current
+    var fallbackMessage by remember { mutableStateOf<String?>(null) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClickLabel = "Send feedback by email") {
+                try {
+                    uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=" + android.net.Uri.encode("Nooz feedback"))
+                } catch (_: Exception) {
+                    clipboard.setText(AnnotatedString(FEEDBACK_EMAIL))
+                    fallbackMessage = "No email app found — copied $FEEDBACK_EMAIL to your clipboard instead."
+                }
+            }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text("Send feedback", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+            Text(
+                "Opens an email to $FEEDBACK_EMAIL.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+    fallbackMessage?.let {
+        Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

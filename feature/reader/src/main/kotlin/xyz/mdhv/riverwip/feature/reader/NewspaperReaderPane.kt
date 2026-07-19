@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -47,6 +50,7 @@ import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
 import xyz.mdhv.riverwip.model.AffectSpanDetector
 import xyz.mdhv.riverwip.model.Classifier
+import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.PaperGrain
 
@@ -95,8 +99,13 @@ fun NewspaperReaderPane(
     item: Item,
     showReadingTime: Boolean,
     lensOn: Boolean,
+    lensDisabledDefaultTerms: Set<String>,
+    lensCustomTerms: Set<String>,
     saved: Boolean,
     paperGrain: PaperGrain,
+    showFeedImages: Boolean,
+    hideNsfwImages: Boolean,
+    imageStyle: ImageStyle,
     columns: Int,
     onToggleLens: () -> Unit,
     onToggleClip: () -> Unit,
@@ -164,6 +173,21 @@ fun NewspaperReaderPane(
                     )
                 }
             }
+            // The feed's own masthead photo (owner's ask), where it supplied
+            // one — under the byline, above the rule, like a real front page.
+            if (showFeedImages) {
+                Spacer(Modifier.height(Tokens.Spacing.md))
+                FeedImage(
+                    imageUrl = item.imageUrl,
+                    declaredNsfw = item.declaredNsfw,
+                    hideNsfw = hideNsfwImages,
+                    style = imageStyle,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(21f / 9f)
+                        .clip(RoundedCornerShape(Tokens.Radius.md)),
+                )
+            }
             Spacer(Modifier.height(Tokens.Spacing.md))
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(Modifier.height(Tokens.Spacing.lg))
@@ -187,6 +211,8 @@ fun NewspaperReaderPane(
                     pageHeight = pageHeight,
                     bodyStyle = MaterialTheme.typography.bodyLarge,
                     lensOn = lensOn,
+                    lensDisabledDefaultTerms = lensDisabledDefaultTerms,
+                    lensCustomTerms = lensCustomTerms,
                 )
                 is ArticleUiState.Fallback -> Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
                     Text(
@@ -281,6 +307,8 @@ private fun NewspaperColumns(
     pageHeight: Dp,
     bodyStyle: TextStyle,
     lensOn: Boolean,
+    lensDisabledDefaultTerms: Set<String>,
+    lensCustomTerms: Set<String>,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
@@ -289,8 +317,12 @@ private fun NewspaperColumns(
     // and it re-wraps identically wherever a column slice lands inside it.
     // Loaded-language spans are detected per paragraph (their offsets are
     // paragraph-local) and rebased onto this joined text's own offsets so
-    // they line up with the same line-chunking below.
-    val (fullText, affectSpans) = remember(paragraphs, lensOn) {
+    // they line up with the same line-chunking below. Advanced settings'
+    // per-word disable/custom-term customization applies here exactly as it
+    // does in the single-column LensAnnotatedParagraph (same detector, same
+    // two parameters), so turning off a default word or adding a custom one
+    // is respected in both reading layouts identically.
+    val (fullText, affectSpans) = remember(paragraphs, lensOn, lensDisabledDefaultTerms, lensCustomTerms) {
         val sb = StringBuilder()
         val spans = mutableListOf<IntRange>()
         paragraphs.forEachIndexed { index, paragraph ->
@@ -298,7 +330,7 @@ private fun NewspaperColumns(
             val paragraphStart = sb.length
             sb.append(paragraph)
             if (lensOn) {
-                for (span in AffectSpanDetector.detect(paragraph)) {
+                for (span in AffectSpanDetector.detect(paragraph, lensDisabledDefaultTerms, lensCustomTerms)) {
                     spans.add((paragraphStart + span.start) until (paragraphStart + span.end))
                 }
             }
