@@ -21,8 +21,22 @@ import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.ReadEvent
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
+import xyz.mdhv.riverwip.model.SourceKind
 import xyz.mdhv.riverwip.model.WeekBucketing
 import xyz.mdhv.riverwip.model.WeeklyAggregate
+
+/**
+ * Result of a manual GDELT historical-fetch request (the long-pending "fetch
+ * content for any date" item). Never persisted; mirrors
+ * [ItemRepository.FetchOutcome] honestly rather than collapsing a partial
+ * failure into a plain "done" — [Done] carries the real new-item count, how
+ * many sources were actually queried, and any per-source errors.
+ */
+sealed interface HistoricalFetchState {
+    data object Idle : HistoricalFetchState
+    data object Loading : HistoricalFetchState
+    data class Done(val newItemCount: Int, val sourcesQueried: Int, val errors: List<String>) : HistoricalFetchState
+}
 
 /**
  * The day loom's state: day-grained aggregates (computed on demand — the
@@ -35,7 +49,7 @@ class LoomViewModel(
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     sourceRepository: SourceRepository,
     private val settingsRepository: SettingsRepository,
-    itemRepository: ItemRepository,
+    private val itemRepository: ItemRepository,
     readEventRepository: ReadEventRepository,
 ) : ViewModel() {
 
@@ -62,6 +76,18 @@ class LoomViewModel(
     val sourceTitles: StateFlow<Map<String, String>> = sourceRepository.observeSources()
         .map { list -> list.associate { it.id to it.title } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
+
+    /**
+     * Count of enabled GDELT-kind sources — the only catalogue provider a
+     * historical, absolute-date fetch is actually possible for (the
+     * long-pending "fetch content for any date" item; RSS/Atom, Google News,
+     * Mastodon, and the generic `api` kind have no such capability, full
+     * stop). Gates whether the empty-day affordance below offers it at all,
+     * rather than showing a control that can never do anything.
+     */
+    val gdeltEnabledCount: StateFlow<Int> = sourceRepository.observeSources()
+        .map { list -> list.count { it.enabled && it.kind == SourceKind.GDELT } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), 0)
 
     /** Every read event, for the Contrast view's read-by-region heatmap (joined to items by the panel). */
     val readEvents: StateFlow<List<ReadEvent>> = readEventRepository.observeAll()
@@ -91,6 +117,14 @@ class LoomViewModel(
     var showDatePicker: Boolean by mutableStateOf(false)
         private set
 
+    /** Result of the last manual GDELT historical-fetch request, if any. Never persisted. */
+    var historicalFetchState: HistoricalFetchState by mutableStateOf(HistoricalFetchState.Idle)
+        private set
+
+    fun resetHistoricalFetchState() {
+        historicalFetchState = HistoricalFetchState.Idle
+    }
+
     init {
         reload()
     }
@@ -99,10 +133,40 @@ class LoomViewModel(
         viewModelScope.launch { _days.value = weeklyAggregateRepository.dailyAggregates() }
     }
 
+    /**
+     * Manually ask GDELT for the day (or range) currently shown, instead of
+     * only ever reading whatever's already stored locally — the long-pending
+     * "fetch content for any date" item. Scoped to enabled GDELT-kind sources
+     * only; see [ItemRepository.fetchHistoricalGdelt] for why RSS/Atom,
+     * Google News, Mastodon, and the generic `api` kind have no such
+     * capability at all. Merges any new items the normal way, then reloads
+     * so the loom reflects them immediately.
+     */
+    fun fetchHistoricalGdelt(days: List<WeeklyAggregate>) {
+        val today = WeekBucketing.periodStart(System.currentTimeMillis(), periodDays = 1)
+        val start = selectedDayStart ?: days.lastOrNull()?.weekStart ?: today
+        val end = (selectedRangeEnd ?: start) + MILLIS_PER_DAY
+        historicalFetchState = HistoricalFetchState.Loading
+        viewModelScope.launch {
+            val outcomes = itemRepository.fetchHistoricalGdelt(start, end)
+            weeklyAggregateRepository.recompute()
+            // Inline rather than calling reload() — reload() launches its own
+            // child coroutine, which would race the Done state set just below
+            // it instead of guaranteeing the loom reflects the new items first.
+            _days.value = weeklyAggregateRepository.dailyAggregates()
+            historicalFetchState = HistoricalFetchState.Done(
+                newItemCount = outcomes.sumOf { it.newItemCount },
+                sourcesQueried = outcomes.size,
+                errors = outcomes.mapNotNull { it.error },
+            )
+        }
+    }
+
     fun selectDay(dayStartMillis: Long) {
         selectedDayStart = WeekBucketing.periodStart(dayStartMillis, periodDays = 1)
         selectedRangeEnd = null
         showDatePicker = false
+        resetHistoricalFetchState()
     }
 
     /** A picked range (owner's #4: "the date picker in loom needs to also allow a range selection"). Order-independent; a same-day "range" just collapses to a single-day selection. */
@@ -114,6 +178,7 @@ class LoomViewModel(
         selectedDayStart = start
         selectedRangeEnd = end.takeIf { it != start }
         showDatePicker = false
+        resetHistoricalFetchState()
     }
 
     /**
@@ -130,6 +195,7 @@ class LoomViewModel(
         )
         selectedDayStart = stepped.coerceAtMost(today)
         selectedRangeEnd = null
+        resetHistoricalFetchState()
     }
 
     /** Whether [stepDay] can still move forward from the currently-shown day. */

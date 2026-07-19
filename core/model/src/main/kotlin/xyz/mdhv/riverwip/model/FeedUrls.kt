@@ -1,6 +1,9 @@
 package xyz.mdhv.riverwip.model
 
 import java.net.URLEncoder
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 /**
  * Query builders for the parameterized source kinds (brief §P1). Pure string
@@ -68,6 +71,65 @@ object FeedUrls {
         val sort = if (q.sortByDate) "&sort=datedesc" else ""
         return "https://api.gdeltproject.org/api/v2/doc/doc?query=${enc(q.query)}" +
             "&mode=artlist&format=json&maxrecords=$max&timespan=${span}h$sort"
+    }
+
+    // ---- GDELT DOC 2.0 — absolute historical date range --------------------
+    //
+    // (pending item: "fetch content for any date") GDELT DOC 2.0 is the one
+    // catalogue provider whose real API supports an absolute historical
+    // window instead of a relative lookback — verified against GDELT's own
+    // docs (blog.gdeltproject.org/gdelt-doc-2-0-api-debuts): STARTDATETIME/
+    // ENDDATETIME take `YYYYMMDDHHMMSS` (UTC, no separators — distinct from
+    // the *response* `seendate` field's `yyyyMMdd'T'HHmmss'Z'`, which
+    // FeedParser already parses) and are documented as "only articles
+    // published after/before this date/time stamp will be considered" —
+    // i.e. an exclusive-ish [start, end) window, matching how the rest of
+    // this app already treats day boundaries. GDELT also documents
+    // ENDDATETIME as bounded to roughly the last three months; a
+    // sufficiently old day legitimately coming back empty is GDELT's own
+    // limit, not a bug here.
+
+    private val GDELT_DATETIME_FMT: DateTimeFormatter =
+        DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneOffset.UTC)
+
+    /** Format an instant as GDELT DOC 2.0's absolute-date query parameter value. */
+    fun gdeltDateTime(epochMillis: Long): String = GDELT_DATETIME_FMT.format(Instant.ofEpochMilli(epochMillis))
+
+    /**
+     * Rewrite an already-built GDELT DOC 2.0 URL — however it was produced:
+     * [gdeltDoc], the one-tap starter, or a hand-typed add-by-URL — to query
+     * the absolute `[startInclusiveMillis, endExclusiveMillis)` window instead
+     * of whatever relative `timespan` it currently carries. Every other
+     * param (`query`, `maxrecords`, `mode`, `format`, `sort`, any
+     * language/country filter a user added by hand) passes through untouched
+     * — kept exactly as already URL-encoded in [existingUrl], never
+     * re-decoded/re-encoded, so nothing about the original search changes
+     * except the time window. Returns null if [existingUrl] isn't recognizably
+     * a `gdeltproject.org` DOC endpoint with a query string, so a caller can
+     * fail closed instead of firing a nonsense request.
+     */
+    fun gdeltDocForRange(existingUrl: String, startInclusiveMillis: Long, endExclusiveMillis: Long): String? {
+        if ("gdeltproject.org" !in existingUrl.lowercase()) return null
+        val qIndex = existingUrl.indexOf('?')
+        if (qIndex < 0) return null
+        val base = existingUrl.substring(0, qIndex)
+        val query = existingUrl.substring(qIndex + 1)
+        if (query.isBlank()) return null
+        val params = LinkedHashMap<String, String>()
+        for (pair in query.split('&')) {
+            if (pair.isBlank()) continue
+            val eq = pair.indexOf('=')
+            if (eq < 0) {
+                params[pair] = ""
+            } else {
+                params[pair.substring(0, eq)] = pair.substring(eq + 1)
+            }
+        }
+        params.remove("timespan")
+        params["startdatetime"] = gdeltDateTime(startInclusiveMillis)
+        params["enddatetime"] = gdeltDateTime(endExclusiveMillis)
+        val rebuilt = params.entries.joinToString("&") { (k, v) -> if (v.isEmpty()) k else "$k=$v" }
+        return "$base?$rebuilt"
     }
 
     // ---- Mastodon public timelines (no auth) ----------------------------

@@ -11,6 +11,7 @@ import xyz.mdhv.riverwip.data.db.SourceEntity
 import xyz.mdhv.riverwip.data.mapping.toDomain
 import xyz.mdhv.riverwip.data.mapping.toEntity
 import xyz.mdhv.riverwip.data.net.HttpClient
+import xyz.mdhv.riverwip.model.FeedUrls
 import xyz.mdhv.riverwip.model.Ingest
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.Source
@@ -73,6 +74,55 @@ class ItemRepository(
             val reason = e.message ?: e.javaClass.simpleName
             sourceDao.markFetchFailure(source.id, reason, now)
             FetchOutcome(source.id, 0, reason)
+        }
+    }
+
+    /**
+     * Historical backfill for the loom's date picker (the long-pending "fetch
+     * content for any date" item). GDELT DOC 2.0 is the one catalogue provider
+     * whose real API supports an absolute historical date query — RSS/Atom,
+     * Google News RSS, Mastodon timelines, and the generic keyed `api` kind
+     * have no such capability at all, so they are deliberately left untouched
+     * here rather than faked. Re-fetches every *enabled* GDELT-kind source
+     * for the half-open `[dayStartMillis, dayEndExclusiveMillis)` window,
+     * using [FeedUrls.gdeltDocForRange] in place of the source's stored
+     * (relative-`timespan`) URL, and merges any new items in exactly the way
+     * a normal fetch does (same [Ingest], same conflict-ignoring insert).
+     *
+     * Deliberately does **not** touch etag/lastModified/lastFetchAt/failure
+     * bookkeeping on the source row: those describe the source's regular
+     * *live* poll cadence (and feed [SourceRepository.observeHealth]), while
+     * this queries a different, absolute-date resource on demand — recording
+     * it there would make a source's health status reflect a manual backfill
+     * instead of its actual live-feed health.
+     */
+    suspend fun fetchHistoricalGdelt(dayStartMillis: Long, dayEndExclusiveMillis: Long): List<FetchOutcome> {
+        val now = clock()
+        return sourceDao.enabled()
+            .filter { SourceKind.fromKey(it.kind) == SourceKind.GDELT }
+            .map { source -> fetchHistoricalGdeltOne(source, dayStartMillis, dayEndExclusiveMillis, now) }
+    }
+
+    private suspend fun fetchHistoricalGdeltOne(
+        source: SourceEntity,
+        dayStartMillis: Long,
+        dayEndExclusiveMillis: Long,
+        now: Long,
+    ): FetchOutcome {
+        val url = FeedUrls.gdeltDocForRange(source.url, dayStartMillis, dayEndExclusiveMillis)
+            ?: return FetchOutcome(source.id, 0, "Not a recognized GDELT DOC 2.0 URL")
+        return try {
+            val resp = http.get(url)
+            if (!resp.isSuccess) return FetchOutcome(source.id, 0, "HTTP ${resp.code}")
+            val domainSource = Source(
+                id = source.id, kind = SourceKind.GDELT, url = source.url, title = source.title,
+                tier = Tier.fromKey(source.tier), enabled = source.enabled, addedAt = source.addedAt,
+            )
+            val items = Ingest.ingest(domainSource, resp.body, resp.contentType, now)
+            itemDao.insertAllIgnoring(items.map { it.toEntity() })
+            FetchOutcome(source.id, items.size)
+        } catch (e: Exception) {
+            FetchOutcome(source.id, 0, e.message ?: e.javaClass.simpleName)
         }
     }
 

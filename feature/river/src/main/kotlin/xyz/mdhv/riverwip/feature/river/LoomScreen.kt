@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -75,6 +76,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
     val recentItems by vm.recentItems.collectAsStateWithLifecycle()
     val sourceTitles by vm.sourceTitles.collectAsStateWithLifecycle()
     val readEvents by vm.readEvents.collectAsStateWithLifecycle()
+    val gdeltEnabledCount by vm.gdeltEnabledCount.collectAsStateWithLifecycle()
     // Three ways to read the same day (owner's contrast idea): the woven Loom,
     // the stark Contrast ledger, and the Framings comparison.
     var mode by remember { mutableStateOf(LoomMode.LOOM) }
@@ -231,12 +233,37 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
             }
             LoomMode.LOOM -> if (aggregate == null || loom.totalFlowed == 0) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        "Nothing flowed this day. The loom weaves once your sources do.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(Tokens.Spacing.xl),
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            "Nothing flowed this day. The loom weaves once your sources do.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(Tokens.Spacing.xl),
+                        )
+                        // Honest, not a bug (the long-pending "fetch content for any
+                        // date" item): almost every source here is a live RSS/Atom feed
+                        // with no historical query in the protocol at all, so this can
+                        // only ever show what a feed is serving right now — never an
+                        // archive of some past day.
+                        Text(
+                            "Most sources are live RSS/Atom feeds with no way to ask for a past date — this shows what they're serving right now, not an archive.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = Tokens.Spacing.xl),
+                        )
+                        // GDELT DOC 2.0 is the one catalogue provider with a genuine
+                        // absolute-date query, so — only when an enabled GDELT source
+                        // actually exists — offer a real historical fetch instead of
+                        // leaving the affordance to imply something that isn't there.
+                        if (gdeltEnabledCount > 0) {
+                            HistoricalGdeltAffordance(
+                                state = vm.historicalFetchState,
+                                onFetch = { vm.fetchHistoricalGdelt(days) },
+                                modifier = Modifier.padding(top = Tokens.Spacing.xs),
+                            )
+                        }
+                    }
                 }
             } else {
                 DayLoomCanvas(
@@ -249,6 +276,57 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                 )
             }
         }
+    }
+}
+
+/**
+ * The one real affordance for the long-pending "fetch content for any date"
+ * item: GDELT DOC 2.0 has a genuine absolute-date query (see
+ * [FeedUrls.gdeltDocForRange]), so an enabled GDELT source can actually be
+ * asked for the day currently shown — unlike RSS/Atom, Google News,
+ * Mastodon, or the generic `api` kind, which have no such capability. Only
+ * ever rendered when the caller has confirmed a GDELT source is enabled.
+ */
+@Composable
+private fun HistoricalGdeltAffordance(
+    state: HistoricalFetchState,
+    onFetch: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when (state) {
+        is HistoricalFetchState.Loading -> Text(
+            "Asking GDELT…",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = modifier.padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
+        )
+        is HistoricalFetchState.Done -> {
+            val label = when {
+                state.errors.isNotEmpty() -> "GDELT: ${state.errors.first()}"
+                state.newItemCount > 0 ->
+                    "Found ${state.newItemCount} new ${if (state.newItemCount == 1) "item" else "items"} from GDELT — tap to ask again"
+                else -> "GDELT had nothing new for this day — tap to ask again"
+            }
+            Text(
+                label,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = modifier
+                    .clickable(onClickLabel = "Ask GDELT again for this day") { onFetch() }
+                    .semantics { role = Role.Button }
+                    .padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
+            )
+        }
+        else -> Text(
+            "Ask GDELT for this day",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = modifier
+                .clickable(onClickLabel = "Fetch GDELT results for this day") { onFetch() }
+                .semantics { role = Role.Button }
+                .padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
+        )
     }
 }
 

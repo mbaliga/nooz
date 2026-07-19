@@ -46,4 +46,44 @@ class FeedUrlsTest {
         val tag = FeedUrls.mastodonTag("mastodon.social", "#News", limit = 20)
         assertEquals("https://mastodon.social/api/v1/timelines/tag/News?limit=20", tag)
     }
+
+    @Test fun gdeltDateTimeFormatsUtcNoSeparators() {
+        val millis = java.time.Instant.parse("2026-07-15T00:00:00Z").toEpochMilli()
+        assertEquals("20260715000000", FeedUrls.gdeltDateTime(millis))
+        val withTime = java.time.Instant.parse("2026-01-05T07:08:09Z").toEpochMilli()
+        assertEquals("20260105070809", FeedUrls.gdeltDateTime(withTime))
+    }
+
+    @Test fun gdeltDocForRangeSwapsTimespanForAbsoluteWindowAndKeepsOtherParams() {
+        val existing = FeedUrls.gdeltDoc(FeedUrls.GdeltQuery(query = "flood india", maxRecords = 75, timespanHours = 24))
+        val start = java.time.Instant.parse("2026-07-15T00:00:00Z").toEpochMilli()
+        val end = java.time.Instant.parse("2026-07-16T00:00:00Z").toEpochMilli()
+        val rewritten = FeedUrls.gdeltDocForRange(existing, start, end)
+        assertTrue(rewritten != null)
+        assertTrue(rewritten!!.contains("query=flood%20india"))
+        assertTrue(rewritten.contains("mode=artlist"))
+        assertTrue(rewritten.contains("format=json"))
+        assertTrue(rewritten.contains("maxrecords=75"))
+        assertTrue(rewritten.contains("sort=datedesc"))
+        assertTrue(rewritten.contains("startdatetime=20260715000000"))
+        assertTrue(rewritten.contains("enddatetime=20260716000000"))
+        assertTrue(!rewritten.contains("timespan="))
+    }
+
+    @Test fun gdeltDocForRangePreservesHandTypedParamsVerbatim() {
+        val existing = "https://api.gdeltproject.org/api/v2/doc/doc?query=climate&mode=artlist&format=json&maxrecords=75&timespan=24h&sourcelang=english"
+        val rewritten = FeedUrls.gdeltDocForRange(existing, 0L, 86_400_000L)
+        assertTrue(rewritten != null)
+        assertTrue(rewritten!!.contains("sourcelang=english"))
+        assertTrue(rewritten.contains("query=climate"))
+        assertTrue(!rewritten.contains("timespan="))
+    }
+
+    @Test fun gdeltDocForRangeRejectsNonGdeltUrl() {
+        assertEquals(null, FeedUrls.gdeltDocForRange("https://example.com/rss?query=x", 0L, 1L))
+    }
+
+    @Test fun gdeltDocForRangeRejectsUrlWithoutQueryString() {
+        assertEquals(null, FeedUrls.gdeltDocForRange("https://api.gdeltproject.org/api/v2/doc/doc", 0L, 1L))
+    }
 }

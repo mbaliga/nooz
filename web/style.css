@@ -1,0 +1,897 @@
+/* =========================================================================
+   Nooz -- style.css
+   =========================================================================
+
+   Read this before writing a view module. Plain, quiet, newspaper-like:
+   hairline dividers, generous whitespace, serif headlines over sans body/UI
+   text, no shadows, no gradients, no rounded pills, no dark patterns,
+   nothing autoplaying, no telemetry-flavoured "gamification" chrome (no
+   streak counters, no reward badges -- the .nooz-badge class below is a
+   plain informational label, e.g. an unread count or an error marker,
+   never a reward).
+
+   -------------------------------------------------------------------------
+   1. CUSTOM PROPERTIES (:root)
+   -------------------------------------------------------------------------
+   Colour:
+     --paper-field        page background
+     --paper-raised       slightly-raised surface (inputs, cards) -- still flat
+     --paper-ink          primary text
+     --paper-ink-dim      secondary text / bylines
+     --paper-ink-faint    faint / disabled / placeholder
+     --paper-hairline     default divider colour (rgba, use directly)
+     --paper-hairline-strong  a stronger divider, e.g. under the topbar
+     --paper-signal-danger    fetch-error text/border colour (pair with a
+                              text label or icon -- never colour alone)
+   Spacing:      --space-xxs .. --space-xxl (4 / 8 / 12 / 16 / 20 / 24 / 32 px)
+   Radius:       --radius-sm .. --radius-lg (4 / 8 / 12 px)
+   Type:         --font-serif ('PT Serif' -- wordmark, headlines, titles)
+                 --font-sans  ('Hyle Grotesk' -- body copy & UI chrome)
+                 (the @font-face rules themselves live in index.html's head)
+
+   -------------------------------------------------------------------------
+   2. LAYOUT CLASSES
+   -------------------------------------------------------------------------
+   .nooz-app-shell        full-height flex column: topbar + main content
+   .nooz-topbar           sticky top bar (wordmark + nav + actions)
+   .nooz-wordmark         serif "Nooz" wordmark treatment
+   .nooz-nav              flex row of nav links (Stand / Sources / Clippings)
+   .nooz-nav-link         plain nav link/button; mark the active one with
+                          aria-current="page" (styled automatically)
+   .nooz-container        centred max-width content wrapper + side padding
+   .nooz-layout           single-column content region (default, any width)
+   .nooz-layout--split    same region, but becomes a two-column grid
+                          (list pane + reader pane) at wide viewports --
+                          stays single-column below the breakpoint. The
+                          two-pane logic itself (which pane shows when) is
+                          left to app.js; this class only supplies the grid.
+   .nooz-pane             one column/scroll region inside .nooz-layout(--split)
+   .nooz-pane--sticky     pins a pane (e.g. the reader) under the topbar on
+                          wide viewports
+
+   -------------------------------------------------------------------------
+   3. LISTS & ITEMS (river / stand / clippings)
+   -------------------------------------------------------------------------
+   .nooz-list             list reset + hairline dividers between children
+   .nooz-list-item        one clickable row (button or a); add modifiers:
+                            .is-read     dims title/byline (already opened)
+                            .is-clipped  for a clipped/saved item
+   .nooz-list-item-title  serif headline text for the row
+   .nooz-summary          sans dek/summary text under a title
+   .nooz-byline           small sans metadata row (source, author, time);
+                          separate parts with a .nooz-byline-dot ("·")
+   .nooz-section-title    small caps-tracked sans label for a list/section
+                          heading ("Sources", "Clippings", a region name)
+   .nooz-divider          plain hairline rule (hr or div)
+
+   -------------------------------------------------------------------------
+   4. SOURCES MANAGEMENT
+   -------------------------------------------------------------------------
+   .nooz-source-row               one row in the sources list
+     .nooz-source-row-info          title + url, column
+     .nooz-source-row-title         source title
+     .nooz-source-row-meta          url / region, dim + truncated
+     .nooz-source-row-actions       trailing controls, row
+   .nooz-switch                   plain enable/disable toggle (checkbox)
+   .nooz-status-dot               fetchStatus indicator; modifiers:
+                                    --ok / --loading / --error
+                                   (always pair with a text label somewhere
+                                   nearby -- never colour as the only signal)
+
+   -------------------------------------------------------------------------
+   5. BUTTONS, INPUTS, FILTERS
+   -------------------------------------------------------------------------
+   .nooz-button            standard bordered text button; add
+                             .nooz-button--primary for a filled/inverse one
+   .nooz-button-icon       square icon-only button (share, clip, close, ...);
+                           add aria-pressed="true" for a toggled-on state
+   .nooz-input             text input (search box, "add source by URL", ...)
+   .nooz-input-group       flex row pairing an .nooz-input with a button
+   .nooz-chip-row          flex-wrap row of filter chips (regions, etc.)
+   .nooz-chip              one filter chip; add .is-active for the selected one
+
+   -------------------------------------------------------------------------
+   6. FEEDBACK
+   -------------------------------------------------------------------------
+   .nooz-badge             small plain label for a count or a status word;
+                           modifiers: --unread (ink) / --error (danger)
+   .nooz-empty-state       centred placeholder block (no sources yet, no
+                           results, empty clippings, ...)
+     .nooz-empty-state-title / .nooz-empty-state-text
+   .nooz-toast             transient confirmation (e.g. "Link copied");
+                           toggle visibility with the .is-visible modifier
+
+   -------------------------------------------------------------------------
+   7. READER VIEW
+   -------------------------------------------------------------------------
+   .nooz-reader            article container, readable max measure
+   .nooz-reader-header     title + byline + actions block
+   .nooz-reader-actions    row of icon buttons (share / clip / open original)
+   .nooz-reader-body       article/summary body copy
+
+   -------------------------------------------------------------------------
+   8. GENERIC UTILITIES
+   -------------------------------------------------------------------------
+   .nooz-stack             vertical flex + gap (modifiers: --xs/--sm/--md/--lg)
+   .nooz-row               horizontal flex + gap, wraps (same size modifiers)
+   .nooz-truncate          single-line ellipsis truncation
+   .nooz-clamp-2/--clamp-3 multi-line clamp (2 or 3 lines) with ellipsis
+   .nooz-visually-hidden   visually hidden but screen-reader accessible
+   .nooz-icon              sizes an inline svg/glyph to 1em square, shrink:0
+
+   -------------------------------------------------------------------------
+   9. BOOT / NO-JS FALLBACK
+   -------------------------------------------------------------------------
+   .nooz-boot, .nooz-boot-wordmark, .nooz-boot-tagline, .nooz-boot-noscript
+   -- used only by the static placeholder markup inside #app in index.html,
+   shown until app.js mounts the real views and replaces it.
+   ========================================================================= */
+
+:root {
+  /* colour */
+  --paper-field: #F7F6F3;
+  --paper-raised: #FFFFFF;
+  --paper-ink: #141414;
+  --paper-ink-dim: #8A8A86;
+  --paper-ink-faint: #C9C8C4;
+  --paper-hairline: rgba(0, 0, 0, 0.12);
+  --paper-hairline-strong: rgba(0, 0, 0, 0.2);
+  --paper-signal-danger: #B3261E;
+
+  /* spacing */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 20px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+
+  /* radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* type */
+  --font-serif: 'PT Serif', Georgia, serif;
+  --font-sans: 'Hyle Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  color-scheme: light;
+}
+
+/* -------------------------------------------------------------------------
+   Base reset
+   ---------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body,
+h1, h2, h3, h4, h5, h6,
+p, ul, ol, dl, dd,
+figure {
+  margin: 0;
+}
+
+ul, ol {
+  padding: 0;
+  list-style: none;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* -------------------------------------------------------------------------
+   Document / typography
+   ---------------------------------------------------------------------- */
+
+html, body {
+  height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  background: var(--paper-field);
+  color: var(--paper-ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--paper-ink);
+}
+
+#app {
+  min-height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   2. Layout
+   ---------------------------------------------------------------------- */
+
+.nooz-app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.nooz-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--paper-field);
+  border-bottom: 1px solid var(--paper-hairline-strong);
+}
+
+.nooz-wordmark {
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--paper-ink);
+  white-space: nowrap;
+}
+
+.nooz-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.nooz-nav-link {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--paper-ink-dim);
+  padding: var(--space-xxs) var(--space-xxs);
+  border-bottom: 2px solid transparent;
+}
+
+.nooz-nav-link:hover {
+  color: var(--paper-ink);
+}
+
+.nooz-nav-link[aria-current="page"] {
+  color: var(--paper-ink);
+  border-bottom-color: var(--paper-ink);
+}
+
+.nooz-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.nooz-layout {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+.nooz-layout--split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+  max-width: 1180px;
+  align-items: start;
+}
+
+@media (min-width: 860px) {
+  .nooz-layout--split {
+    grid-template-columns: minmax(320px, 400px) 1fr;
+  }
+}
+
+.nooz-pane {
+  min-width: 0;
+}
+
+@media (min-width: 860px) {
+  .nooz-pane--sticky {
+    position: sticky;
+    top: calc(var(--space-lg) + 56px);
+    max-height: calc(100dvh - var(--space-lg) - 56px);
+    overflow-y: auto;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   3. Lists & items
+   ---------------------------------------------------------------------- */
+
+.nooz-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.nooz-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  width: 100%;
+  text-align: left;
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--paper-hairline);
+  background: none;
+  color: inherit;
+}
+
+.nooz-list-item:first-child {
+  border-top: none;
+}
+
+.nooz-list-item:hover,
+.nooz-list-item:focus-visible {
+  background: rgba(0, 0, 0, 0.03);
+  outline: none;
+}
+
+.nooz-list-item-title {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--paper-ink);
+}
+
+.nooz-list-item.is-read .nooz-list-item-title {
+  color: var(--paper-ink-dim);
+}
+
+.nooz-list-item.is-clipped .nooz-list-item-title::after {
+  content: '\2022';
+  margin-left: var(--space-xs);
+  color: var(--paper-ink-dim);
+}
+
+.nooz-summary {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--paper-ink-dim);
+}
+
+.nooz-byline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xxs);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+}
+
+.nooz-byline-dot::before {
+  content: '\00B7';
+  margin-right: var(--space-xxs);
+}
+
+.nooz-section-title {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-ink-dim);
+}
+
+.nooz-divider {
+  border: none;
+  border-top: 1px solid var(--paper-hairline);
+  margin: var(--space-md) 0;
+}
+
+/* -------------------------------------------------------------------------
+   4. Sources management
+   ---------------------------------------------------------------------- */
+
+.nooz-source-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--paper-hairline);
+}
+
+.nooz-source-row:first-child {
+  border-top: none;
+}
+
+.nooz-source-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nooz-source-row-title {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--paper-ink);
+}
+
+.nooz-source-row-meta {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+}
+
+.nooz-source-row-title,
+.nooz-source-row-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nooz-source-row-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.nooz-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border: 1px solid var(--paper-hairline-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nooz-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--paper-ink-faint);
+  border-radius: 2px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.nooz-switch:checked {
+  border-color: var(--paper-ink);
+}
+
+.nooz-switch:checked::after {
+  background: var(--paper-ink);
+  transform: translateX(16px);
+}
+
+.nooz-switch:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: 2px;
+}
+
+.nooz-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--paper-ink-faint);
+  flex-shrink: 0;
+}
+
+.nooz-status-dot--ok {
+  background: var(--paper-ink-dim);
+}
+
+.nooz-status-dot--loading {
+  background: var(--paper-ink-faint);
+}
+
+.nooz-status-dot--error {
+  background: var(--paper-signal-danger);
+}
+
+/* -------------------------------------------------------------------------
+   5. Buttons, inputs, filters
+   ---------------------------------------------------------------------- */
+
+.nooz-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--paper-ink);
+  background: transparent;
+  border: 1px solid var(--paper-hairline-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-md);
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.nooz-button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.nooz-button:active {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.nooz-button:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: 2px;
+}
+
+.nooz-button:disabled {
+  color: var(--paper-ink-faint);
+  border-color: var(--paper-hairline);
+  cursor: not-allowed;
+  background: none;
+}
+
+.nooz-button--primary {
+  background: var(--paper-ink);
+  color: var(--paper-field);
+  border-color: var(--paper-ink);
+}
+
+.nooz-button--primary:hover {
+  opacity: 0.85;
+  background: var(--paper-ink);
+}
+
+.nooz-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--paper-ink);
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.nooz-button-icon:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.nooz-button-icon:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: 2px;
+}
+
+.nooz-button-icon[aria-pressed="true"] {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: var(--paper-hairline);
+}
+
+.nooz-input {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--paper-ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-hairline-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.nooz-input::placeholder {
+  color: var(--paper-ink-faint);
+}
+
+.nooz-input:focus {
+  outline: none;
+  border-color: var(--paper-ink);
+}
+
+.nooz-input-group {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: stretch;
+}
+
+.nooz-input-group .nooz-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.nooz-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.nooz-chip {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--paper-ink-dim);
+  background: transparent;
+  border: 1px solid var(--paper-hairline-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xxs) var(--space-sm);
+  white-space: nowrap;
+}
+
+.nooz-chip:hover {
+  color: var(--paper-ink);
+}
+
+.nooz-chip.is-active {
+  color: var(--paper-field);
+  background: var(--paper-ink);
+  border-color: var(--paper-ink);
+}
+
+/* -------------------------------------------------------------------------
+   6. Feedback
+   ---------------------------------------------------------------------- */
+
+.nooz-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--paper-ink-dim);
+  background: transparent;
+  border: 1px solid var(--paper-hairline-strong);
+  border-radius: var(--radius-sm);
+}
+
+.nooz-badge--unread {
+  color: var(--paper-ink);
+  border-color: var(--paper-ink);
+}
+
+.nooz-badge--error {
+  color: var(--paper-signal-danger);
+  border-color: var(--paper-signal-danger);
+}
+
+.nooz-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  padding: var(--space-xxl) var(--space-lg);
+  color: var(--paper-ink-dim);
+}
+
+.nooz-empty-state-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--paper-ink);
+}
+
+.nooz-empty-state-text {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  max-width: 38ch;
+}
+
+.nooz-toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-xl);
+  transform: translate(-50%, calc(100% + var(--space-lg)));
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--paper-field);
+  background: var(--paper-ink);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  z-index: 100;
+}
+
+.nooz-toast.is-visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* -------------------------------------------------------------------------
+   7. Reader view
+   ---------------------------------------------------------------------- */
+
+.nooz-reader {
+  max-width: 68ch;
+}
+
+.nooz-reader-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--paper-hairline);
+}
+
+.nooz-reader-header h1,
+.nooz-reader-title {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--paper-ink);
+}
+
+.nooz-reader-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.nooz-reader-body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--paper-ink);
+}
+
+.nooz-reader-body p + p {
+  margin-top: var(--space-md);
+}
+
+/* -------------------------------------------------------------------------
+   8. Generic utilities
+   ---------------------------------------------------------------------- */
+
+.nooz-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.nooz-stack--xs { gap: var(--space-xs); }
+.nooz-stack--sm { gap: var(--space-sm); }
+.nooz-stack--md { gap: var(--space-md); }
+.nooz-stack--lg { gap: var(--space-lg); }
+
+.nooz-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.nooz-row--xs { gap: var(--space-xs); }
+.nooz-row--sm { gap: var(--space-sm); }
+.nooz-row--md { gap: var(--space-md); }
+.nooz-row--lg { gap: var(--space-lg); }
+
+.nooz-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nooz-clamp-2,
+.nooz-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.nooz-clamp-2 { -webkit-line-clamp: 2; }
+.nooz-clamp-3 { -webkit-line-clamp: 3; }
+
+.nooz-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.nooz-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* -------------------------------------------------------------------------
+   9. Boot / no-JS fallback (index.html static placeholder only)
+   ---------------------------------------------------------------------- */
+
+.nooz-boot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 100dvh;
+  padding: var(--space-xxl) var(--space-lg);
+  text-align: center;
+}
+
+.nooz-boot-wordmark {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--paper-ink);
+}
+
+.nooz-boot-tagline,
+.nooz-boot-noscript {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--paper-ink-dim);
+  max-width: 40ch;
+}

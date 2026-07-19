@@ -25,12 +25,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.model.AffectSpanDetector
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.PaperGrain
@@ -72,13 +77,17 @@ fun columnsForWidth(paneWidth: Dp): Int? {
  * than several columns scrolling in lockstep. Each page is one "fold" —
  * scrolling from one to the next is turning the page.
  *
- * Known gap: the interactive reading lens (tap-to-define, loaded-language
- * underlining) is [ReaderDetailScreen]'s own per-paragraph composable and
- * doesn't carry over here — it needs the exact character range of an
- * annotated span to survive being sliced across column/page boundaries,
- * which is a separate piece of work. The lens toggle still shows in the
- * utility bar for a consistent bar between layouts; it just has nothing to
- * do yet when the body is columned.
+ * Known gap: only the lens's *passive* mark carries over here — the subtle
+ * loaded-language underline (see [NewspaperColumns]), gated by the same
+ * "Highlight loaded language" setting ([lensOn]) as everywhere else. The
+ * *interactive* half ([ReaderDetailScreen]'s own per-paragraph
+ * `LensAnnotatedParagraph`: tap-to-define, tap-to-defuse/accept-rewrite) does
+ * not — that needs a tap's screen position remapped to a character offset
+ * *within whichever column/page slice it landed in*, which is a materially
+ * riskier separate piece of work than drawing a mark. It also means a span
+ * defused or accepted in [ReaderDetailScreen] shows no trace here (this pane
+ * keeps no per-span override state) — switching layouts on the same article
+ * can show it underlined again.
  */
 @Composable
 fun NewspaperReaderPane(
@@ -177,6 +186,7 @@ fun NewspaperReaderPane(
                     columnWidth = columnWidth,
                     pageHeight = pageHeight,
                     bodyStyle = MaterialTheme.typography.bodyLarge,
+                    lensOn = lensOn,
                 )
                 is ArticleUiState.Fallback -> Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
                     Text(
@@ -248,6 +258,20 @@ fun NewspaperReaderPane(
  * [columns] each. Measures the whole body once at the column width to get
  * real line breaks (`TextMeasurer`), then slices by line index — never mid-
  * line — so each rendered slice re-wraps to exactly the lines it was cut at.
+ *
+ * Carries over the *passive* half of the reading lens (brief §P5): when
+ * [lensOn], each paragraph is run through the same
+ * [AffectSpanDetector.detect] the single-column `LensAnnotatedParagraph`
+ * uses (pure, synchronous, no ViewModel needed), and each detected span's
+ * offsets are carried into [fullText]'s own coordinate space alongside it.
+ * A column slice can land mid-span — that's the whole reason this is
+ * non-trivial — so the underline for a given column is drawn from the
+ * *shared* whole-body [layout], clipped to that column's [start, end), never
+ * from a fresh per-column measurement: the wrapping is already known
+ * identical (same text, width, style), so its line geometry is reused
+ * outright, just shifted up by that column's own first line's top. No
+ * character-offset-to-tap remapping is attempted — see the gap called out
+ * on [NewspaperReaderPane] itself.
  */
 @Composable
 private fun NewspaperColumns(
@@ -256,16 +280,35 @@ private fun NewspaperColumns(
     columnWidth: Dp,
     pageHeight: Dp,
     bodyStyle: TextStyle,
+    lensOn: Boolean,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
     // A blank line between paragraphs — simpler and safer to reason about
     // than reproducing true newsprint's indented, gapless paragraph marks,
     // and it re-wraps identically wherever a column slice lands inside it.
-    val fullText = remember(paragraphs) { paragraphs.joinToString("\n\n") }
+    // Loaded-language spans are detected per paragraph (their offsets are
+    // paragraph-local) and rebased onto this joined text's own offsets so
+    // they line up with the same line-chunking below.
+    val (fullText, affectSpans) = remember(paragraphs, lensOn) {
+        val sb = StringBuilder()
+        val spans = mutableListOf<IntRange>()
+        paragraphs.forEachIndexed { index, paragraph ->
+            if (index > 0) sb.append("\n\n")
+            val paragraphStart = sb.length
+            sb.append(paragraph)
+            if (lensOn) {
+                for (span in AffectSpanDetector.detect(paragraph)) {
+                    spans.add((paragraphStart + span.start) until (paragraphStart + span.end))
+                }
+            }
+        }
+        sb.toString() to spans
+    }
 
     val columnWidthPx = with(density) { columnWidth.roundToPx() }.coerceAtLeast(1)
     val pageHeightPx = with(density) { pageHeight.roundToPx() }.coerceAtLeast(1)
+    val underlineStroke = with(density) { 1.3.dp.toPx() }
 
     val layout = remember(fullText, bodyStyle, columnWidthPx) {
         textMeasurer.measure(text = fullText, style = bodyStyle, constraints = Constraints(maxWidth = columnWidthPx))
@@ -291,13 +334,76 @@ private fun NewspaperColumns(
         for (page in pages) {
             Row(horizontalArrangement = Arrangement.spacedBy(COLUMN_GUTTER)) {
                 for ((start, end) in page) {
+                    // This column's loaded-language marks, clipped to
+                    // [start, end) — offsets stay GLOBAL (into `layout`,
+                    // not this column's substring), since drawSpanUnderline
+                    // reads geometry straight off the shared whole-body layout.
+                    val underlines = affectSpans.mapNotNull { span ->
+                        val lo = maxOf(span.first, start)
+                        val hi = minOf(span.last + 1, end)
+                        if (hi > lo) lo to hi else null
+                    }
+                    val columnTop = if (underlines.isEmpty()) {
+                        0f
+                    } else {
+                        layout.getLineTop(layout.getLineForOffset(start))
+                    }
                     Text(
                         text = fullText.substring(start, end),
                         style = bodyStyle,
-                        modifier = Modifier.width(columnWidth).height(pageHeight),
+                        modifier = Modifier
+                            .width(columnWidth)
+                            .height(pageHeight)
+                            .drawBehind {
+                                for ((lo, hi) in underlines) {
+                                    drawSpanUnderline(layout, lo, hi, columnTop, LoadedUnderline, underlineStroke)
+                                }
+                            },
                     )
                 }
             }
         }
+    }
+}
+
+// Same visual mark as the single-column lens (LensAnnotatedParagraph's own
+// LoadedUnderline, in :feature:lens) — a muted red underline drawn behind
+// otherwise-normal ink, never coloured link-blue text. Kept as a literal
+// copy here rather than a cross-module export: this pane only ever wants the
+// passive mark, never the interactive state (tap targets, defuse/accept
+// overrides) that lives alongside it in that file.
+private val LoadedUnderline = Color(0xFFC0442F).copy(alpha = 0.6f)
+
+/**
+ * Draw the loaded-language underline for GLOBAL offsets [start, end) — into
+ * the shared whole-body [layout], the same one already used to slice lines
+ * into columns — line by line, shifted up by [columnTop] (that column's own
+ * first line's top in the shared layout) so it lands correctly within this
+ * column's own local drawing space. Mirrors LensAnnotatedParagraph's
+ * drawSpanUnderline (not shared code: that one draws from a per-paragraph,
+ * locally-measured layout captured via `onTextLayout`, since a single
+ * paragraph's `Text` there can't reuse a whole-body layout the way a column
+ * here can).
+ */
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawSpanUnderline(
+    layout: TextLayoutResult,
+    start: Int,
+    end: Int,
+    columnTop: Float,
+    color: Color,
+    stroke: Float,
+) {
+    if (end <= start) return
+    val last = (end - 1).coerceAtLeast(start)
+    val startLine = layout.getLineForOffset(start)
+    val endLine = layout.getLineForOffset(last)
+    for (line in startLine..endLine) {
+        val ls = maxOf(start, layout.getLineStart(line))
+        val le = minOf(end, layout.getLineEnd(line, visibleEnd = true))
+        if (le <= ls) continue
+        val x1 = layout.getHorizontalPosition(ls, usePrimaryDirection = true)
+        val x2 = layout.getHorizontalPosition(le, usePrimaryDirection = true)
+        val y = layout.getLineBottom(line) - columnTop - stroke * 2f
+        drawLine(color, Offset(x1, y), Offset(x2, y), strokeWidth = stroke)
     }
 }
