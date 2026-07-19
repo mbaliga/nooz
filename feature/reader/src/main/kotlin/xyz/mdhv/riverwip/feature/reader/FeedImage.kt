@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
@@ -96,8 +98,8 @@ private const val HALFTONE_COLUMNS = 36
  * existing paper-grain speckle technique (a seeded jittered dot field on a
  * `Canvas`), driven by the image's downsampled luminance instead of noise.
  * Decodes the source once into a plain software [android.graphics.Bitmap]
- * (Coil's own image loader, off the main thread — [produceState] runs its
- * block as a coroutine), then leans on [android.graphics.Bitmap.createScaledBitmap]
+ * (Coil's own image loader, off the main thread — a plain `LaunchedEffect`
+ * coroutine), then leans on [android.graphics.Bitmap.createScaledBitmap]
  * to do the per-cell averaging: scaling *down* to the dot grid's own
  * resolution is exactly a box-filtered average per output pixel, so no
  * separate luminance-sampling pass is needed.
@@ -105,8 +107,15 @@ private const val HALFTONE_COLUMNS = 36
 @Composable
 private fun HalftoneImage(imageUrl: String, contentDescription: String?, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val bitmap by produceState<android.graphics.Bitmap?>(initialValue = null, imageUrl) {
-        value = decodeSoftwareBitmap(context, imageUrl)
+    // The same reset-and-refetch-on-key-change shape produceState gives for
+    // free -- written out as remember+LaunchedEffect instead, since Compose
+    // lint's ProduceStateDoesNotAssignValue check persistently misreported
+    // this exact decode (a single `value = decodeSoftwareBitmap(...)`
+    // statement, no try/catch, no branching) as never assigning a value,
+    // even after simplifying it as far as the produceState API allows.
+    var bitmap by remember(imageUrl) { mutableStateOf<android.graphics.Bitmap?>(null) }
+    LaunchedEffect(imageUrl) {
+        bitmap = decodeSoftwareBitmap(context, imageUrl)
     }
 
     val source = bitmap ?: return // still loading, or the decode failed -- reserve nothing, same as no image at all
@@ -152,12 +161,8 @@ private fun HalftoneImage(imageUrl: String, contentDescription: String?, modifie
 /**
  * Decode [imageUrl] into a plain software [android.graphics.Bitmap] (via
  * Coil's own loader, `allowHardware(false)` so its pixels are readable), or
- * null on any failure. Pulled out of [HalftoneImage]'s `produceState` block
- * as its own plain suspend function — not just for readability: Compose
- * lint's `ProduceStateDoesNotAssignValue` check statically looks for a
- * direct `value = <expr>` in the producer lambda, and doesn't reliably see
- * one buried inside a `try/catch` expression body. `value = decodeSoftwareBitmap(...)`
- * is unambiguous either way.
+ * null on any failure. A plain suspend function, called from
+ * [HalftoneImage]'s `LaunchedEffect`.
  */
 private suspend fun decodeSoftwareBitmap(context: Context, imageUrl: String): android.graphics.Bitmap? = try {
     val request = ImageRequest.Builder(context).data(imageUrl).allowHardware(false).build()
