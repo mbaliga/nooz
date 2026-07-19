@@ -23,8 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -60,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.AppSearchBar
 import xyz.mdhv.riverwip.design.GlobeCanvas
 import xyz.mdhv.riverwip.design.NoResultsState
 import xyz.mdhv.riverwip.design.NoozWordmark
@@ -307,46 +306,9 @@ private fun SourcesTab(vm: SourcesViewModel) {
             Spacer(Modifier.height(Tokens.Spacing.xl))
         }
 
-        // The search bar, docked to the bottom (owner's spec).
-        SourcesSearchBar(query = query, onQueryChange = { query = it })
-    }
-}
-
-@Composable
-private fun SourcesSearchBar(query: String, onQueryChange: (String) -> Unit) {
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
-    ) {
-        Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Box(Modifier.weight(1f)) {
-            if (query.isEmpty()) {
-                Text(
-                    "Search sources",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            BasicTextField(
-                value = query,
-                onValueChange = onQueryChange,
-                singleLine = true,
-                textStyle = TextStyle.Default.merge(MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground)),
-                cursorBrush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.onBackground),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .semantics { contentDescription = "Search sources" },
-            )
-        }
-        if (query.isNotEmpty()) {
-            IconButton(onClick = { onQueryChange("") }) {
-                Icon(Icons.Filled.Close, contentDescription = "Clear search")
-            }
-        }
+        // The search bar, docked to the bottom (owner's spec) — the shared bar
+        // (core/design), now also reused by the Stand's article list.
+        AppSearchBar(query = query, onQueryChange = { query = it }, placeholder = "Search sources")
     }
 }
 

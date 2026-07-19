@@ -20,18 +20,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,21 +62,28 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.AppSearchBar
 import xyz.mdhv.riverwip.design.CandyCaneBar
 import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.EmptyState
+import xyz.mdhv.riverwip.design.NoResultsState
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.R
+import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.Diversifier
 import xyz.mdhv.riverwip.model.ReadMarkStyle
+import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Item
+import xyz.mdhv.riverwip.model.Region
+import xyz.mdhv.riverwip.model.Topic
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -117,6 +131,7 @@ fun ArticleListScreen(
     val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
     val lastRefresh by vm.lastRefresh.collectAsStateWithLifecycle()
     val filter by vm.filter.collectAsStateWithLifecycle()
+    val topicCountsForRegion by vm.topicCountsForRegion.collectAsStateWithLifecycle()
     // The Stand's top bar shows what was actually read today, not what merely
     // flowed (owner's #5) — the reader's own bottom utility bar keeps the
     // supply-based mix as ambient context while reading.
@@ -126,11 +141,27 @@ fun ArticleListScreen(
     // maximum spread/coverage"). A deterministic round-robin-by-source
     // reorder, not a random shuffle — toggled, not a one-shot re-roll.
     var diversified by rememberSaveable { mutableStateOf(false) }
+    // Sort (owner: "filter and sort along with the remix option"). Chronological
+    // is the existing default order; grouped-by-source clusters each source's
+    // items together (stably, so each group stays newest-first internally).
+    // Remix already defines its own explicit order for coverage, so it wins
+    // outright when both are on rather than fighting over the final order.
+    var groupedBySource by rememberSaveable { mutableStateOf(false) }
+    // The region/topic filter already narrows this list end-to-end (Contrast's
+    // chips write the same standing filter); this sheet is just a quicker way
+    // to reach it from the Stand itself, cascading region -> topic-with-counts.
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
+    // Search (owner: "search in the listings as well, same as we have in the
+    // sources") — same shared bar, same plain-substring-on-title match.
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     // Immersive unread filter (owner's ask): pinch in on the list to show only
     // unread, pinch out to show everything again.
     var showUnreadOnly by rememberSaveable { mutableStateOf(false) }
     val unreadFiltered = if (showUnreadOnly) items.filter { it.id !in readIds } else items
-    val displayedItems = if (diversified) remember(unreadFiltered) { Diversifier.spread(unreadFiltered) } else unreadFiltered
+    val q = searchQuery.trim()
+    val searched = if (q.isEmpty()) unreadFiltered else unreadFiltered.filter { it.title.contains(q, ignoreCase = true) }
+    val sorted = if (groupedBySource) searched.sortedBy { sourceTitles[it.sourceId]?.lowercase() ?: "" } else searched
+    val displayedItems = if (diversified) remember(sorted) { Diversifier.spread(sorted) } else sorted
 
     val listState = rememberLazyListState()
     var pull by remember { mutableFloatStateOf(0f) }
@@ -220,6 +251,24 @@ fun ArticleListScreen(
                     .padding(vertical = Tokens.Spacing.xxs),
             )
             Spacer(Modifier.weight(1f))
+            IconButton(onClick = { showFilterSheet = true }) {
+                Icon(
+                    Icons.Filled.FilterList,
+                    contentDescription = "Filter by region and topic",
+                    tint = if (!filter.allTopics || filter.region != Region.GLOBAL) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            }
+            IconButton(onClick = { groupedBySource = !groupedBySource }) {
+                Icon(
+                    Icons.AutoMirrored.Filled.Sort,
+                    contentDescription = if (groupedBySource) "Grouped by source — tap for newest first" else "Sort: newest first — tap to group by source",
+                    tint = if (groupedBySource) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             IconButton(onClick = { diversified = !diversified }) {
                 Icon(
                     Icons.Filled.Shuffle,
@@ -289,57 +338,86 @@ fun ArticleListScreen(
             Modifier
         }
 
-        if (items.isEmpty()) {
-            EmptyStand(
-                enabledCount = enabledCount,
-                isRefreshing = isRefreshing,
-                lastRefresh = lastRefresh,
-                anyUnfiltered = enabledCount > 0 && lastRefresh != null && !filter.allTopics,
-                onAdd = onOpenEdit,
-                onRetry = { vm.refresh() },
-            )
-        } else if (displayedItems.isEmpty()) {
-            // showUnreadOnly filtered everything away — an honest, different
-            // state from "no sources"/"nothing flowed": there's plenty here,
-            // all of it read already.
-            Box(Modifier.fillMaxSize().then(pinchModifier)) {
-                EmptyState(
-                    title = "Nothing left unread",
-                    body = "Every story in this list has been opened. Pinch out, or tap here, to see the whole list again.",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable(onClickLabel = "Show all articles") { showUnreadOnly = false },
+        when {
+            items.isEmpty() -> {
+                EmptyStand(
+                    enabledCount = enabledCount,
+                    isRefreshing = isRefreshing,
+                    lastRefresh = lastRefresh,
+                    anyUnfiltered = enabledCount > 0 && lastRefresh != null && !filter.allTopics,
+                    onAdd = onOpenEdit,
+                    onRetry = { vm.refresh() },
                 )
             }
-        } else {
-            Box(Modifier.fillMaxSize().then(pinchModifier)) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize().topFadingEdge(listState.canScrollBackward).nestedScroll(pullConnection),
-                    // A touch more bottom padding than the list's usual vertical
-                    // padding, so the last row clears the scroll-position bar
-                    // floating over the bottom edge.
-                    contentPadding = PaddingValues(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg),
-                ) {
-                    items(displayedItems, key = { it.id }) { item ->
-                        ItemRow(
-                            item = item,
-                            sourceTitle = sourceTitles[item.sourceId],
-                            read = item.id in readIds,
-                            readMarkStyle = readMarkStyle,
-                            onClick = { onOpenItem(item) },
-                        )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    }
-                    item { EndOfFeed() }
+            unreadFiltered.isEmpty() -> {
+                // showUnreadOnly filtered everything away — an honest, different
+                // state from "no sources"/"nothing flowed": there's plenty here,
+                // all of it read already.
+                Box(Modifier.weight(1f).fillMaxWidth().then(pinchModifier)) {
+                    EmptyState(
+                        title = "Nothing left unread",
+                        body = "Every story in this list has been opened. Pinch out, or tap here, to see the whole list again.",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable(onClickLabel = "Show all articles") { showUnreadOnly = false },
+                    )
                 }
-                // Where you are in the list (owner: "you missed the bottom scroll
-                // bar which tells you where you are in the reading list") — a
-                // thin track+thumb pinned to the bottom, only once there's more
-                // than one screen's worth to be "somewhere in".
-                ScrollPositionBar(listState = listState, modifier = Modifier.align(Alignment.BottomCenter))
+            }
+            displayedItems.isEmpty() -> {
+                // Unread items exist, but this search came up empty — distinct
+                // from the pinch-filter's "Nothing left unread" above.
+                Box(Modifier.weight(1f).fillMaxWidth().then(pinchModifier)) {
+                    NoResultsState()
+                }
+            }
+            else -> {
+                Box(Modifier.weight(1f).fillMaxWidth().then(pinchModifier)) {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize().topFadingEdge(listState.canScrollBackward).nestedScroll(pullConnection),
+                        // A touch more bottom padding than the list's usual vertical
+                        // padding, so the last row clears the scroll-position bar
+                        // floating over the bottom edge.
+                        contentPadding = PaddingValues(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg),
+                    ) {
+                        items(displayedItems, key = { it.id }) { item ->
+                            ItemRow(
+                                item = item,
+                                sourceTitle = sourceTitles[item.sourceId],
+                                read = item.id in readIds,
+                                readMarkStyle = readMarkStyle,
+                                onClick = { onOpenItem(item) },
+                            )
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        }
+                        item { EndOfFeed() }
+                    }
+                    // Where you are in the list (owner: "you missed the bottom scroll
+                    // bar which tells you where you are in the reading list") — a
+                    // thin track+thumb pinned to the bottom, only once there's more
+                    // than one screen's worth to be "somewhere in".
+                    ScrollPositionBar(listState = listState, modifier = Modifier.align(Alignment.BottomCenter))
+                }
             }
         }
+
+        // The search bar, docked to the bottom (owner: "search in the listings
+        // as well, same as we have in the sources") — the same shared bar,
+        // hidden only when there's nothing yet to search through at all.
+        if (items.isNotEmpty()) {
+            AppSearchBar(query = searchQuery, onQueryChange = { searchQuery = it }, placeholder = "Search articles")
+        }
+    }
+
+    if (showFilterSheet) {
+        RegionTopicFilterSheet(
+            filter = filter,
+            topicCounts = topicCountsForRegion,
+            onSetRegion = vm::setRegion,
+            onToggleTopic = vm::toggleTopic,
+            onClearFilter = vm::clearFilter,
+            onDismiss = { showFilterSheet = false },
+        )
     }
 }
 
@@ -465,6 +543,88 @@ private fun EmptyStand(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             modifier = Modifier.padding(top = Tokens.Spacing.lg),
         )
+    }
+}
+
+/**
+ * The Stand's quick filter (owner: "filter... the globe with the segmented
+ * circle and the topics with how many articles for each remain for the
+ * selected region — it's a cascading filter"). This writes the exact same
+ * standing [ReaderFilter] Contrast's region/topic chips do — it's just a
+ * faster way to reach it from the Stand itself — but shows a live per-topic
+ * count for whichever region is picked, so picking a region first narrows
+ * what the topic row even offers (cascading, not two independent pickers).
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+private fun RegionTopicFilterSheet(
+    filter: ReaderFilter,
+    topicCounts: Map<Topic, Int>,
+    onSetRegion: (Region) -> Unit,
+    onToggleTopic: (String) -> Unit,
+    onClearFilter: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val ink = MaterialTheme.colorScheme.onBackground
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm)
+                .padding(bottom = Tokens.Spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+        ) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text("Filter", style = MaterialTheme.typography.titleLarge, color = ink, modifier = Modifier.weight(1f))
+                if (filter.region != Region.GLOBAL || !filter.allTopics) {
+                    TextButton(onClick = onClearFilter) { Text("Clear") }
+                }
+            }
+
+            SectionHeading("Region")
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+                verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
+            ) {
+                for (region in Region.entries) {
+                    val chosen = region == filter.region
+                    Text(
+                        region.label,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                        color = if (chosen) ink else muted,
+                        modifier = Modifier
+                            .clickable(onClickLabel = "Filter to ${region.label}") { onSetRegion(region) }
+                            .padding(vertical = Tokens.Spacing.xxs),
+                    )
+                }
+            }
+
+            SectionHeading("Topics")
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+                verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
+            ) {
+                for (topic in Topic.entries) {
+                    val count = topicCounts[topic] ?: 0
+                    val picked = topic.key in filter.topicKeys
+                    val chosen = filter.allTopics || picked
+                    Text(
+                        "${topic.placeholderLabel} · $count",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = if (picked) FontWeight.Bold else FontWeight.Normal,
+                        color = if (chosen) ink else muted,
+                        modifier = Modifier
+                            .clickable(
+                                enabled = count > 0 || picked,
+                                onClickLabel = "Toggle ${topic.placeholderLabel}",
+                            ) { onToggleTopic(topic.key) }
+                            .padding(vertical = Tokens.Spacing.xxs),
+                    )
+                }
+            }
+        }
     }
 }
 

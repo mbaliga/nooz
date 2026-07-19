@@ -30,6 +30,7 @@ import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.DwellBucket
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.ReaderFilter
+import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.Starters
 import xyz.mdhv.riverwip.model.Topic
 import xyz.mdhv.riverwip.model.WeekBucketing
@@ -74,7 +75,7 @@ class ReaderViewModel(
     private val readEventRepository: ReadEventRepository,
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     private val clippingRepository: ClippingRepository,
-    settingsRepository: SettingsRepository,
+    private val settingsRepository: SettingsRepository,
     private val flashRouter: InferenceRouter,
     private val clock: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
@@ -105,6 +106,40 @@ class ReaderViewModel(
     /** The standing region + topics filter (set on the globe, persisted). */
     val filter: StateFlow<ReaderFilter> = settingsRepository.observeFilter()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), ReaderFilter())
+
+    /** Region and topic interactions also reach the standing filter from here — the Stand's own quick-filter sheet, not just Contrast/the globe. */
+    fun setRegion(region: Region) {
+        viewModelScope.launch { settingsRepository.setFilter(filter.value.copy(region = region)) }
+    }
+
+    fun toggleTopic(topicKey: String) {
+        viewModelScope.launch {
+            val current = filter.value
+            val topics = if (topicKey in current.topicKeys) current.topicKeys - topicKey else current.topicKeys + topicKey
+            settingsRepository.setFilter(current.copy(topicKeys = topics))
+        }
+    }
+
+    /** Resets region and topics together, atomically — the quick-filter sheet's "Clear". */
+    fun clearFilter() {
+        viewModelScope.launch { settingsRepository.setFilter(ReaderFilter()) }
+    }
+
+    /**
+     * Per-topic article counts for the currently selected region only — the
+     * cascading filter's second step (owner: "the topics with how many
+     * articles for each remain for the selected region"). Deliberately
+     * ignores the current topic selection itself (region-only filter), so
+     * toggling a topic chip never changes the counts shown next to the
+     * others.
+     */
+    val topicCountsForRegion: StateFlow<Map<Topic, Int>> = combine(allItems, filter) { list, f ->
+        list.asSequence()
+            .filter { f.includesSource(Starters.regionBySourceId[it.sourceId]) }
+            .map { Classifier.dominantTopic(it.topics) }
+            .groupingBy { it }
+            .eachCount()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyMap())
 
     /**
      * The stand's stream: enabled sources, then the standing filter. Region
