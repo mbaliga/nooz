@@ -2,6 +2,7 @@ package xyz.mdhv.riverwip.feature.reader
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -99,8 +100,12 @@ fun ReaderScreenTwoPane(
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.outlineVariant),
         )
-        Box(Modifier.weight(1f).fillMaxHeight()) {
+        BoxWithConstraints(Modifier.weight(1f).fillMaxHeight()) {
             val sel = selected
+            // Newspaper columns need real width to be worth it (owner: "a
+            // combination based on the space") — plain single-column below
+            // that, same as the phone, rather than cramming two narrow columns.
+            val columns = columnsForWidth(maxWidth)
             if (sel == null) {
                 // Nothing to rest on yet (an empty library) — the list pane's own
                 // empty state already explains why; this pane just stays quiet.
@@ -113,6 +118,19 @@ fun ReaderScreenTwoPane(
                         modifier = Modifier.padding(Tokens.Spacing.xl),
                     )
                 }
+            } else if (columns != null) {
+                NewspaperReaderPane(
+                    vm = vm,
+                    item = sel,
+                    showReadingTime = showReadingTime,
+                    lensOn = highlightLoadedLanguage,
+                    saved = savedIds.contains(sel.id),
+                    paperGrain = paperGrain,
+                    columns = columns,
+                    onToggleLens = onToggleLens,
+                    onToggleClip = { vm.toggleClip(sel) },
+                    onOpenLoom = onOpenLoom,
+                )
             } else {
                 ReaderDetailScreen(
                     vm = vm,

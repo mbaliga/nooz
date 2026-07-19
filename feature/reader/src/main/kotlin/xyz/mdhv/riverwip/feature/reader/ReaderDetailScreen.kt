@@ -278,11 +278,19 @@ fun ReaderDetailScreen(
             }
 
             // The bottom line: controls floating over a gradient fade of the text.
+            val readingProgress by remember {
+                derivedStateOf {
+                    val info = listState.layoutInfo
+                    val total = info.totalItemsCount
+                    if (total == 0) 0f
+                    else (((info.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1f) / total).coerceIn(0f, 1f)
+                }
+            }
             ReaderUtilityBar(
                 state = state,
                 showReadingTime = showReadingTime,
                 todayMix = todayMix,
-                listState = listState,
+                progress = readingProgress,
                 background = background,
                 lensOn = lensOn,
                 saved = saved,
@@ -326,12 +334,19 @@ fun ReaderDetailScreen(
     }
 }
 
+/**
+ * The bottom utility bar — shared with [NewspaperReaderPane], the tablet/
+ * large-screen multi-column layout, which has no [LazyListState] of its own
+ * (it's one long scrolling `Column`, not item-indexed), so `progress` is
+ * whatever the caller's own scroll position works out to be, not something
+ * this bar derives itself.
+ */
 @Composable
-private fun ReaderUtilityBar(
+internal fun ReaderUtilityBar(
     state: ArticleUiState,
     showReadingTime: Boolean,
     todayMix: List<Pair<Topic, Double>>,
-    listState: LazyListState,
+    progress: Float,
     background: Color,
     lensOn: Boolean,
     saved: Boolean,
@@ -342,14 +357,6 @@ private fun ReaderUtilityBar(
     onOpenLoom: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val progress by remember {
-        derivedStateOf {
-            val info = listState.layoutInfo
-            val total = info.totalItemsCount
-            if (total == 0) 0f
-            else (((info.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1f) / total).coerceIn(0f, 1f)
-        }
-    }
     Box(
         modifier
             .fillMaxWidth()
