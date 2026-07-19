@@ -55,7 +55,15 @@ fun LensAnnotatedParagraph(
     style: TextStyle,
     modifier: Modifier = Modifier,
 ) {
-    val affect = if (vm.underlinesEnabled) remember(text) { vm.detect(text) } else emptyList()
+    // Keyed on the Advanced-settings word-list customization too (not just
+    // text): vm.detect() now reads vm.lensDisabledDefaultTerms/lensCustomTerms
+    // internally, so a stale memo here would keep showing yesterday's marks
+    // after either changes, even though nothing about `text` itself did.
+    val affect = if (vm.underlinesEnabled) {
+        remember(text, vm.lensDisabledDefaultTerms, vm.lensCustomTerms) { vm.detect(text) }
+    } else {
+        emptyList()
+    }
     val defineEnabled = vm.dictionaryReady
 
     if (affect.isEmpty() && !defineEnabled) {
