@@ -11,9 +11,9 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        // Working applicationId. Final name/package is RESERVED — the late
-        // rename sweep changes `riverwip.packageBase` (gradle.properties) plus
-        // this file's flavor suffixes and AppInfo.kt only.
+        // Final applicationId — dev.asystemofcells.nooz, as registered in Play
+        // Console. The `full` flavor below is deliberately left with no
+        // applicationIdSuffix so bundleFullRelease's AAB matches that exactly.
         applicationId = "${property("riverwip.packageBase")}"
         minSdk = 31
         targetSdk = 35
@@ -33,8 +33,6 @@ android {
         }
         create("full") {
             dimension = "distribution"
-            applicationIdSuffix = ".full"
-            versionNameSuffix = "-full"
         }
     }
 

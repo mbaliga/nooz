@@ -4,7 +4,8 @@ Living build state. Updated every session (brief §0).
 
 - **Working register:** omission. Name: **Nooz** (owner-decided 2026-07-10, see
   D5). License, taxonomy labels, metaphor language remain **RESERVED** — see
-  §RESERVED. Package placeholder `xyz.mdhv.riverwip` (rename still pending).
+  §RESERVED. Package: `dev.asystemofcells.nooz` (owner-decided 2026-07-20, via
+  Play Console registration; rename applied).
 - **Current phase:** P0–P7 substantially built, plus the owner's 2026-07-11/12
   feature round (see D9–D13): the reader "one more cut" (real Hyle fonts,
   interactive sheet-slide, newspaper share, back-gesture fix), **Clippings**,
@@ -1096,10 +1097,9 @@ respect as the CI-caught log above.
 ---
 
 ## RESERVED — never decide, never suggest in-product
-Still reserved: final package; license; any visual metaphor language; final
-taxonomy labels; any mythological/metaphorical naming; Tier B paid-key
-decisions. No Marvel/Loki/TVA references anywhere (loom image guides form only,
-never copy).
+Still reserved: license; any visual metaphor language; final taxonomy labels;
+any mythological/metaphorical naming; Tier B paid-key decisions. No
+Marvel/Loki/TVA references anywhere (loom image guides form only, never copy).
 
 **Decided by the owner** (not by this build):
 - The app name — **"Nooz"** — delivered via the owner's own design mocks on
@@ -1107,6 +1107,12 @@ never copy).
 - The app icon — the owner's 512×512 logo (2026-07-11/12 mock drop), applied
   per decision D6 (launcher mipmaps + `fastlane/.../images/icon.png`). No
   longer reserved/open.
-
-The applicationId/package stays `xyz.mdhv.riverwip` until the owner schedules
-the rename (changing it breaks in-place upgrades of installed test builds).
+- The applicationId/package — **`dev.asystemofcells.nooz`** — forced by the
+  owner's Play Console listing (2026-07-20); applied to `riverwip.packageBase`,
+  `AppInfo.PACKAGE_BASE`, and the `full` flavor's applicationIdSuffix (removed,
+  so `bundleFullRelease`'s AAB matches Play's registered package exactly). The
+  `foss`/F-Droid flavor keeps its own `.foss` suffix, and debug builds keep
+  `.debug` — only the Play-bound release id changed. No longer reserved/open.
+  Any device with an old `xyz.mdhv.riverwip.full`-signed test build installed
+  will need to uninstall it first — Android treats the new applicationId as a
+  different app, not an in-place update.
