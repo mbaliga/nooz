@@ -81,7 +81,7 @@ class SourceRepository(
     /** Add a one-click starter from the seed catalogue. */
     suspend fun addStarter(def: ServiceDef): AddResult {
         val source = def.toSourceOrNull(clock())?.copy(enabled = true)
-            ?: return AddResult.Failed("${def.title} needs the builder or a key — open it to configure.")
+            ?: return AddResult.Failed("${def.title} needs the builder or a key; open it to configure.")
         dao.upsert(source.toEntity())
         return AddResult.Added(source)
     }

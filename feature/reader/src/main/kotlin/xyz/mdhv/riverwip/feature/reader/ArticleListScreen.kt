@@ -271,14 +271,14 @@ fun ArticleListScreen(
             IconButton(onClick = { groupedBySource = !groupedBySource }) {
                 Icon(
                     Icons.AutoMirrored.Filled.Sort,
-                    contentDescription = if (groupedBySource) "Grouped by source — tap for newest first" else "Sort: newest first — tap to group by source",
+                    contentDescription = if (groupedBySource) "Grouped by source, tap for newest first" else "Sort: newest first, tap to group by source",
                     tint = if (groupedBySource) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             IconButton(onClick = { diversified = !diversified }) {
                 Icon(
                     Icons.Filled.Shuffle,
-                    contentDescription = if (diversified) "Showing the mix for coverage — tap to return to flow order" else "Mix for maximum spread",
+                    contentDescription = if (diversified) "Showing the mix for coverage, tap to return to flow order" else "Mix for maximum spread",
                     tint = if (diversified) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -496,7 +496,7 @@ private fun EmptyStand(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(Tokens.Spacing.xl),
+            .padding(vertical = Tokens.Spacing.xl),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -505,14 +505,21 @@ private fun EmptyStand(
             // (many strands drawn into one thread, through the needle's eye —
             // the app's own "weave many sources into one stream" idea). The
             // illustration itself is the tap target, not a separate button.
+            //
+            // Right-aligned and deliberately not full-width (owner's ask): the
+            // right edge sits flush with the screen's own edge, while the
+            // needle itself — which the drawable draws left-of-centre within
+            // its own bounds, not in the middle — lands on the screen's
+            // vertical centre line. NEEDLE_ILLUSTRATION_WIDTH_FRACTION is the
+            // one width where both are true at once.
             Image(
                 painter = painterResource(R.drawable.img_no_sources),
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .align(Alignment.End)
+                    .fillMaxWidth(NEEDLE_ILLUSTRATION_WIDTH_FRACTION)
                     .clickable(enabled = !isRefreshing, onClickLabel = "Add sources") { onAdd() }
-                    .semantics { role = Role.Button }
-                    .padding(horizontal = Tokens.Spacing.lg),
+                    .semantics { role = Role.Button },
             )
             if (isRefreshing) {
                 CircularProgressIndicator(
@@ -550,10 +557,19 @@ private fun EmptyStand(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            modifier = Modifier.padding(top = Tokens.Spacing.lg),
+            modifier = Modifier.padding(top = Tokens.Spacing.lg, start = Tokens.Spacing.xl, end = Tokens.Spacing.xl),
         )
     }
 }
+
+/**
+ * `img_no_sources`'s own needle column sits at ~38.6% of the drawable's width
+ * (measured from the asset, not centred in it — the eye and shaft, not the
+ * thread reaching out to either side). Solving `width * (1 - 0.386) = 0.5` for
+ * `width` (screen units, right-aligned so the image's right edge is the
+ * screen's own right edge) gives the fraction below.
+ */
+private const val NEEDLE_ILLUSTRATION_WIDTH_FRACTION = 0.81f
 
 /**
  * The Stand's quick filter (owner: "filter... the globe with the segmented

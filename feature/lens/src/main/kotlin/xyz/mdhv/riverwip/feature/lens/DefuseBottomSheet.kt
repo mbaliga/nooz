@@ -83,7 +83,7 @@ fun DefuseBottomSheet(
                     // Not an error the reader caused — a capability that isn't
                     // set up yet. Muted, not alarming red (owner).
                     Text(
-                        "No neutral rewrite yet — this needs an on-device model or your own key, from Settings › Reader intelligence.",
+                        "No neutral rewrite yet. This needs an on-device model or your own key, from Settings › Reader intelligence.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = Tokens.Spacing.xs),

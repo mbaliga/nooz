@@ -50,7 +50,7 @@ fun FramingsPanel(
     if (clusters.isEmpty()) {
         EmptyState(
             title = "No overlapping stories yet",
-            body = "Framings appear when two of your sources tell the same story — set side by side, the wording each chose is the contrast.",
+            body = "Framings appear when two of your sources tell the same story: set side by side, the wording each chose is the contrast.",
             modifier = modifier,
         )
         return

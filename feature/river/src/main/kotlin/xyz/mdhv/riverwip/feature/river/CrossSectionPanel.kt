@@ -75,14 +75,14 @@ fun CrossSectionPanel(aggregates: List<WeeklyAggregate>, selectedIndex: Int, mod
             formula = "items you opened ÷ items that flowed, this period",
         )
         MetricRow(
-            label = "Breadth — the stream",
+            label = "Breadth: the stream",
             value = "%.1f effective topics".format(breadthStream),
-            formula = "exp(Shannon entropy) of the stream's topic mix — how spread across topics the supply was",
+            formula = "exp(Shannon entropy) of the stream's topic mix: how spread across topics the supply was",
         )
         MetricRow(
-            label = "Breadth — you",
+            label = "Breadth: you",
             value = "%.1f effective topics".format(breadthRead),
-            formula = "exp(Shannon entropy) of what you read — how spread across topics your reading was",
+            formula = "exp(Shannon entropy) of what you read: how spread across topics your reading was",
         )
 
         Text("Per-topic over/under", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = Tokens.Spacing.xs))
@@ -162,7 +162,7 @@ private fun OverUnderRow(topic: Topic, ratio: Double) {
         }
         if (expanded) {
             Text(
-                "your ${topic.placeholderLabel} share of what you read ÷ its share of the stream — " +
+                "your ${topic.placeholderLabel} share of what you read ÷ its share of the stream; " +
                     "above 1x means you read more of this topic than it made up of the stream",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

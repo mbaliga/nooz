@@ -153,7 +153,7 @@ fun ContrastPanel(
         if (totalFlowed == 0) {
             EmptyState(
                 title = "Nothing flowed this day",
-                body = "The contrast — what your sources ran against what you read — appears once anything comes in.",
+                body = "The contrast, what your sources ran against what you read, appears once anything comes in.",
                 fill = false,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -213,7 +213,7 @@ fun ContrastPanel(
             val blindSpot = ordered.maxByOrNull { it.gap }
             if (totalRead > 0 && blindSpot != null && blindSpot.gap > 0.08f) {
                 Text(
-                    "Widest gap: ${blindSpot.topic.placeholderLabel} — ${(blindSpot.flowedShare * 100).roundToInt()}% flowed, ${(blindSpot.readShare * 100).roundToInt()}% read.",
+                    "Widest gap in ${blindSpot.topic.placeholderLabel}: ${(blindSpot.flowedShare * 100).roundToInt()}% flowed, ${(blindSpot.readShare * 100).roundToInt()}% read.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = muted,
                 )
@@ -257,7 +257,7 @@ private fun RegionsSection(
         RegionHeatStrip(reads = reads, selected = filter.region, ink = ink)
         if (reads.values.sum() == 0) {
             Text(
-                "No reads yet today — the map fills in as you read.",
+                "No reads yet today. The map fills in as you read.",
                 style = MaterialTheme.typography.bodySmall,
                 color = muted,
             )

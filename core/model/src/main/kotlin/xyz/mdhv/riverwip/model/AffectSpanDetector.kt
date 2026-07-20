@@ -18,8 +18,8 @@ object AffectSpanDetector {
         val category: BiasLexicon.Category,
         val term: String,
     ) {
-        /** Human-facing evidence line, e.g. "flagged: 'slammed' — loaded verb". */
-        val evidence: String get() = "flagged: '$text' — ${category.label}"
+        /** Human-facing evidence line, e.g. "flagged: 'slammed', loaded verb". */
+        val evidence: String get() = "flagged: '$text', ${category.label}"
     }
 
     /**

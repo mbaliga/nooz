@@ -117,7 +117,7 @@ private fun EmptyStatePreview() {
     RiverTheme {
         EmptyState(
             title = "No sources yet",
-            body = "This reader only shows ${Copy.fromSources(0)}. Add a feed to begin — " +
+            body = "This reader only shows ${Copy.fromSources(0)}. Add a feed to begin; " +
                 "it never claims to show all the news.",
         )
     }

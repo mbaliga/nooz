@@ -148,7 +148,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                 val endLabel = DAY_FORMAT.format(Instant.ofEpochMilli(rangeEnd).atZone(ZoneId.systemDefault()))
                 "$startLabel – $endLabel"
             }
-        } ?: "—"
+        } ?: "–"
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -246,7 +246,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                         // only ever show what a feed is serving right now — never an
                         // archive of some past day.
                         Text(
-                            "Most sources are live RSS/Atom feeds with no way to ask for a past date — this shows what they're serving right now, not an archive.",
+                            "Most sources are live RSS/Atom feeds with no way to ask for a past date; this shows what they're serving right now, not an archive.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             textAlign = TextAlign.Center,
@@ -304,8 +304,8 @@ private fun HistoricalGdeltAffordance(
             val label = when {
                 state.errors.isNotEmpty() -> "GDELT: ${state.errors.first()}"
                 state.newItemCount > 0 ->
-                    "Found ${state.newItemCount} new ${if (state.newItemCount == 1) "item" else "items"} from GDELT — tap to ask again"
-                else -> "GDELT had nothing new for this day — tap to ask again"
+                    "Found ${state.newItemCount} new ${if (state.newItemCount == 1) "item" else "items"} from GDELT, tap to ask again"
+                else -> "GDELT had nothing new for this day, tap to ask again"
             }
             Text(
                 label,

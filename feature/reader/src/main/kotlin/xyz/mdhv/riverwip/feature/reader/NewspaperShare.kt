@@ -43,7 +43,7 @@ object NewspaperShare {
         val caption = buildString {
             append(title)
             if (!url.isNullOrBlank()) append('\n').append(url)
-            append("\n— clipped with Nooz")
+            append("\nClipped with Nooz")
         }
         val send = Intent(Intent.ACTION_SEND).apply {
             if (uri != null) {

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
@@ -66,9 +67,14 @@ fun FlashCard(vm: ReaderViewModel, modifier: Modifier = Modifier) {
             .border(BorderStroke(Tokens.Border.thin, MaterialTheme.colorScheme.outlineVariant), RoundedCornerShape(Tokens.Radius.md))
             .padding(Tokens.Spacing.sm),
     ) {
+        // A crossed-out bolt reads at a glance, without a tap first (owner's
+        // ask): "not configured" is knowable upfront (see ReaderViewModel's
+        // own preflight check), so the icon should say so immediately rather
+        // than waiting for the reader to tap and be told in text alone.
+        val notConfigured = (state as? FlashUiState.Unavailable)?.needsSetup == true
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
             Icon(
-                Icons.Filled.FlashOn,
+                if (notConfigured) Icons.Filled.FlashOff else Icons.Filled.FlashOn,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(18.dp),

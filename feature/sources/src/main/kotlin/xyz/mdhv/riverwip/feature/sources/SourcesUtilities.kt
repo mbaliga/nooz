@@ -104,7 +104,7 @@ fun CatalogueCard(vm: SourcesViewModel) {
         SectionHeading("Catalogue")
         Text(
             "Optionally point this at a catalogue.json to refresh starters and free-tier " +
-                "limits without an app update. Nothing is fetched unless you tap refresh — " +
+                "limits without an app update. Nothing is fetched unless you tap refresh; " +
                 "there is no default URL, since this build can't verify one is live.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

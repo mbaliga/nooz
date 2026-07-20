@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -74,6 +75,51 @@ import kotlin.math.ceil
 private fun readingMinutes(paragraphs: List<String>): Int {
     val words = paragraphs.sumOf { it.split(Regex("\\s+")).count { w -> w.isNotBlank() } }
     return ceil(words / 200.0).toInt().coerceAtLeast(1)
+}
+
+/**
+ * The end-of-article marker (brief §3: "the river has banks"), Previous/Next
+ * flanking it so reaching the end doesn't dead-end (owner's ask). Shared by
+ * [ReaderDetailScreen] and [NewspaperReaderPane]. Equal-width side slots keep
+ * the label centred in the row regardless of whether either side has a target
+ * — a present-but-unclickable label would misrepresent a real edge of the
+ * list as just a quiet moment, so an absent neighbour renders nothing at all.
+ */
+@Composable
+fun EndOfArticleRow(
+    hasPrevious: Boolean,
+    hasNext: Boolean,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+            if (hasPrevious) {
+                Text(
+                    "‹ Previous",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable(onClick = onPrevious),
+                )
+            }
+        }
+        Text(
+            "End of article",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+            if (hasNext) {
+                Text(
+                    "Next ›",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable(onClick = onNext),
+                )
+            }
+        }
+    }
 }
 
 /**
@@ -127,7 +173,19 @@ fun ReaderDetailScreen(
     val topic = Classifier.dominantTopic(item.topics)
     val background = MaterialTheme.colorScheme.background
 
+    // End-of-article Previous/Next (owner's ask): the item adjacent to this one
+    // in the *current* list ordering, the same one ArticleListScreen shows.
+    val listItems by vm.items.collectAsStateWithLifecycle()
+    val currentIndex = listItems.indexOfFirst { it.id == item.id }
+    val previousItem = if (currentIndex > 0) listItems.getOrNull(currentIndex - 1) else null
+    val nextItem = if (currentIndex != -1) listItems.getOrNull(currentIndex + 1) else null
+
     val listState = rememberLazyListState()
+    // A Previous/Next tap swaps `item` under this same composable instance —
+    // without this, the LazyColumn would keep whatever scroll offset the
+    // reader was at (the very bottom, having just reached the end) and open
+    // the new article already scrolled past its own start.
+    LaunchedEffect(item.id) { listState.scrollToItem(0) }
 
     Box(Modifier.fillMaxSize()) {
         Box(
@@ -289,11 +347,14 @@ fun ReaderDetailScreen(
                     }
                 }
                 item {
-                    // The river has banks (brief §3): the article itself has an explicit end too.
-                    Text(
-                        "— end of article —",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    // The river has banks (brief §3): the article itself has an
+                    // explicit end too — flanked by Previous/Next so reaching it
+                    // doesn't dead-end (owner's ask).
+                    EndOfArticleRow(
+                        hasPrevious = previousItem != null,
+                        hasNext = nextItem != null,
+                        onPrevious = { previousItem?.let { vm.openItem(it) } },
+                        onNext = { nextItem?.let { vm.openItem(it) } },
                         modifier = Modifier.padding(top = Tokens.Spacing.lg),
                     )
                 }

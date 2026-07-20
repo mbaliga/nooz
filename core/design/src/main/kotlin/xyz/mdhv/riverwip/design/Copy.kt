@@ -29,7 +29,7 @@ object Copy {
     fun openedOf(opened: Int): String = "you opened $opened"
 
     /** Detection is framed as opinion, never verdict (brief §7). */
-    const val DETECTION_IS_OPINION = "the app's read — tap to see why"
+    const val DETECTION_IS_OPINION = "the app's read, tap to see why"
 
     /** Feeds end; the river has banks (brief §3). */
     const val END_OF_FEED = "that's everything from your sources for this period"

@@ -2,6 +2,8 @@ package xyz.mdhv.riverwip.feature.reader
 
 import android.content.Context
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
@@ -89,8 +92,14 @@ private val TastefulBlackAndWhite = ColorMatrix(
     ),
 )
 
-/** How many dot columns the halftone grid samples across — rows follow from the source image's own aspect ratio. */
-private const val HALFTONE_COLUMNS = 36
+// The dot grid's resolution tracks the image's own rendered width (a fixed
+// column count either looked chunky at a full-width hero or wasted density on
+// a small list thumbnail) rather than one constant for every size. 4dp reads
+// as a fine, resolved dot-print at both ends — a real newspaper halftone, not
+// the coarse blown-up dots a low, fixed column count gave every size alike.
+private val HALFTONE_CELL_SIZE = 4.dp
+private const val HALFTONE_MIN_COLUMNS = 12
+private const val HALFTONE_MAX_COLUMNS = 160
 
 /**
  * The image reproduced as newsprint would: no photo drawn at all, only a
@@ -120,38 +129,41 @@ private fun HalftoneImage(imageUrl: String, contentDescription: String?, modifie
 
     val source = bitmap ?: return // still loading, or the decode failed -- reserve nothing, same as no image at all
 
-    val cols = HALFTONE_COLUMNS
-    val rows = (cols / (source.width.toFloat() / source.height.toFloat())).toInt().coerceAtLeast(1)
-    val cells = remember(source, cols, rows) { android.graphics.Bitmap.createScaledBitmap(source, cols, rows, true) }
-
     val ink = MaterialTheme.colorScheme.onBackground
     val paper = MaterialTheme.colorScheme.background
     val description = contentDescription
-    val canvasModifier = if (description != null) {
-        modifier.semantics { this.contentDescription = description }
-    } else {
-        modifier
-    }
 
-    Canvas(canvasModifier) {
-        drawRect(paper)
-        val cellW = size.width / cols
-        val cellH = size.height / rows
-        val maxRadius = minOf(cellW, cellH) / 2f
-        for (y in 0 until rows) {
-            for (x in 0 until cols) {
-                val pixel = cells.getPixel(x, y)
-                val r = android.graphics.Color.red(pixel)
-                val g = android.graphics.Color.green(pixel)
-                val b = android.graphics.Color.blue(pixel)
-                val luminance = (0.299f * r + 0.587f * g + 0.114f * b) / 255f
-                val radius = (1f - luminance) * maxRadius * 0.95f
-                if (radius > 0.5f) {
-                    drawCircle(
-                        color = ink,
-                        radius = radius,
-                        center = Offset(x * cellW + cellW / 2f, y * cellH + cellH / 2f),
-                    )
+    BoxWithConstraints(modifier) {
+        val cols = (maxWidth / HALFTONE_CELL_SIZE).toInt().coerceIn(HALFTONE_MIN_COLUMNS, HALFTONE_MAX_COLUMNS)
+        val rows = (cols / (source.width.toFloat() / source.height.toFloat())).toInt().coerceAtLeast(1)
+        val cells = remember(source, cols, rows) { android.graphics.Bitmap.createScaledBitmap(source, cols, rows, true) }
+
+        val canvasModifier = if (description != null) {
+            Modifier.fillMaxSize().semantics { this.contentDescription = description }
+        } else {
+            Modifier.fillMaxSize()
+        }
+
+        Canvas(canvasModifier) {
+            drawRect(paper)
+            val cellW = size.width / cols
+            val cellH = size.height / rows
+            val maxRadius = minOf(cellW, cellH) / 2f
+            for (y in 0 until rows) {
+                for (x in 0 until cols) {
+                    val pixel = cells.getPixel(x, y)
+                    val r = android.graphics.Color.red(pixel)
+                    val g = android.graphics.Color.green(pixel)
+                    val b = android.graphics.Color.blue(pixel)
+                    val luminance = (0.299f * r + 0.587f * g + 0.114f * b) / 255f
+                    val radius = (1f - luminance) * maxRadius * 0.95f
+                    if (radius > 0.5f) {
+                        drawCircle(
+                            color = ink,
+                            radius = radius,
+                            center = Offset(x * cellW + cellW / 2f, y * cellH + cellH / 2f),
+                        )
+                    }
                 }
             }
         }

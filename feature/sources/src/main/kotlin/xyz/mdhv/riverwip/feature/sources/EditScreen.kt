@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -54,6 +55,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -77,13 +79,14 @@ import xyz.mdhv.riverwip.model.toSourceOrNull
 enum class EditTab { SOURCES, REGION_TOPICS, SETTINGS }
 
 /**
- * Nooz EDIT (owner's mocks + flow map, extended 2026-07): three tabs. Sources —
+ * Nooz EDIT (owner's mocks + flow map, extended 2026-07): three tabs. Sources:
  * one-click starters with check-circle toggles and add-by-URL with an honest
- * error state; Region & Topics — the globe, the topic chips, and the metrics
- * block (coverage, breadth, per-topic over/under — every number
- * tap-explained); Settings — the full app settings, shown here directly
- * rather than behind a separate gear (owner: "it needn't be in the settings
- * cog"). [settingsTab] is a caller-supplied slot (the same pattern as
+ * error state; Region & Topics: the globe, the topic chips, and the metrics
+ * block (coverage, breadth, per-topic over/under, every number
+ * tap-explained); Reader (labeled "Settings" until the owner's rename): the
+ * full app settings, shown here directly rather than behind a separate gear
+ * (owner: "it needn't be in the settings cog"). [settingsTab] is a
+ * caller-supplied slot (the same pattern as
  * [xyz.mdhv.riverwip.feature.reader.ReaderScreen]'s `settingsRoom`) so this
  * feature module never needs a dependency on wherever Settings actually
  * lives. DONE saves the filter draft and returns to the Stand.
@@ -154,10 +157,14 @@ fun EditScreen(
             Spacer(Modifier.width(Tokens.Spacing.xl))
             TabLabel("Region & Topics", tab == EditTab.REGION_TOPICS) { tab = EditTab.REGION_TOPICS }
             Spacer(Modifier.width(Tokens.Spacing.xl))
-            TabLabel("Settings", tab == EditTab.SETTINGS) { tab = EditTab.SETTINGS }
+            TabLabel("Reader", tab == EditTab.SETTINGS) { tab = EditTab.SETTINGS }
         }
-        Spacer(Modifier.height(Tokens.Spacing.xs))
+        // More air above the rule than before (owner: "the line is sticking too
+        // close to the headers") — enough that it reads as a column-header rule
+        // opening the content below, not a second underline crowding the tabs.
+        Spacer(Modifier.height(Tokens.Spacing.md))
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Spacer(Modifier.height(Tokens.Spacing.xs))
 
         when (tab) {
             EditTab.SOURCES -> SourcesTab(vm)
@@ -349,13 +356,32 @@ private fun BuilderRow(def: ServiceDef, onAdd: (String) -> Unit) {
     }
 }
 
+/**
+ * Bleeds [horizontal] past an ancestor's own inset on each side (owner: "the
+ * grey on click state is not edge to edge yet") — [SourcesTab]'s scrolling
+ * column insets every row by [Tokens.Spacing.md] so text lines up with the
+ * region chips and search bar above/below it, but that same inset was
+ * shrinking a row's own `clickable` ripple/press background short of the
+ * screen's true edges. Applied before `clickable` so its indication paints
+ * across the full bled width; the row's own content re-adds the same inset
+ * afterward, so nothing but the ripple actually moves.
+ */
+private fun Modifier.bleedHorizontal(horizontal: Dp): Modifier = layout { measurable, constraints ->
+    val horizontalPx = horizontal.roundToPx()
+    val placeable = measurable.measure(constraints.copy(maxWidth = constraints.maxWidth + horizontalPx * 2))
+    layout(placeable.width, placeable.height) {
+        placeable.placeRelative(-horizontalPx, 0)
+    }
+}
+
 @Composable
 private fun StarterRow(def: ServiceDef, region: String?, added: Boolean, unhealthy: Boolean, onToggle: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .bleedHorizontal(Tokens.Spacing.md)
             .clickable(onClickLabel = if (added) "Remove ${def.title}" else "Add ${def.title}", onClick = onToggle)
-            .padding(vertical = Tokens.Spacing.xs),
+            .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
@@ -454,7 +480,7 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
                 .padding(top = Tokens.Spacing.xxs),
         )
         is AddUiState.Choices -> Column {
-            Text("This page declares more than one feed — pick one:", style = MaterialTheme.typography.bodySmall)
+            Text("This page declares more than one feed, pick one:", style = MaterialTheme.typography.bodySmall)
             state.candidates.forEach { feed ->
                 TextButton(onClick = { vm.addCandidate(feed) }) {
                     Text((feed.title ?: feed.url) + "  ·  ${feed.type.name.lowercase()}")

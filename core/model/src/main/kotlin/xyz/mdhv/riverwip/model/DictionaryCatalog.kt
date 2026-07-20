@@ -28,7 +28,7 @@ object DictionaryCatalog {
         DictionaryOption(
             id = "websters-1913",
             name = "Webster's 1913",
-            description = "The classic public-domain American dictionary — about 86,000 words with full prose definitions.",
+            description = "The classic public-domain American dictionary, about 86,000 words with full prose definitions.",
             downloadUrl = "https://raw.githubusercontent.com/matthewreagan/WebstersEnglishDictionary/master/dictionary.json",
             license = "Public domain (1913 text); MIT (compilation)",
             sizeHuman = "22 MB",

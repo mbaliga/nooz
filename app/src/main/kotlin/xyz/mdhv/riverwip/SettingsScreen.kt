@@ -526,7 +526,7 @@ fun SettingsBody(
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
-                        "Hides the back button and controls for a bare page. Off by default — swipe right or tap back to return.",
+                        "Hides the back button and controls for a bare page. Off by default; swipe right or tap back to return.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -556,7 +556,7 @@ fun SettingsBody(
             } else {
                 SectionHeading("Dictionary")
                 Text(
-                    "Download a dictionary, then long-press any word as you read for its meaning — Kindle-style.",
+                    "Download a dictionary, then long-press any word as you read for its meaning, Kindle-style.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -616,7 +616,7 @@ private fun CrashSection() {
         Text("Nooz closed unexpectedly last time", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         Text(current.headline, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
         Text(
-            "The report stayed on your device — nothing was sent anywhere.",
+            "The report stayed on your device; nothing was sent anywhere.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -698,7 +698,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                "Today's news compressed to 10 words or fewer, with a tap to go deeper. On-device first; a bring-your-own key is the only fallback — never a general cloud broker.",
+                "Today's news compressed to 10 words or fewer, with a tap to go deeper. On-device first; a bring-your-own key is the only fallback, never a general cloud broker.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -827,7 +827,7 @@ private fun ImagesSection(settings: AppSettings, vm: SettingsViewModel) {
         }
         SettingSwitchRow(
             title = "Hide source-flagged images",
-            subtitle = "Hides an item's image only when its own feed declared it adult/explicit — never this app's own judgment, and never touches a source that declares nothing.",
+            subtitle = "Hides an item's image only when its own feed declared it adult/explicit; never this app's own judgment, and never touches a source that declares nothing.",
             checked = settings.hideNsfwImages,
             onCheckedChange = { vm.setHideNsfwImages(it) },
         )
@@ -919,7 +919,7 @@ private fun FeedbackRow() {
                     uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=" + android.net.Uri.encode("Nooz feedback"))
                 } catch (_: Exception) {
                     clipboard.setText(AnnotatedString(FEEDBACK_EMAIL))
-                    fallbackMessage = "No email app found — copied $FEEDBACK_EMAIL to your clipboard instead."
+                    fallbackMessage = "No email app found; copied $FEEDBACK_EMAIL to your clipboard instead."
                 }
             }
             .padding(vertical = Tokens.Spacing.xs),
@@ -983,7 +983,7 @@ private fun YourDataSection(vm: SettingsViewModel) {
 
     SectionHeading("Your data")
     Text(
-        "Export everything as open JSON — preferences, your region and topics, your sources, your clippings, and the coarse read log. Local only; API keys are never included.",
+        "Export everything as open JSON: preferences, your region and topics, your sources, your clippings, and the coarse read log. Local only; API keys are never included.",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -1005,7 +1005,7 @@ private fun AboutSection() {
     val uriHandler = LocalUriHandler.current
     SectionHeading("About")
     Text(
-        "Nooz is a news reader whose subject is omission — what got left out. It's made by mdhv.xyz, a small studio of focused, quiet apps.",
+        "Nooz is a news reader whose subject is omission: what got left out. It's made by mdhv.xyz, a small studio of focused, quiet apps.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onBackground,
     )

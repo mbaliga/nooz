@@ -97,7 +97,7 @@ private fun PathChip(label: String, selected: Boolean, onClick: () -> Unit) {
 @Composable
 private fun OnDeviceStanza() {
     Text(
-        "Nooz tries your device first, automatically — nothing to set up. This build doesn't yet include a local model runtime, so until one lands (or you add a key below), the lens honestly reports \"unavailable\" instead of guessing — even for a model you've downloaded below.",
+        "Nooz tries your device first, automatically: nothing to set up. This build doesn't yet include a local model runtime, so until one lands (or you add a key below), the lens honestly reports \"unavailable\" instead of guessing, even for a model you've downloaded below.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -106,7 +106,7 @@ private fun OnDeviceStanza() {
 @Composable
 private fun DownloadStanza(ui: ModelDownloadUi) {
     Text(
-        "Real, open-source models verified by this app's own catalogue. Download them here — they won't run automatically (see On-device), but once downloaded they're on disk and ready.",
+        "Real, open-source models verified by this app's own catalogue. Download them here: they won't run automatically (see On-device), but once downloaded they're on disk and ready.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

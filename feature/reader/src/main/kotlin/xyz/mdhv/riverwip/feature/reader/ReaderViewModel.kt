@@ -58,6 +58,15 @@ sealed interface FlashUiState {
     data class Unavailable(val reason: String, val needsSetup: Boolean = false) : FlashUiState
 }
 
+/**
+ * Shared between the upfront preflight check ([ReaderViewModel.init]) and
+ * [ReaderViewModel.requestFlash]'s own post-tap failure, so the reader sees
+ * the identical line either way it gets shown (owner's ask: this should be
+ * known before tapping, not only discovered after — see [FlashCard]'s slashed
+ * bolt for the icon half of that).
+ */
+private const val FLASH_NOT_CONFIGURED_REASON = "Nooz Flash won't work until a model or API key is configured."
+
 /** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
 data class RefreshResult(
     val newItems: Int,
@@ -236,7 +245,7 @@ class ReaderViewModel(
                     // real runtime error (a BYOK endpoint 401, say) is shown as-is.
                     val needsSetup = result.reason.contains("no reader-intelligence provider", ignoreCase = true)
                     FlashUiState.Unavailable(
-                        reason = if (needsSetup) "Nooz Flash needs an on-device model or your own API key." else result.reason,
+                        reason = if (needsSetup) FLASH_NOT_CONFIGURED_REASON else result.reason,
                         needsSetup = needsSetup,
                     )
                 }
@@ -260,6 +269,17 @@ class ReaderViewModel(
             combine(enabledSourceCount, allItems) { count, list -> count > 0 && list.isEmpty() }
                 .first { it }
             if (_lastRefresh.value == null) refresh()
+        }
+        // Nooz Flash, known upfront rather than only after a tap (owner's
+        // ask): if nothing is configured yet, show that immediately instead
+        // of the ordinary "tap to compress" invitation, which used to be the
+        // only way to discover it wouldn't work at all. Guarded on still
+        // being Idle so this can never clobber a real request already in
+        // flight (or its result) if one somehow won the race.
+        viewModelScope.launch {
+            if (!flashRouter.hasAvailableProvider() && _flashState.value == FlashUiState.Idle) {
+                _flashState.value = FlashUiState.Unavailable(FLASH_NOT_CONFIGURED_REASON, needsSetup = true)
+            }
         }
     }
 

@@ -14,6 +14,15 @@ class InferenceRouter(private val order: List<InferenceProvider>) {
     /** The order the router will actually try, i.e. [order] as given (user-configurable upstream). */
     val providerOrder: List<String> get() = order.map { it.id }
 
+    /**
+     * A cheap upfront capability check — true once any provider in [order] is
+     * currently usable, without attempting a real rewrite/digest call. Lets a
+     * caller show a "not configured yet" state proactively (owner's ask for
+     * Nooz Flash) instead of only discovering it after the reader taps and
+     * the request comes back [DigestResult.Failed]/[RewriteResult.Failed].
+     */
+    suspend fun hasAvailableProvider(): Boolean = order.any { it.isAvailable() }
+
     // User-facing failures never enumerate internal provider ids (owner: it's
     // unseemly to surface "tried: local-llama, byok"). The order the router
     // tried is still inspectable via [providerOrder]; the message stays plain.

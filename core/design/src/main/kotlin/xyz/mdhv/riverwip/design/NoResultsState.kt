@@ -65,7 +65,7 @@ fun NoResultsState(modifier: Modifier = Modifier, fill: Boolean = true) {
 private val NO_RESULTS_QUOTES = listOf(
     "The wire stayed quiet on this one.",
     "Even omission has to omit something.",
-    "Nothing here — which is, technically, the whole thesis.",
+    "Nothing here, which is, technically, the whole thesis.",
     "Not every search finds its story. This one didn't.",
     "The archives shrugged.",
     "Somewhere, a headline that isn't about this.",

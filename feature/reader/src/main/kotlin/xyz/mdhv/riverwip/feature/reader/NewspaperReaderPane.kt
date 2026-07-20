@@ -22,6 +22,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -118,6 +119,13 @@ fun NewspaperReaderPane(
     val topic = Classifier.dominantTopic(item.topics)
     val background = MaterialTheme.colorScheme.background
 
+    // End-of-article Previous/Next (owner's ask): the item adjacent to this one
+    // in the *current* list ordering, the same one ArticleListScreen shows.
+    val listItems by vm.items.collectAsStateWithLifecycle()
+    val currentIndex = listItems.indexOfFirst { it.id == item.id }
+    val previousItem = if (currentIndex > 0) listItems.getOrNull(currentIndex - 1) else null
+    val nextItem = if (currentIndex != -1) listItems.getOrNull(currentIndex + 1) else null
+
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
@@ -134,6 +142,11 @@ fun NewspaperReaderPane(
         val columnWidth = ((columnsWidth + COLUMN_GUTTER) / columns) - COLUMN_GUTTER
 
         val scrollState = rememberScrollState()
+        // A Previous/Next tap swaps `item` under this same composable instance —
+        // without this, the Column would keep whatever scroll offset the reader
+        // was at (the very bottom, having just reached the end) and open the
+        // new article already scrolled past its own start.
+        LaunchedEffect(item.id) { scrollState.scrollTo(0) }
         Column(
             Modifier
                 .fillMaxSize()
@@ -235,10 +248,11 @@ fun NewspaperReaderPane(
                 }
             }
             Spacer(Modifier.height(Tokens.Spacing.lg))
-            Text(
-                "— end of article —",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            EndOfArticleRow(
+                hasPrevious = previousItem != null,
+                hasNext = nextItem != null,
+                onPrevious = { previousItem?.let { vm.openItem(it) } },
+                onNext = { nextItem?.let { vm.openItem(it) } },
             )
             Spacer(Modifier.height(96.dp))
         }

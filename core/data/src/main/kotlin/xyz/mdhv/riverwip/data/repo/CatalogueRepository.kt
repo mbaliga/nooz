@@ -72,7 +72,7 @@ class CatalogueRepository(
 
     suspend fun refresh(clock: () -> Long = { System.currentTimeMillis() }): RefreshResult {
         val url = observeCatalogueUrl().first()
-            ?: return RefreshResult.Failed("No catalogue URL set — set one to refresh Tier A/B definitions remotely.")
+            ?: return RefreshResult.Failed("No catalogue URL set; set one to refresh Tier A/B definitions remotely.")
         return try {
             val resp = http.get(url)
             if (!resp.isSuccess) return RefreshResult.Failed("HTTP ${resp.code}")

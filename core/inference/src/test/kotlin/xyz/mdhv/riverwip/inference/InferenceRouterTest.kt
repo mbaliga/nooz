@@ -108,4 +108,18 @@ class InferenceRouterTest {
         assertFalse(reason.contains("byok"))
         assertEquals(listOf("local-llama", "byok"), router.providerOrder)
     }
+
+    @Test fun hasAvailableProviderTrueWhenAnyProviderIsAvailable() = runTest {
+        val router = InferenceRouter(listOf(FakeProvider("urbana", false), FakeProvider("local-llama", true)))
+        assertTrue(router.hasAvailableProvider())
+    }
+
+    @Test fun hasAvailableProviderFalseWhenNoneAreAvailable() = runTest {
+        val router = InferenceRouter(listOf(FakeProvider("urbana", false), FakeProvider("local-llama", false)))
+        assertFalse(router.hasAvailableProvider())
+    }
+
+    @Test fun hasAvailableProviderFalseForEmptyOrder() = runTest {
+        assertFalse(InferenceRouter(emptyList()).hasAvailableProvider())
+    }
 }

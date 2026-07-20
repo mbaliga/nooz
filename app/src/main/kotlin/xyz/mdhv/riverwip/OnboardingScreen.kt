@@ -112,7 +112,7 @@ fun OnboardingScreen(
 @Composable
 private fun WelcomeStep(onQuick: () -> Unit, onAdvanced: () -> Unit, onSkip: () -> Unit) {
     Text(
-        "Read what's there — and notice what isn't.",
+        "Read what's there, and notice what isn't.",
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.onBackground,
     )
@@ -168,7 +168,7 @@ private fun AdvancedStep(
         ModeChip("Immersive", immersive) { immersive = true }
     }
     Text(
-        "Controls shown keeps an obvious back button and the utility bar. Immersive hides them for a bare page — swipe right to go back. You can change this any time in Settings.",
+        "Controls shown keeps an obvious back button and the utility bar. Immersive hides them for a bare page; swipe right to go back. You can change this any time in Settings.",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

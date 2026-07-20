@@ -111,7 +111,7 @@ class LensGuardTest {
         assertTrue(spans.any { it.term == "slammed" && it.category == BiasLexicon.Category.LOADED_VERB })
         assertTrue(spans.any { it.term == "shocking" && it.category == BiasLexicon.Category.EMOTIVE_ADJECTIVE })
         val slam = spans.first { it.term == "slammed" }
-        assertEquals("flagged: 'slammed' — loaded verb", slam.evidence)
+        assertEquals("flagged: 'slammed', loaded verb", slam.evidence)
         // Span offsets point at the real text.
         assertEquals("slammed", "Modi slammed the opposition in a shocking move.".substring(slam.start, slam.end))
     }
@@ -142,7 +142,7 @@ class LensGuardTest {
         val hit = spans.firstOrNull { it.term == "committee" }
         assertTrue(hit != null)
         assertEquals(BiasLexicon.Category.CUSTOM, hit!!.category)
-        assertEquals("flagged: 'committee' — custom", hit.evidence)
+        assertEquals("flagged: 'committee', custom", hit.evidence)
     }
 
     @Test fun blankAndWhitespaceCustomTermsAreIgnoredNotCrashed() {
