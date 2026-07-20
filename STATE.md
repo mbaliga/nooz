@@ -1108,11 +1108,17 @@ Marvel/Loki/TVA references anywhere (loom image guides form only, never copy).
   per decision D6 (launcher mipmaps + `fastlane/.../images/icon.png`). No
   longer reserved/open.
 - The applicationId/package — **`dev.asystemofcells.nooz`** — forced by the
-  owner's Play Console listing (2026-07-20); applied to `riverwip.packageBase`,
-  `AppInfo.PACKAGE_BASE`, and the `full` flavor's applicationIdSuffix (removed,
-  so `bundleFullRelease`'s AAB matches Play's registered package exactly). The
-  `foss`/F-Droid flavor keeps its own `.foss` suffix, and debug builds keep
-  `.debug` — only the Play-bound release id changed. No longer reserved/open.
-  Any device with an old `xyz.mdhv.riverwip.full`-signed test build installed
-  will need to uninstall it first — Android treats the new applicationId as a
+  owner's Play Console listing (2026-07-20); applied via a new
+  `riverwip.applicationId` property, `AppInfo.PACKAGE_BASE`, and the `full`
+  flavor's applicationIdSuffix (removed, so `bundleFullRelease`'s AAB matches
+  Play's registered package exactly). `riverwip.packageBase` — every module's
+  internal `namespace`, matching the actual `xyz.mdhv.riverwip` Kotlin package
+  declarations throughout the source tree — deliberately stays untouched; a
+  first attempt that repointed it at the new package broke every module's
+  generated-R resolution, since renaming *that* for real would mean moving
+  every module's Kotlin package + directory structure. The `foss`/F-Droid
+  flavor keeps its own `.foss` suffix, and debug builds keep `.debug` — only
+  the Play-bound release id changed. No longer reserved/open. Any device with
+  an old `xyz.mdhv.riverwip.full`-signed test build installed will need to
+  uninstall it first — Android treats the new applicationId as a
   different app, not an in-place update.

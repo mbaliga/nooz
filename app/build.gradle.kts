@@ -12,9 +12,13 @@ android {
 
     defaultConfig {
         // Final applicationId — dev.asystemofcells.nooz, as registered in Play
-        // Console. The `full` flavor below is deliberately left with no
-        // applicationIdSuffix so bundleFullRelease's AAB matches that exactly.
-        applicationId = "${property("riverwip.packageBase")}"
+        // Console. A separate property from riverwip.packageBase (used for
+        // `namespace` above and every other module): that one has to keep
+        // matching the actual xyz.mdhv.riverwip Kotlin package declarations
+        // across the source tree, or generated R classes stop resolving.
+        // The `full` flavor below is deliberately left with no
+        // applicationIdSuffix so bundleFullRelease's AAB matches this exactly.
+        applicationId = "${property("riverwip.applicationId")}"
         minSdk = 31
         targetSdk = 35
         versionCode = 1
