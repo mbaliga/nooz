@@ -1,4 +1,4 @@
-# river *(working name — final name RESERVED)*
+# Nooz
 
 A news reader whose subject is **omission**. It shows the shape of what flowed
 past — *from the sources you chose* — against the shape of what you actually read,
