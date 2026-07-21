@@ -168,6 +168,19 @@ fun ReaderScreen(
         }
     }
 
+    // The back button's mirror: an explicit settings control parks left the
+    // same way a real drag-and-commit does, rather than duplicating the drag
+    // rig's own math a second time.
+    fun openSettings() {
+        if (containerWidth <= 0) return
+        val range = dragRange()
+        scope.launch {
+            animate(offsetX, -range, animationSpec = tween(SETTLE_MS, easing = FastOutSlowInEasing)) { v, _ -> offsetX = v }
+            parkedRoom = ReaderRoom.SETTINGS
+            draggingRoom = null
+        }
+    }
+
     // Hardware back: parked → full, full → closed (→ parked home).
     BackHandler(enabled = selected != null) {
         if (parkedRoom != null) unpark() else vm.closeItem()
@@ -267,6 +280,7 @@ fun ReaderScreen(
             onToggleLens = onToggleLens,
             onToggleClip = { vm.toggleClip(sel) },
             onBack = { slideBack() },
+            onOpenSettings = { openSettings() },
             onRoomDragStart = { room -> draggingRoom = room },
             onDrag = { dx ->
                 val room = draggingRoom ?: parkedRoom

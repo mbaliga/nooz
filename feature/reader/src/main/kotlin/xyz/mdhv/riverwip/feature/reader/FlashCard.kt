@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.DisplayFontFamily
@@ -54,9 +55,14 @@ import java.util.Locale
  * away, never a second, ungrounded generation. "Play" reads the flash line
  * aloud via the device's own on-device text-to-speech engine — no network,
  * matching the feature's on-device-first stance.
+ *
+ * Owner's report: the "not configured" state read as broken, a dead-end card
+ * with no way forward. Its hint is now the actual door, not just a pointer to
+ * one — tapping it opens Settings' Reader intelligence section directly
+ * ([onOpenSetup]) rather than leaving the reader to find the menu themselves.
  */
 @Composable
-fun FlashCard(vm: ReaderViewModel, modifier: Modifier = Modifier) {
+fun FlashCard(vm: ReaderViewModel, onOpenSetup: () -> Unit, modifier: Modifier = Modifier) {
     val state by vm.flashState.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf(false) }
 
@@ -148,10 +154,13 @@ fun FlashCard(vm: ReaderViewModel, modifier: Modifier = Modifier) {
                 )
                 if (s.needsSetup) {
                     Text(
-                        "Add one in Settings › Reader intelligence.",
+                        "Set up an on-device model or connect an API →",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .clickable(onClickLabel = "Set up Nooz Flash") { onOpenSetup() }
+                            .padding(top = Tokens.Spacing.xxs),
                     )
                 }
             }

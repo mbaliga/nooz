@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,7 @@ import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.model.GlobeModel
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.Topic
@@ -235,13 +237,16 @@ fun ContrastPanel(
 }
 
 /**
- * The globe opened up (owner #6b): the world as a flat, *unwrapped* longitude
- * strip — no spinning, no gesture, just the map laid flat — each region shaded
- * by how much of your reading came from it. (An earlier pass here tried the
- * spinnable 3D globe instead; the owner clarified that wasn't the ask — "I
- * don't need it spinning, I want it unwrapped.") Below it, the region and
- * topic filter, moved here from Edit (owner #3): tap a region to aim there,
- * tap topics to narrow.
+ * The globe opened up (owner #6b): the same landmass dots [GlobeCanvas] spins
+ * as a sphere, laid flat instead — no spinning, no gesture, just the map
+ * unrolled — each dot shaded by how much of your reading came from its own
+ * region. (An earlier pass here tried the spinnable 3D globe instead; the
+ * owner clarified that wasn't the ask — "I don't need it spinning, I want it
+ * unwrapped." A later pass drew plain shaded rectangles per sector instead of
+ * the dots themselves — owner: "it just shows rectangles, that won't do" — so
+ * this reads it back off [GlobeModel.dots] directly, the same data the globe
+ * draws from.) Below it, the region and topic filter, moved here from Edit
+ * (owner #3): tap a region to aim there, tap topics to narrow.
  */
 @Composable
 private fun RegionsSection(
@@ -268,11 +273,17 @@ private fun RegionsSection(
 }
 
 /**
- * The read-by-region heatmap: the earth unrolled to a longitude bar, each
- * sector shaded by read volume. Always drawn with a full outline and visible
- * sector dividers — regardless of how faint the fill is at low read counts —
- * so the strip reads as a real control, not a rendering glitch (the earlier
- * version's near-zero-alpha fill at zero reads looked like nothing was there).
+ * The read-by-region heatmap: [GlobeModel.dots] — the exact same 6°-grid
+ * landmass dots [GlobeCanvas] projects onto a sphere — plotted instead onto a
+ * flat equirectangular strip (lon → x, lat → y), so this reads as the globe
+ * unrolled rather than an abstract row of shaded rectangles. Each dot's own
+ * sector is resolved with the same [Region.forLongitude] every other picker
+ * uses, so the antimeridian-wrapping Australia & Pacific sector needs no
+ * special-casing here — a dot's longitude alone decides its region and thus
+ * its shade. Always drawn with a full outline and sector dividers — regardless
+ * of how faint the shading is at low read counts — so the strip reads as a
+ * real control, not a rendering glitch (an earlier version's near-zero-alpha
+ * fill at zero reads looked like nothing was there).
  */
 @Composable
 private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Color) {
@@ -280,38 +291,41 @@ private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Colo
     Canvas(
         Modifier
             .fillMaxWidth()
-            .height(28.dp)
+            .aspectRatio(360f / 168f)
             .clip(RoundedCornerShape(Tokens.Radius.sm)),
     ) {
         val w = size.width
         val h = size.height
+        val dotRadius = 1.6.dp.toPx()
         fun x(lon: Double) = (((lon + 180.0) / 360.0) * w).toFloat()
-        fun fillAndDivide(fromLon: Double, toLon: Double, v: Int) {
-            val left = x(fromLon)
-            val right = x(toLon)
-            if (right <= left) return
-            val a = if (v == 0) 0f else 0.18f + 0.6f * (v.toFloat() / maxV)
-            if (a > 0f) drawRect(ink.copy(alpha = a), topLeft = Offset(left, 0f), size = Size(right - left, h))
-            drawLine(ink.copy(alpha = 0.22f), Offset(right, 0f), Offset(right, h), strokeWidth = 1.dp.toPx())
-        }
+        fun y(lat: Double) = (((84.0 - lat) / 168.0) * h).toFloat()
         fun outline(fromLon: Double, toLon: Double) {
             val left = x(fromLon)
             val right = x(toLon)
             drawRect(ink.copy(alpha = 0.75f), topLeft = Offset(left, 0f), size = Size((right - left).coerceAtLeast(2f), h), style = Stroke(1.5.dp.toPx()))
         }
+
+        // Ocean: a faint fill so the strip reads as a map, not empty space.
         drawRect(ink.copy(alpha = 0.05f), size = size)
+
+        // Sector dividers, one per region's own left edge (Australia &
+        // Pacific's wrap sliver shares Americas' left edge, -170°, so no
+        // separate divider is needed for it).
         for (r in Region.entries) {
             if (r == Region.GLOBAL) continue
-            fillAndDivide(r.fromLon, r.toLon, reads[r] ?: 0)
-            // Region.forLongitude() folds the antimeridian sliver [-180,
-            // Americas.fromLon) into Australia & Pacific too (a globe wraps;
-            // this enum's own from/toLon pair can't express that on its own)
-            // — without also filling/dividing it here, that sliver at the
-            // strip's own left edge belonged, visually, to no sector at all.
-            if (r == Region.AUSTRALIA_PACIFIC) {
-                fillAndDivide(-180.0, Region.AMERICAS.fromLon, reads[r] ?: 0)
-            }
+            drawLine(ink.copy(alpha = 0.22f), Offset(x(r.fromLon), 0f), Offset(x(r.fromLon), h), strokeWidth = 1.dp.toPx())
         }
+
+        // The land, dot by dot — shaded by its own sector's read volume,
+        // dimmed further outside the aimed sector.
+        for (dot in GlobeModel.dots) {
+            val region = Region.forLongitude(dot[0])
+            val v = reads[region] ?: 0
+            val heat = if (v == 0) 0.3f else 0.4f + 0.5f * (v.toFloat() / maxV)
+            val alpha = if (selected == Region.GLOBAL || region == selected) heat else heat * 0.35f
+            drawCircle(ink.copy(alpha = alpha), radius = dotRadius, center = Offset(x(dot[0]), y(dot[1])))
+        }
+
         // The strip's own bounds, always visible — the map's presence never
         // depends on there being any read data to shade it with.
         drawRect(ink.copy(alpha = 0.3f), size = size, style = Stroke(1.dp.toPx()))

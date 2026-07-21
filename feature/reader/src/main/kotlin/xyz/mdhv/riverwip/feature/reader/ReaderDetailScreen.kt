@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.CircularProgressIndicator
@@ -155,6 +156,7 @@ fun ReaderDetailScreen(
     onToggleLens: () -> Unit,
     onToggleClip: () -> Unit,
     onBack: () -> Unit,
+    onOpenSettings: () -> Unit,
     onRoomDragStart: (ReaderRoom) -> Unit,
     onDrag: (Float) -> Unit,
     onDragEnd: (velocityX: Float) -> Unit,
@@ -405,7 +407,11 @@ fun ReaderDetailScreen(
             // report) — the same gradient-fade-of-the-text treatment
             // [ReaderUtilityBar] already uses at the bottom, just inverted top
             // to bottom, keeps the control legible without ever hard-clipping
-            // the text beneath it.
+            // the text beneath it. The settings control mirrors it on the other
+            // side (owner: back is left, so settings should be its mirror on
+            // the right) — the same drag this scrim's left edge triggers
+            // (right → stand, left → settings) is now reachable without a
+            // gesture either way.
             if (!immersive) {
                 Box(
                     Modifier
@@ -423,6 +429,18 @@ fun ReaderDetailScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back to the stand",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    IconButton(
+                        onClick = onOpenSettings,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(Tokens.Spacing.xs),
+                    ) {
+                        Icon(
+                            Icons.Filled.Settings,
+                            contentDescription = "Open reader settings",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }

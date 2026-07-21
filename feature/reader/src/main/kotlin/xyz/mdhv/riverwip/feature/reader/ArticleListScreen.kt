@@ -307,7 +307,7 @@ fun ArticleListScreen(
         }
 
         if (noozFlashEnabled) {
-            FlashCard(vm = vm, modifier = Modifier.padding(horizontal = Tokens.Spacing.md))
+            FlashCard(vm = vm, onOpenSetup = onOpenEditSettings, modifier = Modifier.padding(horizontal = Tokens.Spacing.md))
         }
 
         // Immersive unread filter (owner's ask): pinch in shows only unread,

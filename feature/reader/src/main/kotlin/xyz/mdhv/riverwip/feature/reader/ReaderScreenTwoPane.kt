@@ -170,6 +170,11 @@ fun ReaderScreenTwoPane(
                     onToggleLens = onToggleLens,
                     onToggleClip = { vm.toggleClip(sel) },
                     onBack = { vm.closeItem() },
+                    // No separate "Settings room" to slide to here — both panes
+                    // are always on screen (owner's spec for this breakpoint) —
+                    // so the mirrored button opens the same Settings tab the
+                    // list pane's own gear reaches.
+                    onOpenSettings = onOpenEditSettings,
                     onRoomDragStart = {},
                     onDrag = {},
                     onDragEnd = {},
