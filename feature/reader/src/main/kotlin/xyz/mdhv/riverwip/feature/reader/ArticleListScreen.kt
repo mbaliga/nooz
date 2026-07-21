@@ -7,15 +7,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -510,17 +513,27 @@ private fun EmptyStand(
             // right edge sits flush with the screen's own edge, while the
             // needle itself — which the drawable draws left-of-centre within
             // its own bounds, not in the middle — lands on the screen's
-            // vertical centre line. NEEDLE_ILLUSTRATION_WIDTH_FRACTION is the
-            // one width where both are true at once.
-            Image(
-                painter = painterResource(R.drawable.img_no_sources),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .fillMaxWidth(NEEDLE_ILLUSTRATION_WIDTH_FRACTION)
-                    .clickable(enabled = !isRefreshing, onClickLabel = "Add sources") { onAdd() }
-                    .semantics { role = Role.Button },
-            )
+            // vertical centre line. Both the width and the aspect-derived
+            // height are computed explicitly here from BoxWithConstraints's
+            // own resolved maxWidth, rather than leaning on fillMaxWidth(
+            // fraction) plus Image's own implicit intrinsic-aspect sizing —
+            // a first version built that way rendered noticeably smaller and
+            // off-centre instead (owner: "illustration still not aligned"),
+            // so nothing about its size or position is left for Image or the
+            // Column to infer.
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val illustrationWidth = maxWidth * NEEDLE_ILLUSTRATION_WIDTH_FRACTION
+                Image(
+                    painter = painterResource(R.drawable.img_no_sources),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(illustrationWidth)
+                        .aspectRatio(NEEDLE_ILLUSTRATION_ASPECT_RATIO)
+                        .clickable(enabled = !isRefreshing, onClickLabel = "Add sources") { onAdd() }
+                        .semantics { role = Role.Button },
+                )
+            }
             if (isRefreshing) {
                 CircularProgressIndicator(
                     modifier = Modifier.padding(top = Tokens.Spacing.lg).size(28.dp),
@@ -570,6 +583,9 @@ private fun EmptyStand(
  * screen's own right edge) gives the fraction below.
  */
 private const val NEEDLE_ILLUSTRATION_WIDTH_FRACTION = 0.81f
+
+/** `img_no_sources`'s own raster is 640×479 — its exact width/height ratio, so `aspectRatio` reproduces it with zero letterboxing. */
+private const val NEEDLE_ILLUSTRATION_ASPECT_RATIO = 640f / 479f
 
 /**
  * The Stand's quick filter (owner: "filter... the globe with the segmented

@@ -254,13 +254,17 @@ fun RiverApp() {
                         onOpenEdit = onOpenEdit,
                         onOpenEditSettings = onOpenEditSettings,
                         // The reader's right room is the *compact* reading settings
-                        // (owner #2); "More settings" opens the full page.
+                        // (owner #2); "More settings" opens the Reader tab of
+                        // Edit itself now, not the standalone Settings page —
+                        // that page was a dead end with no tab bar of its own
+                        // (owner: "orphaned"), while Edit's Reader tab is the
+                        // exact same content, reachable from everywhere else.
                         settingsRoom = { onBack ->
                             SettingsScreen(
                                 vm = settingsVm,
                                 onBack = onBack,
                                 compact = true,
-                                onOpenAll = { screen = Screen.SETTINGS },
+                                onOpenAll = onOpenEditSettings,
                             )
                         },
                         onOpenLoom = onOpenLoom,

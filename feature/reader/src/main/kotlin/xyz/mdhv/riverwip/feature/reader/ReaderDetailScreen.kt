@@ -399,18 +399,33 @@ fun ReaderDetailScreen(
 
             // Owner's #22: an obvious back control, on by default. Immersive mode
             // hides it (and everything else fades into the gestures-only page).
+            // Sat directly over the scrolling text with nothing behind it, the
+            // arrow intersected whatever paragraph happened to scroll under it
+            // and the text itself cut off at a hard rectangular edge (owner's
+            // report) — the same gradient-fade-of-the-text treatment
+            // [ReaderUtilityBar] already uses at the bottom, just inverted top
+            // to bottom, keeps the control legible without ever hard-clipping
+            // the text beneath it.
             if (!immersive) {
-                IconButton(
-                    onClick = onBack,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(Tokens.Spacing.xs),
+                Box(
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .height(72.dp)
+                        .background(Brush.verticalGradient(listOf(background, background, Color.Transparent))),
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back to the stand",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(Tokens.Spacing.xs),
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to the stand",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }

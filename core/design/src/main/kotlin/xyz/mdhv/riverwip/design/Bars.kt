@@ -18,7 +18,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -104,7 +103,21 @@ fun CandyCaneBar(modifier: Modifier = Modifier, animate: Boolean = true) {
         val h = size.height
         val stripeW = h * 2.2f
         val period = stripeW * 2
-        clipRect {
+        // Same whole-bar rounded-capsule clip as DayMixBar (owner: "the
+        // corners are not rounded as they should be") — a plain clipRect
+        // left this one alone with hard square corners while every other
+        // state of this same bar reads as a single rounded capsule.
+        val radius = CornerRadius(h / 2f, h / 2f)
+        val silhouette = Path().apply {
+            addRoundRect(
+                RoundRect(
+                    left = 0f, top = 0f, right = size.width, bottom = h,
+                    topLeftCornerRadius = radius, topRightCornerRadius = radius,
+                    bottomRightCornerRadius = radius, bottomLeftCornerRadius = radius,
+                ),
+            )
+        }
+        clipPath(silhouette) {
             drawRect(ground, size = size)
             var x = -period + phase * period
             while (x < size.width + period) {

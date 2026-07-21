@@ -286,27 +286,43 @@ private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Colo
         val w = size.width
         val h = size.height
         fun x(lon: Double) = (((lon + 180.0) / 360.0) * w).toFloat()
-        drawRect(ink.copy(alpha = 0.05f), size = size)
-        for (r in Region.entries) {
-            if (r == Region.GLOBAL) continue
-            val left = x(r.fromLon)
-            val right = x(r.toLon)
-            if (right <= left) continue
-            val v = reads[r] ?: 0
+        fun fillAndDivide(fromLon: Double, toLon: Double, v: Int) {
+            val left = x(fromLon)
+            val right = x(toLon)
+            if (right <= left) return
             val a = if (v == 0) 0f else 0.18f + 0.6f * (v.toFloat() / maxV)
             if (a > 0f) drawRect(ink.copy(alpha = a), topLeft = Offset(left, 0f), size = Size(right - left, h))
             drawLine(ink.copy(alpha = 0.22f), Offset(right, 0f), Offset(right, h), strokeWidth = 1.dp.toPx())
+        }
+        fun outline(fromLon: Double, toLon: Double) {
+            val left = x(fromLon)
+            val right = x(toLon)
+            drawRect(ink.copy(alpha = 0.75f), topLeft = Offset(left, 0f), size = Size((right - left).coerceAtLeast(2f), h), style = Stroke(1.5.dp.toPx()))
+        }
+        drawRect(ink.copy(alpha = 0.05f), size = size)
+        for (r in Region.entries) {
+            if (r == Region.GLOBAL) continue
+            fillAndDivide(r.fromLon, r.toLon, reads[r] ?: 0)
+            // Region.forLongitude() folds the antimeridian sliver [-180,
+            // Americas.fromLon) into Australia & Pacific too (a globe wraps;
+            // this enum's own from/toLon pair can't express that on its own)
+            // — without also filling/dividing it here, that sliver at the
+            // strip's own left edge belonged, visually, to no sector at all.
+            if (r == Region.AUSTRALIA_PACIFIC) {
+                fillAndDivide(-180.0, Region.AMERICAS.fromLon, reads[r] ?: 0)
+            }
         }
         // The strip's own bounds, always visible — the map's presence never
         // depends on there being any read data to shade it with.
         drawRect(ink.copy(alpha = 0.3f), size = size, style = Stroke(1.dp.toPx()))
         // Outline the aimed sector (the whole strip when Global).
-        if (selected == Region.GLOBAL) {
-            drawRect(ink.copy(alpha = 0.6f), style = Stroke(1.5.dp.toPx()))
-        } else {
-            val left = x(selected.fromLon)
-            val right = x(selected.toLon)
-            drawRect(ink.copy(alpha = 0.75f), topLeft = Offset(left, 0f), size = Size((right - left).coerceAtLeast(2f), h), style = Stroke(1.5.dp.toPx()))
+        when (selected) {
+            Region.GLOBAL -> drawRect(ink.copy(alpha = 0.6f), style = Stroke(1.5.dp.toPx()))
+            Region.AUSTRALIA_PACIFIC -> {
+                outline(selected.fromLon, selected.toLon)
+                outline(-180.0, Region.AMERICAS.fromLon)
+            }
+            else -> outline(selected.fromLon, selected.toLon)
         }
     }
 }

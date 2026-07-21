@@ -194,8 +194,9 @@ private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
     // the Column to the text width via IntrinsicSize.Min (sized to the longest
     // *word*, so "Region & Topics" wrapped to three lines) then IntrinsicSize.Max
     // (still wrapped on-device). Drawing the rule inside the Text's own bounds
-    // sidesteps intrinsic measurement entirely — the line simply spans size.width,
-    // which is exactly the single-line text width (owner's #6, recurring).
+    // sidesteps intrinsic measurement entirely — no horizontal padding is ever
+    // added here, so size.width always matches the single-line text's own
+    // width exactly (owner's #6, recurring).
     val underline = MaterialTheme.colorScheme.onBackground
     Text(
         label,
@@ -205,13 +206,13 @@ private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
         maxLines = 1,
         softWrap = false,
         modifier = Modifier
-            .selectable(selected = active, role = Role.Tab, onClick = onClick)
-            // Still more air than before (owner: "the underline of the
-            // selected is still sticking to the selected text") — a visible
-            // gap between the text baseline and its own rule, and between
-            // that rule and the HorizontalDivider underneath, so all three
-            // read as separate.
-            .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg)
+            // drawBehind must wrap padding, not the other way around (owner:
+            // "the underline of the selected is still sticking to the
+            // selected text") — a modifier only sees the size of what's
+            // *inside* it, so with padding applied first, drawBehind's own
+            // `size` was just the bare text, never the padded box, and every
+            // extra bit of bottom padding only pushed the divider further
+            // away without ever moving the line off the text itself.
             .drawBehind {
                 if (active) {
                     val stroke = 3.dp.toPx()
@@ -223,7 +224,9 @@ private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
                         strokeWidth = stroke,
                     )
                 }
-            },
+            }
+            .selectable(selected = active, role = Role.Tab, onClick = onClick)
+            .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg),
     )
 }
 
