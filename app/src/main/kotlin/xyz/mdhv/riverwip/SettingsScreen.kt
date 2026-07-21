@@ -295,6 +295,11 @@ fun SettingsBody(
     compact: Boolean,
     onOpenAll: () -> Unit = {},
     onOpenLensWordList: () -> Unit = {},
+    // Off when Edit's own "About" tab already covers it (owner: About needs
+    // to be its own tab), so it isn't shown twice in that context; the
+    // standalone Settings page (reached via "More settings") has no tabs to
+    // put a separate one in, so it keeps the default of showing it inline.
+    showAbout: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
@@ -586,9 +591,11 @@ fun SettingsBody(
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 YourDataSection(vm)
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-                AboutSection()
+                if (showAbout) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    AboutSection()
+                }
             }
         }
 }
@@ -1001,7 +1008,7 @@ private fun YourDataSection(vm: SettingsViewModel) {
  * at the studio and its siblings — quietly, no tracking, just links.
  */
 @Composable
-private fun AboutSection() {
+internal fun AboutSection() {
     val uriHandler = LocalUriHandler.current
     SectionHeading("About")
     Text(
@@ -1042,6 +1049,27 @@ private fun AboutSection() {
                 modifier = Modifier.size(18.dp),
             )
         }
+    }
+}
+
+/**
+ * [AboutSection] on its own scrollable page — Edit's dedicated "About" tab
+ * (owner: it needs to be a separate tab, not buried at the bottom of the
+ * Reader tab's long scroll). [AboutSection] itself stays a bare fragment, no
+ * scroll or padding of its own, since [SettingsBody] still embeds it inline
+ * too when [SettingsBody]'s `showAbout` is true — the standalone Settings
+ * page reached via "More settings" has no tabs to put a separate one in.
+ */
+@Composable
+internal fun AboutTab(modifier: Modifier = Modifier) {
+    Column(
+        modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+    ) {
+        AboutSection()
     }
 }
 

@@ -76,17 +76,19 @@ import xyz.mdhv.riverwip.model.ServiceDef
 import xyz.mdhv.riverwip.model.Topic
 import xyz.mdhv.riverwip.model.toSourceOrNull
 
-enum class EditTab { SOURCES, REGION_TOPICS, SETTINGS }
+enum class EditTab { SOURCES, REGION_TOPICS, SETTINGS, ABOUT }
 
 /**
- * Nooz EDIT (owner's mocks + flow map, extended 2026-07): three tabs. Sources:
+ * Nooz EDIT (owner's mocks + flow map, extended 2026-07): four tabs. Sources:
  * one-click starters with check-circle toggles and add-by-URL with an honest
  * error state; Region & Topics: the globe, the topic chips, and the metrics
  * block (coverage, breadth, per-topic over/under, every number
  * tap-explained); Reader (labeled "Settings" until the owner's rename): the
  * full app settings, shown here directly rather than behind a separate gear
- * (owner: "it needn't be in the settings cog"). [settingsTab] is a
- * caller-supplied slot (the same pattern as
+ * (owner: "it needn't be in the settings cog"); About: the studio/app info,
+ * pulled out into its own tab rather than buried at the bottom of Reader's
+ * long scroll (owner: "About needs to be a separate tab"). [settingsTab] and
+ * [aboutTab] are caller-supplied slots (the same pattern as
  * [xyz.mdhv.riverwip.feature.reader.ReaderScreen]'s `settingsRoom`) so this
  * feature module never needs a dependency on wherever Settings actually
  * lives. DONE saves the filter draft and returns to the Stand.
@@ -96,6 +98,7 @@ fun EditScreen(
     vm: SourcesViewModel,
     onDone: () -> Unit,
     settingsTab: @Composable () -> Unit,
+    aboutTab: @Composable () -> Unit,
     startTab: EditTab = EditTab.SOURCES,
 ) {
     var tab by rememberSaveable { mutableStateOf(startTab) }
@@ -158,6 +161,8 @@ fun EditScreen(
             TabLabel("Region & Topics", tab == EditTab.REGION_TOPICS) { tab = EditTab.REGION_TOPICS }
             Spacer(Modifier.width(Tokens.Spacing.xl))
             TabLabel("Reader", tab == EditTab.SETTINGS) { tab = EditTab.SETTINGS }
+            Spacer(Modifier.width(Tokens.Spacing.xl))
+            TabLabel("About", tab == EditTab.ABOUT) { tab = EditTab.ABOUT }
         }
         // More air above the rule than before (owner: "the line is sticking too
         // close to the headers") — enough that it reads as a column-header rule
@@ -176,6 +181,7 @@ fun EditScreen(
                 onTopics = { draftTopics = it },
             )
             EditTab.SETTINGS -> settingsTab()
+            EditTab.ABOUT -> aboutTab()
         }
     }
 }
@@ -200,11 +206,12 @@ private fun TabLabel(label: String, active: Boolean, onClick: () -> Unit) {
         softWrap = false,
         modifier = Modifier
             .selectable(selected = active, role = Role.Tab, onClick = onClick)
-            // More air than before (owner: "the underline beneath the sources
-            // etc is too close, making it cramped") — a visible gap between the
-            // text baseline and its rule, and between that rule and the
-            // HorizontalDivider underneath, so the two lines read as separate.
-            .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.md)
+            // Still more air than before (owner: "the underline of the
+            // selected is still sticking to the selected text") — a visible
+            // gap between the text baseline and its own rule, and between
+            // that rule and the HorizontalDivider underneath, so all three
+            // read as separate.
+            .padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg)
             .drawBehind {
                 if (active) {
                     val stroke = 3.dp.toPx()

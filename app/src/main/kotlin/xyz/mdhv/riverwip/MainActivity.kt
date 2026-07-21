@@ -288,8 +288,13 @@ fun RiverApp() {
                             vm = settingsVm,
                             compact = false,
                             onOpenLensWordList = { screen = Screen.LENS_WORDS },
+                            // About is its own Edit tab now (below); showing
+                            // it again at the bottom of this one would just
+                            // duplicate it.
+                            showAbout = false,
                         )
                     },
+                    aboutTab = { AboutTab() },
                 )
                 Screen.SETTINGS -> SettingsScreen(
                     vm = settingsVm,
