@@ -663,31 +663,25 @@ private fun CrashSection() {
 @Composable
 private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
     val config = vm.byokConfig
-    var expanded by remember { mutableStateOf(config.isComplete) }
     var modelPath by remember(config.isComplete) {
         mutableStateOf(if (config.isComplete) ModelPath.BYOK else ModelPath.ON_DEVICE)
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { expanded = !expanded }
-            .padding(vertical = Tokens.Spacing.xs),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            SectionHeading("Reader intelligence")
+    // No expand/collapse here (owner: "it feels like I am already in the
+    // reader intelligence setting so there's nothing to expand") — Flash and
+    // Cast's own toggles were already unconditionally visible below this
+    // header regardless of a since-removed `expanded` flag, so the fold only
+    // ever hid the shared model panel beneath them; that partial hide was
+    // the confusing part, not a real need to save space on this one tab.
+    Column(Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs)) {
+        SectionHeading("Reader intelligence")
+        if (config.isComplete) {
             Text(
-                if (config.isComplete) "Bring-your-own-key: ${config.model}" else "On-device first · three ways to add more",
+                "Bring-your-own-key: ${config.model}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Icon(
-            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-            contentDescription = if (expanded) "Collapse intelligence" else "Expand intelligence",
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
     Row(
         modifier = Modifier
@@ -739,42 +733,40 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
         }
         Switch(checked = settings.noozCastEnabled, onCheckedChange = null)
     }
-    if (expanded) {
-        val catalogue by vm.modelCatalogue.collectAsStateWithLifecycle()
-        ModelChoicePanel(
-            path = modelPath,
-            onPathChange = { modelPath = it },
-            byokConfig = config,
-            onSaveByok = { url, key, model -> vm.saveByok(url, key, model) },
-            onClearByok = { vm.clearByok() },
-            download = ModelDownloadUi(
-                models = vm.downloadableModels(catalogue),
-                downloadStates = vm.modelDownloadStates,
-                isDownloaded = { vm.isModelDownloaded(it) },
-                onDownload = { vm.downloadModel(it) },
-                onDelete = { vm.deleteModel(it) },
-                onRefresh = { vm.refreshModelCatalogue() },
-                refreshing = vm.modelCatalogueRefreshing,
-                error = vm.modelCatalogueError,
-            ),
-        )
-        // Cast has no on-device/BYOK trichotomy — a private anchor voice never
-        // leaves the device — so its own model gets only the download list,
-        // scoped to its own kind rather than Flash's LLM_GGUF default.
-        SectionHeading("Nooz Cast model", modifier = Modifier.padding(top = Tokens.Spacing.md))
-        ModelDownloadList(
-            ModelDownloadUi(
-                models = vm.downloadableModels(catalogue, kind = "TTS_ONNX"),
-                downloadStates = vm.modelDownloadStates,
-                isDownloaded = { vm.isModelDownloaded(it) },
-                onDownload = { vm.downloadModel(it) },
-                onDelete = { vm.deleteModel(it) },
-                onRefresh = { vm.refreshModelCatalogue() },
-                refreshing = vm.modelCatalogueRefreshing,
-                error = vm.modelCatalogueError,
-            ),
-        )
-    }
+    val catalogue by vm.modelCatalogue.collectAsStateWithLifecycle()
+    ModelChoicePanel(
+        path = modelPath,
+        onPathChange = { modelPath = it },
+        byokConfig = config,
+        onSaveByok = { url, key, model -> vm.saveByok(url, key, model) },
+        onClearByok = { vm.clearByok() },
+        download = ModelDownloadUi(
+            models = vm.downloadableModels(catalogue),
+            downloadStates = vm.modelDownloadStates,
+            isDownloaded = { vm.isModelDownloaded(it) },
+            onDownload = { vm.downloadModel(it) },
+            onDelete = { vm.deleteModel(it) },
+            onRefresh = { vm.refreshModelCatalogue() },
+            refreshing = vm.modelCatalogueRefreshing,
+            error = vm.modelCatalogueError,
+        ),
+    )
+    // Cast has no on-device/BYOK trichotomy — a private anchor voice never
+    // leaves the device — so its own model gets only the download list,
+    // scoped to its own kind rather than Flash's LLM_GGUF default.
+    SectionHeading("Nooz Cast model", modifier = Modifier.padding(top = Tokens.Spacing.md))
+    ModelDownloadList(
+        ModelDownloadUi(
+            models = vm.downloadableModels(catalogue, kind = "TTS_ONNX"),
+            downloadStates = vm.modelDownloadStates,
+            isDownloaded = { vm.isModelDownloaded(it) },
+            onDownload = { vm.downloadModel(it) },
+            onDelete = { vm.deleteModel(it) },
+            onRefresh = { vm.refreshModelCatalogue() },
+            refreshing = vm.modelCatalogueRefreshing,
+            error = vm.modelCatalogueError,
+        ),
+    )
 }
 
 /**
