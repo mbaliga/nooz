@@ -24,6 +24,17 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // onnxruntime-android (Nooz Cast) bundles a real native libonnxruntime.so
+        // per ABI — confirmed by inspecting the .aar: arm64-v8a ~27MB,
+        // armeabi-v7a ~20MB, x86 ~34MB, x86_64 ~34MB. x86/x86_64 only matter for
+        // emulators and a vanishing sliver of x86 Chromebooks; no real phone or
+        // tablet this app targets runs them, so excluding them here drops ~68MB
+        // of dead weight from every build (including the debug APKs handed out
+        // for testing, which aren't ABI-split the way the release .aab is).
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     // Two flavors: `foss` (F-Droid-eligible; zero proprietary/Play deps) and

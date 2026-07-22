@@ -114,7 +114,7 @@ enum class ImageStyle(val key: String, val label: String) {
 
     companion object {
         private val byKey = entries.associateBy(ImageStyle::key)
-        fun fromKey(key: String?): ImageStyle = byKey[key] ?: COLOR
+        fun fromKey(key: String?): ImageStyle = byKey[key] ?: HALFTONE
     }
 }
 
@@ -188,7 +188,7 @@ data class AppSettings(
      * exactly as both of those specs themselves define it.
      */
     val hideNsfwImages: Boolean = false,
-    val imageStyle: ImageStyle = ImageStyle.COLOR,
+    val imageStyle: ImageStyle = ImageStyle.HALFTONE,
     /**
      * Advanced settings (owner's ask): the reading lens's default loaded-word
      * / editorial-hedging terms a reader has individually turned off, by the
