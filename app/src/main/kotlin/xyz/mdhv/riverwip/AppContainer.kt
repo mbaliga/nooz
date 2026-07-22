@@ -82,7 +82,7 @@ class AppContainer(appContext: Context) {
      * into (see its own `fileFor()` — files are told apart by name, not by
      * directory).
      */
-    val ttsProvider: TtsProvider = LocalKokoroTtsProvider(File(appContext.filesDir, "models"))
+    val ttsProvider: TtsProvider = LocalKokoroTtsProvider(appContext, File(appContext.filesDir, "models"))
 
     /** The user's own OpenAI-compatible endpoint config (BYOK, #18). Shared with the provider by prefs name. */
     val byokConfigStore: ByokConfigStore = ByokConfigStore(appContext)
