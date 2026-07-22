@@ -121,6 +121,7 @@ private fun emptyBody(enabledCount: Int, isRefreshing: Boolean, last: RefreshRes
 fun ArticleListScreen(
     vm: ReaderViewModel,
     noozFlashEnabled: Boolean,
+    noozCastEnabled: Boolean,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
     showFeedImages: Boolean,
@@ -306,9 +307,13 @@ fun ArticleListScreen(
             }
         }
 
-        if (noozFlashEnabled) {
-            FlashCard(vm = vm, onOpenSetup = onOpenEditSettings, modifier = Modifier.padding(horizontal = Tokens.Spacing.md))
-        }
+        NoozBroadcastCard(
+            vm = vm,
+            noozFlashEnabled = noozFlashEnabled,
+            noozCastEnabled = noozCastEnabled,
+            onOpenSetup = onOpenEditSettings,
+            modifier = Modifier.padding(horizontal = Tokens.Spacing.md),
+        )
 
         // Immersive unread filter (owner's ask): pinch in shows only unread,
         // pinch out shows everything again. Observes raw pointer positions on

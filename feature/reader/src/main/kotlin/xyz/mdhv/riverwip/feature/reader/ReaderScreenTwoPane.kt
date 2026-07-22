@@ -52,6 +52,7 @@ fun ReaderScreenTwoPane(
     highlightLoadedLanguage: Boolean,
     immersiveReader: Boolean,
     noozFlashEnabled: Boolean,
+    noozCastEnabled: Boolean,
     paperGrain: PaperGrain,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
@@ -96,6 +97,7 @@ fun ReaderScreenTwoPane(
             ArticleListScreen(
                 vm = vm,
                 noozFlashEnabled = noozFlashEnabled,
+                noozCastEnabled = noozCastEnabled,
                 readMarkStyle = readMarkStyle,
                 unreadPinchFilter = unreadPinchFilter,
                 showFeedImages = showFeedImages,

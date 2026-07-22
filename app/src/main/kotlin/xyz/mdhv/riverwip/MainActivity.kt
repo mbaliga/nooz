@@ -85,6 +85,7 @@ fun RiverApp() {
             clippingRepository = container.clippingRepository,
             settingsRepository = container.settingsRepository,
             flashRouter = container.flashRouter,
+            ttsProvider = container.ttsProvider,
         ),
     )
     val lensVm: LensViewModel = viewModel(
@@ -219,6 +220,7 @@ fun RiverApp() {
                         highlightLoadedLanguage = settings.highlightLoadedLanguage,
                         immersiveReader = settings.immersiveReader,
                         noozFlashEnabled = settings.noozFlashEnabled,
+                        noozCastEnabled = settings.noozCastEnabled,
                         paperGrain = settings.paperGrain,
                         readMarkStyle = settings.readMarkStyle,
                         unreadPinchFilter = settings.unreadPinchFilter,
@@ -242,6 +244,7 @@ fun RiverApp() {
                         highlightLoadedLanguage = settings.highlightLoadedLanguage,
                         immersiveReader = settings.immersiveReader,
                         noozFlashEnabled = settings.noozFlashEnabled,
+                        noozCastEnabled = settings.noozCastEnabled,
                         paperGrain = settings.paperGrain,
                         readMarkStyle = settings.readMarkStyle,
                         unreadPinchFilter = settings.unreadPinchFilter,

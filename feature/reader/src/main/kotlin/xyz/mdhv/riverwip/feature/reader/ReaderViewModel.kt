@@ -25,6 +25,9 @@ import xyz.mdhv.riverwip.inference.DigestRequest
 import xyz.mdhv.riverwip.inference.DigestResult
 import xyz.mdhv.riverwip.inference.InferenceRouter
 import xyz.mdhv.riverwip.inference.Provenance
+import xyz.mdhv.riverwip.inference.SynthesisRequest
+import xyz.mdhv.riverwip.inference.SynthesisResult
+import xyz.mdhv.riverwip.inference.TtsProvider
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.DwellBucket
@@ -34,6 +37,7 @@ import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.Starters
 import xyz.mdhv.riverwip.model.Topic
 import xyz.mdhv.riverwip.model.WeekBucketing
+import java.io.File
 
 /** The reader's article state, once a reading session has begun. */
 sealed interface ArticleUiState {
@@ -59,6 +63,26 @@ sealed interface FlashUiState {
 }
 
 /**
+ * Nooz Cast's state (owner's ask: a natural on-device narrator for the full
+ * body, not the robotic system-TTS "Play" [FlashCard] already has) — mirrors
+ * [FlashUiState]'s exact shape since it's the same "tap, then wait, then
+ * either a result or an honest reason" contract, just over a different
+ * provider with no cloud fallback at all.
+ */
+sealed interface CastUiState {
+    data object Idle : CastUiState
+    data object Loading : CastUiState
+    /** [audioFile] is the rendered narration — always [Provenance.NATIVE]; Cast has no cloud path to mark otherwise (owner: "a private anchor voice should never leave the device"). */
+    data class Ready(val audioFile: File, val provenance: Provenance) : CastUiState
+    /**
+     * The provider ran but declined or errored — never silent (brief §3).
+     * [needsSetup] distinguishes "the narration model isn't downloaded yet"
+     * (actionable — point at Settings) from a genuine runtime error.
+     */
+    data class Unavailable(val reason: String, val needsSetup: Boolean = false) : CastUiState
+}
+
+/**
  * Shared between the upfront preflight check ([ReaderViewModel.init]) and
  * [ReaderViewModel.requestFlash]'s own post-tap failure, so the reader sees
  * the identical line either way it gets shown (owner's ask: this should be
@@ -66,6 +90,9 @@ sealed interface FlashUiState {
  * bolt for the icon half of that).
  */
 private const val FLASH_NOT_CONFIGURED_REASON = "Nooz Flash won't work until a model or API key is configured."
+
+/** Cast's own gate — Kokoro is a wholly different, independently-downloaded model class from whatever LLM [ReaderViewModel.flashState] uses. */
+private const val CAST_NOT_CONFIGURED_REASON = "Nooz Cast won't work until the on-device narration model is downloaded."
 
 /** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
 data class RefreshResult(
@@ -86,6 +113,7 @@ class ReaderViewModel(
     private val clippingRepository: ClippingRepository,
     private val settingsRepository: SettingsRepository,
     private val flashRouter: InferenceRouter,
+    private val ttsProvider: TtsProvider,
     private val clock: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
 
@@ -253,6 +281,44 @@ class ReaderViewModel(
         }
     }
 
+    private val _castState = MutableStateFlow<CastUiState>(CastUiState.Idle)
+
+    /**
+     * Nooz Cast (owner's ask): narrates whichever article is currently open
+     * or resting ([articleState]) in a natural on-device voice — the full
+     * body, not [flashState]'s ten-word line. [ttsProvider] is a single
+     * on-device provider, never a router: Cast has no BYOK/cloud fallback at
+     * all (owner: "a private anchor voice should never leave the device").
+     */
+    val castState: StateFlow<CastUiState> = _castState
+
+    fun requestCast() {
+        if (_castState.value is CastUiState.Loading) return
+        viewModelScope.launch {
+            _castState.value = CastUiState.Loading
+            if (!ttsProvider.isAvailable()) {
+                _castState.value = CastUiState.Unavailable(CAST_NOT_CONFIGURED_REASON, needsSetup = true)
+                return@launch
+            }
+            val body = currentArticleBody()
+            if (body.isNullOrBlank()) {
+                _castState.value = CastUiState.Unavailable("Open an article to narrate it.")
+                return@launch
+            }
+            _castState.value = when (val result = ttsProvider.synthesize(SynthesisRequest(body))) {
+                is SynthesisResult.Success -> CastUiState.Ready(result.audioFile, result.provenance)
+                is SynthesisResult.Failed -> CastUiState.Unavailable(result.reason)
+            }
+        }
+    }
+
+    /** The open/resting article's full text — Cast's input, falling back to the feed summary only if the real body never loaded. */
+    private fun currentArticleBody(): String? = when (val s = _articleState.value) {
+        is ArticleUiState.Loaded -> s.paragraphs.joinToString("\n\n")
+        is ArticleUiState.Fallback -> s.summary
+        is ArticleUiState.Loading -> null
+    }
+
     private val _isRefreshing = MutableStateFlow(false)
     /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
@@ -279,6 +345,13 @@ class ReaderViewModel(
         viewModelScope.launch {
             if (!flashRouter.hasAvailableProvider() && _flashState.value == FlashUiState.Idle) {
                 _flashState.value = FlashUiState.Unavailable(FLASH_NOT_CONFIGURED_REASON, needsSetup = true)
+            }
+        }
+        // Nooz Cast gets the same upfront honesty as Flash, above — its own
+        // gate, since Kokoro is a separate, independently-downloaded model.
+        viewModelScope.launch {
+            if (!ttsProvider.isAvailable() && _castState.value == CastUiState.Idle) {
+                _castState.value = CastUiState.Unavailable(CAST_NOT_CONFIGURED_REASON, needsSetup = true)
             }
         }
     }
@@ -384,6 +457,7 @@ class ReaderViewModel(
         private val clippingRepository: ClippingRepository,
         private val settingsRepository: SettingsRepository,
         private val flashRouter: InferenceRouter,
+        private val ttsProvider: TtsProvider,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -396,6 +470,7 @@ class ReaderViewModel(
                 clippingRepository,
                 settingsRepository,
                 flashRouter,
+                ttsProvider,
             ) as T
     }
 }

@@ -118,7 +118,8 @@ class SettingsViewModel(
     var modelCatalogueError: String? by mutableStateOf(null)
         private set
 
-    fun downloadableModels(models: List<CatalogueModel>): List<CatalogueModel> = modelCatalogueRepo.downloadable(models)
+    fun downloadableModels(models: List<CatalogueModel>, kind: String = "LLM_GGUF"): List<CatalogueModel> =
+        modelCatalogueRepo.downloadable(models, kind)
 
     /** Cheap file-existence check — called straight from composition, no cached/stale copy to keep in sync. */
     fun isModelDownloaded(model: CatalogueModel): Boolean = modelCatalogueRepo.isDownloaded(model)
@@ -188,6 +189,7 @@ class SettingsViewModel(
     fun setTwoFingerThemeFlick(on: Boolean) = viewModelScope.launch { repo.setTwoFingerThemeFlick(on) }
     fun completeOnboarding() = viewModelScope.launch { repo.setOnboarded(true) }
     fun setNoozFlashEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozFlashEnabled(on) }
+    fun setNoozCastEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozCastEnabled(on) }
     fun setPaperGrain(grain: PaperGrain) = viewModelScope.launch { repo.setPaperGrain(grain) }
     fun setReadMarkStyle(style: ReadMarkStyle) = viewModelScope.launch { repo.setReadMarkStyle(style) }
     fun setUnreadPinchFilter(enabled: Boolean) = viewModelScope.launch { repo.setUnreadPinchFilter(enabled) }
@@ -712,6 +714,31 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
         }
         Switch(checked = settings.noozFlashEnabled, onCheckedChange = null)
     }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(
+                value = settings.noozCastEnabled,
+                onValueChange = { vm.setNoozCastEnabled(it) },
+                role = Role.Switch,
+            )
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                "Nooz Cast",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                "The full article read aloud in a natural on-device voice, never the robotic system reader. Its own model, downloaded separately from Flash's.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(checked = settings.noozCastEnabled, onCheckedChange = null)
+    }
     if (expanded) {
         val catalogue by vm.modelCatalogue.collectAsStateWithLifecycle()
         ModelChoicePanel(
@@ -722,6 +749,22 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
             onClearByok = { vm.clearByok() },
             download = ModelDownloadUi(
                 models = vm.downloadableModels(catalogue),
+                downloadStates = vm.modelDownloadStates,
+                isDownloaded = { vm.isModelDownloaded(it) },
+                onDownload = { vm.downloadModel(it) },
+                onDelete = { vm.deleteModel(it) },
+                onRefresh = { vm.refreshModelCatalogue() },
+                refreshing = vm.modelCatalogueRefreshing,
+                error = vm.modelCatalogueError,
+            ),
+        )
+        // Cast has no on-device/BYOK trichotomy — a private anchor voice never
+        // leaves the device — so its own model gets only the download list,
+        // scoped to its own kind rather than Flash's LLM_GGUF default.
+        SectionHeading("Nooz Cast model", modifier = Modifier.padding(top = Tokens.Spacing.md))
+        ModelDownloadList(
+            ModelDownloadUi(
+                models = vm.downloadableModels(catalogue, kind = "TTS_ONNX"),
                 downloadStates = vm.modelDownloadStates,
                 isDownloaded = { vm.isModelDownloaded(it) },
                 onDownload = { vm.downloadModel(it) },

@@ -153,6 +153,14 @@ data class AppSettings(
      * everything that flowed, not a one-off the reader asked for.
      */
     val noozFlashEnabled: Boolean = false,
+    /**
+     * Nooz Cast (owner's ask): the full article read aloud in a natural
+     * on-device voice, never the robotic system TTS. Gated independently of
+     * Flash — its own model (Kokoro), its own download prompt, since one
+     * being ready says nothing about the other. Off by default, same as
+     * every reader-intelligence tool.
+     */
+    val noozCastEnabled: Boolean = false,
     val paperGrain: PaperGrain = PaperGrain.NONE,
     /** How a read article marks itself in the list (owner's ask). */
     val readMarkStyle: ReadMarkStyle = ReadMarkStyle.GREYED,

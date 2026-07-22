@@ -14,6 +14,7 @@ datastore = "1.1.1"
 workManager = "2.10.0"
 jsoup = "1.18.3"
 coil = "2.7.0"
+onnxruntime = "1.27.0"
 kotlinxSerialization = "1.7.3"
 kotlinxSerializationPlugin = "2.0.21"
 junit = "4.13.2"
@@ -69,6 +70,9 @@ jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 # Feed images
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+
+# On-device TTS (Nooz Cast — Kokoro ONNX inference)
+onnxruntime-android = { module = "com.microsoft.onnxruntime:onnxruntime-android", version.ref = "onnxruntime" }
 
 # Testing
 junit = { module = "junit:junit", version.ref = "junit" }

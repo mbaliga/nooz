@@ -18,7 +18,9 @@ import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
 import xyz.mdhv.riverwip.inference.InferenceProvider
 import xyz.mdhv.riverwip.inference.InferenceRouter
 import xyz.mdhv.riverwip.inference.ProviderFactory
+import xyz.mdhv.riverwip.inference.TtsProvider
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
+import xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider
 
 /**
  * The manual DI composition root (house style: constructor injection, no
@@ -69,6 +71,18 @@ class AppContainer(appContext: Context) {
             inferenceProviders.find { it.id == "byok" },
         ),
     )
+
+    /**
+     * Nooz Cast (owner: "if the on-device model exists... enable Nooz Cast as
+     * well - unless that required a specific TTS model, in which case the
+     * same compulsion must exist") — Kokoro is a different model class than
+     * whatever LLM [flashRouter] uses, downloaded and gated independently
+     * through its own catalogue entries, but landing in the same flat
+     * `models/` directory [modelCatalogueRepository] downloads everything
+     * into (see its own `fileFor()` — files are told apart by name, not by
+     * directory).
+     */
+    val ttsProvider: TtsProvider = LocalKokoroTtsProvider(File(appContext.filesDir, "models"))
 
     /** The user's own OpenAI-compatible endpoint config (BYOK, #18). Shared with the provider by prefs name. */
     val byokConfigStore: ByokConfigStore = ByokConfigStore(appContext)

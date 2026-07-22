@@ -30,6 +30,8 @@ data class CatalogueModel(
     val policySafe: Boolean = true,
     val verifiedAt: String? = null,
     val note: String? = null,
+    /** Links companion files that must all be present together, e.g. a TTS model plus its required voice pack. */
+    val groupId: String? = null,
 )
 
 @Serializable
@@ -51,9 +53,10 @@ sealed interface ModelDownloadState {
  * `ai-catalogue/models.json` — this repo's own honestly-maintained, live-probed
  * catalogue (see `ai-catalogue/README.md`) — instead of the placeholder,
  * always-empty entries the lens's on-device provider used to hardcode. Only
- * `policySafe` `LLM_GGUF` entries with a verified `downloadUrl` are ever
- * offered; a `null` URL is never rendered as "downloadable" (the catalogue's
- * own honesty rule 4).
+ * `policySafe` entries of the requested `kind` (default `LLM_GGUF`; Nooz Cast
+ * asks for `TTS_ONNX` instead, its own independent gate) with a verified
+ * `downloadUrl` are ever offered; a `null` URL is never rendered as
+ * "downloadable" (the catalogue's own honesty rule 4).
  *
  * A bundled snapshot is the offline/first-run default; refreshing is an
  * explicit, user-initiated action (never automatic), matching the catalogue's
@@ -85,9 +88,9 @@ class ModelCatalogueRepository(
         }
     }.getOrDefault(CatalogueFile())
 
-    /** Only what this app can actually offer: real LLM weights, official/licensed, a verified mirror. */
-    fun downloadable(models: List<CatalogueModel>): List<CatalogueModel> =
-        models.filter { it.kind == "LLM_GGUF" && it.policySafe && !it.downloadUrl.isNullOrBlank() }
+    /** Only what this app can actually offer for [kind]: official/licensed weights, a verified mirror. */
+    fun downloadable(models: List<CatalogueModel>, kind: String = "LLM_GGUF"): List<CatalogueModel> =
+        models.filter { it.kind == kind && it.policySafe && !it.downloadUrl.isNullOrBlank() }
 
     suspend fun refresh(clock: () -> Long = { System.currentTimeMillis() }): Result<Int> = withContext(Dispatchers.IO) {
         runCatching {
@@ -105,7 +108,10 @@ class ModelCatalogueRepository(
     // ---- download / delete ----
 
     private fun modelsDir() = File(context.filesDir, "models").apply { mkdirs() }
-    fun fileFor(model: CatalogueModel): File = File(modelsDir(), "${model.id}.gguf")
+
+    /** Extension follows the real download, not a hardcoded assumption — GGUF isn't the only [CatalogueModel.kind] on disk anymore (e.g. Kokoro's `.onnx`/`.bin`). */
+    fun fileFor(model: CatalogueModel): File =
+        File(modelsDir(), "${model.id}.${model.downloadUrl?.substringAfterLast('.', "bin") ?: "bin"}")
     fun isDownloaded(model: CatalogueModel): Boolean = fileFor(model).exists()
 
     /** Bytes free where the model would land, so a multi-gigabyte download can be refused honestly up front. */

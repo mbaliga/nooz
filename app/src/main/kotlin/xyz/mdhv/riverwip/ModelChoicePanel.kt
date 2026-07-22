@@ -61,8 +61,10 @@ data class ModelDownloadUi(
  * - **On-device**: the default, nothing to configure — stated plainly that
  *   this build has no local model *runtime* wired in yet (downloading a model
  *   here doesn't change that; it just has the weights ready for when it is).
- * - **Download a model**: the catalogue's real, policy-safe LLM entries —
- *   sized, one tap, a real progress bar, a real file on disk afterward.
+ * - **Download a model**: the catalogue's real, policy-safe entries for
+ *   whichever `kind` the caller asked for (LLM weights for the lens, Kokoro's
+ *   ONNX files for Nooz Cast) — sized, one tap, a real progress bar, a real
+ *   file on disk afterward.
  * - **Bring your own key**: the one path that runs end-to-end today.
  */
 @Composable
@@ -83,7 +85,7 @@ fun ModelChoicePanel(
         }
         when (path) {
             ModelPath.ON_DEVICE -> OnDeviceStanza()
-            ModelPath.DOWNLOAD -> DownloadStanza(download)
+            ModelPath.DOWNLOAD -> ModelDownloadList(download)
             ModelPath.BYOK -> ByokStanza(byokConfig, onSaveByok, onClearByok)
         }
     }
@@ -103,32 +105,40 @@ private fun OnDeviceStanza() {
     )
 }
 
+/**
+ * The download list on its own — [ModelChoicePanel]'s "Download a model" path
+ * uses this, and so does Nooz Cast's own model section in Settings, since Cast
+ * has no on-device/BYOK trichotomy to choose from (an on-device-only model,
+ * downloaded or not), just this list scoped to its own `kind`.
+ */
 @Composable
-private fun DownloadStanza(ui: ModelDownloadUi) {
-    Text(
-        "Real, open-source models verified by this app's own catalogue. Download them here: they won't run automatically (see On-device), but once downloaded they're on disk and ready.",
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    for (model in ui.models) {
-        ModelRow(model, ui)
-    }
-    if (ui.models.isEmpty()) {
+fun ModelDownloadList(ui: ModelDownloadUi, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
         Text(
-            "No models available.",
-            style = MaterialTheme.typography.bodySmall,
+            "Real, open-source models verified by this app's own catalogue. Download them here: they won't run automatically (see On-device), but once downloaded they're on disk and ready.",
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Tokens.Spacing.xs),
         )
-    }
-    TextButton(
-        onClick = ui.onRefresh,
-        enabled = !ui.refreshing,
-        contentPadding = PaddingValues(0.dp),
-        modifier = Modifier.padding(top = Tokens.Spacing.xs),
-    ) { Text(if (ui.refreshing) "Refreshing…" else "Refresh list") }
-    ui.error?.let {
-        Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        for (model in ui.models) {
+            ModelRow(model, ui)
+        }
+        if (ui.models.isEmpty()) {
+            Text(
+                "No models available.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Tokens.Spacing.xs),
+            )
+        }
+        TextButton(
+            onClick = ui.onRefresh,
+            enabled = !ui.refreshing,
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier.padding(top = Tokens.Spacing.xs),
+        ) { Text(if (ui.refreshing) "Refreshing…" else "Refresh list") }
+        ui.error?.let {
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        }
     }
 }
 
