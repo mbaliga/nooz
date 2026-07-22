@@ -1,0 +1,21 @@
+*.iml
+.gradle/
+.kotlin/
+/local.properties
+/.idea/
+.DS_Store
+/build
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Downloaded inference models are never committed (see :core:inference model manager).
+/models/
+*.gguf
+
+# Secrets — API keys live in Android Keystore at runtime, never in the repo.
+keystore.properties
+*.keystore
+!debug.keystore

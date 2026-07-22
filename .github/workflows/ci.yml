@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "**" ]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Fast, Android-SDK-free gate: the pure-Kotlin domain + analysis core.
+  # These tests hold the load-bearing math (river decomposition, dedup,
+  # classifier evidence, lens fidelity guard, CVD palette) and must be green.
+  core-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Pure-JVM core unit tests
+        run: ./gradlew :core:model:test --stacktrace
+
+  # Full Android build: assemble both flavors, unit tests, lint.
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit tests (all modules + both flavors)
+        # Non-flavored modules expose `testDebugUnitTest`; flavored modules
+        # (app, :core:inference, :feature:lens) expose the per-flavor tasks.
+        # Requesting all three covers every module's unit tests.
+        run: ./gradlew testDebugUnitTest testFossDebugUnitTest testFullDebugUnitTest --stacktrace
+
+      - name: Lint (foss)
+        run: ./gradlew lintFossDebug --stacktrace
+
+      - name: Assemble (both flavors)
+        run: ./gradlew assembleFossDebug assembleFullDebug --stacktrace
+
+      # Keep the built debug APKs so they can be downloaded from the run's
+      # "Artifacts" section and sideloaded onto an Android device (API 31+).
+      # Debug-signed with the repo's own fixed app/keystore/debug.keystore
+      # (app/build.gradle.kts), not AGP's implicit per-machine one — this
+      # runner has no persisted ~/.android/debug.keystore, so without a
+      # pinned key every run would sign with a fresh random one and each new
+      # APK would conflict with whatever was installed from the last run
+      # ("App not installed"). Fine for testing, not for store upload.
+      - name: Upload debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apks
+          path: app/build/outputs/apk/**/*-debug.apk
+          if-no-files-found: error

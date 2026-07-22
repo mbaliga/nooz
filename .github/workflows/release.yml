@@ -1,0 +1,54 @@
+name: Release
+
+# Manual only — unlike ci.yml this decodes the real release signing key, so
+# it never runs on routine pushes/PRs. Fire it from Actions → Release → Run
+# workflow once RELEASE_KEYSTORE_BASE64 / RELEASE_KEYSTORE_PASSWORD /
+# RELEASE_KEY_ALIAS / RELEASE_KEY_PASSWORD are set as repo secrets.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Decoded to the runner's own temp dir, never written into the checkout
+      # (so it can't accidentally end up staged/committed) and removed again
+      # at the end of the job regardless of build outcome.
+      - name: Decode release keystore
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+
+      # Play distribution flavor (owner: foss is the F-Droid-eligible, zero-
+      # proprietary-deps build; full is the one meant for the Play Store).
+      # bundleFullRelease, not assemble — Play wants an .aab, not an .apk.
+      - name: Build signed release App Bundle (full flavor)
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: ./gradlew bundleFullRelease --stacktrace
+
+      - name: Upload release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab
+          path: app/build/outputs/bundle/fullRelease/*.aab
+          if-no-files-found: error
+
+      - name: Remove decoded keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.keystore"
