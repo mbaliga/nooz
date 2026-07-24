@@ -1,16 +1,17 @@
 // feeds.js -- fetch and parse RSS 2.0 / Atom / RDF (RSS 1.0) feeds.
 //
-// Fully client-side: fetchFeed() calls the browser's fetch() directly against
-// source.url. There is no proxy and no backend server -- this app has no
-// account and no sync, so "reach the source" means "the reader's own browser
-// reaches the source." A feed that blocks cross-origin requests, or is simply
-// offline, will fail here, and fetchFeed reports that honestly instead of
-// pretending the source is empty.
+// fetchFeed() calls /api/feed?url=..., a same-origin serverless function
+// (see api/feed.js) that fetches source.url server-side and re-serves it.
+// Most feed servers don't send Access-Control-Allow-Origin, so a direct
+// browser fetch() against them is blocked by CORS even though the request
+// itself succeeds -- routing through a same-origin proxy sidesteps that
+// (CORS is a browser policy, not a server one). This app still has no
+// account and no sync; the proxy is stateless and only relays bytes.
 //
 // "Never silent": fetchFeed NEVER throws. Every failure path -- a network
-// error, a CORS block, a non-2xx response, a body DOMParser can't make sense
-// of -- resolves to { ok: false, error: <short reason> }. Callers can rely on
-// always getting a settled, well-shaped result.
+// error, a proxy/upstream error, a non-2xx response, a body DOMParser can't
+// make sense of -- resolves to { ok: false, error: <short reason> }. Callers
+// can rely on always getting a settled, well-shaped result.
 
 const FETCH_TIMEOUT_MS = 20000;
 
@@ -27,11 +28,11 @@ export async function fetchFeed(source) {
     if (err && err.name === 'AbortError') {
       return { ok: false, error: 'Timed out' };
     }
-    return { ok: false, error: 'CORS blocked or unreachable' };
+    return { ok: false, error: 'Unreachable' };
   }
 
   if (!response.ok) {
-    return { ok: false, error: `HTTP ${response.status}` };
+    return { ok: false, error: await proxyErrorReason(response) };
   }
 
   let body;
@@ -59,7 +60,8 @@ export async function fetchFeed(source) {
 function fetchWithTimeout(url, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
-  return fetch(url, {
+  const proxied = `/api/feed?url=${encodeURIComponent(url)}`;
+  return fetch(proxied, {
     method: 'GET',
     headers: { Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*' },
     redirect: 'follow',
@@ -67,6 +69,18 @@ function fetchWithTimeout(url, timeoutMs) {
     cache: 'no-store',
     signal: controller.signal,
   }).finally(() => clearTimeout(timer));
+}
+
+// api/feed.js answers non-2xx with a JSON { error } body -- surface that
+// reason directly instead of a generic "HTTP 502" when we can.
+async function proxyErrorReason(response) {
+  try {
+    const body = await response.json();
+    if (body && typeof body.error === 'string') return body.error;
+  } catch (_err) {
+    // Not JSON (or already consumed) -- fall through to the plain status.
+  }
+  return `HTTP ${response.status}`;
 }
 
 // ---- XML (RSS 2.0 / Atom / RDF) --------------------------------------
