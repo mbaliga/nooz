@@ -1,0 +1,13 @@
+{
+  "name": "nooz-web-reader",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static Nooz web reader plus two serverless helpers: /api/feed (CORS proxy for RSS/Atom) and /api/article (full-article extraction).",
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "linkedom": "^0.18.5"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
