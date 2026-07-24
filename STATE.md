@@ -624,6 +624,45 @@ respect as the CI-caught log above.
   **Superseded by D18** — the "Download a model" stanza described here as
   purely informational is now a real download flow.
 
+- **D16 — Aarso wired up as a real `ai-catalogue/` consumer (cross-repo,
+  2026-07-12; ported into this lineage 2026-07-24).** Closes the loop D13
+  opened: Aarso (`mbaliga/Android-IDE-core`) replaced its two hand-maintained
+  `full`/`play` model lists and its own `free_tiers.json` refresh pipeline
+  with a fetch of this repo's `ai-catalogue/models.json` +
+  `ai-catalogue/free-tiers.json` (bundled fallback + a consented "Update"
+  action; `policySafe` drives its Play-vs-sideload split at runtime). Two
+  implications: (1) the `ai-catalogue-sentry` weekly probe and the free-tier
+  staleness reminder now have a real downstream reader, not just a
+  designed-for one; (2) the raw-URL branch Aarso points at
+  (`SessionStore.DEFAULT_FT_URL`/`DEFAULT_MC_URL`) is
+  `claude/app-build-d1f9s6`, which was this repo's default branch when D16
+  was written. **That condition has since fired**: `main` became the real
+  canonical branch on 2026-07-23 (PR #1's squash-merge). The old branch name
+  still resolves, so nothing is 404ing today, but Aarso's session should be
+  told to repoint those URLs at `main` — a later deletion of the stale
+  branch would otherwise silently strand that consumer on its bundled
+  snapshot.
+
+- **D17 — Free-tier verification pass (2026-07-12; ported into this lineage
+  2026-07-24).** A hand-verification pass over every `free-tiers.json` entry
+  against its own `sourceUrl` (or best corroborating evidence where the page
+  withheld numbers or errored), per the sentry docstring's "a human confirms
+  each number" rule: groq/openrouter reconfirmed; cerebras/github_models
+  refined (Cerebras's free-tier model lineup changed entirely); cohere
+  corrected from a flat "~100 req/day" to its real 20 req/min +
+  ~1,000 calls/month cap; deepseek corrected from ~10M to ~5M tokens with
+  30-day validity; anthropic/openai `sourceUrl`s updated to where their old
+  links now redirect; one new entry (Cloudflare Workers AI, 10K Neurons/day)
+  added with a primary-source-verified number. Figures the pass could NOT
+  re-verify against a primary source were deliberately left unchanged and
+  annotated as such in each entry's own summary, never overwritten with
+  secondary-source guesses. Note on lineage: D16/D17 were authored on the
+  since-superseded `claude/ide-one-click-downloads-nooz-7lv280` branch (its
+  PR #2 diverged from the pre-app init commit and was closed unmerged, not
+  mergeable against the real `main`); only these two catalogue artifacts
+  were ported out of it — the rest of that branch was a parallel app build
+  superseded by what `main` already contains.
+
 - **D18 — Real one-click model downloads, reading this repo's own
   `ai-catalogue/` (owner feedback, 2026-07-12).** D14/D15 left "Download a
   model" informational because the two ids `LocalLlamaProvider` hardcoded
