@@ -7,12 +7,15 @@
 // the app's owner, not a missing feature.
 
 const DB_NAME = 'nooz-web';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const STORE_SOURCES = 'sources';
 const STORE_ITEMS = 'items';
 const STORE_READS = 'reads';
 const STORE_CLIPS = 'clips';
+// v2: a cache of server-extracted full-article bodies, keyed by item id, so a
+// re-open reads from disk instead of re-hitting /api/article every time.
+const STORE_ARTICLES = 'articles';
 
 let dbPromise = null;
 
@@ -47,6 +50,10 @@ function openDB() {
 
       if (!db.objectStoreNames.contains(STORE_CLIPS)) {
         db.createObjectStore(STORE_CLIPS, { keyPath: 'id' });
+      }
+
+      if (!db.objectStoreNames.contains(STORE_ARTICLES)) {
+        db.createObjectStore(STORE_ARTICLES, { keyPath: 'id' });
       }
     };
 
@@ -251,5 +258,31 @@ export async function dbGetClippings() {
   } catch (err) {
     console.error('dbGetClippings failed:', err);
     return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Extracted-article cache ({ id, html, textLen, byline, leadImage, fetchedAt })
+// ---------------------------------------------------------------------------
+
+export async function dbGetArticle(id) {
+  try {
+    return await runTransaction(STORE_ARTICLES, 'readonly', (tx) =>
+      requestToPromise(tx.objectStore(STORE_ARTICLES).get(id))
+    );
+  } catch (err) {
+    console.error('dbGetArticle failed:', err);
+    return null;
+  }
+}
+
+export async function dbPutArticle(record) {
+  if (!record || !record.id) return;
+  try {
+    await runTransaction(STORE_ARTICLES, 'readwrite', (tx) =>
+      requestToPromise(tx.objectStore(STORE_ARTICLES).put(record))
+    );
+  } catch (err) {
+    console.error('dbPutArticle failed:', err);
   }
 }

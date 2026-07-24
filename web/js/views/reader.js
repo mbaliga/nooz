@@ -1,41 +1,30 @@
-// reader.js -- the Reader view: a single article, read one at a time.
+// reader.js -- the Reader: one article, set as a single newspaper column.
 //
-// This view shows exactly one Item: whichever one state.currentItemId points
-// at. It never re-filters or re-fetches anything -- that's app.js's job. If
-// the item named by currentItemId isn't in state.items (its source was
-// removed, or a search/region change since it was opened filtered it back
-// out), that's not a bug to hide: it's told to the reader plainly, with a
-// clear way back to the stand.
+// Body content, best first: a server-extracted full article (state.articles),
+// else the feed's own content:encoded HTML (item.contentHtml), else the plain
+// summary, else an honest "no content" note. Extracted/feed HTML is run
+// through sanitizeHtml (a strict allowlist, parsed inertly) before it ever
+// touches the page, and loaded language is then marked in place by lens.js
+// when the reader has that setting on.
 //
-// There is no full-content extraction in this app (that's a bigger, separate
-// piece of work). What's shown here is only whatever the feed itself
-// provided as a summary -- so the "Read at the source" link is the primary
-// way to read past it, and this view says so rather than pretending the
-// summary is the whole story.
-//
-// All feed-derived text (title, author, source title, summary) is untrusted
-// external content and is only ever assigned via .textContent -- never
-// innerHTML. The one place untrusted data becomes markup at all is the
-// source-link href, which is restricted to plain http(s) URLs before it's
-// ever used, so a feed can't smuggle a javascript: URI into a clickable link.
+// Feed-derived text is only ever set via .textContent; the one href that
+// becomes a link (the source URL) is restricted to http(s) first.
+
+import { sanitizeHtml } from '../sanitize.js';
+import { annotate } from '../lens.js';
+import { classifyItem, TOPIC_LABEL } from '../topics.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-/**
- * @param {HTMLElement} container
- * @param {object} state
- * @param {object} actions
- */
 export function render(container, state, actions) {
-  container.innerHTML = '';
+  container.replaceChildren();
 
   const layout = document.createElement('div');
-  layout.className = 'nooz-layout nooz-stack';
+  layout.className = 'nooz-reader-layout';
 
   layout.appendChild(buildBackControl(actions));
 
   const item = findCurrentItem(state);
-
   if (!item) {
     layout.appendChild(buildMissingItemEmptyState(state, actions));
     container.appendChild(layout);
@@ -45,14 +34,27 @@ export function render(container, state, actions) {
   const article = document.createElement('article');
   article.className = 'nooz-reader';
 
+  article.appendChild(buildKicker(item));
   article.appendChild(buildHeader(item, state, actions));
-  article.appendChild(buildBody(item));
+  article.appendChild(buildByline(item, state));
 
-  const divider = document.createElement('hr');
-  divider.className = 'nooz-divider';
-  article.appendChild(divider);
+  const settings = state.settings || {};
+  const leadImage = pickLeadImage(item, state);
+  if (settings.showImages !== false && leadImage) {
+    const figure = document.createElement('figure');
+    figure.className = 'nooz-reader-figure';
+    const img = document.createElement('img');
+    img.className = 'nooz-photo';
+    img.loading = 'lazy';
+    img.alt = '';
+    img.src = leadImage;
+    img.addEventListener('error', () => figure.remove());
+    figure.appendChild(img);
+    article.appendChild(figure);
+  }
 
-  article.appendChild(buildSourceSection(item));
+  article.appendChild(buildBody(item, state));
+  article.appendChild(buildSourceSection(item, state));
 
   layout.appendChild(article);
   container.appendChild(layout);
@@ -60,8 +62,15 @@ export function render(container, state, actions) {
 
 function findCurrentItem(state) {
   if (!state.currentItemId) return null;
-  const items = state.items || [];
-  return items.find((it) => it.id === state.currentItemId) || null;
+  const inView = (state.items || []).find((it) => it.id === state.currentItemId);
+  if (inView) return inView;
+  // Fall back to the full history / clippings so an item stays readable even
+  // when a search or region filter has projected it out of the Stand list.
+  return (
+    (state.allItems || []).find((it) => it.id === state.currentItemId) ||
+    (state.clippings || []).find((it) => it.id === state.currentItemId) ||
+    null
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -70,32 +79,25 @@ function findCurrentItem(state) {
 
 function buildBackControl(actions) {
   const row = document.createElement('div');
-  row.className = 'nooz-row nooz-row--xs';
+  row.className = 'nooz-reader-back';
 
   const backBtn = document.createElement('button');
   backBtn.type = 'button';
   backBtn.className = 'nooz-button';
   backBtn.setAttribute('aria-label', 'Back to your stand');
   backBtn.appendChild(createBackIcon());
-
   const label = document.createElement('span');
   label.textContent = 'Back to your stand';
   backBtn.appendChild(label);
-
   backBtn.addEventListener('click', () => actions.goTo('stand'));
   row.appendChild(backBtn);
 
   return row;
 }
 
-// ---------------------------------------------------------------------------
-// Missing-item empty state -- never a silent blank page
-// ---------------------------------------------------------------------------
-
 function buildMissingItemEmptyState(state, actions) {
   const wrap = document.createElement('div');
   wrap.className = 'nooz-empty-state';
-
   const hadTarget = Boolean(state.currentItemId);
 
   const title = document.createElement('p');
@@ -106,8 +108,8 @@ function buildMissingItemEmptyState(state, actions) {
   const text = document.createElement('p');
   text.className = 'nooz-empty-state-text';
   text.textContent = hadTarget
-    ? "It may have dropped out of view since you opened it -- a search or region filter change, or its source being removed. Go back to your stand to find something to read."
-    : 'Pick an item from your stand to read it here.';
+    ? "It may have dropped out of view since you opened it. Go back to your stand to find something to read."
+    : 'Pick a story from your stand to read it here.';
   wrap.appendChild(text);
 
   const btn = document.createElement('button');
@@ -121,31 +123,26 @@ function buildMissingItemEmptyState(state, actions) {
 }
 
 // ---------------------------------------------------------------------------
-// Header: headline, byline, share/clip actions
+// Header / kicker / byline
 // ---------------------------------------------------------------------------
+
+function buildKicker(item) {
+  const k = document.createElement('p');
+  k.className = 'nooz-kicker nooz-reader-kicker';
+  k.textContent = TOPIC_LABEL[classifyItem(item)] || 'General';
+  return k;
+}
 
 function buildHeader(item, state, actions) {
   const header = document.createElement('div');
   header.className = 'nooz-reader-header';
 
-  const topRow = document.createElement('div');
-  topRow.className = 'nooz-row';
-  topRow.style.flexWrap = 'nowrap';
-  topRow.style.alignItems = 'flex-start';
-  topRow.style.justifyContent = 'space-between';
-
   const title = document.createElement('h1');
   title.className = 'nooz-reader-title';
-  title.style.flex = '1';
-  title.style.minWidth = '0';
   title.textContent = item.title || '(untitled)';
-  topRow.appendChild(title);
+  header.appendChild(title);
 
-  topRow.appendChild(buildReaderActions(item, state, actions));
-
-  header.appendChild(topRow);
-  header.appendChild(buildByline(item, state));
-
+  header.appendChild(buildReaderActions(item, state, actions));
   return header;
 }
 
@@ -177,13 +174,14 @@ function buildReaderActions(item, state, actions) {
 
 function buildByline(item, state) {
   const byline = document.createElement('div');
-  byline.className = 'nooz-byline';
+  byline.className = 'nooz-byline nooz-reader-byline';
 
-  if (item.author) {
+  const extracted = state.articles && state.articles[item.id];
+  const authorText = item.author || (extracted && extracted.byline) || null;
+  if (authorText) {
     const authorSpan = document.createElement('span');
-    authorSpan.textContent = item.author;
+    authorSpan.textContent = authorText;
     byline.appendChild(authorSpan);
-
     const sep = document.createElement('span');
     sep.textContent = '|';
     byline.appendChild(sep);
@@ -202,53 +200,83 @@ function buildByline(item, state) {
   return byline;
 }
 
+function pickLeadImage(item, state) {
+  const extracted = state.articles && state.articles[item.id];
+  if (extracted && extracted.leadImage) return extracted.leadImage;
+  return item.image || null;
+}
+
 // ---------------------------------------------------------------------------
-// Body -- plain paragraph text from the feed's summary, nothing more
+// Body -- extracted article > feed HTML > plain summary
 // ---------------------------------------------------------------------------
 
-function buildBody(item) {
+function buildBody(item, state) {
   const body = document.createElement('div');
   body.className = 'nooz-reader-body';
 
-  const summary = typeof item.summary === 'string' ? item.summary.trim() : '';
+  const settings = state.settings || {};
+  const status = (state.articleStatus || {})[item.id];
+  const extracted = state.articles && state.articles[item.id];
 
-  if (!summary) {
-    const p = document.createElement('p');
-    p.style.color = 'var(--paper-ink-dim)';
-    p.textContent = "This source's feed doesn't include full content -- read it at the source.";
-    body.appendChild(p);
-    return body;
+  let renderedHtml = false;
+
+  if (extracted && extracted.html) {
+    body.appendChild(sanitizeHtml(extracted.html, { allowImages: settings.showImages !== false }));
+    renderedHtml = true;
+  } else if (item.contentHtml) {
+    body.appendChild(sanitizeHtml(item.contentHtml, { allowImages: settings.showImages !== false }));
+    renderedHtml = true;
+  } else if (item.summary) {
+    for (const para of splitParagraphs(item.summary)) {
+      const p = document.createElement('p');
+      p.textContent = para;
+      body.appendChild(p);
+    }
+    renderedHtml = true;
   }
 
-  const paragraphs = summary
-    .split(/\n\s*\n/)
-    .map((part) => part.trim())
-    .filter((part) => part.length > 0);
-
-  if (paragraphs.length === 0) paragraphs.push(summary);
-
-  for (const paragraph of paragraphs) {
+  // If the body is thin and extraction is still running (or just failed),
+  // say so honestly rather than leaving a near-empty page unexplained.
+  if (status === 'loading') {
+    const loading = document.createElement('p');
+    loading.className = 'nooz-reader-loading';
+    loading.textContent = 'Fetching the full article…';
+    body.appendChild(loading);
+  } else if (!renderedHtml) {
     const p = document.createElement('p');
-    p.textContent = paragraph;
+    p.className = 'nooz-reader-thin';
+    p.textContent = "This source's feed didn't include the article text. Read the full piece at the source below.";
     body.appendChild(p);
+  }
+
+  // Strip any images we can't render safely (they get dropped in sanitize),
+  // then mark loaded language in place when the reader wants it.
+  if (settings.highlightLoaded !== false) {
+    annotate(body);
   }
 
   return body;
 }
 
+function splitParagraphs(text) {
+  const parts = text
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return parts.length ? parts : [text.trim()];
+}
+
 // ---------------------------------------------------------------------------
-// "Read at the source" -- the primary way to read past the summary
+// Read at the source
 // ---------------------------------------------------------------------------
 
-function buildSourceSection(item) {
+function buildSourceSection(item, state) {
   const wrap = document.createElement('div');
-  wrap.className = 'nooz-stack nooz-stack--sm';
+  wrap.className = 'nooz-reader-source';
 
-  const note = document.createElement('p');
-  note.className = 'nooz-summary';
-  note.textContent =
-    "This reader only shows what the source's feed provided -- there's no full-article extraction here yet. Read the complete piece at the source.";
-  wrap.appendChild(note);
+  const divider = document.createElement('hr');
+  divider.className = 'nooz-divider';
+  wrap.appendChild(divider);
 
   const url = safeHttpUrl(item.link);
   if (url) {
@@ -270,14 +298,13 @@ function buildSourceSection(item) {
   return wrap;
 }
 
-/** Only ever treat plain http(s) URLs as links -- feed data is untrusted. */
 function safeHttpUrl(link) {
   if (!link || typeof link !== 'string') return null;
   try {
     const parsed = new URL(link, window.location.href);
     if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
   } catch (_err) {
-    // unparseable -- treat as no link
+    /* unparseable */
   }
   return null;
 }
@@ -291,7 +318,6 @@ function createBackIcon() {
   svg.setAttribute('viewBox', '0 0 16 16');
   svg.setAttribute('class', 'nooz-icon');
   svg.setAttribute('aria-hidden', 'true');
-
   const path = document.createElementNS(SVG_NS, 'path');
   path.setAttribute('d', 'M9.5 3L5 8l4.5 5');
   path.setAttribute('fill', 'none');
@@ -300,7 +326,6 @@ function createBackIcon() {
   path.setAttribute('stroke-linecap', 'round');
   path.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(path);
-
   return svg;
 }
 
@@ -309,7 +334,6 @@ function createShareIcon() {
   svg.setAttribute('viewBox', '0 0 16 16');
   svg.setAttribute('class', 'nooz-icon');
   svg.setAttribute('aria-hidden', 'true');
-
   const tray = document.createElementNS(SVG_NS, 'path');
   tray.setAttribute('d', 'M3.5 7.5v4.3c0 .66.54 1.2 1.2 1.2h6.6c.66 0 1.2-.54 1.2-1.2V7.5');
   tray.setAttribute('fill', 'none');
@@ -318,7 +342,6 @@ function createShareIcon() {
   tray.setAttribute('stroke-linecap', 'round');
   tray.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(tray);
-
   const arrow = document.createElementNS(SVG_NS, 'path');
   arrow.setAttribute('d', 'M8 9.5V2M8 2L5.6 4.4M8 2l2.4 2.4');
   arrow.setAttribute('fill', 'none');
@@ -327,7 +350,6 @@ function createShareIcon() {
   arrow.setAttribute('stroke-linecap', 'round');
   arrow.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(arrow);
-
   return svg;
 }
 
@@ -336,7 +358,6 @@ function createClipIcon(isClipped) {
   svg.setAttribute('viewBox', '0 0 16 16');
   svg.setAttribute('class', 'nooz-icon');
   svg.setAttribute('aria-hidden', 'true');
-
   const path = document.createElementNS(SVG_NS, 'path');
   path.setAttribute(
     'd',
@@ -351,20 +372,13 @@ function createClipIcon(isClipped) {
     path.setAttribute('stroke-linejoin', 'round');
   }
   svg.appendChild(path);
-
   return svg;
 }
 
-// ---------------------------------------------------------------------------
-// Date formatting -- full, unambiguous (unlike the short form in the list)
-// ---------------------------------------------------------------------------
-
 function formatFullDate(publishedAt) {
   if (typeof publishedAt !== 'number' || Number.isNaN(publishedAt)) return 'Unknown date';
-
   const date = new Date(publishedAt);
   if (Number.isNaN(date.getTime())) return 'Unknown date';
-
   return date.toLocaleString(undefined, {
     month: 'long',
     day: 'numeric',

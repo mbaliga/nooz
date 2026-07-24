@@ -1,8 +1,9 @@
-// app.js -- integration glue. Owns the one persistent app chrome (wordmark +
-// Stand/Sources/Clippings nav), the single in-memory state object, and every
-// action the view modules call. Each view module only renders; app.js is the
-// only place that touches IndexedDB, fetches feeds, or decides what's
-// currently "visible" (enabled sources, region filter, search).
+// app.js -- integration glue. Owns the persistent app chrome (now a FOOTER,
+// not a header -- the wordmark and Stand/Loom/Sources/Clippings/Settings nav
+// sit at the bottom of the frame, matching asystemofcells), the single
+// in-memory state object, and every action the view modules call. Each view
+// module only renders; app.js is the only place that touches IndexedDB,
+// fetches feeds, extracts articles, or decides what's currently "visible".
 
 import {
   dbInit,
@@ -17,30 +18,39 @@ import {
   dbGetClippedIds,
   dbToggleClip,
   dbGetClippings,
+  dbGetArticle,
+  dbPutArticle,
 } from './db.js';
 import { fetchFeed } from './feeds.js';
 import { STARTERS } from './starters.js';
+import { loadSettings, getSettings, setSetting } from './settings.js';
 import { render as renderStand } from './views/stand.js';
 import { render as renderReader } from './views/reader.js';
 import { render as renderSources } from './views/sources.js';
 import { render as renderClippings } from './views/clippings.js';
+import { render as renderLoom } from './views/loom.js';
+import { render as renderSettings } from './views/settings.js';
 import { parseRoute, navigate, onRoute } from './router.js';
 
 const VIEW_RENDERERS = {
   stand: renderStand,
+  loom: renderLoom,
   reader: renderReader,
   sources: renderSources,
   clippings: renderClippings,
+  settings: renderSettings,
 };
-const NAV_VIEWS = ['stand', 'sources', 'clippings'];
+// Footer nav order. Reader has no nav entry (it's reached by opening an item);
+// Settings sits at the end, slightly apart.
+const NAV_VIEWS = ['stand', 'loom', 'sources', 'clippings', 'settings'];
+const NAV_LABELS = { stand: 'Stand', loom: 'Loom', sources: 'Sources', clippings: 'Clippings', settings: 'Settings' };
 
-// Full, unfiltered item history (every item ever fetched, across all
-// sources -- never pruned in this version). state.items handed to views is
-// always a filtered projection of this, computed fresh on every render.
+// A feed whose own body already runs to at least this many characters of plain
+// text is treated as "full enough" -- we don't bother the extraction endpoint
+// for it. Below it (BBC-style one-liners), we try to extract the real article.
+const RICH_ENOUGH_CHARS = 900;
+
 let allItems = [];
-// Every item this app has ever seen, by id -- including clippings, so a
-// clip stays shareable/openable even if its source is later removed and
-// stops appearing in allItems' enabled-source projection.
 const itemsById = new Map();
 
 const currentState = {
@@ -53,6 +63,9 @@ const currentState = {
   starters: STARTERS,
   fetchStatus: {},
   fetchErrors: {},
+  articles: {}, // itemId -> { id, html, byline, leadImage, textLen, fetchedAt }
+  articleStatus: {}, // itemId -> 'loading' | 'ready' | 'error' | 'skip'
+  settings: null,
 };
 
 let viewEl = null;
@@ -61,6 +74,7 @@ let toastEl = null;
 let toastTimer = null;
 
 async function boot() {
+  currentState.settings = loadSettings();
   await dbInit();
   const [sources, items, readIds, clippedIds, clippings] = await Promise.all([
     dbGetSources(),
@@ -78,7 +92,7 @@ async function boot() {
 
   buildShell();
   onRoute(handleRoute);
-  refreshAll(); // background fill-in; first paint already happened from cached IndexedDB state
+  refreshAll();
 }
 
 function rebuildItemsById() {
@@ -90,7 +104,7 @@ function rebuildItemsById() {
 }
 
 // ---------------------------------------------------------------------------
-// Persistent chrome
+// Persistent chrome -- content region on top, footer nav pinned at the bottom
 // ---------------------------------------------------------------------------
 
 function buildShell() {
@@ -100,35 +114,39 @@ function buildShell() {
   const shell = document.createElement('div');
   shell.className = 'nooz-app-shell';
 
-  const topbar = document.createElement('header');
-  topbar.className = 'nooz-topbar';
+  viewEl = document.createElement('main');
+  viewEl.id = 'view';
+  viewEl.className = 'nooz-view';
+  shell.appendChild(viewEl);
 
-  const wordmark = document.createElement('span');
-  wordmark.className = 'nooz-wordmark';
+  const footer = document.createElement('footer');
+  footer.className = 'nooz-footerbar';
+
+  const wordmark = document.createElement('button');
+  wordmark.type = 'button';
+  wordmark.className = 'nooz-footer-wordmark';
   wordmark.textContent = 'Nooz';
-  topbar.appendChild(wordmark);
+  wordmark.setAttribute('aria-label', 'Nooz home');
+  wordmark.addEventListener('click', () => navigate('stand'));
+  footer.appendChild(wordmark);
 
   const nav = document.createElement('nav');
-  nav.className = 'nooz-nav';
+  nav.className = 'nooz-footer-nav';
   nav.setAttribute('aria-label', 'Primary');
 
   navLinksEl = {};
   for (const view of NAV_VIEWS) {
     const link = document.createElement('button');
     link.type = 'button';
-    link.className = 'nooz-nav-link';
-    link.textContent = capitalize(view);
+    link.className = 'nooz-footer-link';
+    if (view === 'settings') link.classList.add('nooz-footer-link--end');
+    link.textContent = NAV_LABELS[view];
     link.addEventListener('click', () => navigate(view));
     nav.appendChild(link);
     navLinksEl[view] = link;
   }
-  topbar.appendChild(nav);
-
-  shell.appendChild(topbar);
-
-  viewEl = document.createElement('main');
-  viewEl.id = 'view';
-  shell.appendChild(viewEl);
+  footer.appendChild(nav);
+  shell.appendChild(footer);
 
   toastEl = document.createElement('div');
   toastEl.className = 'nooz-toast';
@@ -138,29 +156,21 @@ function buildShell() {
   app.appendChild(shell);
 }
 
-function capitalize(s) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 // ---------------------------------------------------------------------------
 // Routing + render
 // ---------------------------------------------------------------------------
 
 function handleRoute(route) {
   for (const view of NAV_VIEWS) {
-    if (view === route.view) navLinksEl[view].setAttribute('aria-current', 'page');
+    const active =
+      view === route.view || (view === 'stand' && route.view === 'reader');
+    if (active) navLinksEl[view].setAttribute('aria-current', 'page');
     else navLinksEl[view].removeAttribute('aria-current');
   }
+  viewEl.scrollTop = 0;
   rerender();
 }
 
-/**
- * Re-render the current view. Preserves focus + cursor position on a
- * focused <input>/<textarea> across the rebuild -- container.innerHTML = ''
- * inside a view's render() would otherwise drop focus on every keystroke in
- * e.g. the Stand's search box, since a brand-new input element replaces the
- * old one each time.
- */
 function rerender() {
   const active = document.activeElement;
   let restore = null;
@@ -180,6 +190,7 @@ function rerender() {
   const stateForView = {
     sources: currentState.sources,
     items: computeVisibleItems(),
+    allItems,
     clippings: currentState.clippings,
     readIds: currentState.readIds,
     clippedIds: currentState.clippedIds,
@@ -189,6 +200,9 @@ function rerender() {
     starters: currentState.starters,
     fetchStatus: currentState.fetchStatus,
     fetchErrors: currentState.fetchErrors,
+    articles: currentState.articles,
+    articleStatus: currentState.articleStatus,
+    settings: getSettings(),
   };
 
   const renderer = VIEW_RENDERERS[route.view] || VIEW_RENDERERS.stand;
@@ -203,14 +217,14 @@ function rerender() {
         try {
           el.setSelectionRange(restore.selectionStart, restore.selectionEnd);
         } catch (_err) {
-          // some input types (e.g. "search" in older engines) can reject this -- fine to skip
+          /* some input types reject this -- fine to skip */
         }
       }
     }
   }
 }
 
-/** Stand's items: enabled sources only (the "honest denominator"), then region, then search. */
+/** Stand's items: enabled sources only (the honest denominator), then region, then search. */
 function computeVisibleItems() {
   const enabledIds = new Set(currentState.sources.filter((s) => s.enabled).map((s) => s.id));
   let list = allItems.filter((item) => enabledIds.has(item.sourceId));
@@ -236,7 +250,7 @@ function computeVisibleItems() {
 }
 
 // ---------------------------------------------------------------------------
-// Fetching
+// Fetching feeds
 // ---------------------------------------------------------------------------
 
 async function refreshAll() {
@@ -260,6 +274,68 @@ async function refreshOne(source) {
   } else {
     currentState.fetchStatus[source.id] = 'error';
     currentState.fetchErrors[source.id] = result.error;
+  }
+  rerender();
+}
+
+// ---------------------------------------------------------------------------
+// Full-article extraction (server-side /api/article, cached in IndexedDB)
+//
+// Only reached for items whose own feed body is too thin to read (BBC-style
+// one-liners). Feeds that already ship a full body skip this entirely -- we
+// never re-fetch what we were already given.
+// ---------------------------------------------------------------------------
+
+function plainLength(html) {
+  if (!html) return 0;
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().length;
+}
+
+async function ensureArticle(item) {
+  if (!item || !item.link) return;
+  const id = item.id;
+  if (currentState.articles[id] || currentState.articleStatus[id]) return;
+
+  if (plainLength(item.contentHtml) >= RICH_ENOUGH_CHARS) {
+    currentState.articleStatus[id] = 'skip'; // the feed body is already enough
+    return;
+  }
+
+  const cached = await dbGetArticle(id);
+  if (cached && cached.html) {
+    currentState.articles[id] = cached;
+    currentState.articleStatus[id] = 'ready';
+    rerender();
+    return;
+  }
+
+  currentState.articleStatus[id] = 'loading';
+  rerender();
+
+  try {
+    const res = await fetch(`/api/article?url=${encodeURIComponent(item.link)}`, {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data || !data.html || plainLength(data.html) < 200) {
+      currentState.articleStatus[id] = 'error';
+    } else {
+      const record = {
+        id,
+        html: data.html,
+        byline: data.byline || null,
+        leadImage: data.leadImage || null,
+        textLen: plainLength(data.html),
+        fetchedAt: Date.now(),
+      };
+      currentState.articles[id] = record;
+      currentState.articleStatus[id] = 'ready';
+      dbPutArticle(record);
+    }
+  } catch (_err) {
+    currentState.articleStatus[id] = 'error';
   }
   rerender();
 }
@@ -335,6 +411,8 @@ async function openItem(itemId) {
   currentState.readIds.add(itemId);
   await dbMarkRead(itemId);
   navigate('reader', itemId);
+  const item = itemsById.get(itemId);
+  if (item) ensureArticle(item);
 }
 
 async function toggleClip(itemId) {
@@ -359,7 +437,7 @@ async function shareItem(itemId) {
     try {
       await navigator.share(shareData);
     } catch (_err) {
-      // user cancelled, or unsupported for this data -- not an error worth surfacing
+      /* cancelled/unsupported -- not worth surfacing */
     }
     return;
   }
@@ -383,6 +461,12 @@ function setRegionFilter(region) {
   rerender();
 }
 
+function updateSetting(key, value) {
+  setSetting(key, value);
+  currentState.settings = getSettings();
+  rerender();
+}
+
 function showToast(message) {
   if (!toastEl) return;
   toastEl.textContent = message;
@@ -403,6 +487,8 @@ const actions = {
   shareItem,
   setSearchQuery,
   setRegionFilter,
+  updateSetting,
+  ensureArticle,
 };
 
 boot();
