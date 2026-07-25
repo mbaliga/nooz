@@ -13,6 +13,7 @@
 import { sanitizeHtml } from '../sanitize.js';
 import { annotate } from '../lens.js';
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
+import { frameImage, frameBodyImages } from '../images.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -41,16 +42,13 @@ export function render(container, state, actions) {
   const settings = state.settings || {};
   const leadImage = pickLeadImage(item, state);
   if (settings.showImages !== false && leadImage) {
-    const figure = document.createElement('figure');
-    figure.className = 'nooz-reader-figure';
-    const img = document.createElement('img');
-    img.className = 'nooz-photo';
-    img.loading = 'lazy';
-    img.alt = '';
-    img.src = leadImage;
-    img.addEventListener('error', () => figure.remove());
-    figure.appendChild(img);
-    article.appendChild(figure);
+    const figure = frameImage(leadImage, {
+      prominent: true,
+      className: 'nooz-reader-figure',
+      currentStyle: settings.imageStyle || 'halftone',
+      onStyle: (s) => actions.updateSetting('imageStyle', s),
+    });
+    if (figure) article.appendChild(figure);
   }
 
   article.appendChild(buildBody(item, state));
@@ -249,11 +247,10 @@ function buildBody(item, state) {
     body.appendChild(p);
   }
 
-  // Strip any images we can't render safely (they get dropped in sanitize),
-  // then mark loaded language in place when the reader wants it.
-  if (settings.highlightLoaded !== false) {
-    annotate(body);
-  }
+  // Give body images the same halftone/B&W/colour frame as the lead, then mark
+  // loaded language in place when the reader wants it.
+  if (settings.showImages !== false) frameBodyImages(body);
+  if (settings.highlightLoaded !== false) annotate(body);
 
   return body;
 }

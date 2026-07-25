@@ -22,11 +22,16 @@ export const PAPER_OPTIONS = [
   { key: 'slate', label: 'Night', swatch: '#1C1C1A' },
 ];
 
+export const IMAGE_STYLES = ['halftone', 'bw', 'colour'];
+export const READING_MODES = ['continuous', 'newspaper'];
+
 const DEFAULTS = {
   font: 'serif',
   paper: 'cream',
   highlightLoaded: true,
   showImages: true,
+  imageStyle: 'halftone', // halftone (default, newsprint) | bw | colour
+  readingMode: 'continuous', // continuous scroll | newspaper (paged, page-turn)
 };
 
 let current = { ...DEFAULTS };
@@ -42,6 +47,8 @@ export function loadSettings() {
         paper: PAPER_OPTIONS.some((o) => o.key === parsed.paper) ? parsed.paper : DEFAULTS.paper,
         highlightLoaded: typeof parsed.highlightLoaded === 'boolean' ? parsed.highlightLoaded : DEFAULTS.highlightLoaded,
         showImages: typeof parsed.showImages === 'boolean' ? parsed.showImages : DEFAULTS.showImages,
+        imageStyle: IMAGE_STYLES.includes(parsed.imageStyle) ? parsed.imageStyle : DEFAULTS.imageStyle,
+        readingMode: READING_MODES.includes(parsed.readingMode) ? parsed.readingMode : DEFAULTS.readingMode,
       };
     }
   } catch (_err) {
@@ -79,4 +86,6 @@ function applyToDocument() {
   root.dataset.paper = current.paper;
   root.dataset.loaded = current.highlightLoaded ? 'on' : 'off';
   root.dataset.images = current.showImages ? 'on' : 'off';
+  root.dataset.imgstyle = current.imageStyle;
+  root.dataset.reading = current.readingMode;
 }
