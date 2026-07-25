@@ -103,6 +103,9 @@ function buildToolbar(state, actions) {
     bar.appendChild(chips);
   }
 
+  const focus = buildFocusChip(state, actions);
+  if (focus) bar.appendChild(focus);
+
   const refresh = document.createElement('button');
   refresh.type = 'button';
   refresh.className = 'nooz-button nooz-toolbar-refresh';
@@ -111,6 +114,32 @@ function buildToolbar(state, actions) {
   bar.appendChild(refresh);
 
   return bar;
+}
+
+// When the newsstand focuses the Paper on a category or publisher, show a
+// removable chip so it's obvious what's being filtered and easy to clear.
+function buildFocusChip(state, actions) {
+  let label = null;
+  if (state.topicFilter) label = `Category: ${TOPIC_LABEL[state.topicFilter] || state.topicFilter}`;
+  else if (state.sourceFilter) {
+    const src = (state.sources || []).find((s) => s.id === state.sourceFilter);
+    label = `Publisher: ${src ? src.title : 'source'}`;
+  }
+  if (!label) return null;
+
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'nooz-focus-chip';
+  chip.setAttribute('aria-label', `Clear ${label}`);
+  const text = document.createElement('span');
+  text.textContent = label;
+  chip.appendChild(text);
+  const x = document.createElement('span');
+  x.className = 'nooz-focus-x';
+  x.textContent = '×';
+  chip.appendChild(x);
+  chip.addEventListener('click', () => actions.clearFocus());
+  return chip;
 }
 
 function regionChip(label, active, onClick) {
@@ -177,42 +206,126 @@ function buildNewspaper(state, actions) {
   const step = spread ? 2 : 1;
   const maxPage = Math.max(0, pages.length - 1);
   if (newspaperPage > maxPage) newspaperPage = maxPage;
+  if (newspaperPage < 0) newspaperPage = 0;
+
+  const ctx = { pages, state, actions, showImages, imageStyle };
 
   const book = document.createElement('div');
   book.className = 'nooz-book' + (spread ? ' is-spread' : '');
+  book.dataset.turning = 'no';
 
-  const visible = spread ? [newspaperPage, newspaperPage + 1] : [newspaperPage];
-  visible.forEach((idx, i) => {
-    if (idx > maxPage) return;
-    const sheet = buildSheet(pages[idx], idx, pages.length, state, actions, showImages, imageStyle);
-    // Turn-in animation on the leading sheet only, in the last turn's direction.
-    if (i === 0 && lastTurnDir !== 0) sheet.classList.add(lastTurnDir > 0 ? 'turn-in-fwd' : 'turn-in-back');
-    book.appendChild(sheet);
-  });
-  lastTurnDir = 0;
+  const leftEl = pageElement(ctx, newspaperPage);
+  leftEl.classList.add('nooz-page--left');
+  book.appendChild(leftEl);
+
+  let rightEl = null;
+  if (spread) {
+    rightEl = pageElement(ctx, newspaperPage + 1);
+    rightEl.classList.add('nooz-page--right');
+    book.appendChild(rightEl);
+  }
+
+  const doTurn = (dir) => {
+    if (book.dataset.turning === 'yes') return;
+    const target = Math.min(maxPage, Math.max(0, newspaperPage + dir * step));
+    if (target === newspaperPage) return;
+    animateTurn({ ...ctx, book, leftEl, rightEl, spread, dir, from: newspaperPage, target });
+  };
 
   const wrap = document.createElement('div');
   wrap.className = 'nooz-newspaper';
   wrap.appendChild(book);
-  wrap.appendChild(buildPager(newspaperPage, pages.length, step, maxPage, actions));
-
+  wrap.appendChild(buildPager(newspaperPage, pages.length, step, maxPage, doTurn));
   return wrap;
 }
 
-function buildPager(page, count, step, maxPage, actions) {
+// One page slot in the book: a sheet, or a blank "end of paper" leaf.
+function pageElement(ctx, idx) {
+  const el = document.createElement('div');
+  el.className = 'nooz-page';
+  if (idx >= 0 && idx < ctx.pages.length) {
+    el.appendChild(buildSheet(ctx, idx));
+  } else {
+    el.classList.add('nooz-page--blank');
+    const end = document.createElement('div');
+    end.className = 'nooz-page-end';
+    end.textContent = '·  ·  ·';
+    el.appendChild(end);
+  }
+  return el;
+}
+
+// A real page-turn: a hinged leaf rotates around the spine, its front the page
+// you're leaving and its back the page you're turning to, revealing the next
+// spread underneath. Not two static columns -- an actual turning sheet.
+function animateTurn(o) {
+  const { book, pages, state, actions, showImages, imageStyle, spread, dir, from, target } = o;
+  const ctx = { pages, state, actions, showImages, imageStyle };
+  const forward = dir > 0;
+  book.dataset.turning = 'yes';
+
+  const leaf = document.createElement('div');
+  leaf.className = 'nooz-leaf ' + (forward ? 'nooz-leaf--right' : 'nooz-leaf--left');
+
+  const front = document.createElement('div');
+  front.className = 'nooz-leaf-face nooz-leaf-front';
+  const back = document.createElement('div');
+  back.className = 'nooz-leaf-face nooz-leaf-back';
+
+  if (spread) {
+    if (forward) {
+      // Reveal the new right page under the lifting leaf; the leaf carries the
+      // old right on its front and the new left on its back.
+      o.rightEl.replaceChildren(sheetOrEnd(ctx, target + 1));
+      front.appendChild(sheetOrEnd(ctx, from + 1));
+      back.appendChild(sheetOrEnd(ctx, target));
+    } else {
+      o.leftEl.replaceChildren(sheetOrEnd(ctx, target));
+      front.appendChild(sheetOrEnd(ctx, from));
+      back.appendChild(sheetOrEnd(ctx, target + 1));
+    }
+  } else {
+    o.leftEl.replaceChildren(sheetOrEnd(ctx, target));
+    front.appendChild(sheetOrEnd(ctx, from));
+  }
+
+  leaf.appendChild(front);
+  leaf.appendChild(back);
+  book.appendChild(leaf);
+
+  const finish = () => {
+    newspaperPage = target;
+    lastTurnDir = 0;
+    actions.refreshView();
+  };
+  leaf.addEventListener('animationend', finish, { once: true });
+  // Safety net if animationend doesn't fire (reduced-motion, etc.).
+  setTimeout(() => { if (book.dataset.turning === 'yes') finish(); }, 900);
+
+  requestAnimationFrame(() => leaf.classList.add(forward ? 'is-turning-fwd' : 'is-turning-back'));
+}
+
+function sheetOrEnd(ctx, idx) {
+  if (idx >= 0 && idx < ctx.pages.length) return buildSheet(ctx, idx);
+  const end = document.createElement('div');
+  end.className = 'nooz-sheet nooz-page--blank';
+  const dots = document.createElement('div');
+  dots.className = 'nooz-page-end';
+  dots.textContent = '·  ·  ·';
+  end.appendChild(dots);
+  return end;
+}
+
+function buildPager(page, count, step, maxPage, doTurn) {
   const pager = document.createElement('div');
   pager.className = 'nooz-pager';
 
   const prev = document.createElement('button');
   prev.type = 'button';
   prev.className = 'nooz-button nooz-pager-btn';
-  prev.textContent = '‹ Previous';
+  prev.textContent = '‹ Turn back';
   prev.disabled = page <= 0;
-  prev.addEventListener('click', () => {
-    newspaperPage = Math.max(0, page - step);
-    lastTurnDir = -1;
-    actions.refreshView();
-  });
+  prev.addEventListener('click', () => doTurn(-1));
   pager.appendChild(prev);
 
   const label = document.createElement('span');
@@ -226,19 +339,16 @@ function buildPager(page, count, step, maxPage, actions) {
   const next = document.createElement('button');
   next.type = 'button';
   next.className = 'nooz-button nooz-pager-btn';
-  next.textContent = 'Next ›';
+  next.textContent = 'Turn page ›';
   next.disabled = page + step > maxPage;
-  next.addEventListener('click', () => {
-    newspaperPage = Math.min(maxPage, page + step);
-    lastTurnDir = 1;
-    actions.refreshView();
-  });
+  next.addEventListener('click', () => doTurn(1));
   pager.appendChild(next);
 
   return pager;
 }
 
-function buildSheet(pageData, index, total, state, actions, showImages, imageStyle) {
+function buildSheet(ctx, index) {
+  const pageData = ctx.pages[index];
   const sheet = document.createElement('section');
   sheet.className = 'nooz-sheet';
 
@@ -248,12 +358,12 @@ function buildSheet(pageData, index, total, state, actions, showImages, imageSty
   sheet.appendChild(folio);
 
   if (pageData.lead) {
-    sheet.appendChild(buildLeadStory(pageData.lead, state, actions, showImages, imageStyle, true));
+    sheet.appendChild(buildLeadStory(pageData.lead, ctx.state, ctx.actions, ctx.showImages, ctx.imageStyle, true));
   }
   if (pageData.stories.length) {
     const cols = document.createElement('div');
     cols.className = 'nooz-columns';
-    for (const item of pageData.stories) cols.appendChild(buildColumnStory(item, state, actions, showImages));
+    for (const item of pageData.stories) cols.appendChild(buildColumnStory(item, ctx.state, ctx.actions, ctx.showImages));
     sheet.appendChild(cols);
   }
   return sheet;

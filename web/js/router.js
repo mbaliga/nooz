@@ -3,7 +3,7 @@
 // which item) -- so location.hash is the single source of navigational
 // truth, and bookmarking/reload/back-forward all fall out of that for free.
 
-const VALID_VIEWS = new Set(['stand', 'loom', 'sources', 'clippings', 'reader', 'settings']);
+const VALID_VIEWS = new Set(['stand', 'newsstand', 'loom', 'sources', 'clippings', 'reader', 'settings']);
 const DEFAULT_VIEW = 'stand';
 
 /** Parse the current location.hash into {view, itemId}. */
