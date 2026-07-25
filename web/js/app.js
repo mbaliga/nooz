@@ -31,10 +31,13 @@ import { render as renderSources } from './views/sources.js';
 import { render as renderClippings } from './views/clippings.js';
 import { render as renderLoom } from './views/loom.js';
 import { render as renderSettings } from './views/settings.js';
+import { render as renderNewsstand } from './views/newsstand.js';
+import { classifyItem } from './topics.js';
 import { parseRoute, navigate, onRoute } from './router.js';
 
 const VIEW_RENDERERS = {
   stand: renderStand,
+  newsstand: renderNewsstand,
   loom: renderLoom,
   reader: renderReader,
   sources: renderSources,
@@ -42,13 +45,16 @@ const VIEW_RENDERERS = {
   settings: renderSettings,
 };
 // Footer nav order. Reader has no nav entry (it's reached by opening an item);
-// Settings sits at the end, slightly apart. "Stand" is called "Paper" on the
-// web -- the front page IS the paper.
-const NAV_VIEWS = ['stand', 'loom', 'sources', 'clippings', 'settings'];
-const NAV_LABELS = { stand: 'Paper', loom: 'Loom', sources: 'Sources', clippings: 'Clippings', settings: 'Settings' };
+// Settings sits at the end, slightly apart. "Stand" is the front PAPER; the
+// newsstand ("Stand") is a separate browse-the-papers surface.
+const NAV_VIEWS = ['stand', 'newsstand', 'loom', 'sources', 'clippings', 'settings'];
+const NAV_LABELS = { stand: 'Paper', newsstand: 'Stand', loom: 'Loom', sources: 'Sources', clippings: 'Clippings', settings: 'Settings' };
+// Full-stage views replace the Paper; everything else opens as a right drawer.
+const STAGE_VIEWS = new Set(['stand', 'reader', 'newsstand']);
 // The option views open as a right-hand drawer over the Paper (which slides
 // aside), rather than replacing it. Reader and Paper are full-stage.
 const DRAWER_VIEWS = new Set(['loom', 'sources', 'clippings', 'settings']);
+
 
 // A feed whose own body already runs to at least this many characters of plain
 // text is treated as "full enough" -- we don't bother the extraction endpoint
@@ -65,6 +71,8 @@ const currentState = {
   clippedIds: new Set(),
   searchQuery: '',
   regionFilter: null,
+  topicFilter: null, // set from the newsstand (Category)
+  sourceFilter: null, // set from the newsstand (Publisher)
   starters: STARTERS,
   fetchStatus: {},
   fetchErrors: {},
@@ -211,7 +219,7 @@ function handleRoute(route) {
     // only while its own drawer is open.
     const active = DRAWER_VIEWS.has(view)
       ? view === route.view
-      : view === 'stand' && (route.view === 'stand' || route.view === 'reader');
+      : view === route.view || (view === 'stand' && route.view === 'reader');
     if (active) navLinksEl[view].setAttribute('aria-current', 'page');
     else navLinksEl[view].removeAttribute('aria-current');
   }
@@ -246,6 +254,8 @@ function rerender() {
     currentItemId: route.itemId,
     searchQuery: currentState.searchQuery,
     regionFilter: currentState.regionFilter,
+    topicFilter: currentState.topicFilter,
+    sourceFilter: currentState.sourceFilter,
     starters: currentState.starters,
     fetchStatus: currentState.fetchStatus,
     fetchErrors: currentState.fetchErrors,
@@ -254,9 +264,8 @@ function rerender() {
     settings: getSettings(),
   };
 
-  // Stage: the reader when reading an item, otherwise the Paper (which stays
-  // mounted behind an open drawer).
-  const stageView = route.view === 'reader' ? 'reader' : 'stand';
+  // Stage: reader / newsstand / Paper (which stays mounted behind an open drawer).
+  const stageView = STAGE_VIEWS.has(route.view) ? route.view : 'stand';
   VIEW_RENDERERS[stageView](stageEl, stateForView, actions);
 
   // Drawer: an option view slides in from the right; the Paper shifts aside.
@@ -302,6 +311,14 @@ function computeVisibleItems() {
       currentState.sources.filter((s) => s.region === currentState.regionFilter).map((s) => s.id)
     );
     list = list.filter((item) => idsInRegion.has(item.sourceId));
+  }
+
+  if (currentState.sourceFilter) {
+    list = list.filter((item) => item.sourceId === currentState.sourceFilter);
+  }
+
+  if (currentState.topicFilter) {
+    list = list.filter((item) => classifyItem(item) === currentState.topicFilter);
   }
 
   const q = (currentState.searchQuery || '').trim().toLowerCase();
@@ -529,6 +546,30 @@ function setRegionFilter(region) {
   rerender();
 }
 
+// The newsstand focuses the Paper on one category / publisher / region, then
+// hands back to the Paper.
+function focusTopic(topic) {
+  currentState.topicFilter = topic;
+  currentState.sourceFilter = null;
+  navigate('stand');
+}
+function focusSource(sourceId) {
+  currentState.sourceFilter = sourceId;
+  currentState.topicFilter = null;
+  navigate('stand');
+}
+function focusRegion(region) {
+  currentState.regionFilter = region;
+  currentState.topicFilter = null;
+  currentState.sourceFilter = null;
+  navigate('stand');
+}
+function clearFocus() {
+  currentState.topicFilter = null;
+  currentState.sourceFilter = null;
+  rerender();
+}
+
 function updateSetting(key, value) {
   setSetting(key, value);
   currentState.settings = getSettings();
@@ -561,6 +602,10 @@ const actions = {
   shareItem,
   setSearchQuery,
   setRegionFilter,
+  focusTopic,
+  focusSource,
+  focusRegion,
+  clearFocus,
   updateSetting,
   ensureArticle,
   refreshView,

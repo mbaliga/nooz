@@ -1619,19 +1619,34 @@ h1, h2, h3, h4 {
   margin-top: var(--space-xs);
 }
 
-/* ---- Newspaper mode: sheets you turn ----------------------------------- */
-.nooz-book { perspective: 1800px; }
-.nooz-book.is-spread {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
+/* ---- Newspaper mode: real turning pages -------------------------------- */
+.nooz-book {
+  position: relative;
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  perspective: 2400px;
 }
+.nooz-book:not(.is-spread) { display: block; }
+.nooz-page {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--paper-raised);
+}
+/* The two open leaves share a spine seam in the middle of a spread. */
+.nooz-book.is-spread .nooz-page--left .nooz-sheet { border-right: none; }
 .nooz-sheet {
+  height: 100%;
   background: var(--paper-raised);
   border: 1px solid var(--paper-hairline);
   padding: var(--space-lg);
-  transform-origin: left center;
-  backface-visibility: hidden;
+}
+.nooz-page--blank { display: flex; align-items: center; justify-content: center; }
+.nooz-page-end {
+  font-family: var(--font-serif);
+  color: var(--paper-ink-faint);
+  letter-spacing: 0.3em;
+  padding: var(--space-xxl);
 }
 .nooz-folio {
   font-family: var(--font-sans);
@@ -1644,16 +1659,51 @@ h1, h2, h3, h4 {
   padding-bottom: var(--space-xs);
   border-bottom: 1px solid var(--paper-hairline);
 }
-@keyframes nooz-turn-fwd {
-  from { transform: rotateY(88deg); opacity: 0; }
-  to { transform: rotateY(0); opacity: 1; }
+
+/* The hinged leaf that actually turns. It sits over one half of the spread
+   and rotates around the spine; its two faces are the page you leave and the
+   page you turn to. */
+.nooz-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  transform-style: preserve-3d;
+  z-index: 4;
 }
-@keyframes nooz-turn-back {
-  from { transform: rotateY(-88deg); opacity: 0; }
-  to { transform: rotateY(0); opacity: 1; }
+.nooz-book:not(.is-spread) .nooz-leaf { width: 100%; }
+.nooz-leaf--right { right: 0; transform-origin: left center; }
+.nooz-leaf--left { left: 0; transform-origin: right center; }
+.nooz-leaf-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  overflow: hidden;
+  background: var(--paper-raised);
 }
-.nooz-sheet.turn-in-fwd { animation: nooz-turn-fwd 0.45s ease; }
-.nooz-sheet.turn-in-back { animation: nooz-turn-back 0.45s ease; transform-origin: right center; }
+.nooz-leaf-back { transform: rotateY(180deg); }
+/* a soft page shadow that deepens as the leaf lifts */
+.nooz-leaf-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to var(--nooz-leaf-shade, left), rgba(0, 0, 0, 0.16), transparent 38%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.nooz-leaf.is-turning-fwd .nooz-leaf-face::after,
+.nooz-leaf.is-turning-back .nooz-leaf-face::after { opacity: 1; }
+@keyframes nooz-leaf-fwd {
+  from { transform: rotateY(0); }
+  to { transform: rotateY(-180deg); }
+}
+@keyframes nooz-leaf-back {
+  from { transform: rotateY(0); }
+  to { transform: rotateY(180deg); }
+}
+.nooz-leaf.is-turning-fwd { animation: nooz-leaf-fwd 0.62s cubic-bezier(0.4, 0.1, 0.3, 1) forwards; }
+.nooz-leaf.is-turning-back { animation: nooz-leaf-back 0.62s cubic-bezier(0.4, 0.1, 0.3, 1) forwards; }
 .nooz-pager {
   display: flex;
   align-items: center;
@@ -1704,8 +1754,93 @@ h1, h2, h3, h4 {
 .nooz-selpop-btn:hover { background: rgba(255, 255, 255, 0.14); }
 .nooz-selpop-sep { width: 1px; background: rgba(255, 255, 255, 0.22); }
 
-/* ---- Narrow: newspaper spread folds to one page ------------------------ */
-@media (max-width: 1023px) {
-  .nooz-book.is-spread { grid-template-columns: 1fr; }
+/* ---- The Stand (newsstand) --------------------------------------------- */
+.nooz-newsstand {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-lg) var(--space-xxl);
 }
+.nooz-newsstand-header { text-align: center; margin-bottom: var(--space-lg); }
+.nooz-newsstand-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+}
+.nooz-newsstand-sub {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--paper-ink-dim);
+  margin-top: var(--space-xxs);
+}
+.nooz-seg {
+  display: flex;
+  width: max-content;
+  margin: 0 auto var(--space-xl);
+  border: 1px solid var(--paper-hairline-strong);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.nooz-seg-btn {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  padding: var(--space-xs) var(--space-lg);
+  color: var(--paper-ink-dim);
+}
+.nooz-seg-btn.is-active { background: var(--paper-ink); color: var(--paper-field); }
+.nooz-rack {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--space-lg);
+  align-items: start;
+}
+.nooz-paper-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  text-align: left;
+  padding: var(--space-md);
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-hairline);
+  box-shadow: 3px 3px 0 var(--paper-hairline), 6px 6px 0 rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.nooz-paper-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 6px 0 var(--paper-hairline-strong), 9px 12px 16px rgba(0, 0, 0, 0.10);
+}
+.nooz-paper-mast { text-align: center; }
+.nooz-paper-name { font-family: var(--font-serif); font-weight: 700; font-size: 1.3rem; line-height: 1.05; }
+.nooz-paper-rule { height: 2px; background: var(--paper-ink); margin: var(--space-xxs) 0; }
+.nooz-paper-count {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--paper-ink-dim);
+  text-align: center;
+}
+.nooz-paper-lead { font-family: var(--font-serif); font-weight: 700; font-size: 1rem; line-height: 1.2; margin-top: var(--space-xxs); }
+.nooz-paper-second {
+  font-family: var(--font-serif);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+  line-height: 1.25;
+  border-top: 1px solid var(--paper-hairline);
+  padding-top: var(--space-xxs);
+  margin-top: var(--space-xxs);
+}
+
+/* ---- Focus chip on the Paper toolbar ----------------------------------- */
+.nooz-focus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: 999px;
+  background: var(--paper-ink);
+  color: var(--paper-field);
+}
+.nooz-focus-x { font-size: 1rem; line-height: 1; }
 
