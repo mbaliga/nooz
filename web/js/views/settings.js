@@ -17,11 +17,76 @@ export function render(container, state, actions) {
 
   const s = state.settings || {};
 
+  root.appendChild(buildReadingModeSection(s, actions));
+  root.appendChild(buildImageStyleSection(s, actions));
   root.appendChild(buildFontSection(s, actions));
   root.appendChild(buildPaperSection(s, actions));
   root.appendChild(buildToggleSection(s, actions));
 
   container.appendChild(root);
+}
+
+function buildReadingModeSection(s, actions) {
+  const section = document.createElement('div');
+  section.className = 'nooz-stack nooz-stack--xs';
+  section.appendChild(sectionTitle('Layout'));
+
+  const row = document.createElement('div');
+  row.className = 'nooz-choice-row';
+  const modes = [
+    { key: 'continuous', label: 'Continuous', desc: 'One scrolling paper' },
+    { key: 'newspaper', label: 'Newspaper', desc: 'Turn the pages' },
+  ];
+  const current = s.readingMode || 'continuous';
+  for (const m of modes) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nooz-choice nooz-choice--wide';
+    if (current === m.key) btn.classList.add('is-active');
+    btn.setAttribute('aria-pressed', current === m.key ? 'true' : 'false');
+    const label = document.createElement('span');
+    label.className = 'nooz-choice-label nooz-choice-label--strong';
+    label.textContent = m.label;
+    btn.appendChild(label);
+    const desc = document.createElement('span');
+    desc.className = 'nooz-choice-label';
+    desc.textContent = m.desc;
+    btn.appendChild(desc);
+    btn.addEventListener('click', () => actions.updateSetting('readingMode', m.key));
+    row.appendChild(btn);
+  }
+  section.appendChild(row);
+  return section;
+}
+
+function buildImageStyleSection(s, actions) {
+  const section = document.createElement('div');
+  section.className = 'nooz-stack nooz-stack--xs';
+  section.appendChild(sectionTitle('Images'));
+
+  const row = document.createElement('div');
+  row.className = 'nooz-choice-row';
+  const styles = [
+    { key: 'halftone', label: 'Halftone' },
+    { key: 'bw', label: 'Black & white' },
+    { key: 'colour', label: 'Colour' },
+  ];
+  const current = s.imageStyle || 'halftone';
+  for (const st of styles) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nooz-choice';
+    if (current === st.key) btn.classList.add('is-active');
+    btn.setAttribute('aria-pressed', current === st.key ? 'true' : 'false');
+    const label = document.createElement('span');
+    label.className = 'nooz-choice-label';
+    label.textContent = st.label;
+    btn.appendChild(label);
+    btn.addEventListener('click', () => actions.updateSetting('imageStyle', st.key));
+    row.appendChild(btn);
+  }
+  section.appendChild(row);
+  return section;
 }
 
 function sectionTitle(text) {

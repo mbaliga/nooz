@@ -1481,3 +1481,231 @@ h1, h2, h3, h4 {
   .nooz-columns { column-width: 220px; }
 }
 
+/* =========================================================================
+   11. PAPER + DRAWERS + HALFTONE + LOOM BAR + NEWSPAPER + SELECTION
+   ========================================================================= */
+
+:root { --nooz-footer-h: 56px; }
+
+/* ---- Stage / right-hand drawer ----------------------------------------- */
+.nooz-view {
+  position: relative;
+  overflow-x: clip;
+}
+.nooz-stage {
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+.nooz-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: var(--nooz-footer-h);
+  width: min(440px, 92vw);
+  background: var(--paper-raised);
+  border-left: 1px solid var(--paper-hairline-strong);
+  transform: translateX(101%);
+  transition: transform 0.35s ease;
+  z-index: 30;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: -14px 0 34px rgba(0, 0, 0, 0.10);
+}
+.has-drawer .nooz-drawer { transform: translateX(0); }
+@media (min-width: 1024px) {
+  .has-drawer .nooz-stage { transform: translateX(-220px); }
+}
+.nooz-drawer-close {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--paper-raised);
+  z-index: 2;
+}
+.nooz-drawer-content { padding: 0 var(--space-lg) var(--space-xl); }
+.nooz-drawer .nooz-layout,
+.nooz-drawer .nooz-loom,
+.nooz-drawer .nooz-reader-layout { max-width: none; margin: 0; padding: 0; }
+
+/* ---- Paper (front page fills the stage now; rail moved to a drawer) ----- */
+.nooz-paper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-lg) var(--space-xxl);
+}
+
+/* ---- Paper toolbar ----------------------------------------------------- */
+.nooz-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+.nooz-toolbar-search { flex: 1 1 200px; max-width: 340px; }
+.nooz-toolbar-regions { display: flex; flex-wrap: wrap; gap: var(--space-xxs); }
+.nooz-toolbar-refresh { margin-left: auto; }
+
+/* ---- Image frames: halftone (default) / B&W / colour ------------------- */
+.nooz-img {
+  position: relative;
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  background: var(--paper-raised);
+}
+.nooz-img > img { display: block; width: 100%; height: auto; margin: 0; }
+:root[data-imgstyle="colour"] .nooz-img > img { filter: none; }
+:root[data-imgstyle="bw"] .nooz-img > img { filter: grayscale(1) contrast(1.05); }
+:root[data-imgstyle="halftone"] .nooz-img > img { filter: grayscale(1) contrast(1.35) brightness(1.05); }
+:root[data-imgstyle="halftone"] .nooz-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.85) 30%, transparent 33%);
+  background-size: 3.5px 3.5px;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+:root[data-paper="slate"][data-imgstyle="halftone"] .nooz-img::after {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.6) 30%, transparent 33%);
+  mix-blend-mode: screen;
+}
+:root[data-images="off"] .nooz-img { display: none; }
+.nooz-img--inline { margin: var(--space-md) 0; }
+
+/* The Halftone / B&W / Colour chip on the most prominent photo */
+.nooz-img-chip {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.55);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.nooz-img-chip-btn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.72);
+}
+.nooz-img-chip-btn.is-active { background: rgba(255, 255, 255, 0.95); color: #141414; }
+.nooz-img-chip .nooz-icon { width: 15px; height: 15px; }
+
+/* ---- Loom bar (the rounded multi-colour strip) ------------------------- */
+.nooz-loombar-wrap { margin-bottom: var(--space-lg); }
+.nooz-loombar {
+  display: flex;
+  height: 22px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--paper-hairline);
+}
+.nooz-loombar-seg { min-width: 3px; }
+.nooz-loombar-caption {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+  margin-top: var(--space-xs);
+}
+
+/* ---- Newspaper mode: sheets you turn ----------------------------------- */
+.nooz-book { perspective: 1800px; }
+.nooz-book.is-spread {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+.nooz-sheet {
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-hairline);
+  padding: var(--space-lg);
+  transform-origin: left center;
+  backface-visibility: hidden;
+}
+.nooz-folio {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--paper-ink-dim);
+  text-align: center;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--paper-hairline);
+}
+@keyframes nooz-turn-fwd {
+  from { transform: rotateY(88deg); opacity: 0; }
+  to { transform: rotateY(0); opacity: 1; }
+}
+@keyframes nooz-turn-back {
+  from { transform: rotateY(-88deg); opacity: 0; }
+  to { transform: rotateY(0); opacity: 1; }
+}
+.nooz-sheet.turn-in-fwd { animation: nooz-turn-fwd 0.45s ease; }
+.nooz-sheet.turn-in-back { animation: nooz-turn-back 0.45s ease; transform-origin: right center; }
+.nooz-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+.nooz-pager-label {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+}
+
+/* ---- Continue-reading affordance --------------------------------------- */
+.nooz-continue {
+  display: inline-block;
+  margin-top: var(--space-xs);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--paper-signal-danger);
+}
+
+/* ---- Settings: wide choice + strong label ------------------------------ */
+.nooz-choice--wide { flex-direction: column; align-items: flex-start; min-width: 132px; }
+.nooz-choice-label--strong {
+  color: var(--paper-ink);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+}
+
+/* ---- Selection search popover ------------------------------------------ */
+.nooz-selpop {
+  position: absolute;
+  z-index: 60;
+  display: none;
+  align-items: stretch;
+  background: var(--paper-ink);
+  color: var(--paper-field);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  overflow: hidden;
+}
+.nooz-selpop.is-visible { display: flex; }
+.nooz-selpop-btn { padding: 7px 13px; color: var(--paper-field); white-space: nowrap; }
+.nooz-selpop-btn:hover { background: rgba(255, 255, 255, 0.14); }
+.nooz-selpop-sep { width: 1px; background: rgba(255, 255, 255, 0.22); }
+
+/* ---- Narrow: newspaper spread folds to one page ------------------------ */
+@media (max-width: 1023px) {
+  .nooz-book.is-spread { grid-template-columns: 1fr; }
+}
+

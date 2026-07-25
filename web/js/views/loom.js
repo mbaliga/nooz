@@ -15,6 +15,14 @@ import { classifyItem, TOPICS, TOPIC_LABEL } from '../topics.js';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const REGIONS = ['Europe', 'Americas', 'Asia', 'Middle East', 'Africa', 'Australia/Pacific'];
 
+// A distinct hue per topic -- the loom is the one place the paper allows
+// colour, matching the app's multi-coloured day bar.
+const PALETTE = {
+  politics: '#4C6EF5', conflict: '#E8590C', business: '#2B8A3E', tech: '#7048E8',
+  science: '#1098AD', climate: '#66A80F', health: '#E64980', culture: '#F08C00',
+  sport: '#0CA678', general: '#868E96',
+};
+
 export function render(container, state, actions) {
   container.replaceChildren();
 
@@ -57,11 +65,45 @@ export function render(container, state, actions) {
   })).filter((r) => r.flowed > 0)
     .sort((a, b) => b.flowed - a.flowed);
 
+  root.appendChild(buildLoomBar(rows, items.length));
   root.appendChild(buildWeave(rows));
   root.appendChild(buildLegend(items, state));
   root.appendChild(buildRegionStrip(items, state));
 
   container.appendChild(root);
+}
+
+// ---------------------------------------------------------------------------
+// The loom bar: a rounded, multi-coloured strip of the day's mix -- the thing
+// that (in the drawer) expands into the full weave below it.
+// ---------------------------------------------------------------------------
+
+function buildLoomBar(rows, total) {
+  const wrap = document.createElement('div');
+  wrap.className = 'nooz-loombar-wrap';
+
+  const bar = document.createElement('div');
+  bar.className = 'nooz-loombar';
+  bar.setAttribute('role', 'img');
+  bar.setAttribute('aria-label', 'The day, by topic.');
+
+  const sum = rows.reduce((a, r) => a + r.flowed, 0) || 1;
+  for (const row of rows) {
+    const seg = document.createElement('div');
+    seg.className = 'nooz-loombar-seg';
+    seg.style.flexGrow = String(row.flowed);
+    seg.style.background = PALETTE[row.key] || PALETTE.general;
+    seg.title = `${row.label}: ${row.flowed}`;
+    bar.appendChild(seg);
+  }
+  wrap.appendChild(bar);
+
+  const caption = document.createElement('p');
+  caption.className = 'nooz-loombar-caption';
+  caption.textContent = `${total} ${total === 1 ? 'story' : 'stories'} flowed, across ${rows.length} ${rows.length === 1 ? 'topic' : 'topics'}.`;
+  wrap.appendChild(caption);
+
+  return wrap;
 }
 
 // ---------------------------------------------------------------------------
@@ -102,16 +144,19 @@ function buildWeave(rows) {
     const yFlowed = baseline - flowedH;
     const yRead = baseline - readH;
 
-    // Full flowed thread (faint).
+    const hue = PALETTE[row.key] || PALETTE.general;
+
+    // Full flowed thread (faint, topic-tinted).
     const faint = document.createElementNS(SVG_NS, 'rect');
     faint.setAttribute('x', x.toFixed(2));
     faint.setAttribute('y', yFlowed.toFixed(2));
     faint.setAttribute('width', barW.toFixed(2));
     faint.setAttribute('height', flowedH.toFixed(2));
     faint.setAttribute('class', 'nooz-thread-flowed');
+    faint.style.fill = hue;
     svg.appendChild(faint);
 
-    // Read portion (inked), rising from the baseline.
+    // Read portion (inked, full topic colour), rising from the baseline.
     if (readH > 0) {
       const ink = document.createElementNS(SVG_NS, 'rect');
       ink.setAttribute('x', x.toFixed(2));
@@ -119,6 +164,7 @@ function buildWeave(rows) {
       ink.setAttribute('width', barW.toFixed(2));
       ink.setAttribute('height', readH.toFixed(2));
       ink.setAttribute('class', 'nooz-thread-read');
+      ink.style.fill = hue;
       svg.appendChild(ink);
     }
   });
