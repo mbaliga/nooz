@@ -163,11 +163,23 @@ function buildPaper(group, actions) {
   greek.className = 'nooz-np-greek';
   paper.appendChild(greek);
 
-  paper.addEventListener('click', () => {
+  const openThePaper = () => {
     const f = group.focus;
     if (f.kind === 'topic') actions.focusTopic(f.value);
     else if (f.kind === 'source') actions.focusSource(f.value);
     else actions.focusRegion(f.value);
+  };
+
+  // Clicking a pile "opens" the folded paper -- it unfolds and lifts toward
+  // you, then hands off to the Paper (front page) focused on that slice.
+  paper.addEventListener('click', () => {
+    if (paper.dataset.opening === 'yes') return;
+    paper.dataset.opening = 'yes';
+    paper.classList.add('is-opening');
+    let done = false;
+    const go = () => { if (done) return; done = true; openThePaper(); };
+    paper.addEventListener('animationend', go, { once: true });
+    setTimeout(go, 620); // safety net (reduced motion / backgrounded tab)
   });
 
   return paper;

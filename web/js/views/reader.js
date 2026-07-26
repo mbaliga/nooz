@@ -14,6 +14,7 @@ import { sanitizeHtml } from '../sanitize.js';
 import { annotate } from '../lens.js';
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
 import { frameImage, frameBodyImages } from '../images.js';
+import { buildLoomStrip } from './loom.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -24,6 +25,10 @@ export function render(container, state, actions) {
   layout.className = 'nooz-reader-layout';
 
   layout.appendChild(buildBackControl(actions));
+
+  // The loom lives here too, not just in its own tab: a coloured strip of the
+  // day's mix that expands into the full Loom when tapped.
+  if ((state.items || []).length) layout.appendChild(buildLoomStrip(state, actions));
 
   const item = findCurrentItem(state);
   if (!item) {

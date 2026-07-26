@@ -74,6 +74,84 @@ export function render(container, state, actions) {
 }
 
 // ---------------------------------------------------------------------------
+// The loom strip: the same rounded multi-colour bar, but standalone and
+// clickable, dropped into the Paper and the Reader so the loom is always in
+// reach. Tapping it slides it aside and opens the full Loom (the drawer, whose
+// own first element is this very bar -- so it reads as the strip expanding).
+// ---------------------------------------------------------------------------
+
+export function buildLoomStrip(state, actions) {
+  const rows = topicRows(state);
+  const total = (state.items || []).length;
+
+  const strip = document.createElement('button');
+  strip.type = 'button';
+  strip.className = 'nooz-loomstrip';
+  strip.setAttribute('aria-label', 'Open the Loom -- what flowed, woven against what you read');
+
+  const label = document.createElement('span');
+  label.className = 'nooz-loomstrip-label';
+  label.textContent = 'The Loom';
+  strip.appendChild(label);
+
+  const bar = document.createElement('span');
+  bar.className = 'nooz-loombar nooz-loomstrip-bar';
+  if (rows.length === 0) {
+    bar.classList.add('is-empty');
+  } else {
+    for (const row of rows) {
+      const seg = document.createElement('span');
+      seg.className = 'nooz-loombar-seg';
+      seg.style.flexGrow = String(row.flowed);
+      seg.style.background = PALETTE[row.key] || PALETTE.general;
+      bar.appendChild(seg);
+    }
+  }
+  strip.appendChild(bar);
+
+  const readCount = (state.items || []).filter((it) => state.readIds && state.readIds.has(it.id)).length;
+  const hint = document.createElement('span');
+  hint.className = 'nooz-loomstrip-hint';
+  hint.textContent = total ? `${readCount}/${total} read` : 'Expand';
+  strip.appendChild(hint);
+
+  const chev = document.createElement('span');
+  chev.className = 'nooz-loomstrip-chev';
+  chev.setAttribute('aria-hidden', 'true');
+  chev.textContent = '›';
+  strip.appendChild(chev);
+
+  // Slide the strip aside, then open the Loom drawer (which slides in from the
+  // right); the drawer's own bar is the same strip, so it reads as one motion.
+  strip.addEventListener('click', () => {
+    if (strip.dataset.launching === 'yes') return;
+    strip.dataset.launching = 'yes';
+    strip.classList.add('is-launching');
+    let done = false;
+    const go = () => { if (done) return; done = true; actions.goTo('loom'); };
+    strip.addEventListener('transitionend', go, { once: true });
+    setTimeout(go, 360);
+  });
+
+  return strip;
+}
+
+// Flowed/read counts per topic, ordered like the loom itself.
+function topicRows(state) {
+  const items = state.items || [];
+  const flowed = new Map();
+  const read = new Map();
+  for (const item of items) {
+    const topic = classifyItem(item);
+    flowed.set(topic, (flowed.get(topic) || 0) + 1);
+    if (state.readIds && state.readIds.has(item.id)) read.set(topic, (read.get(topic) || 0) + 1);
+  }
+  return TOPICS.map((t) => ({ key: t.key, label: t.label, flowed: flowed.get(t.key) || 0, read: read.get(t.key) || 0 }))
+    .filter((r) => r.flowed > 0)
+    .sort((a, b) => b.flowed - a.flowed);
+}
+
+// ---------------------------------------------------------------------------
 // The loom bar: a rounded, multi-coloured strip of the day's mix -- the thing
 // that (in the drawer) expands into the full weave below it.
 // ---------------------------------------------------------------------------

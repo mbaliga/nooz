@@ -44,10 +44,10 @@ const VIEW_RENDERERS = {
   clippings: renderClippings,
   settings: renderSettings,
 };
-// Footer nav order. Reader has no nav entry (it's reached by opening an item);
-// Settings sits at the end, slightly apart. "Stand" is the front PAPER; the
-// newsstand ("Stand") is a separate browse-the-papers surface.
-const NAV_VIEWS = ['stand', 'loom', 'sources', 'clippings', 'settings', 'newsstand'];
+// Footer nav order. Reader has no nav entry (it's reached by opening an item).
+// The newsstand ("Stand") sits first (left-most) -- it's where you pick a paper;
+// "Paper" is the front page you read. Settings sits at the end, slightly apart.
+const NAV_VIEWS = ['newsstand', 'stand', 'loom', 'sources', 'clippings', 'settings'];
 const NAV_LABELS = { stand: 'Paper', loom: 'Loom', sources: 'Sources', clippings: 'Clippings', settings: 'Settings', newsstand: 'Stand' };
 // Full-stage views replace the Paper; everything else opens as a right drawer.
 const STAGE_VIEWS = new Set(['stand', 'reader', 'newsstand']);
@@ -109,7 +109,19 @@ async function boot() {
   buildShell();
   installSelectionSearch();
   onRoute(handleRoute);
+  installResizeReflow();
   refreshAll();
+}
+
+// The Newspaper layout measures the masthead and fits a spread to the frame, so
+// it has to re-lay-out when the window changes size (and when the wide/narrow
+// two-up threshold is crossed). Debounced so a drag-resize doesn't thrash.
+function installResizeReflow() {
+  let timer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => rerender(), 150);
+  });
 }
 
 function rebuildItemsById() {
@@ -169,7 +181,7 @@ function buildShell() {
     const link = document.createElement('button');
     link.type = 'button';
     link.className = 'nooz-footer-link';
-    if (view === 'newsstand') link.classList.add('nooz-footer-link--end');
+    if (view === 'settings') link.classList.add('nooz-footer-link--end');
     link.textContent = NAV_LABELS[view];
     // Clicking the already-open drawer tab closes it (back to the bare Paper).
     link.addEventListener('click', () => {

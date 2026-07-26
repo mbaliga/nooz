@@ -13,10 +13,14 @@
 
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
 import { frameImage } from '../images.js';
+import { buildLoomStrip } from './loom.js';
 
 // Which spread of the Newspaper mode is open; kept across background re-renders.
 // Spread 0 is the front page (shown on its own); spread 1 is pages 2-3, etc.
 let newspaperSpread = 0;
+// Direction of the last turn (-1/0/+1) so the freshly-rendered spread can play
+// its turn-in animation, then it's reset.
+let lastTurnDir = 0;
 
 export function render(container, state, actions) {
   container.replaceChildren();
@@ -43,6 +47,10 @@ export function render(container, state, actions) {
     container.appendChild(paper);
     return;
   }
+
+  // The loom, always in reach: a coloured strip of the day's mix that expands
+  // into the full Loom when tapped.
+  paper.appendChild(buildLoomStrip(state, actions));
 
   const mode = state.settings && state.settings.readingMode === 'newspaper' ? 'newspaper' : 'continuous';
   if (mode === 'newspaper') paper.appendChild(buildNewspaper(state, actions));
@@ -182,10 +190,13 @@ function buildFrontPage(state, actions) {
 }
 
 // ---------------------------------------------------------------------------
-// Newspaper mode -- a real paper you turn. The front page is shown on its own
-// (on the right, like opening a paper); each page is a fixed newspaper width.
-// Turning reveals the 2-3 spread, then 4-5, and so on. When there isn't room
-// for two pages side by side it stays a single page and turns one at a time.
+// Newspaper mode -- a real paper you turn. Every page is exactly as wide as the
+// Nooz masthead above it (measured at layout time). The front page is shown on
+// its own at that full width; turning opens the 2-3 spread, then 4-5, and so on.
+// An open spread is two full pages side by side, so it's wider than the frame --
+// it's zoomed to fit so you see both, the way an open broadsheet reads. On a
+// narrow screen a spread wouldn't be legible, so it stays a single page you turn
+// one at a time.
 // ---------------------------------------------------------------------------
 
 function paginate(state) {
@@ -204,20 +215,23 @@ function paginate(state) {
   return { pages, showImages, imageStyle };
 }
 
-// Room for two fixed-width pages side by side?
-function isWide() { return window.innerWidth >= 960; }
+// Room to open a two-page spread and still read it? Below this we turn single
+// full-width pages instead.
+function isWide() { return window.innerWidth >= 900; }
 
+// Front page is its own spread; after that, two pages per spread when wide.
 function spreadCount(pageCount, wide) {
   if (pageCount <= 0) return 1;
   return wide ? 1 + Math.ceil((pageCount - 1) / 2) : pageCount;
 }
 
-// The page indices a spread shows. The front (spread 0) sits on the right with
-// a blank left -- like opening a newspaper; later spreads are the natural pairs.
-function slots(spread, wide) {
-  if (!wide) return { left: spread, right: null };
-  if (spread === 0) return { left: null, right: 0 };
-  return { left: 2 * spread - 1, right: 2 * spread };
+// The page indices a spread shows. Front (spread 0) is a single page shown on
+// its own; each later spread is the natural pair (2-3, 4-5, ...). Narrow always
+// shows one page.
+function pagesForSpread(spread, wide) {
+  if (!wide) return [spread];
+  if (spread === 0) return [0];
+  return [2 * spread - 1, 2 * spread];
 }
 
 function buildNewspaper(state, actions) {
@@ -228,108 +242,67 @@ function buildNewspaper(state, actions) {
   if (newspaperSpread > maxSpread) newspaperSpread = maxSpread;
   if (newspaperSpread < 0) newspaperSpread = 0;
 
-  const book = document.createElement('div');
-  book.className = 'nooz-book' + (wide ? ' is-spread' : '');
-  book.dataset.turning = 'no';
+  const idxs = pagesForSpread(newspaperSpread, wide).filter((i) => i >= 0 && i < pages.length);
+  const isSpread = idxs.length > 1;
 
-  const v = slots(newspaperSpread, wide);
-  const leftEl = pageElement(ctx, v.left);
-  leftEl.classList.add('nooz-page--left');
-  book.appendChild(leftEl);
-  let rightEl = null;
-  if (wide) {
-    rightEl = pageElement(ctx, v.right);
-    rightEl.classList.add('nooz-page--right');
-    book.appendChild(rightEl);
+  // frame (clips + centres) > scaler (fit-to-width) > book (the turning pages)
+  const frame = document.createElement('div');
+  frame.className = 'nooz-np-frame';
+
+  const scaler = document.createElement('div');
+  scaler.className = 'nooz-np-scaler';
+
+  const book = document.createElement('div');
+  book.className = 'nooz-book' + (isSpread ? ' is-spread' : '');
+  for (const idx of idxs) {
+    const page = document.createElement('div');
+    page.className = 'nooz-page';
+    page.appendChild(buildSheet(ctx, idx));
+    book.appendChild(page);
   }
+  // The freshly-rendered spread plays its turn-in on the side it came from.
+  if (lastTurnDir > 0) book.classList.add('is-turn-fwd');
+  else if (lastTurnDir < 0) book.classList.add('is-turn-back');
+  lastTurnDir = 0;
+
+  scaler.appendChild(book);
+  frame.appendChild(scaler);
 
   const doTurn = (dir) => {
-    if (book.dataset.turning !== 'no') return;
     const target = Math.min(maxSpread, Math.max(0, newspaperSpread + dir));
     if (target === newspaperSpread) return;
-    animateTurn({ ctx, book, leftEl, rightEl, wide, dir, from: newspaperSpread, target });
+    lastTurnDir = dir;
+    newspaperSpread = target;
+    actions.refreshView();
   };
 
   const wrap = document.createElement('div');
   wrap.className = 'nooz-newspaper';
-  wrap.appendChild(book);
+  wrap.appendChild(frame);
   wrap.appendChild(buildPager(newspaperSpread, maxSpread, pages.length, wide, doTurn));
+
+  fitNewspaper(wrap, frame, scaler, book);
   return wrap;
 }
 
-// One page slot: a sheet, the blank beside the front, or the end-of-paper mark.
-function pageElement(ctx, idx) {
-  const el = document.createElement('div');
-  el.className = 'nooz-page';
-  el.appendChild(sheetFor(ctx, idx));
-  return el;
-}
-
-// A real page-turn: a hinged leaf rotates around the spine, its front the page
-// you're leaving and its back the page you're turning to, the next spread
-// revealed underneath as it lifts.
-function animateTurn(o) {
-  const { ctx, book, leftEl, rightEl, wide, dir, from, target } = o;
-  const forward = dir > 0;
-  book.dataset.turning = 'yes';
-  const f = slots(from, wide);
-  const t = slots(target, wide);
-
-  const leaf = document.createElement('div');
-  leaf.className = 'nooz-leaf ' + (forward ? 'nooz-leaf--right' : 'nooz-leaf--left');
-  const front = document.createElement('div');
-  front.className = 'nooz-leaf-face nooz-leaf-front';
-  const back = document.createElement('div');
-  back.className = 'nooz-leaf-face nooz-leaf-back';
-
-  if (wide) {
-    if (forward) {
-      // Reveal the destination's right page under the lifting right leaf; the
-      // leaf's back becomes the destination's left page.
-      rightEl.replaceChildren(sheetFor(ctx, t.right));
-      front.appendChild(sheetFor(ctx, f.right));
-      back.appendChild(sheetFor(ctx, t.left));
-    } else {
-      leftEl.replaceChildren(sheetFor(ctx, t.left));
-      front.appendChild(sheetFor(ctx, f.left));
-      back.appendChild(sheetFor(ctx, t.right));
-    }
-  } else {
-    leftEl.replaceChildren(sheetFor(ctx, t.left));
-    front.appendChild(sheetFor(ctx, f.left));
-  }
-
-  leaf.appendChild(front);
-  leaf.appendChild(back);
-  book.appendChild(leaf);
-
-  const finish = () => {
-    if (book.dataset.turning !== 'yes') return;
-    book.dataset.turning = 'done';
-    newspaperSpread = target;
-    ctx.actions.refreshView();
+// Measure the masthead so each page is exactly its width, then scale the book so
+// the whole (possibly two-page) spread fits the frame. Runs after layout, and
+// once more shortly after in case a lead image changes the height.
+function fitNewspaper(wrap, frame, scaler, book) {
+  const apply = () => {
+    if (!wrap.isConnected) return;
+    const paper = wrap.closest('.nooz-paper');
+    const mast = paper && paper.querySelector('.nooz-masthead');
+    const pageW = Math.round((mast ? mast.getBoundingClientRect().width : frame.clientWidth) || frame.clientWidth);
+    if (pageW > 0) frame.style.setProperty('--page-w', pageW + 'px');
+    const natural = book.scrollWidth || pageW;
+    const avail = frame.clientWidth || pageW;
+    const scale = Math.min(1, avail / natural);
+    scaler.style.transform = scale < 0.999 ? `scale(${scale})` : 'none';
+    frame.style.height = Math.ceil(scaler.getBoundingClientRect().height) + 'px';
   };
-  leaf.addEventListener('animationend', finish, { once: true });
-  setTimeout(finish, 950); // safety net (reduced-motion, backgrounded tab, ...)
-  requestAnimationFrame(() => leaf.classList.add(forward ? 'is-turning-fwd' : 'is-turning-back'));
-}
-
-function sheetFor(ctx, idx) {
-  if (idx === null || idx === undefined) return emptySheet(false);
-  if (idx >= 0 && idx < ctx.pages.length) return buildSheet(ctx, idx);
-  return emptySheet(true);
-}
-
-function emptySheet(end) {
-  const s = document.createElement('section');
-  s.className = 'nooz-sheet nooz-sheet--empty';
-  if (end) {
-    const dots = document.createElement('div');
-    dots.className = 'nooz-page-end';
-    dots.textContent = '·  ·  ·';
-    s.appendChild(dots);
-  }
-  return s;
+  requestAnimationFrame(apply);
+  setTimeout(apply, 260);
 }
 
 function buildPager(spread, maxSpread, pageCount, wide, doTurn) {
