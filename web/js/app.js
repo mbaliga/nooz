@@ -88,6 +88,9 @@ let shellEl = null;
 let navLinksEl = {};
 let toastEl = null;
 let toastTimer = null;
+let searchToggleEl = null;
+let searchBarEl = null;
+let searchInputEl = null;
 
 async function boot() {
   currentState.settings = loadSettings();
@@ -176,6 +179,16 @@ function buildShell() {
   nav.className = 'nooz-footer-nav';
   nav.setAttribute('aria-label', 'Primary');
 
+  // Search is just an icon, to the left of the Stand. Tapping it opens a plain
+  // search bar centred at the bottom -- nothing between you and the paper.
+  searchToggleEl = document.createElement('button');
+  searchToggleEl.type = 'button';
+  searchToggleEl.className = 'nooz-footer-search';
+  searchToggleEl.setAttribute('aria-label', 'Search the paper');
+  searchToggleEl.appendChild(makeSearchIcon());
+  searchToggleEl.addEventListener('click', toggleSearch);
+  nav.appendChild(searchToggleEl);
+
   navLinksEl = {};
   for (const view of NAV_VIEWS) {
     const link = document.createElement('button');
@@ -195,6 +208,31 @@ function buildShell() {
   footer.appendChild(nav);
   shell.appendChild(footer);
 
+  // The search bar: hidden until the footer icon is tapped, then it opens
+  // centred just above the footer.
+  searchBarEl = document.createElement('div');
+  searchBarEl.className = 'nooz-searchbar';
+  const searchForm = document.createElement('form');
+  searchForm.className = 'nooz-searchbar-form';
+  searchForm.addEventListener('submit', (e) => e.preventDefault());
+  searchInputEl = document.createElement('input');
+  searchInputEl.type = 'search';
+  searchInputEl.className = 'nooz-searchbar-input';
+  searchInputEl.placeholder = 'Search the paper';
+  searchInputEl.setAttribute('aria-label', 'Search the paper');
+  searchInputEl.addEventListener('input', (e) => setSearchQuery(e.target.value));
+  searchInputEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
+  searchForm.appendChild(searchInputEl);
+  const searchClear = document.createElement('button');
+  searchClear.type = 'button';
+  searchClear.className = 'nooz-searchbar-clear';
+  searchClear.setAttribute('aria-label', 'Close search');
+  searchClear.textContent = '×';
+  searchClear.addEventListener('click', () => { setSearchQuery(''); closeSearch(); });
+  searchForm.appendChild(searchClear);
+  searchBarEl.appendChild(searchForm);
+  shell.appendChild(searchBarEl);
+
   toastEl = document.createElement('div');
   toastEl.className = 'nooz-toast';
   toastEl.setAttribute('role', 'status');
@@ -202,10 +240,48 @@ function buildShell() {
 
   app.appendChild(shell);
 
-  // Escape closes an open drawer.
+  // Escape closes an open drawer or the search bar.
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && DRAWER_VIEWS.has(parseRoute().view)) navigate('stand');
+    if (e.key !== 'Escape') return;
+    if (shellEl.classList.contains('has-search')) closeSearch();
+    else if (DRAWER_VIEWS.has(parseRoute().view)) navigate('stand');
   });
+}
+
+function makeSearchIcon() {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 16 16');
+  svg.setAttribute('class', 'nooz-icon');
+  svg.setAttribute('aria-hidden', 'true');
+  const c = document.createElementNS(NS, 'circle');
+  c.setAttribute('cx', '7'); c.setAttribute('cy', '7'); c.setAttribute('r', '4.4');
+  c.setAttribute('fill', 'none'); c.setAttribute('stroke', 'currentColor'); c.setAttribute('stroke-width', '1.4');
+  svg.appendChild(c);
+  const l = document.createElementNS(NS, 'line');
+  l.setAttribute('x1', '10.4'); l.setAttribute('y1', '10.4'); l.setAttribute('x2', '14'); l.setAttribute('y2', '14');
+  l.setAttribute('stroke', 'currentColor'); l.setAttribute('stroke-width', '1.4'); l.setAttribute('stroke-linecap', 'round');
+  svg.appendChild(l);
+  return svg;
+}
+
+function toggleSearch() {
+  if (shellEl.classList.contains('has-search')) closeSearch();
+  else openSearch();
+}
+
+function openSearch() {
+  shellEl.classList.add('has-search');
+  searchToggleEl.classList.add('is-active');
+  searchToggleEl.setAttribute('aria-expanded', 'true');
+  searchInputEl.value = currentState.searchQuery || '';
+  searchInputEl.focus();
+}
+
+function closeSearch() {
+  shellEl.classList.remove('has-search');
+  searchToggleEl.classList.toggle('is-active', !!currentState.searchQuery);
+  searchToggleEl.setAttribute('aria-expanded', 'false');
 }
 
 function buildDrawerClose() {
@@ -550,6 +626,10 @@ async function shareItem(itemId) {
 
 function setSearchQuery(query) {
   currentState.searchQuery = query;
+  if (searchToggleEl) {
+    const active = !!query || shellEl.classList.contains('has-search');
+    searchToggleEl.classList.toggle('is-active', active);
+  }
   rerender();
 }
 

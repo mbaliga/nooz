@@ -14,6 +14,7 @@
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
 import { frameImage } from '../images.js';
 import { buildLoomStrip } from './loom.js';
+import { sanitizeHtml } from '../sanitize.js';
 
 // Which spread of the Newspaper mode is open; kept across background re-renders.
 // Spread 0 is the front page (shown on its own); spread 1 is pages 2-3, etc.
@@ -21,26 +22,32 @@ let newspaperSpread = 0;
 // Direction of the last turn (-1/0/+1) so the freshly-rendered spread can play
 // its turn-in animation, then it's reset.
 let lastTurnDir = 0;
+// The current pagination: complete articles measured into full-size pages.
+// Cached by a signature of the content + layout so turning a page doesn't
+// re-paginate; recomputed when the stories, the settings, or the size change.
+// { key, pages: [{ articleIdxs, isFront, pageNum, colH }], articles, dims }
+let plan = null;
 
 export function render(container, state, actions) {
   container.replaceChildren();
 
   const paper = document.createElement('div');
   paper.className = 'nooz-paper';
-
-  paper.appendChild(buildMasthead(state));
-  paper.appendChild(buildToolbar(state, actions));
+  const mode = state.settings && state.settings.readingMode === 'newspaper' ? 'newspaper' : 'continuous';
+  if (mode === 'newspaper') paper.classList.add('nooz-paper--news');
 
   if (state.sources.length === 0) {
+    paper.appendChild(buildMasthead(state));
     paper.appendChild(buildNoSourcesEmptyState(actions));
     container.appendChild(paper);
     return;
   }
 
   const notice = buildFetchErrorNotice(state);
-  if (notice) paper.appendChild(notice);
 
   if (state.items.length === 0) {
+    paper.appendChild(buildMasthead(state));
+    if (notice) paper.appendChild(notice);
     paper.appendChild(
       state.searchQuery ? buildNoResultsEmptyState(state) : buildNothingFlowedEmptyState(actions)
     );
@@ -48,13 +55,26 @@ export function render(container, state, actions) {
     return;
   }
 
-  // The loom, always in reach: a coloured strip of the day's mix that expands
-  // into the full Loom when tapped.
-  paper.appendChild(buildLoomStrip(state, actions));
+  // No toolbar on the paper anymore -- search is a footer icon, and there's
+  // nothing between you and the news but the page itself ("just read"). The one
+  // thing that can appear is a removable chip when the newsstand has focused the
+  // Paper on a category/publisher/region.
+  const focus = buildFocusBar(state, actions);
 
-  const mode = state.settings && state.settings.readingMode === 'newspaper' ? 'newspaper' : 'continuous';
-  if (mode === 'newspaper') paper.appendChild(buildNewspaper(state, actions));
-  else paper.appendChild(buildFrontPage(state, actions));
+  if (mode === 'newspaper') {
+    // The big Nooz nameplate lives on the front page itself; inner pages carry
+    // a plain running head -- standard newspaper format.
+    if (focus) paper.appendChild(focus);
+    if (notice) paper.appendChild(notice);
+    paper.appendChild(buildLoomStrip(state, actions));
+    paper.appendChild(buildNewspaper(state, actions));
+  } else {
+    paper.appendChild(buildMasthead(state));
+    if (focus) paper.appendChild(focus);
+    if (notice) paper.appendChild(notice);
+    paper.appendChild(buildLoomStrip(state, actions));
+    paper.appendChild(buildFrontPage(state, actions));
+  }
 
   container.appendChild(paper);
 }
@@ -89,38 +109,14 @@ function buildMasthead(state) {
   return masthead;
 }
 
-function buildToolbar(state, actions) {
+// The only thing that sits above the paper now: a removable focus chip, shown
+// just when the newsstand has narrowed the Paper to a slice.
+function buildFocusBar(state, actions) {
+  const chip = buildFocusChip(state, actions);
+  if (!chip) return null;
   const bar = document.createElement('div');
-  bar.className = 'nooz-toolbar';
-
-  const search = document.createElement('input');
-  search.type = 'search';
-  search.className = 'nooz-input nooz-toolbar-search';
-  search.placeholder = 'Search the paper';
-  search.value = state.searchQuery || '';
-  search.setAttribute('aria-label', 'Search the paper');
-  search.addEventListener('input', (e) => actions.setSearchQuery(e.target.value));
-  bar.appendChild(search);
-
-  const regions = Array.from(new Set(state.sources.filter((s) => s.region).map((s) => s.region))).sort((a, b) => a.localeCompare(b));
-  if (regions.length) {
-    const chips = document.createElement('div');
-    chips.className = 'nooz-toolbar-regions';
-    chips.appendChild(regionChip('All', state.regionFilter === null, () => actions.setRegionFilter(null)));
-    for (const region of regions) chips.appendChild(regionChip(region, state.regionFilter === region, () => actions.setRegionFilter(region)));
-    bar.appendChild(chips);
-  }
-
-  const focus = buildFocusChip(state, actions);
-  if (focus) bar.appendChild(focus);
-
-  const refresh = document.createElement('button');
-  refresh.type = 'button';
-  refresh.className = 'nooz-button nooz-toolbar-refresh';
-  refresh.textContent = 'Refresh';
-  refresh.addEventListener('click', () => actions.refreshAll());
-  bar.appendChild(refresh);
-
+  bar.className = 'nooz-focus-bar';
+  bar.appendChild(chip);
   return bar;
 }
 
@@ -147,16 +143,6 @@ function buildFocusChip(state, actions) {
   x.textContent = '×';
   chip.appendChild(x);
   chip.addEventListener('click', () => actions.clearFocus());
-  return chip;
-}
-
-function regionChip(label, active, onClick) {
-  const chip = document.createElement('button');
-  chip.type = 'button';
-  chip.className = active ? 'nooz-chip is-active' : 'nooz-chip';
-  chip.textContent = label;
-  chip.setAttribute('aria-pressed', active ? 'true' : 'false');
-  chip.addEventListener('click', onClick);
   return chip;
 }
 
@@ -190,83 +176,81 @@ function buildFrontPage(state, actions) {
 }
 
 // ---------------------------------------------------------------------------
-// Newspaper mode -- a real paper you turn. Every page is exactly as wide as the
-// Nooz masthead above it (measured at layout time). The front page is shown on
-// its own at that full width; turning opens the 2-3 spread, then 4-5, and so on.
-// An open spread is two full pages side by side, so it's wider than the frame --
-// it's zoomed to fit so you see both, the way an open broadsheet reads. On a
-// narrow screen a spread wouldn't be legible, so it stays a single page you turn
-// one at a time.
+// Newspaper mode -- a real paper you turn.
+//
+// The front page carries the big Nooz nameplate; every other page a plain
+// running head (nameplate, date, page number) -- standard newspaper format.
+// Complete articles are set into full-size portrait pages by a small measuring
+// pass (paginateUnits): headlines and paragraphs flow unit by unit so pages
+// fill completely and a long article simply continues onto the next page (a
+// headline is never orphaned at a page break). When the window has room for two
+// full pages side by side you get a spread (front alone, then 2-3, 4-5, ..., a
+// last single page if the count is odd); when it doesn't, you turn one full page
+// at a time. Nothing is scaled -- pages are always their true size.
 // ---------------------------------------------------------------------------
 
-function paginate(state) {
+function computeDims() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const pageW = Math.max(280, Math.min(Math.round(vw * 0.94), 640));
+  const gutter = 40;
+  const twoUp = vw >= pageW * 2 + gutter + 24;
+  const cols = pageW >= 560 ? 3 : pageW >= 400 ? 2 : 1;
+  const maxH = Math.max(460, vh - 168); // room for the footer + the pager
+  const pageH = Math.min(Math.round(pageW * 1.34), maxH);
+  return { vw, vh, pageW, pageH, cols, twoUp, gutter };
+}
+
+function planKey(state, dims) {
   const items = state.items;
-  const showImages = !state.settings || state.settings.showImages;
-  const imageStyle = (state.settings && state.settings.imageStyle) || 'halftone';
-  let leadIndex = 0;
-  if (showImages) {
-    const withImg = items.findIndex((it) => it.image);
-    if (withImg >= 0 && withImg < 6) leadIndex = withImg;
-  }
-  const lead = items[leadIndex];
-  const rest = items.filter((_, i) => i !== leadIndex);
-  const pages = [{ lead, stories: rest.slice(0, 5) }];
-  for (let i = 5; i < rest.length; i += 6) pages.push({ lead: null, stories: rest.slice(i, i + 6) });
-  return { pages, showImages, imageStyle };
-}
-
-// Room to open a two-page spread and still read it? Below this we turn single
-// full-width pages instead.
-function isWide() { return window.innerWidth >= 900; }
-
-// Front page is its own spread; after that, two pages per spread when wide.
-function spreadCount(pageCount, wide) {
-  if (pageCount <= 0) return 1;
-  return wide ? 1 + Math.ceil((pageCount - 1) / 2) : pageCount;
-}
-
-// The page indices a spread shows. Front (spread 0) is a single page shown on
-// its own; each later spread is the natural pair (2-3, 4-5, ...). Narrow always
-// shows one page.
-function pagesForSpread(spread, wide) {
-  if (!wide) return [spread];
-  if (spread === 0) return [0];
-  return [2 * spread - 1, 2 * spread];
+  const s = state.settings || {};
+  const first = items[0] ? items[0].id : '-';
+  const last = items[items.length - 1] ? items[items.length - 1].id : '-';
+  return [items.length, first, last, s.showImages !== false, s.imageStyle || 'halftone', s.font || 'serif', s.paper || 'cream', dims.pageW, dims.pageH, dims.cols].join('|');
 }
 
 function buildNewspaper(state, actions) {
-  const { pages, showImages, imageStyle } = paginate(state);
-  const ctx = { pages, state, actions, showImages, imageStyle };
-  const wide = isWide();
-  const maxSpread = spreadCount(pages.length, wide) - 1;
+  const dims = computeDims();
+  const key = planKey(state, dims);
+  const wrap = document.createElement('div');
+  wrap.className = 'nooz-newspaper';
+
+  if (!plan || plan.key !== key) {
+    const compute = () => {
+      const units = buildUnits(state, actions);
+      const pages = paginateUnits(units, state, dims);
+      plan = { key, pages, units, dims };
+    };
+    // Measuring needs the real fonts, or pages over/under-fill. If they aren't
+    // ready yet, show a brief note and paginate once they are; normally they're
+    // already loaded and we compute inline with no flash.
+    if (document.fonts && document.fonts.status !== 'loaded') {
+      wrap.appendChild(newspaperLoading());
+      document.fonts.ready.then(() => { if (!plan || plan.key !== key) { compute(); actions.refreshView(); } });
+      return wrap;
+    }
+    compute();
+  }
+
+  const dims2 = plan.dims;
+  const pages = plan.pages;
+  const spreads = spreadList(pages.length, dims2.twoUp);
+  const maxSpread = spreads.length - 1;
   if (newspaperSpread > maxSpread) newspaperSpread = maxSpread;
   if (newspaperSpread < 0) newspaperSpread = 0;
-
-  const idxs = pagesForSpread(newspaperSpread, wide).filter((i) => i >= 0 && i < pages.length);
-  const isSpread = idxs.length > 1;
-
-  // frame (clips + centres) > scaler (fit-to-width) > book (the turning pages)
-  const frame = document.createElement('div');
-  frame.className = 'nooz-np-frame';
-
-  const scaler = document.createElement('div');
-  scaler.className = 'nooz-np-scaler';
+  const shown = spreads[newspaperSpread];
 
   const book = document.createElement('div');
-  book.className = 'nooz-book' + (isSpread ? ' is-spread' : '');
-  for (const idx of idxs) {
-    const page = document.createElement('div');
-    page.className = 'nooz-page';
-    page.appendChild(buildSheet(ctx, idx));
-    book.appendChild(page);
-  }
-  // The freshly-rendered spread plays its turn-in on the side it came from.
+  book.className = 'nooz-book' + (shown.length > 1 ? ' is-spread' : '');
+  book.style.gap = dims2.gutter + 'px';
+  for (const pIdx of shown) book.appendChild(buildVisiblePage(state, actions, pages[pIdx], dims2));
   if (lastTurnDir > 0) book.classList.add('is-turn-fwd');
   else if (lastTurnDir < 0) book.classList.add('is-turn-back');
   lastTurnDir = 0;
 
-  scaler.appendChild(book);
-  frame.appendChild(scaler);
+  const frame = document.createElement('div');
+  frame.className = 'nooz-np-frame';
+  frame.appendChild(book);
 
   const doTurn = (dir) => {
     const target = Math.min(maxSpread, Math.max(0, newspaperSpread + dir));
@@ -276,36 +260,253 @@ function buildNewspaper(state, actions) {
     actions.refreshView();
   };
 
-  const wrap = document.createElement('div');
-  wrap.className = 'nooz-newspaper';
   wrap.appendChild(frame);
-  wrap.appendChild(buildPager(newspaperSpread, maxSpread, pages.length, wide, doTurn));
-
-  fitNewspaper(wrap, frame, scaler, book);
+  wrap.appendChild(buildPager(newspaperSpread, maxSpread, shown, pages.length, doTurn));
   return wrap;
 }
 
-// Measure the masthead so each page is exactly its width, then scale the book so
-// the whole (possibly two-page) spread fits the frame. Runs after layout, and
-// once more shortly after in case a lead image changes the height.
-function fitNewspaper(wrap, frame, scaler, book) {
-  const apply = () => {
-    if (!wrap.isConnected) return;
-    const paper = wrap.closest('.nooz-paper');
-    const mast = paper && paper.querySelector('.nooz-masthead');
-    const pageW = Math.round((mast ? mast.getBoundingClientRect().width : frame.clientWidth) || frame.clientWidth);
-    if (pageW > 0) frame.style.setProperty('--page-w', pageW + 'px');
-    const natural = book.scrollWidth || pageW;
-    const avail = frame.clientWidth || pageW;
-    const scale = Math.min(1, avail / natural);
-    scaler.style.transform = scale < 0.999 ? `scale(${scale})` : 'none';
-    frame.style.height = Math.ceil(scaler.getBoundingClientRect().height) + 'px';
-  };
-  requestAnimationFrame(apply);
-  setTimeout(apply, 260);
+// Front alone, then two pages per spread when there's room (else one at a time),
+// with a last single page when the count is odd.
+function spreadList(pageCount, twoUp) {
+  if (pageCount <= 0) return [[]];
+  const spreads = [[0]];
+  if (!twoUp) { for (let p = 1; p < pageCount; p++) spreads.push([p]); return spreads; }
+  for (let p = 1; p < pageCount; p += 2) spreads.push(p + 1 < pageCount ? [p, p + 1] : [p]);
+  return spreads;
 }
 
-function buildPager(spread, maxSpread, pageCount, wide, doTurn) {
+// ---- Article DOM as a flat stream of flow units -----------------------------
+//
+// Each article becomes: a head unit (kicker + headline + byline + lead image,
+// kept whole), one unit per body block, and an end rule. The measuring pass
+// then fills each page's columns unit by unit, so pages fill completely and a
+// long article simply continues onto the next page.
+
+function buildUnits(state, actions) {
+  const items = state.items;
+  const showImages = !state.settings || state.settings.showImages;
+  // Editorial order: lead the front with the first pictured story, then the
+  // rest in the order they flowed.
+  let leadIndex = 0;
+  if (showImages) {
+    const withImg = items.findIndex((it) => it.image);
+    if (withImg >= 0 && withImg < 6) leadIndex = withImg;
+  }
+  const ordered = leadIndex === 0 ? items.slice() : [items[leadIndex], ...items.filter((_, i) => i !== leadIndex)];
+  const units = [];
+  ordered.forEach((item, ai) => {
+    const els = buildArticleEls(item, state, actions, showImages, ai === 0);
+    els.forEach((el, k) => {
+      const kind = k === 0 ? 'head' : k === els.length - 1 ? 'end' : 'body';
+      units.push({ el, articleIdx: ai, kind });
+    });
+  });
+  return units;
+}
+
+function buildArticleEls(item, state, actions, showImages, isLead) {
+  const els = [];
+  const head = document.createElement('div');
+  head.className = 'nooz-art-head' + (isLead ? ' nooz-art-head--lead' : '');
+  head.setAttribute('role', 'button');
+  head.setAttribute('tabindex', '0');
+  if (state.readIds && state.readIds.has(item.id)) head.classList.add('is-read');
+  head.appendChild(kicker(item));
+  const h = document.createElement(isLead ? 'h2' : 'h3');
+  h.className = 'nooz-art-headline' + (isLead ? ' nooz-art-headline--lead' : '');
+  h.textContent = item.title || '(untitled)';
+  head.appendChild(h);
+  if (showImages && isLead && item.image) {
+    const fig = frameImage(item.image, {
+      className: 'nooz-art-photo',
+      prominent: true,
+      currentStyle: (state.settings && state.settings.imageStyle) || 'halftone',
+      onStyle: (s) => actions.updateSetting('imageStyle', s),
+    });
+    if (fig) head.appendChild(fig);
+  }
+  head.appendChild(byline(item, state));
+  wire(head, () => actions.openItem(item.id));
+  els.push(head);
+
+  for (const block of buildBodyBlocks(item, state)) els.push(block);
+
+  const end = document.createElement('div');
+  end.className = 'nooz-art-end';
+  els.push(end);
+  return els;
+}
+
+// The fullest text we have, as a list of block-level elements: the extracted
+// article, else the feed's own body, else the summary, else an honest note.
+function buildBodyBlocks(item, state) {
+  const extracted = state.articles && state.articles[item.id];
+  let frag = null;
+  if (extracted && extracted.html) frag = sanitizeHtml(extracted.html, { allowImages: false });
+  else if (item.contentHtml) frag = sanitizeHtml(item.contentHtml, { allowImages: false });
+
+  const blocks = [];
+  if (frag) {
+    for (const node of Array.from(frag.childNodes)) {
+      if (node.nodeType === 1) {
+        if (node.classList) node.classList.add('nooz-art-b');
+        blocks.push(node);
+      } else if (node.nodeType === 3 && node.textContent.trim()) {
+        const p = document.createElement('p');
+        p.className = 'nooz-art-b';
+        p.textContent = node.textContent.trim();
+        blocks.push(p);
+      }
+    }
+  }
+  if (blocks.length === 0 && item.summary) {
+    for (const para of splitParagraphsLocal(item.summary)) {
+      const p = document.createElement('p');
+      p.className = 'nooz-art-b';
+      p.textContent = para;
+      blocks.push(p);
+    }
+  }
+  if (blocks.length === 0) {
+    const p = document.createElement('p');
+    p.className = 'nooz-art-b nooz-art-b--thin';
+    p.textContent = 'The full text is not in this feed. Open the story to read it at the source.';
+    blocks.push(p);
+  }
+  return blocks;
+}
+
+function splitParagraphsLocal(text) {
+  const parts = (text || '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  return parts.length ? parts : [(text || '').trim()].filter(Boolean);
+}
+
+// ---- Page shells + the measuring pass ---------------------------------------
+
+function buildPageShell(state, isFront, pageNum, dims) {
+  const sheet = document.createElement('section');
+  sheet.className = 'nooz-sheet' + (isFront ? ' nooz-sheet--front' : '');
+  sheet.style.width = dims.pageW + 'px';
+  sheet.style.height = dims.pageH + 'px';
+
+  const header = isFront ? buildMasthead(state) : buildRunningHead(state, pageNum);
+  header.classList.add('nooz-sheet-head');
+  sheet.appendChild(header);
+
+  const box = document.createElement('div');
+  box.className = 'nooz-colbox';
+  box.style.columnCount = String(dims.cols);
+  sheet.appendChild(box);
+  return { sheet, box };
+}
+
+// Inner pages: a plain running head instead of the big nameplate.
+function buildRunningHead(state, pageNum) {
+  const head = document.createElement('div');
+  head.className = 'nooz-runhead';
+  const left = document.createElement('span');
+  left.className = 'nooz-runhead-name';
+  left.textContent = 'Nooz';
+  const mid = document.createElement('span');
+  mid.className = 'nooz-runhead-date';
+  mid.textContent = fullToday();
+  const right = document.createElement('span');
+  right.className = 'nooz-runhead-folio';
+  right.textContent = `Page ${pageNum}`;
+  head.appendChild(left);
+  head.appendChild(mid);
+  head.appendChild(right);
+  return head;
+}
+
+function paginateUnits(units, state, dims) {
+  const host = document.createElement('div');
+  host.style.cssText = `position:absolute; left:-99999px; top:0; visibility:hidden; width:${dims.pageW}px;`;
+  document.body.appendChild(host);
+
+  const pages = [];
+  let cur = null;
+  let curBox = null;
+  const start = (isFront, pageNum) => {
+    const { sheet, box } = buildPageShell(state, isFront, pageNum, dims);
+    host.replaceChildren(sheet);
+    const colH = Math.max(120, dims.pageH - box.offsetTop - 22);
+    box.style.height = colH + 'px';
+    cur = { unitIdxs: [], isFront, pageNum, colH };
+    curBox = box;
+    pages.push(cur);
+  };
+  const overflow = () => curBox.scrollWidth > curBox.clientWidth + 2;
+
+  let pageNum = 1;
+  start(true, pageNum);
+  for (let i = 0; i < units.length; i++) {
+    curBox.appendChild(units[i].el);
+    if (!overflow()) {
+      cur.unitIdxs.push(i);
+      continue;
+    }
+    if (cur.unitIdxs.length === 0) {
+      // A single unit too tall for an empty page (a giant image, say): keep it
+      // and move on rather than loop forever.
+      cur.unitIdxs.push(i);
+      start(false, ++pageNum);
+      continue;
+    }
+    curBox.removeChild(units[i].el);
+
+    // Don't orphan a headline at a page break: if the only thing of this
+    // article on the page is its head, carry the head over with the body.
+    const carried = [];
+    if (units[i].kind === 'body') {
+      const artIdx = units[i].articleIdx;
+      let onlyHead = true;
+      const tail = [];
+      for (let j = cur.unitIdxs.length - 1; j >= 0 && units[cur.unitIdxs[j]].articleIdx === artIdx; j--) {
+        tail.push(cur.unitIdxs[j]);
+        if (units[cur.unitIdxs[j]].kind !== 'head') { onlyHead = false; break; }
+      }
+      if (onlyHead && tail.length) {
+        for (const idx of tail) {
+          cur.unitIdxs.pop();
+          if (units[idx].el.parentNode === curBox) curBox.removeChild(units[idx].el);
+          carried.unshift(idx);
+        }
+      }
+    }
+
+    start(false, ++pageNum);
+    for (const idx of carried) { curBox.appendChild(units[idx].el); cur.unitIdxs.push(idx); }
+    curBox.appendChild(units[i].el);
+    cur.unitIdxs.push(i);
+    if (overflow()) start(false, ++pageNum); // still overflows a fresh page: accept, move on
+  }
+  while (pages.length && pages[pages.length - 1].unitIdxs.length === 0) pages.pop();
+
+  // Detach every unit so the visible book can re-home them.
+  for (const u of units) if (u.el.parentNode) u.el.parentNode.removeChild(u.el);
+  host.remove();
+  return pages.length ? pages : [{ unitIdxs: [], isFront: true, pageNum: 1, colH: dims.pageH }];
+}
+
+function buildVisiblePage(state, actions, page, dims) {
+  const wrap = document.createElement('div');
+  wrap.className = 'nooz-page';
+  const { sheet, box } = buildPageShell(state, page.isFront, page.pageNum, dims);
+  box.style.height = page.colH + 'px';
+  for (const idx of page.unitIdxs) box.appendChild(plan.units[idx].el);
+  wrap.appendChild(sheet);
+  return wrap;
+}
+
+function newspaperLoading() {
+  const p = document.createElement('p');
+  p.className = 'nooz-np-loading';
+  p.textContent = 'Setting the paper…';
+  return p;
+}
+
+function buildPager(spread, maxSpread, shown, pageCount, doTurn) {
   const pager = document.createElement('div');
   pager.className = 'nooz-pager';
 
@@ -319,7 +520,7 @@ function buildPager(spread, maxSpread, pageCount, wide, doTurn) {
 
   const label = document.createElement('span');
   label.className = 'nooz-pager-label';
-  label.textContent = pagerLabel(spread, pageCount, wide);
+  label.textContent = pagerLabel(spread, shown, pageCount);
   pager.appendChild(label);
 
   const next = document.createElement('button');
@@ -333,34 +534,10 @@ function buildPager(spread, maxSpread, pageCount, wide, doTurn) {
   return pager;
 }
 
-function pagerLabel(spread, pageCount, wide) {
-  if (spread === 0) return `Front page  ·  ${pageCount} ${pageCount === 1 ? 'page' : 'pages'}`;
-  if (!wide) return `Page ${spread + 1} of ${pageCount}`;
-  const left = 2 * spread; // human page number of the left page
-  const right = Math.min(pageCount, 2 * spread + 1);
-  return right > left ? `Pages ${left}–${right} of ${pageCount}` : `Page ${left} of ${pageCount}`;
-}
-
-function buildSheet(ctx, index) {
-  const pageData = ctx.pages[index];
-  const sheet = document.createElement('section');
-  sheet.className = 'nooz-sheet';
-
-  const folio = document.createElement('div');
-  folio.className = 'nooz-folio';
-  folio.textContent = index === 0 ? 'Front Page' : `Page ${index + 1}`;
-  sheet.appendChild(folio);
-
-  if (pageData.lead) {
-    sheet.appendChild(buildLeadStory(pageData.lead, ctx.state, ctx.actions, ctx.showImages, ctx.imageStyle, true));
-  }
-  if (pageData.stories.length) {
-    const cols = document.createElement('div');
-    cols.className = 'nooz-columns';
-    for (const item of pageData.stories) cols.appendChild(buildColumnStory(item, ctx.state, ctx.actions, ctx.showImages));
-    sheet.appendChild(cols);
-  }
-  return sheet;
+function pagerLabel(spread, shown, pageCount) {
+  if (spread === 0) return `The front page  ·  ${pageCount} ${pageCount === 1 ? 'page' : 'pages'}`;
+  if (shown.length > 1) return `Pages ${shown[0] + 1}–${shown[1] + 1} of ${pageCount}`;
+  return `Page ${shown[0] + 1} of ${pageCount}`;
 }
 
 // ---------------------------------------------------------------------------

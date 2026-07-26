@@ -983,6 +983,65 @@ h1, h2, h3, h4 {
 }
 .nooz-footer-link--end { margin-left: var(--space-xs); }
 
+/* ---- Footer search: an icon that opens a centred search bar ------------- */
+.nooz-footer-search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--paper-ink-dim);
+  margin-right: var(--space-xxs);
+}
+.nooz-footer-search:hover { color: var(--paper-ink); }
+.nooz-footer-search.is-active { color: var(--paper-ink); background: rgba(0, 0, 0, 0.06); }
+.nooz-footer-search .nooz-icon { width: 16px; height: 16px; }
+
+.nooz-searchbar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--nooz-footer-h) + var(--space-sm));
+  transform: translate(-50%, 12px);
+  width: min(92vw, 460px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 40;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+.has-search .nooz-searchbar { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.nooz-searchbar-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-hairline-strong);
+  border-radius: 999px;
+  padding: 4px 6px 4px var(--space-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+.nooz-searchbar-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--paper-ink);
+  padding: var(--space-xs) 0;
+}
+.nooz-searchbar-input:focus { outline: none; }
+.nooz-searchbar-clear {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--paper-ink-dim);
+}
+.nooz-searchbar-clear:hover { color: var(--paper-ink); background: rgba(0, 0, 0, 0.05); }
+
 /* ---- Front page: sources rail + paper ---------------------------------- */
 .nooz-front {
   display: grid;
@@ -1663,74 +1722,147 @@ h1, h2, h3, h4 {
 }
 .nooz-loomstrip.is-launching { transform: translateX(44px); opacity: 0; }
 
-/* ---- Newspaper mode: real turning pages -------------------------------- */
-/* Every page is exactly as wide as the Nooz masthead above it -- JS measures the
-   masthead and sets --page-w. The front page shows on its own at that width; a
-   spread is two of those pages side by side, so it's wider than the frame and
-   gets zoomed to fit (the .nooz-np-scaler) the way an open broadsheet reads. */
-.nooz-newspaper { --page-w: min(96vw, 1040px); }
+/* ---- Newspaper mode: full-size turning pages, complete articles -------- */
+/* Complete articles are set into fixed-size portrait pages. The front page
+   carries the big Nooz nameplate; inner pages a plain running head. Two pages
+   sit side by side when the window has room (a spread), else one at a time.
+   Nothing is scaled -- pages are their true size, so the paper can be wider than
+   the usual text column; it centres, and scrolls sideways only if it must. */
+.nooz-paper--news { max-width: none; padding-left: var(--space-md); padding-right: var(--space-md); }
+.nooz-newspaper { width: 100%; }
 .nooz-np-frame {
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  overflow: hidden;
-}
-.nooz-np-scaler {
-  transform-origin: top center;
-  perspective: 2200px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  perspective: 2400px;
+  padding-bottom: var(--space-xs);
 }
 .nooz-book {
   display: flex;
-  gap: 0;
   align-items: stretch;
   width: max-content;
+  margin: 0 auto;
   transform-style: preserve-3d;
 }
-.nooz-book .nooz-page { flex: 0 0 var(--page-w); width: var(--page-w); background: var(--paper-raised); }
-/* The two open pages share a spine seam in the middle of a spread. */
-.nooz-book.is-spread .nooz-page:first-child .nooz-sheet { border-right: none; }
+.nooz-page { flex: 0 0 auto; }
 .nooz-sheet {
-  height: 100%;
-  min-height: 72vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--paper-raised);
-  border: 1px solid var(--paper-hairline);
+  border: 1px solid var(--paper-hairline-strong);
+  box-shadow: 0 1px 0 var(--paper-hairline), 0 10px 26px rgba(0, 0, 0, 0.07);
   padding: var(--space-lg);
+  overflow: hidden;
 }
-/* Columns read like a real newspaper page. */
-.nooz-sheet .nooz-columns { column-width: 210px; column-gap: var(--space-lg); }
-.nooz-sheet .nooz-lead-headline { font-size: clamp(1.9rem, 3vw, 3rem); }
-.nooz-sheet .nooz-lead-dek { font-size: 1rem; max-width: none; }
-.nooz-page-end {
-  font-family: var(--font-serif);
-  color: var(--paper-ink-faint);
-  letter-spacing: 0.3em;
-  padding: var(--space-xxl);
-}
-.nooz-folio {
-  font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--paper-ink-dim);
-  text-align: center;
-  margin-bottom: var(--space-md);
+.nooz-sheet-head { flex: 0 0 auto; }
+
+/* Front-page nameplate, sized to the page (not the viewport). */
+.nooz-sheet--front .nooz-masthead { margin-bottom: var(--space-sm); }
+.nooz-sheet--front .nooz-masthead-wordmark { font-size: 2.6rem; padding: var(--space-xs) 0 2px; }
+.nooz-sheet--front .nooz-masthead-edition { font-size: 0.625rem; padding-bottom: var(--space-xs); }
+
+/* Inner-page running head -- standard newspaper format. */
+.nooz-runhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
   padding-bottom: var(--space-xs);
-  border-bottom: 1px solid var(--paper-hairline);
+  margin-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--paper-ink);
 }
+.nooz-runhead-name { font-family: var(--font-serif); font-weight: 700; font-size: 1.05rem; }
+.nooz-runhead-date,
+.nooz-runhead-folio {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper-ink-dim);
+}
+
+/* The column box the articles flow into (fixed height set inline by JS). */
+.nooz-colbox {
+  flex: 0 0 auto;
+  column-fill: auto;
+  column-gap: var(--space-lg);
+  column-rule: 1px solid var(--paper-hairline);
+  overflow: hidden;
+}
+
+/* Articles */
+.nooz-art-head { break-inside: avoid; margin-bottom: var(--space-xs); cursor: pointer; }
+.nooz-art-head--lead {
+  column-span: all;
+  border-bottom: 2px solid var(--paper-ink);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+.nooz-art-headline {
+  font-family: var(--font-read);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.15;
+  margin: 2px 0;
+}
+.nooz-art-headline--lead { font-size: clamp(1.8rem, 4.2vw, 2.5rem); line-height: 1.05; }
+.nooz-art-head.is-read .nooz-art-headline { color: var(--paper-ink-dim); }
+.nooz-art-photo { margin: var(--space-xs) 0 0; }
+.nooz-art-head--lead .nooz-art-photo { margin-top: var(--space-sm); }
+.nooz-art-b {
+  font-family: var(--font-read);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin: 0 0 var(--space-xs);
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.nooz-art-b--thin { color: var(--paper-ink-dim); font-style: italic; text-align: left; }
+.nooz-colbox h2.nooz-art-b,
+.nooz-colbox h3.nooz-art-b,
+.nooz-colbox h4.nooz-art-b {
+  font-family: var(--font-read);
+  font-weight: 700;
+  line-height: 1.2;
+  font-size: 1rem;
+  margin-top: var(--space-xs);
+}
+.nooz-colbox ul.nooz-art-b,
+.nooz-colbox ol.nooz-art-b { padding-left: 1.2em; list-style: revert; }
+.nooz-colbox blockquote.nooz-art-b {
+  border-left: 2px solid var(--paper-hairline-strong);
+  padding-left: var(--space-sm);
+  color: var(--paper-ink-dim);
+  font-style: italic;
+}
+.nooz-art-b a { text-decoration: underline; text-underline-offset: 2px; }
+.nooz-art-end { border-bottom: 1px solid var(--paper-hairline); margin: var(--space-xxs) 0 var(--space-sm); }
 
 /* The turn: the freshly-rendered spread swings in on the spine side it came
    from -- forward from the left, back from the right. */
 @keyframes nooz-turn-fwd {
-  from { transform: rotateY(-82deg); opacity: 0.2; }
+  from { transform: rotateY(-70deg); opacity: 0.2; }
   to { transform: rotateY(0); opacity: 1; }
 }
 @keyframes nooz-turn-back {
-  from { transform: rotateY(82deg); opacity: 0.2; }
+  from { transform: rotateY(70deg); opacity: 0.2; }
   to { transform: rotateY(0); opacity: 1; }
 }
 .nooz-book.is-turn-fwd { transform-origin: left center; animation: nooz-turn-fwd 0.5s cubic-bezier(0.4, 0.1, 0.3, 1); }
 .nooz-book.is-turn-back { transform-origin: right center; animation: nooz-turn-back 0.5s cubic-bezier(0.4, 0.1, 0.3, 1); }
+
+.nooz-np-loading {
+  text-align: center;
+  color: var(--paper-ink-dim);
+  font-family: var(--font-sans);
+  padding: var(--space-xxl);
+}
+.nooz-focus-bar { display: flex; justify-content: center; margin-bottom: var(--space-md); }
+
 .nooz-pager {
   display: flex;
   align-items: center;
