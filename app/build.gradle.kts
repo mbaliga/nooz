@@ -102,6 +102,18 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
+
+            // The bundle ships native code (libonnxruntime.so from Nooz Cast), so
+            // Play asks for a native-debug-symbols file to symbolicate native
+            // crashes/ANRs. AGP extracts it into the .aab's BUNDLE-METADATA — it is
+            // upload-only metadata that Play strips before distribution, so it adds
+            // nothing to the on-device download. SYMBOL_TABLE gives function names
+            // in native stack traces at a fraction of FULL's size (FULL adds file/
+            // line + frame info, which the prebuilt onnxruntime .so is stripped of
+            // anyway); it's the right trade for a third-party native lib.
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
         }
         debug {
             applicationIdSuffix = ".debug"
