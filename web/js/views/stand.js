@@ -43,11 +43,8 @@ export function render(container, state, actions) {
     return;
   }
 
-  const notice = buildFetchErrorNotice(state);
-
   if (state.items.length === 0) {
     paper.appendChild(buildMasthead(state));
-    if (notice) paper.appendChild(notice);
     paper.appendChild(
       state.searchQuery ? buildNoResultsEmptyState(state) : buildNothingFlowedEmptyState(actions)
     );
@@ -65,13 +62,11 @@ export function render(container, state, actions) {
     // The big Nooz nameplate lives on the front page itself; inner pages carry
     // a plain running head -- standard newspaper format.
     if (focus) paper.appendChild(focus);
-    if (notice) paper.appendChild(notice);
     paper.appendChild(buildLoomStrip(state, actions));
     paper.appendChild(buildNewspaper(state, actions));
   } else {
     paper.appendChild(buildMasthead(state));
     if (focus) paper.appendChild(focus);
-    if (notice) paper.appendChild(notice);
     paper.appendChild(buildLoomStrip(state, actions));
     paper.appendChild(buildFrontPage(state, actions));
   }
@@ -727,24 +722,6 @@ function clampText(text, max) {
 // ---------------------------------------------------------------------------
 // Notices + empty states
 // ---------------------------------------------------------------------------
-
-function buildFetchErrorNotice(state) {
-  const fetchStatus = state.fetchStatus || {};
-  const failed = state.sources.filter((s) => s.enabled && fetchStatus[s.id] === 'error');
-  if (failed.length === 0) return null;
-  const notice = document.createElement('div');
-  notice.className = 'nooz-notice';
-  notice.setAttribute('role', 'status');
-  const label = document.createElement('p');
-  label.className = 'nooz-notice-title';
-  label.textContent = failed.length === 1 ? "Couldn't reach 1 source" : `Couldn't reach ${failed.length} sources`;
-  notice.appendChild(label);
-  const names = document.createElement('p');
-  names.className = 'nooz-notice-detail';
-  names.textContent = failed.map((s) => s.title).join(', ');
-  notice.appendChild(names);
-  return notice;
-}
 
 function buildNoSourcesEmptyState(actions) {
   const wrap = emptyState('Nothing on your paper yet', 'Add a feed, or pick from a short list of pre-checked starter sources -- open Sources from the footer.');

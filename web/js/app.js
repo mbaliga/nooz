@@ -86,6 +86,7 @@ let stageEl = null;
 let drawerEl = null;
 let shellEl = null;
 let navLinksEl = {};
+let sourcesBadgeEl = null;
 let toastEl = null;
 let toastTimer = null;
 let searchToggleEl = null;
@@ -202,6 +203,15 @@ function buildShell() {
       if (DRAWER_VIEWS.has(view) && route.view === view) navigate('stand');
       else navigate(view);
     });
+    // The Sources tab carries an alert dot when a source is failing (that's
+    // where you fix it) -- see updateSourceHealth. No banner on the paper.
+    if (view === 'sources') {
+      sourcesBadgeEl = document.createElement('span');
+      sourcesBadgeEl.className = 'nooz-footer-badge';
+      sourcesBadgeEl.hidden = true;
+      sourcesBadgeEl.setAttribute('aria-hidden', 'true');
+      link.appendChild(sourcesBadgeEl);
+    }
     nav.appendChild(link);
     navLinksEl[view] = link;
   }
@@ -316,7 +326,32 @@ function handleRoute(route) {
   rerender();
 }
 
+// A failing enabled source raises a small alert dot on the Sources tab -- the
+// place it gets resolved -- with the "Couldn't reach ..." detail on hover,
+// rather than a notice banner across the top of the paper.
+function updateSourceHealth() {
+  if (!sourcesBadgeEl || !navLinksEl.sources) return;
+  const fetchStatus = currentState.fetchStatus || {};
+  const failed = (currentState.sources || []).filter(
+    (s) => s.enabled && fetchStatus[s.id] === 'error'
+  );
+  const link = navLinksEl.sources;
+  if (failed.length === 0) {
+    sourcesBadgeEl.hidden = true;
+    link.removeAttribute('title');
+    link.removeAttribute('aria-label');
+    return;
+  }
+  sourcesBadgeEl.hidden = false;
+  const summary = failed.length === 1
+    ? "Couldn't reach 1 source"
+    : `Couldn't reach ${failed.length} sources`;
+  link.title = `${summary}: ${failed.map((s) => s.title || s.url).join(', ')}`;
+  link.setAttribute('aria-label', `${NAV_LABELS.sources} — ${summary}`);
+}
+
 function rerender() {
+  updateSourceHealth();
   const active = document.activeElement;
   let restore = null;
   if (active && viewEl.contains(active) && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {

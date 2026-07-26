@@ -969,12 +969,27 @@ h1, h2, h3, h4 {
   justify-content: flex-end;
 }
 .nooz-footer-link {
+  position: relative;
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   letter-spacing: 0.02em;
   color: var(--paper-ink-dim);
   padding: var(--space-xxs) var(--space-xs);
   border-radius: var(--radius-sm);
+}
+/* A source is failing -- a small alert dot rides the Sources tab, since that's
+   where you go to fix it. Replaces the old top-of-paper "Couldn't reach ..."
+   banner: the signal lives on the menu item that resolves it, out of the way. */
+.nooz-footer-badge {
+  position: absolute;
+  top: 1px;
+  right: -1px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--paper-signal-danger);
+  box-shadow: 0 0 0 2px var(--paper-field);
+  pointer-events: none;
 }
 .nooz-footer-link:hover { color: var(--paper-ink); }
 .nooz-footer-link[aria-current="page"] {
@@ -1218,26 +1233,6 @@ h1, h2, h3, h4 {
 }
 .nooz-col-story .nooz-byline,
 .nooz-lead .nooz-byline { margin-top: var(--space-xs); }
-
-/* ---- Notice ------------------------------------------------------------ */
-.nooz-notice {
-  border: 1px solid var(--paper-signal-danger);
-  border-radius: var(--radius-sm);
-  padding: var(--space-sm) var(--space-md);
-  margin-bottom: var(--space-lg);
-}
-.nooz-notice-title {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--paper-signal-danger);
-}
-.nooz-notice-detail {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  color: var(--paper-ink-dim);
-  margin-top: var(--space-xxs);
-}
 
 /* ---- Reader ------------------------------------------------------------ */
 .nooz-reader-layout {
