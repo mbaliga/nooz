@@ -117,45 +117,51 @@ function buildGroups(mode, items, state) {
   }
   // Latest headline per pile.
   for (const g of groups) g.items.sort((a, b) => b.publishedAt - a.publishedAt);
+  // Brand each pile as its own paper -- "Sports Nooz", "Politics Nooz", ...
+  // Publishers keep their own masthead (they're already papers).
+  for (const g of groups) g.mast = mode === 'publisher' ? g.label : `${g.label} Nooz`;
   return groups;
 }
 
+// Each pile is a small folded newspaper, all the same size: a masthead
+// ("Sports Nooz"), an edition line, the latest headline, and a strip of faux
+// newsprint so it reads as a paper at a glance.
 function buildPaper(group, actions) {
   const paper = document.createElement('button');
   paper.type = 'button';
   paper.className = 'nooz-paper-card';
-  paper.setAttribute('aria-label', `Open the ${group.label} pile (${group.items.length})`);
+  paper.setAttribute('aria-label', `Open ${group.mast} (${group.items.length})`);
 
-  const mast = document.createElement('div');
-  mast.className = 'nooz-paper-mast';
-  const name = document.createElement('span');
-  name.className = 'nooz-paper-name';
-  name.textContent = group.label;
-  mast.appendChild(name);
-  paper.appendChild(mast);
+  const ruleTop = document.createElement('div');
+  ruleTop.className = 'nooz-np-rule';
+  paper.appendChild(ruleTop);
 
-  const rule = document.createElement('div');
-  rule.className = 'nooz-paper-rule';
-  paper.appendChild(rule);
+  const name = document.createElement('div');
+  name.className = 'nooz-np-name';
+  name.textContent = group.mast;
+  paper.appendChild(name);
 
-  const count = document.createElement('p');
-  count.className = 'nooz-paper-count';
-  count.textContent = `${group.items.length} ${group.items.length === 1 ? 'story' : 'stories'}`;
-  paper.appendChild(count);
+  const ruleBot = document.createElement('div');
+  ruleBot.className = 'nooz-np-rule nooz-np-rule--double';
+  paper.appendChild(ruleBot);
+
+  const ed = document.createElement('p');
+  ed.className = 'nooz-np-ed';
+  ed.textContent = `${group.items.length} ${group.items.length === 1 ? 'story' : 'stories'}`;
+  paper.appendChild(ed);
 
   const lead = group.items[0];
   if (lead) {
     const head = document.createElement('p');
-    head.className = 'nooz-paper-lead';
+    head.className = 'nooz-np-lead';
     head.textContent = lead.title || '(untitled)';
     paper.appendChild(head);
   }
-  if (group.items[1]) {
-    const second = document.createElement('p');
-    second.className = 'nooz-paper-second';
-    second.textContent = group.items[1].title || '';
-    paper.appendChild(second);
-  }
+
+  // Faux newsprint fill so every card reads as a folded paper.
+  const greek = document.createElement('div');
+  greek.className = 'nooz-np-greek';
+  paper.appendChild(greek);
 
   paper.addEventListener('click', () => {
     const f = group.focus;

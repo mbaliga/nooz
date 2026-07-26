@@ -47,8 +47,8 @@ const VIEW_RENDERERS = {
 // Footer nav order. Reader has no nav entry (it's reached by opening an item);
 // Settings sits at the end, slightly apart. "Stand" is the front PAPER; the
 // newsstand ("Stand") is a separate browse-the-papers surface.
-const NAV_VIEWS = ['stand', 'newsstand', 'loom', 'sources', 'clippings', 'settings'];
-const NAV_LABELS = { stand: 'Paper', newsstand: 'Stand', loom: 'Loom', sources: 'Sources', clippings: 'Clippings', settings: 'Settings' };
+const NAV_VIEWS = ['stand', 'loom', 'sources', 'clippings', 'settings', 'newsstand'];
+const NAV_LABELS = { stand: 'Paper', loom: 'Loom', sources: 'Sources', clippings: 'Clippings', settings: 'Settings', newsstand: 'Stand' };
 // Full-stage views replace the Paper; everything else opens as a right drawer.
 const STAGE_VIEWS = new Set(['stand', 'reader', 'newsstand']);
 // The option views open as a right-hand drawer over the Paper (which slides
@@ -169,7 +169,7 @@ function buildShell() {
     const link = document.createElement('button');
     link.type = 'button';
     link.className = 'nooz-footer-link';
-    if (view === 'settings') link.classList.add('nooz-footer-link--end');
+    if (view === 'newsstand') link.classList.add('nooz-footer-link--end');
     link.textContent = NAV_LABELS[view];
     // Clicking the already-open drawer tab closes it (back to the bare Paper).
     link.addEventListener('click', () => {
