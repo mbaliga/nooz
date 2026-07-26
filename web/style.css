@@ -1619,49 +1619,88 @@ h1, h2, h3, h4 {
   margin-top: var(--space-xs);
 }
 
+/* ---- Loom strip (the coloured bar, in the Paper and the Reader) --------- */
+/* Tapping it slides it aside and opens the full Loom drawer -- whose own first
+   element is this same bar, so it reads as the strip expanding into the loom. */
+.nooz-loomstrip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  text-align: left;
+  padding: var(--space-xs) var(--space-sm);
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--paper-hairline);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.15s ease;
+}
+.nooz-loomstrip:hover { box-shadow: 0 1px 0 var(--paper-hairline-strong); }
+.nooz-loomstrip:focus-visible { outline: 2px solid var(--paper-ink); outline-offset: 2px; }
+.nooz-loomstrip-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--paper-ink-dim);
+  flex-shrink: 0;
+}
+.nooz-loomstrip-bar { flex: 1; height: 14px; }
+.nooz-loombar.is-empty { background: var(--paper-hairline); }
+.nooz-loomstrip-hint {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--paper-ink-dim);
+  flex-shrink: 0;
+}
+.nooz-loomstrip-chev {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--paper-ink-faint);
+  flex-shrink: 0;
+}
+.nooz-loomstrip.is-launching { transform: translateX(44px); opacity: 0; }
+
 /* ---- Newspaper mode: real turning pages -------------------------------- */
-/* Each page is a fixed newspaper width (portrait). The front page shows on
-   its own on the right (blank left, like opening a paper); a spread is two of
-   those pages side by side. The book shrink-wraps its pages and centres, so
-   the turning leaf lines up with the spine. */
-.nooz-newspaper { --page-w: min(46vw, 460px); --page-w-solo: min(94vw, 480px); }
-.nooz-book {
+/* Every page is exactly as wide as the Nooz masthead above it -- JS measures the
+   masthead and sets --page-w. The front page shows on its own at that width; a
+   spread is two of those pages side by side, so it's wider than the frame and
+   gets zoomed to fit (the .nooz-np-scaler) the way an open broadsheet reads. */
+.nooz-newspaper { --page-w: min(96vw, 1040px); }
+.nooz-np-frame {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+}
+.nooz-np-scaler {
+  transform-origin: top center;
+  perspective: 2200px;
+}
+.nooz-book {
   display: flex;
   gap: 0;
   align-items: stretch;
-  perspective: 2600px;
   width: max-content;
-  max-width: 100%;
-  margin: 0 auto;
+  transform-style: preserve-3d;
 }
-.nooz-book:not(.is-spread) { display: block; width: var(--page-w-solo); }
-.nooz-book.is-spread .nooz-page { flex: 0 0 var(--page-w); width: var(--page-w); }
-.nooz-book:not(.is-spread) .nooz-page { width: 100%; }
-.nooz-page { background: var(--paper-raised); }
-/* The two open leaves share a spine seam in the middle of a spread. */
-.nooz-book.is-spread .nooz-page--left .nooz-sheet { border-right: none; }
+.nooz-book .nooz-page { flex: 0 0 var(--page-w); width: var(--page-w); background: var(--paper-raised); }
+/* The two open pages share a spine seam in the middle of a spread. */
+.nooz-book.is-spread .nooz-page:first-child .nooz-sheet { border-right: none; }
 .nooz-sheet {
   height: 100%;
-  min-height: 74vh;
+  min-height: 72vh;
   background: var(--paper-raised);
   border: 1px solid var(--paper-hairline);
-  padding: var(--space-md);
+  padding: var(--space-lg);
 }
-/* Tighter columns so a fixed-width page reads like a real newspaper page. */
-.nooz-sheet .nooz-columns { column-width: 150px; column-gap: var(--space-md); }
-.nooz-sheet .nooz-lead-headline { font-size: clamp(1.3rem, 2.4vw, 1.9rem); }
-.nooz-sheet .nooz-lead-dek { font-size: 0.9375rem; }
-/* The blank half beside the front page -- the other half, folded behind. */
-.nooz-sheet--empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 74vh;
-  background: var(--paper-field);
-  border: 1px solid transparent;
-  box-shadow: inset -22px 0 30px -22px rgba(0, 0, 0, 0.22);
-}
+/* Columns read like a real newspaper page. */
+.nooz-sheet .nooz-columns { column-width: 210px; column-gap: var(--space-lg); }
+.nooz-sheet .nooz-lead-headline { font-size: clamp(1.9rem, 3vw, 3rem); }
+.nooz-sheet .nooz-lead-dek { font-size: 1rem; max-width: none; }
 .nooz-page-end {
   font-family: var(--font-serif);
   color: var(--paper-ink-faint);
@@ -1680,50 +1719,18 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid var(--paper-hairline);
 }
 
-/* The hinged leaf that actually turns. It sits over one half of the spread
-   and rotates around the spine; its two faces are the page you leave and the
-   page you turn to. */
-.nooz-leaf {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  transform-style: preserve-3d;
-  z-index: 4;
+/* The turn: the freshly-rendered spread swings in on the spine side it came
+   from -- forward from the left, back from the right. */
+@keyframes nooz-turn-fwd {
+  from { transform: rotateY(-82deg); opacity: 0.2; }
+  to { transform: rotateY(0); opacity: 1; }
 }
-.nooz-book.is-spread .nooz-leaf { width: var(--page-w); }
-.nooz-book:not(.is-spread) .nooz-leaf { width: 100%; }
-.nooz-leaf--right { right: 0; transform-origin: left center; }
-.nooz-leaf--left { left: 0; transform-origin: right center; }
-.nooz-leaf-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  overflow: hidden;
-  background: var(--paper-raised);
+@keyframes nooz-turn-back {
+  from { transform: rotateY(82deg); opacity: 0.2; }
+  to { transform: rotateY(0); opacity: 1; }
 }
-.nooz-leaf-back { transform: rotateY(180deg); }
-/* a soft page shadow that deepens as the leaf lifts */
-.nooz-leaf-face::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to var(--nooz-leaf-shade, left), rgba(0, 0, 0, 0.16), transparent 38%);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.nooz-leaf.is-turning-fwd .nooz-leaf-face::after,
-.nooz-leaf.is-turning-back .nooz-leaf-face::after { opacity: 1; }
-@keyframes nooz-leaf-fwd {
-  from { transform: rotateY(0); }
-  to { transform: rotateY(-180deg); }
-}
-@keyframes nooz-leaf-back {
-  from { transform: rotateY(0); }
-  to { transform: rotateY(180deg); }
-}
-.nooz-leaf.is-turning-fwd { animation: nooz-leaf-fwd 0.62s cubic-bezier(0.4, 0.1, 0.3, 1) forwards; }
-.nooz-leaf.is-turning-back { animation: nooz-leaf-back 0.62s cubic-bezier(0.4, 0.1, 0.3, 1) forwards; }
+.nooz-book.is-turn-fwd { transform-origin: left center; animation: nooz-turn-fwd 0.5s cubic-bezier(0.4, 0.1, 0.3, 1); }
+.nooz-book.is-turn-back { transform-origin: right center; animation: nooz-turn-back 0.5s cubic-bezier(0.4, 0.1, 0.3, 1); }
 .nooz-pager {
   display: flex;
   align-items: center;
@@ -1830,6 +1837,19 @@ h1, h2, h3, h4 {
   transform: translateY(-3px);
   box-shadow: 4px 6px 0 var(--paper-hairline-strong), 9px 12px 16px rgba(0, 0, 0, 0.10);
 }
+/* Clicking a pile "opens" the paper: it lifts and unfolds toward you, then the
+   Paper (front page) takes over, focused on that slice. */
+@keyframes nooz-paper-open {
+  0% { transform: translateY(0) scale(1) rotateY(0); opacity: 1; }
+  45% { transform: translateY(-6px) scale(1.06) rotateY(-18deg); opacity: 1; }
+  100% { transform: translateY(-10px) scale(1.5) rotateY(0); opacity: 0; }
+}
+.nooz-paper-card.is-opening {
+  z-index: 5;
+  transform-origin: left center;
+  animation: nooz-paper-open 0.5s cubic-bezier(0.4, 0.1, 0.3, 1) forwards;
+}
+.nooz-rack { perspective: 1400px; }
 /* the centre fold */
 .nooz-paper-card::after {
   content: '';
