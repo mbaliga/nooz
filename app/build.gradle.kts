@@ -27,13 +27,14 @@ android {
 
         // onnxruntime-android (Nooz Cast) bundles a real native libonnxruntime.so
         // per ABI — confirmed by inspecting the .aar: arm64-v8a ~27MB,
-        // armeabi-v7a ~20MB, x86 ~34MB, x86_64 ~34MB. x86/x86_64 only matter for
-        // emulators and a vanishing sliver of x86 Chromebooks; no real phone or
-        // tablet this app targets runs them, so excluding them here drops ~68MB
-        // of dead weight from every build (including the debug APKs handed out
-        // for testing, which aren't ABI-split the way the release .aab is).
+        // armeabi-v7a ~20MB, x86 ~34MB, x86_64 ~34MB. That native weight (which R8
+        // can't shrink — it only touches bytecode + resources) is what makes the
+        // bundle large, so we ship arm64-v8a only: every phone/tablet from ~2017
+        // on is 64-bit, 32-bit-only armeabi-v7a is a vanishing sliver, and x86/
+        // x86_64 only matter for emulators. Dropping the rest cuts ~88MB of dead
+        // native libs from every build (the release .aab and the test APKs alike).
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            abiFilters += listOf("arm64-v8a")
         }
     }
 
