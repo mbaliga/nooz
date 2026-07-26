@@ -1742,10 +1742,14 @@ h1, h2, h3, h4 {
 .nooz-book {
   display: flex;
   align-items: stretch;
+  gap: 0;
   width: max-content;
   margin: 0 auto;
   transform-style: preserve-3d;
 }
+/* An open spread: the two pages join at the spine, one drop-shadow around the
+   whole thing and a soft fold darkening each page toward the centre. */
+.nooz-book.is-spread { box-shadow: 0 14px 34px rgba(0, 0, 0, 0.11); }
 .nooz-page { flex: 0 0 auto; }
 .nooz-sheet {
   position: relative;
@@ -1754,15 +1758,82 @@ h1, h2, h3, h4 {
   background: var(--paper-raised);
   border: 1px solid var(--paper-hairline-strong);
   box-shadow: 0 1px 0 var(--paper-hairline), 0 10px 26px rgba(0, 0, 0, 0.07);
-  padding: var(--space-lg);
+  padding: var(--space-md);
   overflow: hidden;
+}
+.nooz-book.is-spread .nooz-sheet { box-shadow: none; }
+.nooz-book.is-spread .nooz-page:first-child .nooz-sheet {
+  border-right: none;
+  box-shadow: inset -16px 0 22px -16px rgba(0, 0, 0, 0.2);
+}
+.nooz-book.is-spread .nooz-page:last-child .nooz-sheet {
+  box-shadow: inset 16px 0 22px -16px rgba(0, 0, 0, 0.2);
 }
 .nooz-sheet-head { flex: 0 0 auto; }
 
-/* Front-page nameplate, sized to the page (not the viewport). */
-.nooz-sheet--front .nooz-masthead { margin-bottom: var(--space-sm); }
-.nooz-sheet--front .nooz-masthead-wordmark { font-size: 2.6rem; padding: var(--space-xs) 0 2px; }
-.nooz-sheet--front .nooz-masthead-edition { font-size: 0.625rem; padding-bottom: var(--space-xs); }
+/* Front-page nameplate: edition line, wordmark, dateline, teaser skyline. */
+.nooz-nameplate { margin-bottom: var(--space-sm); }
+.nooz-np-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--paper-ink);
+}
+.nooz-np-edition { font-weight: 700; color: var(--paper-signal-danger); }
+.nooz-np-tagline { color: var(--paper-ink-dim); }
+.nooz-nameplate-word {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  text-align: center;
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  padding: 4px 0;
+}
+.nooz-np-dateline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--paper-ink-dim);
+  padding: 4px 0;
+  border-top: 1px solid var(--paper-ink);
+  border-bottom: 3px double var(--paper-ink);
+}
+.nooz-np-dateline-mid { color: var(--paper-ink); font-weight: 700; letter-spacing: 0.1em; }
+.nooz-np-teasers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+.nooz-np-teaser {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-left: 1px solid var(--paper-hairline);
+  padding-left: var(--space-xs);
+}
+.nooz-np-teaser:first-child { border-left: none; padding-left: 0; }
+.nooz-np-teaser-kicker {
+  font-family: var(--font-sans);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper-signal-danger);
+}
+.nooz-np-teaser-title { font-family: var(--font-read); font-weight: 700; font-size: 0.8125rem; line-height: 1.15; }
 
 /* Inner-page running head -- standard newspaper format. */
 .nooz-runhead {
@@ -1770,11 +1841,19 @@ h1, h2, h3, h4 {
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-sm);
-  padding-bottom: var(--space-xs);
+  padding-bottom: 4px;
   margin-bottom: var(--space-sm);
   border-bottom: 2px solid var(--paper-ink);
 }
-.nooz-runhead-name { font-family: var(--font-serif); font-weight: 700; font-size: 1.05rem; }
+.nooz-runhead-name { font-family: var(--font-serif); font-weight: 700; font-size: 1.05rem; display: inline-flex; align-items: center; }
+.nooz-runhead-name::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--paper-signal-danger);
+  margin-right: 6px;
+}
 .nooz-runhead-date,
 .nooz-runhead-folio {
   font-family: var(--font-sans);
@@ -1788,13 +1867,14 @@ h1, h2, h3, h4 {
 .nooz-colbox {
   flex: 0 0 auto;
   column-fill: auto;
-  column-gap: var(--space-lg);
+  column-gap: var(--space-md);
   column-rule: 1px solid var(--paper-hairline);
   overflow: hidden;
 }
+.nooz-colbox .nooz-kicker { font-size: 0.5625rem; letter-spacing: 0.09em; margin-bottom: 2px; }
 
-/* Articles */
-.nooz-art-head { break-inside: avoid; margin-bottom: var(--space-xs); cursor: pointer; }
+/* Articles -- denser, real-newspaper measure. */
+.nooz-art-head { break-inside: avoid; margin-bottom: 6px; cursor: pointer; }
 .nooz-art-head--lead {
   column-span: all;
   border-bottom: 2px solid var(--paper-ink);
@@ -1804,22 +1884,33 @@ h1, h2, h3, h4 {
 .nooz-art-headline {
   font-family: var(--font-read);
   font-weight: 700;
-  font-size: 1.1rem;
-  line-height: 1.15;
-  margin: 2px 0;
+  font-size: 1.02rem;
+  line-height: 1.12;
+  margin: 1px 0 2px;
 }
-.nooz-art-headline--lead { font-size: clamp(1.8rem, 4.2vw, 2.5rem); line-height: 1.05; }
+.nooz-art-headline--lead { font-size: clamp(1.7rem, 3.6vw, 2.3rem); line-height: 1.03; }
 .nooz-art-head.is-read .nooz-art-headline { color: var(--paper-ink-dim); }
+.nooz-art-head .nooz-byline { font-size: 0.625rem; margin-top: 2px; }
 .nooz-art-photo { margin: var(--space-xs) 0 0; }
 .nooz-art-head--lead .nooz-art-photo { margin-top: var(--space-sm); }
+.nooz-art-photo--col { margin: 4px 0 0; aspect-ratio: 3 / 2; }
+.nooz-art-photo--col.nooz-img > img { height: 100%; object-fit: cover; }
 .nooz-art-b {
   font-family: var(--font-read);
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  margin: 0 0 var(--space-xs);
+  font-size: 0.8125rem;
+  line-height: 1.36;
+  margin: 0 0 5px;
   text-align: justify;
   hyphens: auto;
   -webkit-hyphens: auto;
+}
+.nooz-art-b--drop::first-letter {
+  float: left;
+  font-family: var(--font-read);
+  font-weight: 700;
+  font-size: 2.9em;
+  line-height: 0.8;
+  padding: 3px 5px 0 0;
 }
 .nooz-art-b--thin { color: var(--paper-ink-dim); font-style: italic; text-align: left; }
 .nooz-colbox h2.nooz-art-b,
@@ -1827,9 +1918,9 @@ h1, h2, h3, h4 {
 .nooz-colbox h4.nooz-art-b {
   font-family: var(--font-read);
   font-weight: 700;
-  line-height: 1.2;
-  font-size: 1rem;
-  margin-top: var(--space-xs);
+  line-height: 1.18;
+  font-size: 0.9rem;
+  margin-top: var(--space-xxs);
 }
 .nooz-colbox ul.nooz-art-b,
 .nooz-colbox ol.nooz-art-b { padding-left: 1.2em; list-style: revert; }
@@ -1840,20 +1931,55 @@ h1, h2, h3, h4 {
   font-style: italic;
 }
 .nooz-art-b a { text-decoration: underline; text-underline-offset: 2px; }
-.nooz-art-end { border-bottom: 1px solid var(--paper-hairline); margin: var(--space-xxs) 0 var(--space-sm); }
+.nooz-art-end { border-bottom: 1px solid var(--paper-hairline); margin: 3px 0 7px; }
 
-/* The turn: the freshly-rendered spread swings in on the spine side it came
-   from -- forward from the left, back from the right. */
-@keyframes nooz-turn-fwd {
-  from { transform: rotateY(-70deg); opacity: 0.2; }
-  to { transform: rotateY(0); opacity: 1; }
+/* The turn: a single page swings in at the spine, the way you actually turn a
+   paper -- not the whole spread swinging as one slab. Turning forward, the new
+   left page falls in from the centre fold (hinged on its inner edge) while the
+   new right page is already there; turning back, the right page falls in. On a
+   single page it's the one page hinging at its spine. A soft page-shadow deepens
+   toward the fold as it lands. */
+@keyframes nooz-flip-fwd {
+  from { transform: rotateY(92deg); }
+  to { transform: rotateY(0); }
 }
-@keyframes nooz-turn-back {
-  from { transform: rotateY(70deg); opacity: 0.2; }
-  to { transform: rotateY(0); opacity: 1; }
+@keyframes nooz-flip-back {
+  from { transform: rotateY(-92deg); }
+  to { transform: rotateY(0); }
 }
-.nooz-book.is-turn-fwd { transform-origin: left center; animation: nooz-turn-fwd 0.5s cubic-bezier(0.4, 0.1, 0.3, 1); }
-.nooz-book.is-turn-back { transform-origin: right center; animation: nooz-turn-back 0.5s cubic-bezier(0.4, 0.1, 0.3, 1); }
+@keyframes nooz-flip-shade {
+  from { opacity: 0.5; }
+  to { opacity: 0; }
+}
+.nooz-book.is-turn-fwd .nooz-page:first-child,
+.nooz-book.is-turn-back .nooz-page:last-child {
+  position: relative;
+  z-index: 2;
+  backface-visibility: hidden;
+}
+.nooz-book.is-turn-fwd .nooz-page:first-child {
+  transform-origin: right center;
+  animation: nooz-flip-fwd 0.52s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+.nooz-book.is-turn-back .nooz-page:last-child {
+  transform-origin: left center;
+  animation: nooz-flip-back 0.52s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+/* the shadow the turning page casts, fading as it settles flat */
+.nooz-book.is-turn-fwd .nooz-page:first-child .nooz-sheet::after,
+.nooz-book.is-turn-back .nooz-page:last-child .nooz-sheet::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: nooz-flip-shade 0.52s ease-out;
+}
+.nooz-book.is-turn-fwd .nooz-page:first-child .nooz-sheet::after {
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.22));
+}
+.nooz-book.is-turn-back .nooz-page:last-child .nooz-sheet::after {
+  background: linear-gradient(to left, transparent, rgba(0, 0, 0, 0.22));
+}
 
 .nooz-np-loading {
   text-align: center;

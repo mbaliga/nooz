@@ -192,13 +192,14 @@ function buildFrontPage(state, actions) {
 function computeDims() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const pageW = Math.max(280, Math.min(Math.round(vw * 0.94), 640));
-  const gutter = 40;
-  const twoUp = vw >= pageW * 2 + gutter + 24;
-  const cols = pageW >= 560 ? 3 : pageW >= 400 ? 2 : 1;
+  const pageW = Math.max(280, Math.min(Math.round(vw * 0.94), 680));
+  // A spread's two pages join at the spine (no gutter), so two of them need
+  // just their own width plus a little breathing room.
+  const twoUp = vw >= pageW * 2 + 24;
+  const cols = pageW >= 620 ? 4 : pageW >= 440 ? 3 : pageW >= 320 ? 2 : 1;
   const maxH = Math.max(460, vh - 168); // room for the footer + the pager
-  const pageH = Math.min(Math.round(pageW * 1.34), maxH);
-  return { vw, vh, pageW, pageH, cols, twoUp, gutter };
+  const pageH = Math.min(Math.round(pageW * 1.3), maxH);
+  return { vw, vh, pageW, pageH, cols, twoUp };
 }
 
 function planKey(state, dims) {
@@ -242,7 +243,6 @@ function buildNewspaper(state, actions) {
 
   const book = document.createElement('div');
   book.className = 'nooz-book' + (shown.length > 1 ? ' is-spread' : '');
-  book.style.gap = dims2.gutter + 'px';
   for (const pIdx of shown) book.appendChild(buildVisiblePage(state, actions, pages[pIdx], dims2));
   if (lastTurnDir > 0) book.classList.add('is-turn-fwd');
   else if (lastTurnDir < 0) book.classList.add('is-turn-back');
@@ -316,20 +316,25 @@ function buildArticleEls(item, state, actions, showImages, isLead) {
   h.className = 'nooz-art-headline' + (isLead ? ' nooz-art-headline--lead' : '');
   h.textContent = item.title || '(untitled)';
   head.appendChild(h);
-  if (showImages && isLead && item.image) {
-    const fig = frameImage(item.image, {
-      className: 'nooz-art-photo',
-      prominent: true,
-      currentStyle: (state.settings && state.settings.imageStyle) || 'halftone',
-      onStyle: (s) => actions.updateSetting('imageStyle', s),
-    });
+  if (showImages && item.image) {
+    const fig = isLead
+      ? frameImage(item.image, {
+          className: 'nooz-art-photo',
+          prominent: true,
+          currentStyle: (state.settings && state.settings.imageStyle) || 'halftone',
+          onStyle: (s) => actions.updateSetting('imageStyle', s),
+        })
+      : frameImage(item.image, { className: 'nooz-art-photo nooz-art-photo--col' });
     if (fig) head.appendChild(fig);
   }
   head.appendChild(byline(item, state));
   wire(head, () => actions.openItem(item.id));
   els.push(head);
 
-  for (const block of buildBodyBlocks(item, state)) els.push(block);
+  const body = buildBodyBlocks(item, state);
+  // A drop cap opens the lead story, the way a front page does.
+  if (isLead && body[0] && body[0].tagName === 'P') body[0].classList.add('nooz-art-b--drop');
+  for (const block of body) els.push(block);
 
   const end = document.createElement('div');
   end.className = 'nooz-art-end';
@@ -389,7 +394,7 @@ function buildPageShell(state, isFront, pageNum, dims) {
   sheet.style.width = dims.pageW + 'px';
   sheet.style.height = dims.pageH + 'px';
 
-  const header = isFront ? buildMasthead(state) : buildRunningHead(state, pageNum);
+  const header = isFront ? buildFrontNameplate(state) : buildRunningHead(state, pageNum);
   header.classList.add('nooz-sheet-head');
   sheet.appendChild(header);
 
@@ -398,6 +403,67 @@ function buildPageShell(state, isFront, pageNum, dims) {
   box.style.columnCount = String(dims.cols);
   sheet.appendChild(box);
   return { sheet, box };
+}
+
+// The front-page nameplate: an edition line, the wordmark, a dateline, and a
+// skyline of teasers -- a proper front page.
+function buildFrontNameplate(state) {
+  const wrap = document.createElement('header');
+  wrap.className = 'nooz-nameplate';
+
+  const top = document.createElement('div');
+  top.className = 'nooz-np-topline';
+  const ed = document.createElement('span');
+  ed.className = 'nooz-np-edition';
+  ed.textContent = 'The Loom Edition';
+  const tag = document.createElement('span');
+  tag.className = 'nooz-np-tagline';
+  tag.textContent = 'Woven from your own sources';
+  top.appendChild(ed);
+  top.appendChild(tag);
+  wrap.appendChild(top);
+
+  const word = document.createElement('h1');
+  word.className = 'nooz-nameplate-word';
+  word.textContent = 'Nooz';
+  wrap.appendChild(word);
+
+  const dateline = document.createElement('div');
+  dateline.className = 'nooz-np-dateline';
+  const enabled = state.sources.filter((s) => s.enabled).length;
+  const d1 = document.createElement('span');
+  d1.textContent = fullToday();
+  const d2 = document.createElement('span');
+  d2.className = 'nooz-np-dateline-mid';
+  d2.textContent = 'Your Source, Your News';
+  const d3 = document.createElement('span');
+  d3.textContent = `${enabled} ${enabled === 1 ? 'source' : 'sources'}`;
+  dateline.appendChild(d1);
+  dateline.appendChild(d2);
+  dateline.appendChild(d3);
+  wrap.appendChild(dateline);
+
+  const picks = (state.items || []).slice(0, 4);
+  if (picks.length) {
+    const teasers = document.createElement('div');
+    teasers.className = 'nooz-np-teasers';
+    for (const it of picks) {
+      const t = document.createElement('div');
+      t.className = 'nooz-np-teaser';
+      const k = document.createElement('span');
+      k.className = 'nooz-np-teaser-kicker';
+      k.textContent = TOPIC_LABEL[classifyItem(it)] || 'News';
+      const ti = document.createElement('span');
+      ti.className = 'nooz-np-teaser-title';
+      ti.textContent = clampText(it.title || '', 46);
+      t.appendChild(k);
+      t.appendChild(ti);
+      teasers.appendChild(t);
+    }
+    wrap.appendChild(teasers);
+  }
+
+  return wrap;
 }
 
 // Inner pages: a plain running head instead of the big nameplate.
