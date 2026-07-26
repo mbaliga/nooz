@@ -1545,8 +1545,14 @@ h1, h2, h3, h4 {
 .nooz-view {
   position: relative;
   overflow-x: clip;
+  isolation: isolate; /* contain the stage/drawer z-order below the footer */
 }
+/* The paper always rides ABOVE the drawer, like the app: an option view slides
+   in behind it and the paper shifts aside to reveal it -- it never slides over
+   the top of the newspaper. */
 .nooz-stage {
+  position: relative;
+  z-index: 2;
   transition: transform 0.35s ease;
   will-change: transform;
 }
@@ -1560,14 +1566,16 @@ h1, h2, h3, h4 {
   border-left: 1px solid var(--paper-hairline-strong);
   transform: translateX(101%);
   transition: transform 0.35s ease;
-  z-index: 30;
+  z-index: 1; /* behind the paper (stage), never over it */
   overflow-y: auto;
   overscroll-behavior: contain;
-  box-shadow: -14px 0 34px rgba(0, 0, 0, 0.10);
 }
 .has-drawer .nooz-drawer { transform: translateX(0); }
+/* Shift the paper aside to uncover the drawer behind it. Narrow screens shift
+   the full drawer width (it takes the screen); wider screens only need a peek. */
+.has-drawer .nooz-stage { transform: translateX(min(-88vw, -440px)); }
 @media (min-width: 1024px) {
-  .has-drawer .nooz-stage { transform: translateX(-220px); }
+  .has-drawer .nooz-stage { transform: translateX(-360px); }
 }
 .nooz-drawer-close {
   position: sticky;
