@@ -94,7 +94,10 @@ private fun FlashCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
     // ask): "not configured" is knowable upfront (see ReaderViewModel's
     // own preflight check), so the icon should say so immediately rather
     // than waiting for the reader to tap and be told in text alone.
-    val notConfigured = (state as? FlashUiState.Unavailable)?.needsSetup == true
+    // Crossed-out bolt for anything the reader can't act on right now: an
+    // unconfigured provider, or Flash itself being "coming soon" in this build.
+    val notConfigured = state is FlashUiState.ComingSoon ||
+        (state as? FlashUiState.Unavailable)?.needsSetup == true
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
         Icon(
             if (notConfigured) Icons.Filled.FlashOff else Icons.Filled.FlashOn,
@@ -105,6 +108,12 @@ private fun FlashCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
         SectionHeading("Nooz Flash", color = MaterialTheme.colorScheme.onBackground)
     }
     when (val s = state) {
+        is FlashUiState.ComingSoon -> Text(
+            "Coming soon: today's news compressed to 10 words or fewer, once on-device intelligence is ready.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+        )
         is FlashUiState.Idle -> Row(
             modifier = Modifier
                 .fillMaxWidth()

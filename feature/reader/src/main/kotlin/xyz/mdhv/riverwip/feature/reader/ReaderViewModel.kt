@@ -51,6 +51,14 @@ sealed interface ArticleUiState {
 sealed interface FlashUiState {
     data object Idle : FlashUiState
     data object Loading : FlashUiState
+    /**
+     * Presented while Nooz Flash is "coming soon": the on-device LLM runtime
+     * that powers the digest isn't wired in this build, and no download can
+     * change that, so the card invites neither a tap nor a model download.
+     * Gated by [FLASH_COMING_SOON]; when that flips, Flash never enters this
+     * state and falls straight back to its ordinary Idle → Loading → Ready flow.
+     */
+    data object ComingSoon : FlashUiState
     /** [headlines] is what was actually compressed — "go deeper" is just showing this list, not a second generation. */
     data class Ready(val flash: String, val provenance: Provenance, val headlines: List<String>) : FlashUiState
     /**
@@ -90,6 +98,17 @@ sealed interface CastUiState {
  * bolt for the icon half of that).
  */
 private const val FLASH_NOT_CONFIGURED_REASON = "Nooz Flash won't work until a model or API key is configured."
+
+/**
+ * Nooz Flash's on-device LLM runtime isn't wired in this build
+ * ([xyz.mdhv.riverwip.inference.local.LocalLlamaProvider]'s own `RUNTIME_WIRED`
+ * is false), and downloading a model can't change that — so Flash is shown
+ * honestly as "coming soon" instead of inviting a tap or a download that can
+ * only fail. Flip to false in the same change that wires a real runtime and
+ * Flash returns to its ordinary tap-to-compress flow; nothing else here needs
+ * touching.
+ */
+private const val FLASH_COMING_SOON = true
 
 /** Cast's own gate — Kokoro is a wholly different, independently-downloaded model class from whatever LLM [ReaderViewModel.flashState] uses. */
 private const val CAST_NOT_CONFIGURED_REASON = "Nooz Cast won't work until the on-device narration model is downloaded."
@@ -244,7 +263,9 @@ class ReaderViewModel(
         DayLoomLayout.dayMix(counts)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
 
-    private val _flashState = MutableStateFlow<FlashUiState>(FlashUiState.Idle)
+    private val _flashState = MutableStateFlow<FlashUiState>(
+        if (FLASH_COMING_SOON) FlashUiState.ComingSoon else FlashUiState.Idle,
+    )
 
     /**
      * Nooz Flash (owner's #6): today's flowed headlines — matching the standing
@@ -257,6 +278,9 @@ class ReaderViewModel(
     val flashState: StateFlow<FlashUiState> = _flashState
 
     fun requestFlash() {
+        // Coming soon: with no on-device runtime the digest can only fail, so
+        // the tap is a no-op (the card shows no tap invitation while gated).
+        if (FLASH_COMING_SOON) return
         if (_flashState.value is FlashUiState.Loading) return
         viewModelScope.launch {
             _flashState.value = FlashUiState.Loading
@@ -343,7 +367,7 @@ class ReaderViewModel(
         // being Idle so this can never clobber a real request already in
         // flight (or its result) if one somehow won the race.
         viewModelScope.launch {
-            if (!flashRouter.hasAvailableProvider() && _flashState.value == FlashUiState.Idle) {
+            if (!FLASH_COMING_SOON && !flashRouter.hasAvailableProvider() && _flashState.value == FlashUiState.Idle) {
                 _flashState.value = FlashUiState.Unavailable(FLASH_NOT_CONFIGURED_REASON, needsSetup = true)
             }
         }

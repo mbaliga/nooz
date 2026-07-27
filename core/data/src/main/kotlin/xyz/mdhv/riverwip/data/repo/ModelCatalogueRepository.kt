@@ -88,9 +88,36 @@ class ModelCatalogueRepository(
         }
     }.getOrDefault(CatalogueFile())
 
-    /** Only what this app can actually offer for [kind]: official/licensed weights, a verified mirror. */
-    fun downloadable(models: List<CatalogueModel>, kind: String = "LLM_GGUF"): List<CatalogueModel> =
-        models.filter { it.kind == kind && it.policySafe && !it.downloadUrl.isNullOrBlank() }
+    /**
+     * Only what this app can actually offer for [kind]: official/licensed
+     * weights, a verified mirror. Companion groups (catalogue `groupId` — a TTS
+     * model plus its required voice pack) collapse to ONE row, the group's
+     * anchor (its first eligible member); the companions ride along on that
+     * single download ([downloadGroup]) instead of appearing as separate,
+     * individually-useless rows a reader would have to discover and tap too.
+     */
+    fun downloadable(models: List<CatalogueModel>, kind: String = "LLM_GGUF"): List<CatalogueModel> {
+        val seenGroups = mutableSetOf<String>()
+        return models
+            .filter { it.kind == kind && it.policySafe && !it.downloadUrl.isNullOrBlank() }
+            .filter { model ->
+                val gid = model.groupId ?: return@filter true // ungrouped entry: always its own row
+                seenGroups.add(gid) // true only for the first eligible member (the anchor); companions return false
+            }
+    }
+
+    /**
+     * Every catalogue entry that must be on disk together with [model] — the
+     * companion group named by its `groupId` (e.g. Kokoro's ONNX model *and* its
+     * paired voice `.bin`), or just [model] itself when it stands alone. The TTS
+     * engine needs the whole group present to load, so a single tap fetches all
+     * of them via [downloadGroup]; [models] is the live catalogue to resolve
+     * against.
+     */
+    fun groupMembers(models: List<CatalogueModel>, model: CatalogueModel): List<CatalogueModel> {
+        val gid = model.groupId ?: return listOf(model)
+        return models.filter { it.groupId == gid }.ifEmpty { listOf(model) }
+    }
 
     suspend fun refresh(clock: () -> Long = { System.currentTimeMillis() }): Result<Int> = withContext(Dispatchers.IO) {
         runCatching {
@@ -136,6 +163,41 @@ class ModelCatalogueRepository(
     fun delete(model: CatalogueModel) {
         fileFor(model).delete()
     }
+
+    /**
+     * Fetch a whole companion group (from [groupMembers]) so one Cast download
+     * yields a complete, loadable install: the TTS model *and* its paired voice
+     * pack, not just whichever row was tapped. Members already on disk are
+     * skipped; the rest download sequentially, each to its own [fileFor] path
+     * (the exact filenames the engine loads). Progress is blended by real bytes
+     * — a voice pack is <1% of the model, so a naive per-file split would jump
+     * the bar. Fails fast if any member fails.
+     */
+    suspend fun downloadGroup(members: List<CatalogueModel>, onProgress: (Float) -> Unit): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val pending = members.filter { !isDownloaded(it) }
+                if (pending.isEmpty()) {
+                    onProgress(1f)
+                    return@runCatching
+                }
+                val totalBytes = pending.sumOf { it.sizeBytes.coerceAtLeast(1L) }.toFloat()
+                var doneBytes = 0L
+                for (member in pending) {
+                    val weight = member.sizeBytes.coerceAtLeast(1L)
+                    download(member) { p ->
+                        onProgress(((doneBytes + p * weight) / totalBytes).coerceIn(0f, 1f))
+                    }.getOrThrow()
+                    doneBytes += weight
+                }
+                onProgress(1f)
+            }
+        }
+
+    /** A companion group counts as downloaded only when every member (model + voice) is present — Kokoro can't load with either missing. */
+    fun isGroupDownloaded(members: List<CatalogueModel>): Boolean = members.all { isDownloaded(it) }
+
+    fun deleteGroup(members: List<CatalogueModel>) = members.forEach { delete(it) }
 
     /** Streaming download with redirect-following (mirrors [DictionaryRepository]) plus periodic progress. */
     private fun downloadWithProgress(url: String, dest: File, expectedSize: Long, onProgress: (Float) -> Unit) {

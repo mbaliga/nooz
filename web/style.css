@@ -1451,6 +1451,237 @@ h1, h2, h3, h4 {
   color: var(--paper-ink);
 }
 
+/* ---- Loom: mode tabs (Loom / Contrast) --------------------------------- */
+.nooz-loom-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.nooz-loom-tab {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-ink-dim);
+  padding: var(--space-xxs) var(--space-xs);
+  border-bottom: 2px solid transparent;
+}
+.nooz-loom-tab.is-active {
+  color: var(--paper-ink);
+  border-bottom-color: var(--paper-ink);
+}
+
+/* ---- Loom: the woven surface ------------------------------------------- */
+.nooz-weave {
+  display: flex;
+  justify-content: center;
+  border-bottom: none;
+}
+.nooz-loom-stage {
+  position: relative;
+  display: inline-block;
+}
+.nooz-loom-svg {
+  display: block;
+  height: min(70vh, 760px);
+  min-height: 360px;
+  width: auto;
+  max-width: 100%;
+}
+.nooz-loom-tube { transition: opacity 0.25s ease; }
+.nooz-loom-tube:focus-visible { outline: none; }
+.nooz-loom-ghost { fill: var(--paper-ink-dim); opacity: 0.35; }
+/* The curtain sweep: the loom reveals top-to-bottom, once per session. */
+.nooz-loom-stage.is-revealing .nooz-loom-svg {
+  animation: nooz-loom-reveal 1.2s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes nooz-loom-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.nooz-loom-num {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.nooz-loom-num--src { top: 1%; left: 1%; align-items: flex-start; }
+.nooz-loom-num--con { top: 24%; right: 1%; align-items: flex-end; text-align: right; }
+.nooz-loom-num-value {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(1.9rem, 8vw, 2.9rem);
+  line-height: 1;
+  color: var(--paper-ink);
+}
+.nooz-loom-num-caption {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  color: var(--paper-ink-dim);
+}
+.nooz-loom-inspect {
+  position: absolute;
+  top: 50%;
+  left: 1%;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  pointer-events: none;
+}
+.nooz-loom-inspect-name {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.nooz-loom-inspect-detail {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+}
+.nooz-loom-denom {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--paper-ink-dim);
+  pointer-events: none;
+}
+
+/* ---- Loom: the Contrast ledger ----------------------------------------- */
+.nooz-contrast {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+.nooz-contrast-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.nooz-contrast-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.nooz-contrast-note {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--paper-ink-dim);
+}
+/* Reach: one nested funnel bar -- the track is everything flowed, the inner
+   solid fill is what you read, so the bar simply shrinks through the omission. */
+.nooz-funnel {
+  position: relative;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--paper-hairline);
+}
+.nooz-funnel-read {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--paper-ink);
+}
+.nooz-funnel-legend { display: flex; gap: var(--space-lg); }
+.nooz-funnel-key { display: flex; align-items: center; gap: var(--space-xs); }
+.nooz-funnel-swatch { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.nooz-funnel-swatch.is-flowed { background: var(--paper-hairline-strong); }
+.nooz-funnel-swatch.is-read { background: var(--paper-ink); }
+.nooz-funnel-key-text { display: flex; flex-direction: column; }
+.nooz-funnel-key-label {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  color: var(--paper-ink-dim);
+}
+.nooz-funnel-key-count {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--paper-ink);
+}
+/* The sort lever. */
+.nooz-sort { display: flex; gap: var(--space-sm); }
+.nooz-sort-opt {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--paper-ink-dim);
+}
+.nooz-sort-opt.is-active { color: var(--paper-ink); font-weight: 700; }
+/* A dumbbell per topic: hollow ring = share of the stream, solid dot = share
+   of your reading, the line between them the gap (the omission at a glance). */
+.nooz-dumbbell {
+  --db-pad: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+.nooz-dumbbell-head { display: flex; align-items: center; gap: var(--space-xs); }
+.nooz-dumbbell-topicdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.nooz-dumbbell-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  color: var(--paper-ink);
+}
+.nooz-dumbbell-pct {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--paper-ink-dim);
+  flex-shrink: 0;
+}
+.nooz-dumbbell-track { position: relative; height: 16px; }
+.nooz-dumbbell-track::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--db-pad);
+  right: var(--db-pad);
+  height: 1px;
+  background: var(--paper-hairline-strong);
+  transform: translateY(-50%);
+}
+.nooz-dumbbell-connector {
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+.nooz-dumbbell-dot {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+.nooz-dumbbell-dot--flowed { background: var(--paper-field); border: 1.5px solid; }
+.nooz-dot-legend {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xs);
+}
+.nooz-dot-key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--paper-ink-dim);
+}
+.nooz-dot-key-dot { width: 10px; height: 10px; border-radius: 50%; box-sizing: border-box; }
+.nooz-dot-key-dot.is-filled { background: var(--paper-ink); }
+.nooz-dot-key-dot.is-hollow { border: 1.5px solid var(--paper-ink); }
+
 /* ---- Settings ---------------------------------------------------------- */
 .nooz-choice-row {
   display: flex;
@@ -1562,8 +1793,11 @@ h1, h2, h3, h4 {
   right: 0;
   bottom: var(--nooz-footer-h);
   width: min(440px, 92vw);
-  background: var(--paper-raised);
-  border-left: 1px solid var(--paper-hairline-strong);
+  /* Same tone as the page backdrop (not the raised-white of cards/inputs) and
+     no border -- a seam would read as an edge, i.e. as sitting beside the
+     paper rather than behind it. Flush colour is what sells "behind". */
+  background: var(--paper-field);
+  border: none;
   transform: translateX(101%);
   transition: transform 0.35s ease;
   z-index: 1; /* behind the paper (stage), never over it */
@@ -1583,7 +1817,7 @@ h1, h2, h3, h4 {
   display: flex;
   justify-content: flex-end;
   padding: var(--space-xs) var(--space-sm);
-  background: var(--paper-raised);
+  background: var(--paper-field); /* flush with .nooz-drawer -- no seam at the top */
   z-index: 2;
 }
 .nooz-drawer-content { padding: 0 var(--space-lg) var(--space-xl); }
@@ -1681,49 +1915,56 @@ h1, h2, h3, h4 {
   margin-top: var(--space-xs);
 }
 
-/* ---- Loom strip (the coloured bar, in the Paper and the Reader) --------- */
-/* Tapping it slides it aside and opens the full Loom drawer -- whose own first
-   element is this same bar, so it reads as the strip expanding into the loom. */
+/* ---- Loom strip (a quiet hint, in the Paper and the Reader) ------------- */
+/* No card, no fill, no border -- it sits flush with the page so it reads as
+   part of the paper, not a control floating on top of it. Compact and
+   left-aligned rather than stretched full-bleed, so it stays a hint, not a
+   banner. Tapping it flies the strip itself to the Loom drawer (see
+   flyStripToLoom in loom.js), where it lands on -- and becomes -- the
+   drawer's own bar, timed with the paper sliding aside to reveal the drawer. */
 .nooz-loomstrip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
+  max-width: 300px;
   width: 100%;
   text-align: left;
-  padding: var(--space-xs) var(--space-sm);
+  padding: 2px 0;
   margin-bottom: var(--space-lg);
-  border: 1px solid var(--paper-hairline);
-  border-radius: 999px;
-  background: var(--paper-raised);
-  transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.15s ease;
+  border: none;
+  background: none;
+  opacity: 0.82;
+  transition: opacity 0.15s ease;
 }
-.nooz-loomstrip:hover { box-shadow: 0 1px 0 var(--paper-hairline-strong); }
-.nooz-loomstrip:focus-visible { outline: 2px solid var(--paper-ink); outline-offset: 2px; }
+.nooz-loomstrip:hover,
+.nooz-loomstrip:focus-visible { opacity: 1; }
+.nooz-loomstrip:focus-visible { outline: 1px solid var(--paper-hairline-strong); outline-offset: 3px; }
 .nooz-loomstrip-label {
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 700;
+  font-size: 0.625rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--paper-ink-dim);
-  flex-shrink: 0;
-}
-.nooz-loomstrip-bar { flex: 1; height: 14px; }
-.nooz-loombar.is-empty { background: var(--paper-hairline); }
-.nooz-loomstrip-hint {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  color: var(--paper-ink-dim);
-  flex-shrink: 0;
-}
-.nooz-loomstrip-chev {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  line-height: 1;
+  letter-spacing: 0.08em;
   color: var(--paper-ink-faint);
   flex-shrink: 0;
 }
-.nooz-loomstrip.is-launching { transform: translateX(44px); opacity: 0; }
+.nooz-loomstrip-bar { flex: 1; height: 5px; border-radius: 999px; }
+.nooz-loomstrip-bar.nooz-loombar { background: var(--paper-hairline); }
+.nooz-loombar.is-empty { background: var(--paper-hairline); }
+.nooz-loomstrip-hint {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--paper-ink-faint);
+  flex-shrink: 0;
+}
+/* The clone that flies from the Paper to the drawer on open (see
+   flyStripToLoom); the original stays in place but hidden until it re-renders. */
+.nooz-loomstrip-flight {
+  z-index: 40;
+  opacity: 1;
+  pointer-events: none;
+  max-width: none;
+}
 
 /* ---- Newspaper mode: full-size turning pages, complete articles -------- */
 /* Complete articles are set into fixed-size portrait pages. The front page
@@ -1741,7 +1982,12 @@ h1, h2, h3, h4 {
   overflow-y: hidden;
   perspective: 2400px;
   padding-bottom: var(--space-xs);
+  /* The blank margin either side of the book turns the page (see
+     attachMarginTurn in stand.js); the pointer hints as much. The book itself
+     reverts to the normal cursor -- its own headlines/links set their own. */
+  cursor: pointer;
 }
+.nooz-np-frame .nooz-book { cursor: auto; }
 .nooz-book {
   display: flex;
   align-items: stretch;
@@ -1890,6 +2136,8 @@ h1, h2, h3, h4 {
   font-size: 1.02rem;
   line-height: 1.12;
   margin: 1px 0 2px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .nooz-art-headline--lead { font-size: clamp(1.7rem, 3.6vw, 2.3rem); line-height: 1.03; }
 .nooz-art-head.is-read .nooz-art-headline { color: var(--paper-ink-dim); }
@@ -1906,6 +2154,14 @@ h1, h2, h3, h4 {
   text-align: justify;
   hyphens: auto;
   -webkit-hyphens: auto;
+  /* A long unbreakable token (a URL, a run-on string) in the real extracted
+     body would otherwise set this paragraph's min-content width wider than its
+     narrow column: every line then renders past the page edge and the inflated
+     scrollWidth trips the paginator's overflow() check early, stranding a
+     near-empty column. `anywhere` (not just `break-word`) shrinks the intrinsic
+     width so the box can't be forced wide. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .nooz-art-b--drop::first-letter {
   float: left;

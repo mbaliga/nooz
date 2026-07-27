@@ -254,10 +254,55 @@ function buildNewspaper(state, actions) {
     newspaperSpread = target;
     actions.refreshView();
   };
+  attachMarginTurn(frame, book, doTurn);
 
   wrap.appendChild(frame);
   wrap.appendChild(buildPager(newspaperSpread, maxSpread, shown, pages.length, doTurn));
   return wrap;
+}
+
+// Clicking the blank margin either side of the book turns the page that way --
+// the default way to move through Newspaper mode (its pages are the web's
+// equivalent of the app's immersive, chrome-free reading surface). Clicking
+// and holding repeats the turn, accelerating like a fast-forward/rewind, until
+// released. A plain click (target === frame, i.e. the flex container's own
+// background, not the book or anything in it -- headlines stay clickable)
+// turns once; holding past ~480ms takes over and the trailing click is
+// suppressed so a hold doesn't also count as one more single turn.
+function attachMarginTurn(frame, book, doTurn) {
+  let holdTimer = null;
+  let heldFired = false;
+
+  const isBlank = (evt) => evt.target === frame;
+  const sideOf = (evt) => {
+    const r = book.getBoundingClientRect();
+    const mid = r.width > 0 ? r.left + r.width / 2 : frame.getBoundingClientRect().left + frame.getBoundingClientRect().width / 2;
+    return evt.clientX < mid ? -1 : 1;
+  };
+  const clearHold = () => { clearTimeout(holdTimer); holdTimer = null; };
+
+  frame.addEventListener('click', (evt) => {
+    if (!isBlank(evt)) return;
+    if (heldFired) { heldFired = false; return; }
+    doTurn(sideOf(evt));
+  });
+
+  frame.addEventListener('pointerdown', (evt) => {
+    if (!isBlank(evt)) return;
+    if (evt.button !== undefined && evt.button !== 0) return;
+    const dir = sideOf(evt);
+    clearHold();
+    heldFired = false;
+    let speed = 420; // ms between repeats; shrinks each tick, i.e. accelerates
+    const tick = () => {
+      heldFired = true;
+      doTurn(dir);
+      speed = Math.max(90, speed - 35);
+      holdTimer = setTimeout(tick, speed);
+    };
+    holdTimer = setTimeout(tick, 480); // grace period so a quick tap stays a single turn
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => frame.addEventListener(ev, clearHold));
 }
 
 // Front alone, then two pages per spread when there's room (else one at a time),

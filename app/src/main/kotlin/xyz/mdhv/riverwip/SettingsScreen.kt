@@ -122,7 +122,8 @@ class SettingsViewModel(
         modelCatalogueRepo.downloadable(models, kind)
 
     /** Cheap file-existence check — called straight from composition, no cached/stale copy to keep in sync. */
-    fun isModelDownloaded(model: CatalogueModel): Boolean = modelCatalogueRepo.isDownloaded(model)
+    fun isModelDownloaded(model: CatalogueModel): Boolean =
+        modelCatalogueRepo.isGroupDownloaded(modelCatalogueRepo.groupMembers(modelCatalogue.value, model))
 
     fun refreshModelCatalogue() {
         if (modelCatalogueRefreshing) return
@@ -139,14 +140,18 @@ class SettingsViewModel(
 
     fun downloadModel(model: CatalogueModel) {
         if (modelDownloadStates[model.id] is ModelDownloadState.Downloading) return
+        // The whole companion group (e.g. Cast's TTS model + its paired voice),
+        // so one tap yields a complete, loadable install — not just the .onnx.
+        val members = modelCatalogueRepo.groupMembers(modelCatalogue.value, model)
+        val neededBytes = members.filter { !modelCatalogueRepo.isDownloaded(it) }.sumOf { it.sizeBytes }
         val available = modelCatalogueRepo.availableStorageBytes()
-        if (!StorageBudget.canDownload(model.sizeBytes, available)) {
+        if (!StorageBudget.canDownload(neededBytes, available)) {
             modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Failed("Not enough free storage for this model."))
             return
         }
         modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Downloading(0f))
         viewModelScope.launch {
-            val result = modelCatalogueRepo.download(model) { progress ->
+            val result = modelCatalogueRepo.downloadGroup(members) { progress ->
                 modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Downloading(progress))
             }
             modelDownloadStates = modelDownloadStates + (model.id to
@@ -157,7 +162,7 @@ class SettingsViewModel(
     }
 
     fun deleteModel(model: CatalogueModel) {
-        modelCatalogueRepo.delete(model)
+        modelCatalogueRepo.deleteGroup(modelCatalogueRepo.groupMembers(modelCatalogue.value, model))
         modelDownloadStates = modelDownloadStates - model.id
     }
 
@@ -701,7 +706,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                "Today's news compressed to 10 words or fewer, with a tap to go deeper. On-device first; a bring-your-own key is the only fallback, never a general cloud broker.",
+                "Today's news compressed to 10 words or fewer. Coming soon: the on-device engine that runs it isn't wired in this build yet, so enabling Flash shows a placeholder for now.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
