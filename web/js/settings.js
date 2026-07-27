@@ -24,6 +24,7 @@ export const PAPER_OPTIONS = [
 
 export const IMAGE_STYLES = ['halftone', 'bw', 'colour'];
 export const READING_MODES = ['continuous', 'newspaper'];
+export const ARTICLE_DISPLAYS = ['full', 'excerpt'];
 
 const DEFAULTS = {
   font: 'serif',
@@ -32,6 +33,8 @@ const DEFAULTS = {
   showImages: true,
   imageStyle: 'halftone', // halftone (default, newsprint) | bw | colour
   readingMode: 'continuous', // continuous scroll | newspaper (paged, page-turn)
+  immersiveNewspaper: false, // Newspaper mode: hide the page-count/turn-buttons strip -- just the paper
+  articleDisplay: 'full', // full extracted article text inline, or a short excerpt/dek
 };
 
 let current = { ...DEFAULTS };
@@ -49,6 +52,8 @@ export function loadSettings() {
         showImages: typeof parsed.showImages === 'boolean' ? parsed.showImages : DEFAULTS.showImages,
         imageStyle: IMAGE_STYLES.includes(parsed.imageStyle) ? parsed.imageStyle : DEFAULTS.imageStyle,
         readingMode: READING_MODES.includes(parsed.readingMode) ? parsed.readingMode : DEFAULTS.readingMode,
+        immersiveNewspaper: typeof parsed.immersiveNewspaper === 'boolean' ? parsed.immersiveNewspaper : DEFAULTS.immersiveNewspaper,
+        articleDisplay: ARTICLE_DISPLAYS.includes(parsed.articleDisplay) ? parsed.articleDisplay : DEFAULTS.articleDisplay,
       };
     }
   } catch (_err) {

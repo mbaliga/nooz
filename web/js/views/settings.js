@@ -18,10 +18,12 @@ export function render(container, state, actions) {
   const s = state.settings || {};
 
   root.appendChild(buildReadingModeSection(s, actions));
+  root.appendChild(buildArticleDisplaySection(s, actions));
   root.appendChild(buildImageStyleSection(s, actions));
   root.appendChild(buildFontSection(s, actions));
   root.appendChild(buildPaperSection(s, actions));
   root.appendChild(buildToggleSection(s, actions));
+  root.appendChild(buildFeedbackSection());
 
   container.appendChild(root);
 }
@@ -53,6 +55,49 @@ function buildReadingModeSection(s, actions) {
     desc.textContent = m.desc;
     btn.appendChild(desc);
     btn.addEventListener('click', () => actions.updateSetting('readingMode', m.key));
+    row.appendChild(btn);
+  }
+  section.appendChild(row);
+
+  section.appendChild(
+    toggleRow(
+      'Immersive',
+      'Newspaper mode, with nothing below the page -- no page count, no turn buttons. Click or hold the margin either side of the page to turn it.',
+      s.immersiveNewspaper === true,
+      (v) => actions.updateSetting('immersiveNewspaper', v)
+    )
+  );
+
+  return section;
+}
+
+function buildArticleDisplaySection(s, actions) {
+  const section = document.createElement('div');
+  section.className = 'nooz-stack nooz-stack--xs';
+  section.appendChild(sectionTitle('Articles'));
+
+  const row = document.createElement('div');
+  row.className = 'nooz-choice-row';
+  const options = [
+    { key: 'full', label: 'Full articles', desc: 'Read in place, like a newspaper' },
+    { key: 'excerpt', label: 'Excerpts', desc: 'A short dek; open to read more' },
+  ];
+  const current = s.articleDisplay || 'full';
+  for (const opt of options) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nooz-choice nooz-choice--wide';
+    if (current === opt.key) btn.classList.add('is-active');
+    btn.setAttribute('aria-pressed', current === opt.key ? 'true' : 'false');
+    const label = document.createElement('span');
+    label.className = 'nooz-choice-label nooz-choice-label--strong';
+    label.textContent = opt.label;
+    btn.appendChild(label);
+    const desc = document.createElement('span');
+    desc.className = 'nooz-choice-label';
+    desc.textContent = opt.desc;
+    btn.appendChild(desc);
+    btn.addEventListener('click', () => actions.updateSetting('articleDisplay', opt.key));
     row.appendChild(btn);
   }
   section.appendChild(row);
@@ -181,6 +226,24 @@ function buildToggleSection(s, actions) {
       (v) => actions.updateSetting('showImages', v)
     )
   );
+
+  return section;
+}
+
+// Plain mailto, matching the Android app's own feedback pattern (same
+// address). No form, no ticket system -- just a real inbox.
+const FEEDBACK_EMAIL = 'nooz@asystemofcells.com';
+
+function buildFeedbackSection() {
+  const section = document.createElement('div');
+  section.className = 'nooz-stack nooz-stack--xs';
+  section.appendChild(sectionTitle('Feedback'));
+
+  const link = document.createElement('a');
+  link.className = 'nooz-button';
+  link.href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('Nooz web reader issue')}`;
+  link.textContent = 'Report an issue';
+  section.appendChild(link);
 
   return section;
 }

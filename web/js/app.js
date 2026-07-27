@@ -23,6 +23,8 @@ import {
 } from './db.js';
 import { fetchFeed } from './feeds.js';
 import { STARTERS } from './starters.js';
+import { renderNewspaperClipping } from './newspaperShare.js';
+import { shouldShowOnboarding, showOnboarding } from './onboarding.js';
 import { loadSettings, getSettings, setSetting } from './settings.js';
 import { installSelectionSearch } from './selection.js';
 import { render as renderStand } from './views/stand.js';
@@ -60,6 +62,14 @@ const DRAWER_VIEWS = new Set(['loom', 'sources', 'clippings', 'settings']);
 // text is treated as "full enough" -- we don't bother the extraction endpoint
 // for it. Below it (BBC-style one-liners), we try to extract the real article.
 const RICH_ENOUGH_CHARS = 900;
+
+// Settings > Articles > "Full articles": how many of the currently-visible
+// items get proactively extracted per render, top of the list first. Bounded
+// so a very large feed list can't fire hundreds of extraction requests at
+// once -- the browser's own per-origin connection limit throttles what does
+// run, but there's no reason to even queue more than a page's worth; items
+// past the cap still extract normally the moment they're opened.
+const FULL_ARTICLE_PREFETCH_CAP = 60;
 
 let allItems = [];
 const itemsById = new Map();
@@ -115,6 +125,7 @@ async function boot() {
   onRoute(handleRoute);
   installResizeReflow();
   refreshAll();
+  if (shouldShowOnboarding()) showOnboarding();
 }
 
 // The Newspaper layout measures the masthead and fits a spread to the frame, so
@@ -387,6 +398,10 @@ function rerender() {
     settings: getSettings(),
   };
 
+  if (stateForView.settings.articleDisplay !== 'excerpt') {
+    for (const item of stateForView.items.slice(0, FULL_ARTICLE_PREFETCH_CAP)) ensureArticle(item);
+  }
+
   // Stage: reader / newsstand / Paper (which stays mounted behind an open drawer).
   const stageView = STAGE_VIEWS.has(route.view) ? route.view : 'stand';
   VIEW_RENDERERS[stageView](stageEl, stateForView, actions);
@@ -640,20 +655,60 @@ function goTo(view) {
 async function shareItem(itemId) {
   const item = itemsById.get(itemId);
   if (!item) return;
-  const shareData = { title: item.title || 'Nooz', text: item.summary || '', url: item.link || undefined };
+  const source = (currentState.sources || []).find((s) => s.id === item.sourceId);
+  const shareText = item.link ? `${item.title || 'Nooz'} — ${item.link}` : (item.title || 'Nooz');
+
+  // A "newspaper clipping" mockup image, matching the Android app's own
+  // share -- rendered client-side. Never dead-ends: if rendering fails, or
+  // the platform can't share files, this falls through to the plain
+  // link/text share (and, with no Web Share API at all, a direct download
+  // plus a copied link) exactly as share worked before this existed.
+  let blob = null;
+  try {
+    blob = await renderNewspaperClipping({
+      title: item.title,
+      sourceTitle: source ? source.title : null,
+      author: item.author,
+    });
+  } catch (_err) {
+    blob = null;
+  }
+
+  if (blob && navigator.canShare) {
+    const file = new File([blob], 'nooz-clipping.png', { type: 'image/png' });
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: item.title || 'Nooz', text: shareText });
+        return;
+      } catch (_err) {
+        /* cancelled -- fall through to the plain share below */
+      }
+    }
+  }
+
   if (navigator.share) {
     try {
-      await navigator.share(shareData);
+      await navigator.share({ title: item.title || 'Nooz', text: item.summary || '', url: item.link || undefined });
     } catch (_err) {
       /* cancelled/unsupported -- not worth surfacing */
     }
     return;
   }
+
+  // No Web Share API at all (desktop Safari/Firefox): download the clipping
+  // if one rendered, and copy the link either way.
+  if (blob) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'nooz-clipping.png';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
   const text = item.link || item.title || '';
   if (!text) return;
   try {
     await navigator.clipboard.writeText(text);
-    showToast('Link copied');
+    showToast(blob ? 'Clipping downloaded, link copied' : 'Link copied');
   } catch (_err) {
     showToast('Could not copy link');
   }

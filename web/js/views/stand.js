@@ -257,7 +257,10 @@ function buildNewspaper(state, actions) {
   attachMarginTurn(frame, book, doTurn);
 
   wrap.appendChild(frame);
-  wrap.appendChild(buildPager(newspaperSpread, maxSpread, shown, pages.length, doTurn));
+  // Immersive: nothing below the page -- no page count, no turn buttons.
+  // Margin click/hold still turns pages; it doesn't depend on this row.
+  const immersive = state.settings && state.settings.immersiveNewspaper === true;
+  if (!immersive) wrap.appendChild(buildPager(newspaperSpread, maxSpread, shown, pages.length, doTurn));
   return wrap;
 }
 
@@ -269,17 +272,30 @@ function buildNewspaper(state, actions) {
 // background, not the book or anything in it -- headlines stay clickable)
 // turns once; holding past ~480ms takes over and the trailing click is
 // suppressed so a hold doesn't also count as one more single turn.
-function attachMarginTurn(frame, book, doTurn) {
-  let holdTimer = null;
-  let heldFired = false;
+//
+// holdTimer/heldFired are MODULE-level, not local to one call: every doTurn()
+// inside the repeat loop calls actions.refreshView(), which re-renders the
+// newspaper and hands buildNewspaper a brand-new `frame` element -- so the
+// listeners this function attaches are re-attached fresh on every tick, each
+// time to a different DOM node. If the timer lived in this function's own
+// closure, the release ("pointerup") would land on whichever frame is
+// current at that instant, not the (now-detached) one the timer's closure
+// captured, so the "stop" listener would never fire and the repeat would run
+// forever ("pages keep scrolling long after I release the click"). Module
+// scope plus a release listener on `window` (registered once, not per call)
+// sidesteps that: the same timer variable is visible from every call, and
+// `window` never gets swapped out from under the pointer.
+let holdTimer = null;
+let heldFired = false;
+let holdReleaseWired = false;
 
+function attachMarginTurn(frame, book, doTurn) {
   const isBlank = (evt) => evt.target === frame;
   const sideOf = (evt) => {
     const r = book.getBoundingClientRect();
     const mid = r.width > 0 ? r.left + r.width / 2 : frame.getBoundingClientRect().left + frame.getBoundingClientRect().width / 2;
     return evt.clientX < mid ? -1 : 1;
   };
-  const clearHold = () => { clearTimeout(holdTimer); holdTimer = null; };
 
   frame.addEventListener('click', (evt) => {
     if (!isBlank(evt)) return;
@@ -291,7 +307,7 @@ function attachMarginTurn(frame, book, doTurn) {
     if (!isBlank(evt)) return;
     if (evt.button !== undefined && evt.button !== 0) return;
     const dir = sideOf(evt);
-    clearHold();
+    clearTimeout(holdTimer);
     heldFired = false;
     let speed = 420; // ms between repeats; shrinks each tick, i.e. accelerates
     const tick = () => {
@@ -302,7 +318,13 @@ function attachMarginTurn(frame, book, doTurn) {
     };
     holdTimer = setTimeout(tick, 480); // grace period so a quick tap stays a single turn
   });
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => frame.addEventListener(ev, clearHold));
+
+  if (!holdReleaseWired) {
+    holdReleaseWired = true;
+    const stop = () => { clearTimeout(holdTimer); holdTimer = null; };
+    window.addEventListener('pointerup', stop);
+    window.addEventListener('pointercancel', stop);
+  }
 }
 
 // Front alone, then two pages per spread when there's room (else one at a time),
@@ -676,7 +698,9 @@ function buildLeadStory(item, state, actions, showImages, imageStyle, continued)
   headline.textContent = item.title || '(untitled)';
   body.appendChild(headline);
 
-  if (item.summary) {
+  if (isFullDisplay(state)) {
+    body.appendChild(buildFullBody(item, state));
+  } else if (item.summary) {
     const dek = document.createElement('p');
     dek.className = 'nooz-lead-dek';
     dek.textContent = clampText(item.summary, continued ? 220 : 320);
@@ -693,6 +717,39 @@ function buildLeadStory(item, state, actions, showImages, imageStyle, continued)
   story.appendChild(body);
   wire(story, () => actions.openItem(item.id));
   return story;
+}
+
+// Continuous mode's article-length setting (Settings > Articles): full extracted
+// text inline (like a newspaper), or the short dek. Falls back to the dek while
+// full text is still being fetched (app.js prefetches it eagerly when this
+// setting is on) -- it upgrades in place on the next render once ready.
+function isFullDisplay(state) {
+  return !state.settings || state.settings.articleDisplay !== 'excerpt';
+}
+
+function buildFullBody(item, state) {
+  const extracted = state.articles && state.articles[item.id];
+  let frag = null;
+  if (extracted && extracted.html) frag = sanitizeHtml(extracted.html, { allowImages: false });
+  else if (item.contentHtml) frag = sanitizeHtml(item.contentHtml, { allowImages: false });
+
+  const wrap = document.createElement('div');
+  wrap.className = 'nooz-reader-body';
+  if (frag && frag.childNodes.length) {
+    wrap.appendChild(frag);
+  } else if (item.summary) {
+    for (const para of splitParagraphsLocal(item.summary)) {
+      const p = document.createElement('p');
+      p.textContent = para;
+      wrap.appendChild(p);
+    }
+  } else {
+    const p = document.createElement('p');
+    p.className = 'nooz-reader-thin';
+    p.textContent = 'The full text is not in this feed yet. Open the story to read it at the source.';
+    wrap.appendChild(p);
+  }
+  return wrap;
 }
 
 function buildColumnStory(item, state, actions, showImages) {
@@ -714,7 +771,9 @@ function buildColumnStory(item, state, actions, showImages) {
     if (figure) story.appendChild(figure);
   }
 
-  if (item.summary) {
+  if (isFullDisplay(state)) {
+    story.appendChild(buildFullBody(item, state));
+  } else if (item.summary) {
     const dek = document.createElement('p');
     dek.className = 'nooz-col-dek';
     dek.textContent = clampText(item.summary, 160);

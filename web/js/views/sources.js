@@ -351,19 +351,19 @@ function buildStarterRow(starter, subscribed, state, actions) {
     }
   }
 
+  // A plain Add/Remove button -- not a switch. One control, one action; the
+  // row never moves regardless of which state it's in.
   const on = !!subscribed;
-  const toggle = document.createElement('input');
-  toggle.type = 'checkbox';
-  toggle.className = 'nooz-switch';
-  toggle.checked = on;
-  toggle.setAttribute('role', 'switch');
-  toggle.setAttribute('aria-checked', on ? 'true' : 'false');
-  toggle.setAttribute('aria-label', `${on ? 'Remove' : 'Add'} ${starter.title}`);
-  toggle.addEventListener('change', () => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'nooz-button' + (on ? '' : ' nooz-button--primary');
+  btn.textContent = on ? 'Remove' : 'Add';
+  btn.setAttribute('aria-label', `${on ? 'Remove' : 'Add'} ${starter.title}`);
+  btn.addEventListener('click', () => {
     if (subscribed) actions.removeSource(subscribed.id);
     else actions.addStarter(starter);
   });
-  actionsWrap.appendChild(toggle);
+  actionsWrap.appendChild(btn);
 
   row.appendChild(actionsWrap);
   return row;
