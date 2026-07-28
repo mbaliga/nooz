@@ -546,6 +546,8 @@ h1, h2, h3, h4 {
    ---------------------------------------------------------------------- */
 
 .nooz-button {
+  appearance: none;
+  -webkit-appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;

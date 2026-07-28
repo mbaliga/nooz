@@ -58,16 +58,23 @@ export function render(container, state, actions) {
   // Paper on a category/publisher/region.
   const focus = buildFocusBar(state, actions);
 
+  // The strip is a quiet echo of the Loom's own bar, meant to fly into and
+  // become it on open (see loom.js's flyStripToLoom). Once the Loom drawer is
+  // actually open, its own bar is already showing that same information --
+  // leaving the strip up too would just read as two duplicate bars, so it's
+  // hidden for as long as the drawer stays open.
+  const loomOpen = state.activeDrawer === 'loom';
+
   if (mode === 'newspaper') {
     // The big Nooz nameplate lives on the front page itself; inner pages carry
     // a plain running head -- standard newspaper format.
     if (focus) paper.appendChild(focus);
-    paper.appendChild(buildLoomStrip(state, actions));
+    if (!loomOpen) paper.appendChild(buildLoomStrip(state, actions));
     paper.appendChild(buildNewspaper(state, actions));
   } else {
     paper.appendChild(buildMasthead(state));
     if (focus) paper.appendChild(focus);
-    paper.appendChild(buildLoomStrip(state, actions));
+    if (!loomOpen) paper.appendChild(buildLoomStrip(state, actions));
     paper.appendChild(buildFrontPage(state, actions));
   }
 

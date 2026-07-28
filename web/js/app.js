@@ -71,6 +71,38 @@ const RICH_ENOUGH_CHARS = 900;
 // past the cap still extract normally the moment they're opened.
 const FULL_ARTICLE_PREFETCH_CAP = 60;
 
+// The prefetch loop above queues up to a page's worth of extractions, but only
+// this many run at once -- otherwise a large feed list fires dozens of
+// concurrent /api/article requests and dozens of near-simultaneous 'loading'
+// state transitions (each calling rerender()) the instant the page loads,
+// which reads as the whole paper flickering and makes the first load feel
+// slow. Queued items still extract, just a few at a time.
+const ARTICLE_PREFETCH_CONCURRENCY = 3;
+const articlePrefetchQueue = [];
+const queuedArticleIds = new Set();
+let articlePrefetchActive = 0;
+
+function queueArticlePrefetch(item) {
+  if (!item || !item.link) return;
+  const id = item.id;
+  if (currentState.articles[id] || currentState.articleStatus[id] || queuedArticleIds.has(id)) return;
+  queuedArticleIds.add(id);
+  articlePrefetchQueue.push(item);
+  pumpArticlePrefetch();
+}
+
+function pumpArticlePrefetch() {
+  while (articlePrefetchActive < ARTICLE_PREFETCH_CONCURRENCY && articlePrefetchQueue.length) {
+    const item = articlePrefetchQueue.shift();
+    queuedArticleIds.delete(item.id);
+    articlePrefetchActive += 1;
+    ensureArticle(item).finally(() => {
+      articlePrefetchActive -= 1;
+      pumpArticlePrefetch();
+    });
+  }
+}
+
 let allItems = [];
 const itemsById = new Map();
 
@@ -361,7 +393,23 @@ function updateSourceHealth() {
   link.setAttribute('aria-label', `${NAV_LABELS.sources} — ${summary}`);
 }
 
+// Many state changes (a burst of article extractions finishing, a fetch tick)
+// can each call rerender() within the same instant. Coalescing them into one
+// rAF-scheduled pass means one DOM rebuild for the whole burst instead of one
+// per change -- the difference between a single repaint and the UI visibly
+// flickering as it rebuilds itself over and over.
+let renderScheduled = false;
+
 function rerender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => {
+    renderScheduled = false;
+    renderNow();
+  });
+}
+
+function renderNow() {
   updateSourceHealth();
   const active = document.activeElement;
   let restore = null;
@@ -396,10 +444,14 @@ function rerender() {
     articles: currentState.articles,
     articleStatus: currentState.articleStatus,
     settings: getSettings(),
+    // Which drawer (if any) is open -- the Paper stays mounted behind it, so it
+    // needs this to know when to quiet its own on-page echo of a drawer's
+    // content (e.g. the loom strip, once the Loom drawer has its own bar open).
+    activeDrawer: DRAWER_VIEWS.has(route.view) ? route.view : null,
   };
 
   if (stateForView.settings.articleDisplay !== 'excerpt') {
-    for (const item of stateForView.items.slice(0, FULL_ARTICLE_PREFETCH_CAP)) ensureArticle(item);
+    for (const item of stateForView.items.slice(0, FULL_ARTICLE_PREFETCH_CAP)) queueArticlePrefetch(item);
   }
 
   // Stage: reader / newsstand / Paper (which stays mounted behind an open drawer).
@@ -407,7 +459,7 @@ function rerender() {
   VIEW_RENDERERS[stageView](stageEl, stateForView, actions);
 
   // Drawer: an option view slides in from the right; the Paper shifts aside.
-  const drawerView = DRAWER_VIEWS.has(route.view) ? route.view : null;
+  const drawerView = stateForView.activeDrawer;
   if (drawerView) {
     drawerEl.replaceChildren();
     drawerEl.appendChild(buildDrawerClose());
