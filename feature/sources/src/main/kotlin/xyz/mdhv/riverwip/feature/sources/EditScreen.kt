@@ -379,7 +379,17 @@ private fun BuilderRow(def: ServiceDef, onAdd: (String) -> Unit) {
 private fun Modifier.bleedHorizontal(horizontal: Dp): Modifier = layout { measurable, constraints ->
     val horizontalPx = horizontal.roundToPx()
     val placeable = measurable.measure(constraints.copy(maxWidth = constraints.maxWidth + horizontalPx * 2))
-    layout(placeable.width, placeable.height) {
+    // Report the ORIGINAL (un-widened) width back to the parent -- this node
+    // must claim only the space it was actually given, so the parent Column
+    // keeps placing it (and everything after it) exactly where it would
+    // without this modifier. Reporting the wider measured width instead (a
+    // bug this fixed: the parent then thought this row started `horizontal`
+    // further right than it actually draws, so the left inset the ancestor
+    // column's own padding added was silently cancelled out, leaving the row
+    // flush against the true screen edge instead of lined up with the chips
+    // and header above it) would misalign every row against everything else
+    // on the same screen that isn't bleeding.
+    layout(constraints.maxWidth, placeable.height) {
         placeable.placeRelative(-horizontalPx, 0)
     }
 }
