@@ -21,7 +21,17 @@ const MAX_LEN = 220;
 // apart on its own.
 function sentencesFrom(html) {
   const frag = sanitizeHtml(html, { allowImages: false });
-  const text = (frag.textContent || '').replace(/\s+/g, ' ').trim();
+  // frag.textContent alone glues adjacent block elements together with no
+  // separator at all ("...come.Supporters say...") since <p> boundaries carry
+  // no whitespace of their own -- joining each top-level node's own text with
+  // a space keeps paragraph breaks from silently vanishing into one run-on
+  // blob the length filter below would then reject outright.
+  const text = Array.from(frag.childNodes)
+    .map((node) => (node.textContent || '').trim())
+    .filter(Boolean)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   if (!text) return [];
   return text
     .split(/(?<=[.!?])\s+(?=[A-Z"“])/)
