@@ -25,6 +25,7 @@ export const PAPER_OPTIONS = [
 export const IMAGE_STYLES = ['halftone', 'bw', 'colour'];
 export const READING_MODES = ['continuous', 'newspaper'];
 export const ARTICLE_DISPLAYS = ['full', 'excerpt'];
+export const FOUND_QUOTE_STYLES = ['quote', 'dateline'];
 
 const DEFAULTS = {
   font: 'serif',
@@ -35,6 +36,7 @@ const DEFAULTS = {
   readingMode: 'continuous', // continuous scroll | newspaper (paged, page-turn)
   immersiveNewspaper: false, // Newspaper mode: hide the page-count/turn-buttons strip -- just the paper
   articleDisplay: 'full', // full extracted article text inline, or a short excerpt/dek
+  foundQuoteStyle: 'quote', // a real line pulled from something you're reading, every few minutes: a pull-quote block, or a wire-style dateline aside
 };
 
 let current = { ...DEFAULTS };
@@ -54,6 +56,7 @@ export function loadSettings() {
         readingMode: READING_MODES.includes(parsed.readingMode) ? parsed.readingMode : DEFAULTS.readingMode,
         immersiveNewspaper: typeof parsed.immersiveNewspaper === 'boolean' ? parsed.immersiveNewspaper : DEFAULTS.immersiveNewspaper,
         articleDisplay: ARTICLE_DISPLAYS.includes(parsed.articleDisplay) ? parsed.articleDisplay : DEFAULTS.articleDisplay,
+        foundQuoteStyle: FOUND_QUOTE_STYLES.includes(parsed.foundQuoteStyle) ? parsed.foundQuoteStyle : DEFAULTS.foundQuoteStyle,
       };
     }
   } catch (_err) {

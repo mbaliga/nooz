@@ -25,6 +25,7 @@ import { fetchFeed } from './feeds.js';
 import { STARTERS } from './starters.js';
 import { renderNewspaperClipping } from './newspaperShare.js';
 import { shouldShowOnboarding, showOnboarding } from './onboarding.js';
+import { pickFoundQuote } from './foundQuote.js';
 import { loadSettings, getSettings, setSetting } from './settings.js';
 import { installSelectionSearch } from './selection.js';
 import { render as renderStand } from './views/stand.js';
@@ -121,6 +122,7 @@ const currentState = {
   articles: {}, // itemId -> { id, html, byline, leadImage, textLen, fetchedAt }
   articleStatus: {}, // itemId -> 'loading' | 'ready' | 'error' | 'skip'
   settings: null,
+  readingAside: null, // the current found-quote/dateline pick (see foundQuote.js), or null
 };
 
 let viewEl = null;
@@ -156,8 +158,39 @@ async function boot() {
   installSelectionSearch();
   onRoute(handleRoute);
   installResizeReflow();
+  installReadingClock();
   refreshAll();
   if (shouldShowOnboarding()) showOnboarding();
+}
+
+// Every so often while actually reading, a quiet aside: a real line pulled
+// from something already read (see foundQuote.js) -- not a reward, no
+// counter kept anywhere, just an editorial break the way a long newspaper
+// column gets a pull-quote. The clock only runs while a reading view is on
+// screen and the tab is actually visible, so switching away or sitting in
+// Sources/Settings/the Loom doesn't quietly rack up "reading" time.
+const READING_ASIDE_INTERVAL_MS = 6 * 60 * 1000;
+const READING_CLOCK_TICK_MS = 5000;
+let readingClockMs = 0;
+
+function installReadingClock() {
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    if (!STAGE_VIEWS.has(parseRoute().view)) return;
+    readingClockMs += READING_CLOCK_TICK_MS;
+    if (readingClockMs < READING_ASIDE_INTERVAL_MS) return;
+    readingClockMs = 0;
+    const quote = pickFoundQuote({
+      items: computeVisibleItems(),
+      readIds: currentState.readIds,
+      articles: currentState.articles,
+      sources: currentState.sources,
+      currentItemId: parseRoute().itemId,
+    });
+    if (!quote) return; // nothing read yet with real text to pull from -- try again next interval
+    currentState.readingAside = quote;
+    rerender();
+  }, READING_CLOCK_TICK_MS);
 }
 
 // The Newspaper layout measures the masthead and fits a spread to the frame, so
@@ -444,6 +477,7 @@ function renderNow() {
     articles: currentState.articles,
     articleStatus: currentState.articleStatus,
     settings: getSettings(),
+    readingAside: currentState.readingAside,
     // Which drawer (if any) is open -- the Paper stays mounted behind it, so it
     // needs this to know when to quiet its own on-page echo of a drawer's
     // content (e.g. the loom strip, once the Loom drawer has its own bar open).

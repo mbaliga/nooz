@@ -15,6 +15,7 @@ import { annotate } from '../lens.js';
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
 import { frameImage, frameBodyImages } from '../images.js';
 import { buildLoomStrip } from './loom.js';
+import { buildFoundQuoteAside, insertFoundQuoteAside } from '../foundQuote.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -250,6 +251,11 @@ function buildBody(item, state) {
     p.className = 'nooz-reader-thin';
     p.textContent = "This source's feed didn't include the article text. Read the full piece at the source below.";
     body.appendChild(p);
+  }
+
+  const aside = state.readingAside;
+  if (aside && aside.itemId === item.id) {
+    insertFoundQuoteAside(body, buildFoundQuoteAside(aside, settings.foundQuoteStyle));
   }
 
   // Give body images the same halftone/B&W/colour frame as the lead, then mark

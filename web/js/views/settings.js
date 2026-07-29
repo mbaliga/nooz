@@ -19,6 +19,7 @@ export function render(container, state, actions) {
 
   root.appendChild(buildReadingModeSection(s, actions));
   root.appendChild(buildArticleDisplaySection(s, actions));
+  root.appendChild(buildFoundQuoteSection(s, actions));
   root.appendChild(buildImageStyleSection(s, actions));
   root.appendChild(buildFontSection(s, actions));
   root.appendChild(buildPaperSection(s, actions));
@@ -98,6 +99,44 @@ function buildArticleDisplaySection(s, actions) {
     desc.textContent = opt.desc;
     btn.appendChild(desc);
     btn.addEventListener('click', () => actions.updateSetting('articleDisplay', opt.key));
+    row.appendChild(btn);
+  }
+  section.appendChild(row);
+  return section;
+}
+
+function buildFoundQuoteSection(s, actions) {
+  const section = document.createElement('div');
+  section.className = 'nooz-stack nooz-stack--xs';
+  section.appendChild(sectionTitle('While you read'));
+
+  const note = document.createElement('p');
+  note.className = 'nooz-choice-label';
+  note.textContent = 'Every so often, a real line pulled from something you’ve already read.';
+  section.appendChild(note);
+
+  const row = document.createElement('div');
+  row.className = 'nooz-choice-row';
+  const options = [
+    { key: 'quote', label: 'Found quote', desc: 'A small pull-quote break' },
+    { key: 'dateline', label: 'Dateline aside', desc: 'A single wire-style line' },
+  ];
+  const current = s.foundQuoteStyle || 'quote';
+  for (const opt of options) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nooz-choice nooz-choice--wide';
+    if (current === opt.key) btn.classList.add('is-active');
+    btn.setAttribute('aria-pressed', current === opt.key ? 'true' : 'false');
+    const label = document.createElement('span');
+    label.className = 'nooz-choice-label nooz-choice-label--strong';
+    label.textContent = opt.label;
+    btn.appendChild(label);
+    const desc = document.createElement('span');
+    desc.className = 'nooz-choice-label';
+    desc.textContent = opt.desc;
+    btn.appendChild(desc);
+    btn.addEventListener('click', () => actions.updateSetting('foundQuoteStyle', opt.key));
     row.appendChild(btn);
   }
   section.appendChild(row);

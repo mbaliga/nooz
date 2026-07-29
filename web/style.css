@@ -1319,6 +1319,53 @@ h1, h2, h3, h4 {
   font-size: 0.9375rem;
   color: var(--paper-ink-dim);
 }
+
+/* The found-quote/dateline aside (see foundQuote.js) -- a quiet editorial
+   break, not a card: no fill, no shadow, no rounded corners, just hairlines
+   and type, matching the rest of the paper. */
+.nooz-aside-quote {
+  display: block;
+  margin: var(--space-lg) 0;
+  text-align: center;
+}
+.nooz-aside-quote-rule {
+  margin: 0 auto var(--space-sm);
+  width: 15%;
+  border-top: 1px solid var(--paper-hairline-strong);
+}
+.nooz-aside-quote-rule + .nooz-aside-quote-text { margin-top: 0; }
+.nooz-aside-quote-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.3125rem;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 34em;
+}
+.nooz-aside-quote-attr {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+  margin: var(--space-xs) 0 0;
+}
+.nooz-aside-quote .nooz-aside-quote-rule:last-child {
+  margin: var(--space-sm) auto 0;
+}
+.nooz-aside-dateline {
+  display: block;
+  margin: var(--space-lg) 0;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-style: italic;
+  color: var(--paper-ink-dim);
+}
+.nooz-aside-dateline-tag {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--paper-ink);
+}
 .nooz-reader-source { margin-top: var(--space-xl); }
 .nooz-reader-source .nooz-divider { margin-bottom: var(--space-lg); }
 

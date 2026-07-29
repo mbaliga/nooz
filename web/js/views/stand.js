@@ -15,6 +15,7 @@ import { classifyItem, TOPIC_LABEL } from '../topics.js';
 import { frameImage } from '../images.js';
 import { buildLoomStrip } from './loom.js';
 import { sanitizeHtml } from '../sanitize.js';
+import { buildFoundQuoteAside, insertFoundQuoteAside } from '../foundQuote.js';
 
 // Which spread of the Newspaper mode is open; kept across background re-renders.
 // Spread 0 is the front page (shown on its own); spread 1 is pages 2-3, etc.
@@ -756,6 +757,12 @@ function buildFullBody(item, state) {
     p.textContent = 'The full text is not in this feed yet. Open the story to read it at the source.';
     wrap.appendChild(p);
   }
+
+  const aside = state.readingAside;
+  if (aside && aside.itemId === item.id) {
+    insertFoundQuoteAside(wrap, buildFoundQuoteAside(aside, state.settings && state.settings.foundQuoteStyle));
+  }
+
   return wrap;
 }
 
