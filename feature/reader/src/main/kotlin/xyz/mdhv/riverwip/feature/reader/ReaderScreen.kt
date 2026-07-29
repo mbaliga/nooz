@@ -26,6 +26,7 @@ import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import kotlin.math.abs
 
 private const val PARK_THRESHOLD = 0.45f
@@ -64,6 +65,7 @@ fun ReaderScreen(
     showFeedImages: Boolean,
     hideNsfwImages: Boolean,
     imageStyle: ImageStyle,
+    readingAsideStyle: ReadingAsideStyle,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -277,6 +279,7 @@ fun ReaderScreen(
             showFeedImages = showFeedImages,
             hideNsfwImages = hideNsfwImages,
             imageStyle = imageStyle,
+            readingAsideStyle = readingAsideStyle,
             offsetX = offsetX,
             progress = progress,
             parkedRoom = parkedRoom,

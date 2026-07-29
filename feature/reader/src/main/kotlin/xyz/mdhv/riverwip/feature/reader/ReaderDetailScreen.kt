@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -34,6 +34,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -46,6 +47,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
@@ -69,6 +73,7 @@ import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.Topic
 import kotlin.math.ceil
 
@@ -146,6 +151,7 @@ fun ReaderDetailScreen(
     showFeedImages: Boolean,
     hideNsfwImages: Boolean,
     imageStyle: ImageStyle,
+    readingAsideStyle: ReadingAsideStyle,
     offsetX: Float,
     // 0f = full Paper, 1f = fully parked — the one value driving scale, shadow,
     // corner radius and (together with offsetX's sign) translation, read live
@@ -188,6 +194,23 @@ fun ReaderDetailScreen(
     // reader was at (the very bottom, having just reached the end) and open
     // the new article already scrolled past its own start.
     LaunchedEffect(item.id) { listState.scrollToItem(0) }
+
+    val readingAside by vm.readingAside.collectAsStateWithLifecycle()
+    // The reading-aside clock only counts while this screen is actually the
+    // one resumed and on screen -- backgrounding the app or navigating away
+    // (both move this lifecycle off RESUMED) pauses it, same as the web
+    // reader's own tab-visibility gate.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            vm.setReaderActive(event == Lifecycle.Event.ON_RESUME)
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            vm.setReaderActive(false)
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Box(Modifier.fillMaxSize()) {
         Box(
@@ -305,20 +328,38 @@ fun ReaderDetailScreen(
                             )
                         }
                     }
-                    is ArticleUiState.Loaded -> items(s.paragraphs) { para ->
-                        LensAnnotatedParagraph(
-                            itemId = item.id,
-                            text = para,
-                            vm = lensVm,
-                            style = MaterialTheme.typography.bodyLarge,
-                            // A touch more room than the list's base spacedBy
-                            // gap, stacked on top of it: at just Tokens.Spacing.md
-                            // between every item, paragraph breaks read as
-                            // barely more than an extra line — this widens the
-                            // gap specifically between paragraphs so they read
-                            // as distinct blocks (owner's #2, rendering quality).
-                            modifier = Modifier.padding(bottom = Tokens.Spacing.xs),
-                        )
+                    is ArticleUiState.Loaded -> {
+                        // The aside breaks up roughly the middle of the piece,
+                        // a stable, deterministic spot -- the way a real
+                        // pull-quote sets one off mid-column, not at a random
+                        // scroll position that would jump around on recompose.
+                        val asideAt = readingAside
+                            ?.takeIf { it.itemId == item.id }
+                            ?.let { s.paragraphs.size / 2 }
+                        itemsIndexed(s.paragraphs) { index, para ->
+                            Column {
+                                LensAnnotatedParagraph(
+                                    itemId = item.id,
+                                    text = para,
+                                    vm = lensVm,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    // A touch more room than the list's base spacedBy
+                                    // gap, stacked on top of it: at just Tokens.Spacing.md
+                                    // between every item, paragraph breaks read as
+                                    // barely more than an extra line — this widens the
+                                    // gap specifically between paragraphs so they read
+                                    // as distinct blocks (owner's #2, rendering quality).
+                                    modifier = Modifier.padding(bottom = Tokens.Spacing.xs),
+                                )
+                                if (index == asideAt) {
+                                    FoundQuoteAside(
+                                        readingAside!!,
+                                        readingAsideStyle,
+                                        modifier = Modifier.padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.sm),
+                                    )
+                                }
+                            }
+                        }
                     }
                     is ArticleUiState.Fallback -> item {
                         // Some feeds (aggregators like Google News especially)

@@ -14,6 +14,7 @@ import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.ReaderFont
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
@@ -49,6 +50,7 @@ class SettingsRepository(private val context: Context) {
         val IMAGE_STYLE = stringPreferencesKey("image_style")
         val LENS_DISABLED_DEFAULT_TERMS = stringSetPreferencesKey("lens_disabled_default_terms")
         val LENS_CUSTOM_TERMS = stringSetPreferencesKey("lens_custom_terms")
+        val READING_ASIDE_STYLE = stringPreferencesKey("reading_aside_style")
     }
 
     fun observeSettings(): Flow<AppSettings> = context.settingsDataStore.data.map { prefs ->
@@ -72,6 +74,7 @@ class SettingsRepository(private val context: Context) {
             imageStyle = ImageStyle.fromKey(prefs[Keys.IMAGE_STYLE]),
             lensDisabledDefaultTerms = prefs[Keys.LENS_DISABLED_DEFAULT_TERMS] ?: emptySet(),
             lensCustomTerms = prefs[Keys.LENS_CUSTOM_TERMS] ?: emptySet(),
+            readingAsideStyle = ReadingAsideStyle.fromKey(prefs[Keys.READING_ASIDE_STYLE]),
         )
     }
 
@@ -132,6 +135,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setReadMarkStyle(style: ReadMarkStyle) {
         context.settingsDataStore.edit { it[Keys.READ_MARK_STYLE] = style.key }
+    }
+
+    suspend fun setReadingAsideStyle(style: ReadingAsideStyle) {
+        context.settingsDataStore.edit { it[Keys.READING_ASIDE_STYLE] = style.key }
     }
 
     suspend fun setUnreadPinchFilter(enabled: Boolean) {

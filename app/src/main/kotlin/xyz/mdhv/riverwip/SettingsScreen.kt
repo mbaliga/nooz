@@ -93,6 +93,7 @@ import xyz.mdhv.riverwip.model.DictionaryOption
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
@@ -197,6 +198,7 @@ class SettingsViewModel(
     fun setNoozCastEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozCastEnabled(on) }
     fun setPaperGrain(grain: PaperGrain) = viewModelScope.launch { repo.setPaperGrain(grain) }
     fun setReadMarkStyle(style: ReadMarkStyle) = viewModelScope.launch { repo.setReadMarkStyle(style) }
+    fun setReadingAsideStyle(style: ReadingAsideStyle) = viewModelScope.launch { repo.setReadingAsideStyle(style) }
     fun setUnreadPinchFilter(enabled: Boolean) = viewModelScope.launch { repo.setUnreadPinchFilter(enabled) }
     fun setShowFeedImages(on: Boolean) = viewModelScope.launch { repo.setShowFeedImages(on) }
     fun setHideNsfwImages(on: Boolean) = viewModelScope.launch { repo.setHideNsfwImages(on) }
@@ -464,6 +466,41 @@ fun SettingsBody(
                                 selected = chosen,
                                 role = Role.RadioButton,
                                 onClick = { vm.setReadMarkStyle(style) },
+                            )
+                            .minimumInteractiveComponentSize()
+                            .padding(vertical = Tokens.Spacing.xxs),
+                    )
+                }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            SectionHeading("While You Read")
+            Text(
+                "Every so often, a real line pulled from something you've already read.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(
+                modifier = Modifier.selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+            ) {
+                for (style in ReadingAsideStyle.entries) {
+                    val chosen = settings.readingAsideStyle == style
+                    Text(
+                        style.label,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                        ),
+                        color = if (chosen) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier
+                            .selectable(
+                                selected = chosen,
+                                role = Role.RadioButton,
+                                onClick = { vm.setReadingAsideStyle(style) },
                             )
                             .minimumInteractiveComponentSize()
                             .padding(vertical = Tokens.Spacing.xxs),

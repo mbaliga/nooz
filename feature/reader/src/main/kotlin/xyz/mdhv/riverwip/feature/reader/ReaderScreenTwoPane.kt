@@ -23,6 +23,7 @@ import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 
 /** The Material list-detail breakpoint (≥840dp) — the point past which a phone-width single pane starts wasting real space. */
 val TWO_PANE_MIN_WIDTH = 840.dp
@@ -61,6 +62,7 @@ fun ReaderScreenTwoPane(
     showFeedImages: Boolean,
     hideNsfwImages: Boolean,
     imageStyle: ImageStyle,
+    readingAsideStyle: ReadingAsideStyle,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -166,6 +168,7 @@ fun ReaderScreenTwoPane(
                     showFeedImages = showFeedImages,
                     hideNsfwImages = hideNsfwImages,
                     imageStyle = imageStyle,
+                    readingAsideStyle = readingAsideStyle,
                     offsetX = 0f,
                     progress = 0f,
                     parkedRoom = null,

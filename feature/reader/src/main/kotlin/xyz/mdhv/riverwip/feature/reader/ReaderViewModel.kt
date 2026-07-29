@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
@@ -112,6 +114,10 @@ private const val FLASH_COMING_SOON = true
 
 /** Cast's own gate — Kokoro is a wholly different, independently-downloaded model class from whatever LLM [ReaderViewModel.flashState] uses. */
 private const val CAST_NOT_CONFIGURED_REASON = "Nooz Cast won't work until the on-device narration model is downloaded."
+
+/** How often the reading-aside clock below checks in, and how long a real reading stretch must run before the next pick (matches the web reader's identical cadence). */
+private const val READING_CLOCK_TICK_MS = 5_000L
+private const val READING_ASIDE_INTERVAL_MS = 6 * 60 * 1_000L
 
 /** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
 data class RefreshResult(
@@ -343,6 +349,24 @@ class ReaderViewModel(
         is ArticleUiState.Loading -> null
     }
 
+    private val _readingAside = MutableStateFlow<FoundQuote?>(null)
+
+    /** The current found-quote/dateline pick (see [FoundQuote]), or null. Set by the reading clock below; cleared only by a later pick. */
+    val readingAside: StateFlow<FoundQuote?> = _readingAside
+
+    // Gates the reading clock below to whenever the reader screen is actually
+    // the one on screen and resumed -- set from ReaderDetailScreen's own
+    // lifecycle observer. A transient in-memory flag only, never persisted
+    // (this app deliberately never stores precise reading duration -- see
+    // ReadEventRepository's own doc comment).
+    @Volatile
+    private var readerActive = false
+    private var readingClockMs = 0L
+
+    fun setReaderActive(active: Boolean) {
+        readerActive = active
+    }
+
     private val _isRefreshing = MutableStateFlow(false)
     /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
@@ -376,6 +400,24 @@ class ReaderViewModel(
         viewModelScope.launch {
             if (!ttsProvider.isAvailable() && _castState.value == CastUiState.Idle) {
                 _castState.value = CastUiState.Unavailable(CAST_NOT_CONFIGURED_REASON, needsSetup = true)
+            }
+        }
+        // The reading-aside clock (owner's ask, matching the web reader): every
+        // few minutes of actual reading -- gated on readerActive, so time spent
+        // elsewhere in the app or with the screen off never counts -- pick a
+        // real line from whatever article is currently open.
+        viewModelScope.launch {
+            while (isActive) {
+                delay(READING_CLOCK_TICK_MS)
+                if (!readerActive) continue
+                readingClockMs += READING_CLOCK_TICK_MS
+                if (readingClockMs < READING_ASIDE_INTERVAL_MS) continue
+                readingClockMs = 0L
+                val item = selectedItem ?: continue
+                val loaded = _articleState.value as? ArticleUiState.Loaded ?: continue
+                pickFoundQuote(item.id, sourceTitles.value[item.sourceId], loaded.paragraphs)?.let {
+                    _readingAside.value = it
+                }
             }
         }
     }

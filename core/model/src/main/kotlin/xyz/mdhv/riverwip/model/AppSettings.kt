@@ -118,6 +118,23 @@ enum class ImageStyle(val key: String, val label: String) {
     }
 }
 
+/**
+ * The reading aside (owner's ask): every so often while actually reading, a
+ * real sentence pulled from the article open, never fabricated -- an
+ * editorial break like a newspaper's own pull-quote, not a reward. Two
+ * presentations, mirroring the web reader's identical Settings choice: a
+ * small pull-quote block (the default), or a single wire-style dateline line.
+ */
+enum class ReadingAsideStyle(val key: String, val label: String) {
+    QUOTE("quote", "Found quote"),
+    DATELINE("dateline", "Dateline aside");
+
+    companion object {
+        private val byKey = entries.associateBy(ReadingAsideStyle::key)
+        fun fromKey(key: String?): ReadingAsideStyle = byKey[key] ?: QUOTE
+    }
+}
+
 data class AppSettings(
     /** The middle tint carries the check in the owner's mock — Paper is the default. */
     val themeMode: ThemeMode = ThemeMode.PAPER,
@@ -199,6 +216,8 @@ data class AppSettings(
     val lensDisabledDefaultTerms: Set<String> = emptySet(),
     /** Advanced settings: a reader's own added words/phrases, detected the same way as any default term. */
     val lensCustomTerms: Set<String> = emptySet(),
+    /** How the reading aside presents itself (owner's ask) -- see [ReadingAsideStyle]. */
+    val readingAsideStyle: ReadingAsideStyle = ReadingAsideStyle.QUOTE,
 )
 
 /**
