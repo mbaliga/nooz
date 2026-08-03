@@ -1,5 +1,7 @@
 package xyz.mdhv.riverwip.inference.local.kokoro
 
+import java.text.Normalizer
+
 /** One inference-ready piece of a longer text, already in Kokoro's phoneme alphabet (unpadded — [LocalKokoroTtsProvider] adds the pad tokens). */
 data class PhonemeChunk(val phonemes: String)
 
@@ -25,7 +27,21 @@ class KokoroPhonemizer(private val lexicon: KokoroLexicon) {
         // use anything but the plain ASCII '. Curly double quotes are left
         // alone — Kokoro's own vocabulary has both straight and curly quote
         // tokens, so those don't need folding.
-        val normalized = text.replace('’', '\'').replace('‘', '\'')
+        //
+        // Same problem, worse failure mode, for accented Latin letters: a
+        // name like "café" or "Zürich" has a character TOKEN_PATTERN's word
+        // class doesn't recognise at all, so it isn't dropped cleanly -- the
+        // word itself splits into two separate, unrelated fragments around
+        // the accented letter ("café" -> "caf", with the "é" vanishing
+        // silently). NFKD-decomposing first turns "é" into "e" plus a
+        // separate combining accent mark, which the second replace then
+        // strips, landing on the plain-ASCII "cafe" -- a real dictionary
+        // word (or at worst a clean letter-to-sound guess), not a truncated
+        // fragment.
+        val normalized = Normalizer.normalize(text, Normalizer.Form.NFKD)
+            .replace(DIACRITIC_MARK, "")
+            .replace('’', '\'')
+            .replace('‘', '\'')
 
         val chunks = mutableListOf<PhonemeChunk>()
         val current = StringBuilder()
@@ -111,11 +127,23 @@ class KokoroPhonemizer(private val lexicon: KokoroLexicon) {
     private companion object {
         val SENTENCE_END = setOf('.', '!', '?', '…')
         val NO_LEADING_SPACE = setOf('.', ',', '!', '?', ';', ':', ')', '”', '…')
+        // Combining marks NFKD decomposition splits an accented letter into
+        // (base letter, this) -- stripped so "é" folds to plain "e" rather
+        // than vanishing as an unrecognised character (see `normalized` above).
+        val DIACRITIC_MARK = Regex("\\p{Mn}+")
         val TOKEN_PATTERN = Regex(
-            "(?<number>-?\\$?[0-9][0-9,]*(?:\\.[0-9]+)?%?(?:st|nd|rd|th)?)" +
+            // The lookbehind keeps a '-' from being absorbed as a minus sign
+            // when it's actually a dash between two digit runs -- "2020-2021"
+            // or "COVID-19" read correctly instead of gaining a spurious
+            // "minus" (a real negative number's '-' is preceded by
+            // whitespace/start-of-text/punctuation, never a digit or letter,
+            // so it's unaffected). The now-unclaimed dash still matches
+            // `punct` below and is handled the same honest way as any other
+            // punctuation the vocabulary doesn't support.
+            "(?<number>(?<![0-9A-Za-z])-?\\$?[0-9][0-9,]*(?:\\.[0-9]+)?%?(?:st|nd|rd|th)?)" +
                 "|(?<word>[A-Za-z]+(?:'[A-Za-z]+)*)" +
                 "|(?<space>\\s+)" +
-                "|(?<punct>[.,!?;:\"()—…“”])",
+                "|(?<punct>[.,!?;:\"()—…“”-])",
         )
     }
 }
