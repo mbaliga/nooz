@@ -58,14 +58,15 @@ data class ModelDownloadUi(
  * exact panel, so a reader who skips it in onboarding finds the identical
  * doors later rather than a diminished version.
  *
- * - **On-device**: the default, nothing to configure — stated plainly that
- *   this build has no local model *runtime* wired in yet (downloading a model
- *   here doesn't change that; it just has the weights ready for when it is).
+ * - **On-device**: the default, nothing to configure — a real llama.cpp
+ *   runtime (`core/inference/src/main/cpp`) runs whichever model was
+ *   downloaded below; until one is, the lens honestly reports "unavailable"
+ *   instead of guessing.
  * - **Download a model**: the catalogue's real, policy-safe entries for
  *   whichever `kind` the caller asked for (LLM weights for the lens, Kokoro's
  *   ONNX files for Nooz Cast) — sized, one tap, a real progress bar, a real
  *   file on disk afterward.
- * - **Bring your own key**: the one path that runs end-to-end today.
+ * - **Bring your own key**: runs end-to-end today too, same as on-device.
  */
 @Composable
 fun ModelChoicePanel(
@@ -99,7 +100,7 @@ private fun PathChip(label: String, selected: Boolean, onClick: () -> Unit) {
 @Composable
 private fun OnDeviceStanza() {
     Text(
-        "Nooz tries your device first, automatically: nothing to set up. This build doesn't yet include a local model runtime, so until one lands (or you add a key below), the lens honestly reports \"unavailable\" instead of guessing, even for a model you've downloaded below.",
+        "Nooz tries your device first, automatically: nothing to set up. Download a model below and it runs right on your device; until then (or unless you add a key below), the lens honestly reports \"unavailable\" instead of guessing.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

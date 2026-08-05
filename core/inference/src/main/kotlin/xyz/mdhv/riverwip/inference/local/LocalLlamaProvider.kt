@@ -1,54 +1,77 @@
 package xyz.mdhv.riverwip.inference.local
 
+import android.content.Context
 import java.io.File
 import xyz.mdhv.riverwip.inference.DigestRequest
 import xyz.mdhv.riverwip.inference.DigestResult
 import xyz.mdhv.riverwip.inference.InferenceProvider
+import xyz.mdhv.riverwip.inference.PromptTemplates
+import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.inference.RewriteRequest
 import xyz.mdhv.riverwip.inference.RewriteResult
+import xyz.mdhv.riverwip.inference.local.llama.LlamaCppEngine
 
 /**
  * On-device inference via a locally downloaded GGUF model (brief §5,
- * `foss`-safe — no proprietary dependency, no model bundled in the APK).
- * Downloading a model (real catalogue, checksum, storage budget, delete) is
- * `:core:data`'s `ModelCatalogueRepository`'s job; this provider only asks "is
- * anything on disk to run" and, if so, tries to run it. **Actual model
- * execution is not yet wired**: this build has no llama.cpp JNI binding
- * integrated, so [rewrite] honestly reports that gap rather than fabricating a
- * result. The whole point of [xyz.mdhv.riverwip.model.FidelityGuard] is that
- * small models measurably fabricate numbers, entities, and negations —
- * silently faking a "successful" rewrite here would be worse than admitting
- * the gap plainly.
+ * `foss`-safe — llama.cpp is MIT-licensed, no proprietary dependency, no
+ * model bundled in the APK). Downloading a model (real catalogue, checksum,
+ * storage budget, delete) is `:core:data`'s `ModelCatalogueRepository`'s job;
+ * this provider loads whichever `.gguf` that landed and runs it through a
+ * real, vendored llama.cpp build (`core/inference/src/main/cpp` — see that
+ * directory's CMakeLists.txt for exactly which upstream commit is built and
+ * why). [xyz.mdhv.riverwip.model.FidelityGuard] still vets every result
+ * downstream, same as the cloud providers — a small on-device model can't
+ * smuggle a fabrication past it either.
  */
-class LocalLlamaProvider(private val modelDir: File) : InferenceProvider {
+class LocalLlamaProvider(
+    private val context: Context,
+    private val modelDir: File,
+) : InferenceProvider {
     override val id: String = "local-llama"
 
-    /** A downloaded GGUF is on disk — necessary for on-device inference, but not sufficient without a runtime. */
-    fun hasModelOnDisk(): Boolean =
-        modelDir.listFiles { f -> f.extension == "gguf" }?.isNotEmpty() == true
+    private val engine by lazy { LlamaCppEngine.getInstance(context) }
 
     /**
-     * Available only when a model is on disk **and** a runtime can actually run
-     * it. No llama.cpp JNI binding is integrated yet, so this stays false even
-     * after a download — which is the honest state for the *router*: it then
-     * skips this provider cleanly (falling through to a configured key, or an
-     * honest "no provider" message) instead of picking it and surfacing a
-     * per-call failure every time (owner: the downloaded-model "wiring error").
-     * The download still matters — it's ready on disk for when [RUNTIME_WIRED]
-     * flips as the binding lands.
+     * The `.gguf` this provider will actually run, or null if none is on
+     * disk. `ModelCatalogueRepository` can leave more than one downloaded at
+     * once, but this provider only ever loads one at a time — the most
+     * recently downloaded, on the same "latest choice wins" assumption the
+     * catalogue's own download flow already makes (there's no separate
+     * "active model" setting to consult instead).
      */
-    override suspend fun isAvailable(): Boolean = RUNTIME_WIRED && hasModelOnDisk()
+    private fun selectedModel(): File? =
+        modelDir.listFiles { f -> f.extension == "gguf" }?.maxByOrNull { it.lastModified() }
 
-    override suspend fun rewrite(request: RewriteRequest): RewriteResult =
-        RewriteResult.Failed(NOT_WIRED)
+    fun hasModelOnDisk(): Boolean = selectedModel() != null
 
-    override suspend fun digest(request: DigestRequest): DigestResult =
-        DigestResult.Failed(NOT_WIRED)
+    override suspend fun isAvailable(): Boolean = hasModelOnDisk()
+
+    override suspend fun rewrite(request: RewriteRequest): RewriteResult {
+        val model = selectedModel() ?: return RewriteResult.Failed(NOT_ON_DISK)
+        val reply = runCompletion(model, PromptTemplates.REWRITE_SYSTEM, PromptTemplates.rewriteUser(request), MAX_REWRITE_TOKENS)
+        if (reply.isNullOrBlank()) return RewriteResult.Failed(GENERATION_FAILED)
+        return RewriteResult.Success(reply, Provenance.NATIVE)
+    }
+
+    override suspend fun digest(request: DigestRequest): DigestResult {
+        if (request.headlines.isEmpty()) return DigestResult.Failed("Nothing flowed yet to compress")
+        val model = selectedModel() ?: return DigestResult.Failed(NOT_ON_DISK)
+        val reply = runCompletion(model, PromptTemplates.DIGEST_SYSTEM, PromptTemplates.digestUser(request), MAX_DIGEST_TOKENS)
+        if (reply.isNullOrBlank()) return DigestResult.Failed(GENERATION_FAILED)
+        return DigestResult.Success(reply, Provenance.NATIVE)
+    }
+
+    /** Never lets a native-side failure (bad GGUF, decode error, OOM on a resource-constrained phone) escape as an unhandled exception — same "never silent, never a crash" contract every provider here follows. */
+    private suspend fun runCompletion(model: File, systemPrompt: String, userPrompt: String, maxTokens: Int): String? =
+        runCatching { engine.complete(model.absolutePath, systemPrompt, userPrompt, maxTokens) }.getOrNull()
 
     companion object {
-        /** Flip to true when a real llama.cpp binding is integrated and verified. */
-        private const val RUNTIME_WIRED = false
-        private const val NOT_WIRED =
-            "on-device model runtime is not yet wired in this build (no llama.cpp binding integrated)"
+        // Flash's own two capabilities are both short: a neutralized phrase,
+        // a ten-word-or-fewer digest sentence. Generous headroom over the
+        // realistic output length, not an arbitrary chat-length budget.
+        private const val MAX_REWRITE_TOKENS = 128
+        private const val MAX_DIGEST_TOKENS = 48
+        private const val NOT_ON_DISK = "no on-device model is downloaded yet"
+        private const val GENERATION_FAILED = "the on-device model couldn't produce a result"
     }
 }

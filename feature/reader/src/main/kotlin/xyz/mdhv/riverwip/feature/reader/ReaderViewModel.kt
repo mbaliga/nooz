@@ -102,15 +102,15 @@ sealed interface CastUiState {
 private const val FLASH_NOT_CONFIGURED_REASON = "Nooz Flash won't work until a model or API key is configured."
 
 /**
- * Nooz Flash's on-device LLM runtime isn't wired in this build
- * ([xyz.mdhv.riverwip.inference.local.LocalLlamaProvider]'s own `RUNTIME_WIRED`
- * is false), and downloading a model can't change that — so Flash is shown
- * honestly as "coming soon" instead of inviting a tap or a download that can
- * only fail. Flip to false in the same change that wires a real runtime and
- * Flash returns to its ordinary tap-to-compress flow; nothing else here needs
- * touching.
+ * Nooz Flash's on-device LLM runtime is wired
+ * ([xyz.mdhv.riverwip.inference.local.LocalLlamaProvider] now runs a real,
+ * vendored llama.cpp build — see `core/inference/src/main/cpp`) so Flash is
+ * back to its ordinary tap-to-compress flow: [FlashUiState.ComingSoon] is
+ * unreachable with this flag false, kept only so a future regression (the
+ * runtime needing to come back out, say) has a one-line way back to the
+ * honest "coming soon" state instead of a silent per-tap failure.
  */
-private const val FLASH_COMING_SOON = true
+private const val FLASH_COMING_SOON = false
 
 /** Cast's own gate — Kokoro is a wholly different, independently-downloaded model class from whatever LLM [ReaderViewModel.flashState] uses. */
 private const val CAST_NOT_CONFIGURED_REASON = "Nooz Cast won't work until the on-device narration model is downloaded."

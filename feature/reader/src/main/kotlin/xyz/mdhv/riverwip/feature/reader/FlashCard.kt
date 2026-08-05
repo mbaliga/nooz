@@ -369,9 +369,9 @@ private const val TTS_CHUNK_CHARS = 3_800
 
 /**
  * Plays a rendered Nooz Cast narration file on tap (its own "Ready" state) —
- * a real playback via [MediaPlayer], not a stub; what's not yet wired is the
- * synthesis step upstream ([xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider]'s
- * own doc comment explains the gap), not this control.
+ * real playback via [MediaPlayer] of a real synthesized file
+ * ([xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider]'s own doc
+ * comment covers the synthesis step upstream of this control).
  */
 @Composable
 private fun PlayAudioFileButton(audioFile: File, modifier: Modifier = Modifier) {

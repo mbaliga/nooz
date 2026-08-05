@@ -18,7 +18,7 @@ object ProviderFactory {
     fun build(context: Context, modelDir: File): List<InferenceProvider> = listOf(
         ByokProvider(ByokConfigStore(context)),
         UrbanaProvider(context),
-        LocalLlamaProvider(modelDir),
+        LocalLlamaProvider(context, modelDir),
         MlKitProvider(),
     )
 }

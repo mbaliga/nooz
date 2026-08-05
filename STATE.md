@@ -27,7 +27,7 @@ Living build state. Updated every session (brief §0).
 | P2 | Ingest & classify | ✅ complete: parse/dedup/classify (pure) + Room persistence + WorkManager scheduled fetch |
 | P3 | Reader | ✅ complete: article list, typography-first reader, full-text extraction + LRU cache, end-of-feed marker |
 | P4 | The River (centerpiece) | ✅ complete: pure layout/analysis math + Canvas visualization + cross-section panel |
-| P5 | The Lens (tap-to-defuse) | ◑ UI + guard + router complete; **inference execution honestly stubbed** (see below) |
+| P5 | The Lens (tap-to-defuse) | ✅ complete: UI + guard + router + on-device inference all real (see D31) |
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
 | P7 | Hardening & release prep | ◑ a11y pass done (+ adversarially reviewed/fixed); F-Droid/Play metadata skeleton + screenshot script done; **baseline profiles honestly not attempted** (see below) |
@@ -40,18 +40,21 @@ present it. Every push is compiled by CI; several genuine bugs were caught and
 fixed this way (see "CI-caught issues" below) — that log is worth reading
 before touching WorkManager, Compose smart-casts, or the JSON-builder DSL again.
 
-### P5 — the one deliberately incomplete piece, and why
+### P5 — inference providers, current state
 Detection, evidence, the fidelity guard, session-ephemeral defuse state, the
 reader overlay, and the defuse bottom sheet are all real and wired end-to-end.
-What is **honestly stubbed**, and must stay that way until someone can verify
-against the real thing:
-- **LocalLlamaProvider**: `isAvailable()` is real (any `.gguf` on disk); model
-  *download* (real catalogue, streaming + progress, storage budget, delete) is
-  real too — see D18. `rewrite()` still returns a plain failure — no llama.cpp
-  JNI binding is integrated in this session, and faking a "successful" rewrite
-  would defeat the entire point of `FidelityGuard` (small models fabricate;
-  this app must never pretend one is running when it isn't). A downloaded
-  model sits on disk, verified-reachable, waiting for that binding.
+- **LocalLlamaProvider**: real end-to-end as of D31 — a genuine, vendored
+  llama.cpp build (`core/inference/src/main/cpp`), not a stub. `isAvailable()`
+  checks for any `.gguf` on disk (model *download* — real catalogue, streaming
+  + progress, storage budget, delete — was already real, see D18); `rewrite()`
+  and `digest()` now actually load that model and run it via JNI. What's
+  **still honestly unverified**: this sandbox can compile Kotlin/C++ and let
+  CI cross-compile the native library, but it can't run an Android
+  device/emulator, so real-device output quality (does a 1.5B-3B model
+  actually produce a *good* rewrite/digest, as opposed to "the pipeline runs
+  and returns text") is unverified here — same honesty caveat
+  `LocalKokoroTtsProvider`'s own doc comment already carries for Cast's audio
+  output. `FidelityGuard` still vets every result downstream regardless.
 - **UrbanaProvider**: real ContentProvider discovery attempt against
   `com.urbana.daemon.discovery` — correctly reports "not discoverable" since no
   real daemon exists to test against here (brief: absent support hides the
@@ -60,10 +63,6 @@ against the real thing:
   (so `foss` never references it). No real ML Kit GenAI dependency added yet
   (evolving API, no Pixel-class device to verify against) — conservatively
   reports unavailable.
-- **Net effect**: `InferenceRouter.rewrite(...)` will return `Failed(...)` on
-  any real device today, and the Lens UI shows that failure honestly (never a
-  silent no-op, never a fake success). Wiring one real provider (most likely
-  LocalLlamaProvider via a llama.cpp AAR) is the highest-value remaining P5 work.
 
 ### P6 — Catalogue sensing layer
 - **`SourceHealth`** (`:core:model`): a pure `classify(lastFetchAt, lastError,
@@ -1049,6 +1048,39 @@ respect as the CI-caught log above.
   onFinish`, identical to `onSkip`) — it added nothing, matching the owner's
   "isn't doing any setup at all." `SourcesViewModel.quickSetup()` now adds
   five verified, editorially varied global outlets before finishing.
+
+- **D31 — Real llama.cpp binding: Nooz Flash's on-device runtime wired
+  (2026-08-05).** The owner's explicit ask, after Play rejected the app twice
+  and separately asked "does Flash work" — no half-measure accepted. Closes
+  the gap D14/D18/P5 all logged as the highest-value remaining P5 work: there
+  was genuinely zero llama.cpp integration anywhere in the repo (`RUNTIME_WIRED
+  = false` hardcoded, no `.so`, no NDK/JNI config — confirmed by a repo-wide
+  grep before starting). Unlike Nooz Cast's onnxruntime-android (a prebuilt
+  Maven AAR), llama.cpp has no such artifact, so `core/inference/src/main/cpp`
+  now vendors the real upstream source via CMake `FetchContent`, pinned to
+  commit `360e1349f0009c5ad99d21e3c4546b707addc68a` — built from scratch as
+  part of `:core:inference`'s native build (first NDK/CMake build in this
+  project; a clean build now takes several minutes longer). The JNI bridge
+  (`nooz_llama_jni.cpp`) and the Kotlin wrapper (`LlamaCppEngine`) are adapted
+  from llama.cpp's own maintained Android reference
+  (`examples/llama.android`), cloned locally and read at the exact pinned
+  commit rather than trusted from memory — that C API moves fast enough that
+  guessing signatures would have been a real risk. Trimmed for Flash's actual
+  shape (short single-turn rewrite/digest, never a chat): no streaming Flow,
+  no benchmark harness, a smaller 4096-token context than the reference's
+  8192. `LocalLlamaProvider` now loads whichever `.gguf` is on disk and runs
+  real inference through it; `PromptTemplates` (new, shared with
+  `ByokProvider`) keeps the on-device and cloud paths sending a model the
+  identical wording for the same capability. `ReaderViewModel`'s
+  `FLASH_COMING_SOON` flag — added specifically so Flash could be shown
+  honestly instead of inviting a tap that could only fail — flips back to
+  `false` in this same change, exactly as its own doc comment said it would.
+  Adversarially reviewed (a second pass re-reading the pinned-commit reference
+  source line-by-line against every JNI signature, CMake target name, and C
+  API call in the new code) before pushing, since this sandbox has no local
+  JDK/NDK to compile-verify — CI's native build is the only real compile
+  signal. See the P5 section above for what's still honestly unverified
+  (real-device output quality).
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
