@@ -983,24 +983,29 @@ private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
 private const val FEEDBACK_EMAIL = "nooz@asystemofcells.com"
 
 /**
- * Feedback (owner's ask): composes an email via whatever mail app is
- * installed. [LocalUriHandler]'s default Android implementation rethrows a
+ * A clickable row that opens a mailto: to [FEEDBACK_EMAIL] with the given
+ * subject. [LocalUriHandler]'s default Android implementation rethrows a
  * missing-mail-app failure as [IllegalArgumentException] (wrapping the
  * underlying `ActivityNotFoundException`) rather than silently no-op'ing —
  * caught here so a device with no mail client configured gets an honest
  * fallback (the address copied to the clipboard) instead of a crash.
+ *
+ * Shared by [AboutSection]'s "Contact us" (Play's News & Magazines policy
+ * requires a clearly labeled, easy-to-find contact section — the app's one
+ * contact address needs to live where that reads, not only buried in
+ * Advanced settings) and Advanced settings' own "Send feedback" row.
  */
 @Composable
-private fun FeedbackRow() {
+private fun ContactRow(label: String, subtitle: String, emailSubject: String) {
     val uriHandler = LocalUriHandler.current
     val clipboard = LocalClipboardManager.current
     var fallbackMessage by remember { mutableStateOf<String?>(null) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = "Send feedback by email") {
+            .clickable(onClickLabel = "Contact Nooz by email") {
                 try {
-                    uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=" + android.net.Uri.encode("Nooz feedback"))
+                    uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=" + android.net.Uri.encode(emailSubject))
                 } catch (_: Exception) {
                     clipboard.setText(AnnotatedString(FEEDBACK_EMAIL))
                     fallbackMessage = "No email app found; copied $FEEDBACK_EMAIL to your clipboard instead."
@@ -1010,17 +1015,18 @@ private fun FeedbackRow() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text("Send feedback", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
-            Text(
-                "Opens an email to $FEEDBACK_EMAIL.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
     fallbackMessage?.let {
         Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+@Composable
+private fun FeedbackRow() {
+    ContactRow("Send feedback", "Opens an email to $FEEDBACK_EMAIL.", "Nooz feedback")
 }
 
 @Composable
@@ -1102,6 +1108,13 @@ internal fun AboutSection() {
     ) {
         Text("View source on GitHub")
     }
+
+    // Google Play's News & Magazines policy requires a clearly labeled,
+    // easy-to-find in-app contact section -- this needs to be right here on
+    // the About tab, not several taps deep in Advanced settings.
+    SectionHeading("Contact us")
+    ContactRow(FEEDBACK_EMAIL, "Questions, feedback, or a correction — email us directly.", "Nooz")
+
     Text(
         "More from the studio",
         style = MaterialTheme.typography.labelLarge,
