@@ -79,6 +79,14 @@ Java_xyz_mdhv_riverwip_inference_local_llama_LlamaCppEngine_nativeLoad(
         LOGe("%s: llama_model_load_from_file() returned null", __func__);
         return 1;
     }
+    // A caller that retries nativeLoad() after a failed nativePrepare() (an
+    // OOM allocating the KV cache, say) never went through nativeUnload() in
+    // between — LlamaCppEngine.ensureModel() only calls that when it's
+    // switching *away* from a previously successful load, not after its own
+    // failure. Freeing any still-resident model here first, unconditionally,
+    // means nativeLoad() can never leak the model it's about to replace on
+    // any call path, not just the ones a caller happens to unload before.
+    if (g_model) { llama_model_free(g_model); g_model = nullptr; }
     g_model = model;
     return 0;
 }
