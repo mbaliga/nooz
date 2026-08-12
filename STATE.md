@@ -1081,6 +1081,55 @@ respect as the CI-caught log above.
   JDK/NDK to compile-verify — CI's native build is the only real compile
   signal. See the P5 section above for what's still honestly unverified
   (real-device output quality).
+- **D32 — Today in History + a real adaptive launcher icon (2026-08-12).**
+  The owner proposed a batch of newspaper page furniture (crossword, comics,
+  spot-the-difference, today-in-history) and asked for a read on it before any
+  implementation. Only **Today in History** was built, and the reasoning is
+  worth keeping: comics are a rights problem, not a code one (every strip
+  worth having is copyrighted, and this app was mid-Play-rejection when it was
+  proposed); spot-the-difference would mean doctoring news photographs inside
+  a product whose whole premise is fidelity, with `FidelityGuard` existing
+  specifically to stop invented content; a crossword is genuinely interesting
+  in its Nooz-native form (cloze-deleted from *today's own headlines*, so it
+  quietly asks whether the reader actually read them) but the interactive grid
+  is a week-plus of work and belongs after the app has an audience. Today in
+  History, by contrast, is thesis-aligned rather than bolted on: the app
+  already shows what a reader missed across *sources*; this asks the same
+  question across *time*.
+  - `TodayInHistory` (`:core:model`, unit-tested like [Diversifier]): tidies
+    Wikipedia's blurbs (their "(aircraft involved pictured)" asides point at
+    an illustration this column doesn't show, so they come out) and picks the
+    column by sampling evenly across the whole returned span — the feed is
+    newest-first and front-loaded with recent decades, so taking the first
+    five would have made "today in history" mean "today in the last thirty
+    years". Deterministic, oldest-first, like a printed almanac.
+  - `TodayInHistoryRepository` (`:core:data`): Wikimedia's own curated
+    `onthisday/selected` endpoint, cached per calendar day. **It is the first
+    fetch this app makes to a destination the reader didn't choose** (the
+    manifest's own note: "The user's own fetches to their own chosen sources.
+    No other egress"), which is why it ships **off by default**, names
+    Wikipedia plainly in its settings row, and carries a UA identifying the
+    app with a contact URL per Wikimedia's policy. CC BY-SA is credited in
+    view under the column, not buried in About.
+  - Deliberately **never links an event to today's headlines**. Asserting that
+    a 1971 decision "echoes" today's would be exactly the invented connection
+    `FidelityGuard` exists to prevent; it sits beside the news and lets the
+    reader draw the line, the way Contrast already behaves.
+  - **Launcher icon.** The owner supplied new pixel-art artwork (black field,
+    after a first light-grey version that would have dissolved into a light
+    home screen). The deeper find: this app had **no adaptive icon at all** —
+    only a flat `mipmap/ic_launcher.png`, despite minSdk 31, so every device
+    it runs on was wrapping the artwork in a system-drawn plate and shrinking
+    it. That, not the artwork, was the "visibility problem". Now a real
+    `adaptive-icon` (foreground + black background + a filled-silhouette
+    `monochrome` layer for Android 13+ themed icons), sized so the furthest
+    *content* pixel lands just inside the strict circle mask (the tightest
+    common shape) while still filling ~87% of the visible aperture. Verified
+    by rendering circle/squircle/themed masks and 48-192px previews before
+    committing.
+  - Also corrected stale copy that outlived D31: the Flash settings row and
+    `ModelChoicePanel`'s on-device stanza both still said the on-device
+    runtime wasn't wired.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

@@ -122,6 +122,7 @@ fun ArticleListScreen(
     vm: ReaderViewModel,
     noozFlashEnabled: Boolean,
     noozCastEnabled: Boolean,
+    todayInHistoryEnabled: Boolean,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
     showFeedImages: Boolean,
@@ -394,6 +395,15 @@ fun ArticleListScreen(
                         // floating over the bottom edge.
                         contentPadding = PaddingValues(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg),
                     ) {
+                        // Today in History (owner's ask, 2026-08) stands above
+                        // the day's stories the way a printed paper's column
+                        // does, and scrolls away with them rather than pinning
+                        // itself over the news. Renders nothing when the
+                        // setting is off, so the list is untouched for anyone
+                        // who left it that way.
+                        if (todayInHistoryEnabled) {
+                            item(key = "today-in-history") { TodayInHistoryCard(vm = vm) }
+                        }
                         items(displayedItems, key = { it.id }) { item ->
                             ItemRow(
                                 item = item,

@@ -13,6 +13,7 @@ import xyz.mdhv.riverwip.data.repo.ModelCatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
+import xyz.mdhv.riverwip.data.repo.TodayInHistoryRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
 import xyz.mdhv.riverwip.inference.InferenceProvider
@@ -50,6 +51,7 @@ class AppContainer(appContext: Context) {
     val clippingRepository: ClippingRepository = data.clippingRepository
     val dictionaryRepository: DictionaryRepository = data.dictionaryRepository
     val settingsRepository: SettingsRepository = data.settingsRepository
+    val todayInHistoryRepository: TodayInHistoryRepository = data.todayInHistoryRepository
     val dataExporter: DataExporter = data.dataExporter
 
     private val inferenceProviders: List<InferenceProvider> =

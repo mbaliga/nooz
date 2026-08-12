@@ -196,6 +196,7 @@ class SettingsViewModel(
     fun completeOnboarding() = viewModelScope.launch { repo.setOnboarded(true) }
     fun setNoozFlashEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozFlashEnabled(on) }
     fun setNoozCastEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozCastEnabled(on) }
+    fun setTodayInHistoryEnabled(on: Boolean) = viewModelScope.launch { repo.setTodayInHistoryEnabled(on) }
     fun setPaperGrain(grain: PaperGrain) = viewModelScope.launch { repo.setPaperGrain(grain) }
     fun setReadMarkStyle(style: ReadMarkStyle) = viewModelScope.launch { repo.setReadMarkStyle(style) }
     fun setReadingAsideStyle(style: ReadingAsideStyle) = viewModelScope.launch { repo.setReadingAsideStyle(style) }
@@ -509,6 +510,36 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
+            SectionHeading("Today In History")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = settings.todayInHistoryEnabled,
+                        onValueChange = { vm.setTodayInHistoryEnabled(it) },
+                        role = Role.Switch,
+                    )
+                    .padding(vertical = Tokens.Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Show the column",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    // Says where it fetches from, because this is the only
+                    // request Nooz makes to somewhere the reader didn't add.
+                    Text(
+                        "A few dated lines above the day's stories, from Wikipedia's own \"On this day\" selection. This is the one thing Nooz fetches from outside the sources you added, so it stays off until you turn it on.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = settings.todayInHistoryEnabled, onCheckedChange = null)
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -743,7 +774,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                "Today's news compressed to 10 words or fewer. Coming soon: the on-device engine that runs it isn't wired in this build yet, so enabling Flash shows a placeholder for now.",
+                "Today's news compressed to 10 words or fewer. Runs on your device once you download a model below, or through your own key.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

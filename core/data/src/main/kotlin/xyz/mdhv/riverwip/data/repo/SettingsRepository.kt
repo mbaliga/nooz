@@ -42,6 +42,7 @@ class SettingsRepository(private val context: Context) {
         val TOPICS = stringSetPreferencesKey("filter_topics")
         val NOOZ_FLASH = booleanPreferencesKey("nooz_flash_enabled")
         val NOOZ_CAST = booleanPreferencesKey("nooz_cast_enabled")
+        val TODAY_IN_HISTORY = booleanPreferencesKey("today_in_history_enabled")
         val PAPER_GRAIN = stringPreferencesKey("paper_grain")
         val READ_MARK_STYLE = stringPreferencesKey("read_mark_style")
         val UNREAD_PINCH_FILTER = booleanPreferencesKey("unread_pinch_filter")
@@ -66,6 +67,7 @@ class SettingsRepository(private val context: Context) {
             onboarded = prefs[Keys.ONBOARDED] ?: false,
             noozFlashEnabled = prefs[Keys.NOOZ_FLASH] ?: false,
             noozCastEnabled = prefs[Keys.NOOZ_CAST] ?: false,
+            todayInHistoryEnabled = prefs[Keys.TODAY_IN_HISTORY] ?: false,
             paperGrain = PaperGrain.fromKey(prefs[Keys.PAPER_GRAIN]),
             readMarkStyle = ReadMarkStyle.fromKey(prefs[Keys.READ_MARK_STYLE]),
             unreadPinchFilter = prefs[Keys.UNREAD_PINCH_FILTER] ?: true,
@@ -127,6 +129,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setNoozCastEnabled(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.NOOZ_CAST] = enabled }
+    }
+
+    suspend fun setTodayInHistoryEnabled(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.TODAY_IN_HISTORY] = enabled }
     }
 
     suspend fun setPaperGrain(grain: PaperGrain) {

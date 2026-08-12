@@ -22,6 +22,7 @@ import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
+import xyz.mdhv.riverwip.data.repo.TodayInHistoryRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.inference.DigestRequest
 import xyz.mdhv.riverwip.inference.DigestResult
@@ -33,6 +34,7 @@ import xyz.mdhv.riverwip.inference.TtsProvider
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.DwellBucket
+import xyz.mdhv.riverwip.model.HistoricalEvent
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
@@ -70,6 +72,19 @@ sealed interface FlashUiState {
      * worth showing verbatim (e.g. a BYOK endpoint returning HTTP 401).
      */
     data class Unavailable(val reason: String, val needsSetup: Boolean = false) : FlashUiState
+}
+
+/**
+ * Today in History's state (owner's ask, 2026-08). Deliberately has no
+ * "needsSetup" case unlike [FlashUiState]/[CastUiState]: there is nothing to
+ * configure or download, so the only ways this ends are a column or an
+ * honest line about not having reached Wikipedia.
+ */
+sealed interface HistoryUiState {
+    data object Idle : HistoryUiState
+    data object Loading : HistoryUiState
+    data class Ready(val events: List<HistoricalEvent>) : HistoryUiState
+    data class Unavailable(val reason: String) : HistoryUiState
 }
 
 /**
@@ -137,6 +152,7 @@ class ReaderViewModel(
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     private val clippingRepository: ClippingRepository,
     private val settingsRepository: SettingsRepository,
+    private val todayInHistoryRepository: TodayInHistoryRepository,
     private val flashRouter: InferenceRouter,
     private val ttsProvider: TtsProvider,
     private val clock: () -> Long = { System.currentTimeMillis() },
@@ -349,6 +365,57 @@ class ReaderViewModel(
         is ArticleUiState.Loading -> null
     }
 
+    private val _historyState = MutableStateFlow<HistoryUiState>(HistoryUiState.Idle)
+
+    /**
+     * Today in History (owner's ask, 2026-08): a few dated lines above the
+     * day's stories. Only ever populated by [loadTodayInHistory], which the
+     * card itself calls when the setting is on, so a reader who leaves the
+     * feature off never causes the fetch at all.
+     */
+    val historyState: StateFlow<HistoryUiState> = _historyState
+
+    /**
+     * Idempotent by design: the Stand's list recomposes constantly (every
+     * scroll, filter, refresh), and the card asks on each first composition,
+     * so anything past the first call while a result is already in hand must
+     * be a no-op or this would hammer Wikipedia. The repository caches per
+     * calendar day underneath this too, so even a process restart re-reads
+     * from disk rather than refetching.
+     */
+    fun loadTodayInHistory() {
+        if (_historyState.value !is HistoryUiState.Idle) return
+        fetchTodayInHistory()
+    }
+
+    /**
+     * An explicit retry, from tapping the card's own failure line. Needed
+     * because [loadTodayInHistory]'s guard deliberately won't re-run itself
+     * after a failure: someone who was offline when the Stand first opened
+     * would otherwise be stuck with that line until the app restarted.
+     */
+    fun retryTodayInHistory() {
+        if (_historyState.value is HistoryUiState.Loading) return
+        fetchTodayInHistory()
+    }
+
+    private fun fetchTodayInHistory() {
+        _historyState.value = HistoryUiState.Loading
+        viewModelScope.launch {
+            _historyState.value = todayInHistoryRepository.column()
+                .fold(
+                    onSuccess = { events ->
+                        if (events.isEmpty()) {
+                            HistoryUiState.Unavailable("Nothing recorded for today's date.")
+                        } else {
+                            HistoryUiState.Ready(events)
+                        }
+                    },
+                    onFailure = { HistoryUiState.Unavailable("Couldn't reach Wikipedia for today's date.") },
+                )
+        }
+    }
+
     private val _readingAside = MutableStateFlow<FoundQuote?>(null)
 
     /** The current found-quote/dateline pick (see [FoundQuote]), or null. Set by the reading clock below; cleared only by a later pick. */
@@ -522,6 +589,7 @@ class ReaderViewModel(
         private val weeklyAggregateRepository: WeeklyAggregateRepository,
         private val clippingRepository: ClippingRepository,
         private val settingsRepository: SettingsRepository,
+        private val todayInHistoryRepository: TodayInHistoryRepository,
         private val flashRouter: InferenceRouter,
         private val ttsProvider: TtsProvider,
     ) : ViewModelProvider.Factory {
@@ -535,6 +603,7 @@ class ReaderViewModel(
                 weeklyAggregateRepository,
                 clippingRepository,
                 settingsRepository,
+                todayInHistoryRepository,
                 flashRouter,
                 ttsProvider,
             ) as T

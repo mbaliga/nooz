@@ -3,4 +3,10 @@
     <!-- Mirrors Tokens.Palette.fieldRaised (#121212). Kept in sync with the
          design token contract; the Compose surfaces are the source of truth. -->
     <color name="river_window_background">#FF121212</color>
+
+    <!-- The adaptive launcher icon's background layer: the artwork's own
+         black, so the paper sits on the field it was drawn against rather
+         than a system-chosen plate. A flat colour rather than a bitmap so it
+         stays exact at every density and under every mask shape. -->
+    <color name="ic_launcher_background">#FF000000</color>
 </resources>

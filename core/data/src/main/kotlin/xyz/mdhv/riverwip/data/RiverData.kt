@@ -16,6 +16,7 @@ import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
+import xyz.mdhv.riverwip.data.repo.TodayInHistoryRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
 
@@ -36,6 +37,7 @@ class RiverData private constructor(
     val clippingRepository: ClippingRepository,
     val dictionaryRepository: DictionaryRepository,
     val settingsRepository: SettingsRepository,
+    val todayInHistoryRepository: TodayInHistoryRepository,
     val dataExporter: DataExporter,
     /** For `Configuration.Provider` on the Application — see `RiverApplication`. */
     val workerFactory: RiverWorkerFactory,
@@ -71,6 +73,11 @@ class RiverData private constructor(
                 clippingRepository = clippingRepository,
                 dictionaryRepository = DictionaryRepository(appContext),
                 settingsRepository = settingsRepository,
+                // Its own HttpClient, not the shared `http` above: Wikimedia's
+                // user-agent policy wants a UA that identifies this app and
+                // offers a contact, which feed fetches have no business
+                // carrying to the reader's own sources.
+                todayInHistoryRepository = TodayInHistoryRepository(appContext),
                 dataExporter = DataExporter(
                     settingsRepository = settingsRepository,
                     sourceRepository = sourceRepository,

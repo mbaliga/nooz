@@ -178,6 +178,18 @@ data class AppSettings(
      * every reader-intelligence tool.
      */
     val noozCastEnabled: Boolean = false,
+    /**
+     * Today in History (owner's ask, 2026-08): a short dated column above the
+     * day's stories, from Wikipedia's own curated "On this day" set. The app's
+     * usual omission question, asked across time instead of across sources.
+     *
+     * Off by default, and for a sharper reason than the tools above: it is the
+     * only fetch this app makes to a destination the reader didn't add
+     * themselves (see the manifest's "no other egress" note, and
+     * `TodayInHistoryRepository`'s own doc comment). Turning it on is a
+     * decision the reader makes, never a default they'd have to discover.
+     */
+    val todayInHistoryEnabled: Boolean = false,
     val paperGrain: PaperGrain = PaperGrain.NONE,
     /** How a read article marks itself in the list (owner's ask). */
     val readMarkStyle: ReadMarkStyle = ReadMarkStyle.GREYED,
