@@ -131,4 +131,66 @@ class ArticleExtractorTest {
         assertTrue(result.paragraphs.any { it.startsWith("•") && it.contains("First step") })
         assertTrue(result.paragraphs.any { it.startsWith("•") && it.contains("Second step") })
     }
+
+    /**
+     * Reduced from the real markup NPR serves (an Up First briefing, reported
+     * from a device): the audio tool renders its own embed snippet as escaped
+     * text inside a `<code>` block, so by the time jsoup has decoded the
+     * entities it is ordinary text and removing `<iframe>` *elements* never
+     * touched it. The whole `<li>` then scored as a fine paragraph — long, no
+     * links — and led the article with "Embed Embed <iframe src=...".
+     */
+    private val articleWithEmbedWidget = """
+        <html><body><article>
+          <h1>Up First briefing</h1>
+          <ul>
+            <li class="audio-tool audio-tool-embed">
+              <button>Embed</button>
+              <div class="embed-closed">
+                <label class="embed-label">
+                  <b class="label">Embed</b>
+                  <input class="embed-url" readonly value="&lt;iframe src=&quot;https://www.npr.org/player/embed/g-s1-1/nx-s1-2&quot;&gt;&lt;/iframe&gt;">
+                </label>
+                <b class="embed-url embed-url-touch">
+                  <code><b class="punctuation">&lt;</b>iframe src="https://www.npr.org/player/embed/g-s1-1/nx-s1-2" width="100%" height="290" frameborder="0" scrolling="no" title="NPR embedded audio player"&gt;</code>
+                </b>
+              </div>
+            </li>
+          </ul>
+          <p>Good morning. You're reading the Up First newsletter, which rounds up the news you need to start your day properly.</p>
+          <p>Voters in six states cast their ballots yesterday, and the results reveal ongoing conflicts in both parties ahead of the midterms.</p>
+        </article></body></html>
+    """.trimIndent()
+
+    @Test fun dropsEmbedSnippetsPrintedAsText() {
+        val result = ArticleExtractor.extract(articleWithEmbedWidget)
+        assertTrue(
+            "raw markup must never reach the reader: ${result.paragraphs.firstOrNull()}",
+            result.paragraphs.none { it.contains("<iframe", ignoreCase = true) || it.contains("frameborder") },
+        )
+        // The widget's own control labels go with it, rather than being left
+        // behind as a stray "Embed Embed" line.
+        assertTrue(result.paragraphs.none { it.contains("Embed") })
+    }
+
+    @Test fun keepsTheRealCopyAroundAnEmbedWidget() {
+        val result = ArticleExtractor.extract(articleWithEmbedWidget)
+        assertEquals(2, result.paragraphs.size)
+        assertTrue(result.paragraphs[0].contains("Good morning"))
+        assertTrue(result.paragraphs[1].contains("Voters in six states"))
+    }
+
+    @Test fun ordinaryProseWithComparisonsIsNotMistakenForMarkup() {
+        // The markup guard must not swallow real writing that happens to use
+        // angle brackets, which is why it matches known tag names only.
+        val html = """
+            <html><body><article>
+              <h1>Markets</h1>
+              <p>Analysts noted the ratio a < b and c > d held across every sampled quarter of the review period.</p>
+              <p>Profits fell <5% in the third quarter, a smaller drop than the one forecast by most of the banks.</p>
+            </article></body></html>
+        """.trimIndent()
+        val result = ArticleExtractor.extract(html)
+        assertEquals(2, result.paragraphs.size)
+    }
 }
