@@ -252,7 +252,12 @@ h1, h2, h3, h4 {
 .nooz-app-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  /* svh (the smallest the viewport ever is, toolbar fully shown), not dvh:
+     dvh tracks the toolbar live, so a min-height keyed to it recomputes and
+     nudges layout on every collapse/expand as the page scrolls -- exactly
+     the kind of resize iPadOS fires on its own with no user interaction.
+     svh is the conservative floor and never moves. */
+  min-height: 100svh;
 }
 
 .nooz-topbar {
@@ -339,7 +344,14 @@ h1, h2, h3, h4 {
   .nooz-pane--sticky {
     position: sticky;
     top: calc(var(--space-lg) + 56px);
-    max-height: calc(100dvh - var(--space-lg) - 56px);
+    /* svh, not dvh, for the same reason as .nooz-app-shell above: this is a
+       max-height gating an internally-scrolling pane, and dvh would resize
+       that scroll area (and jump its own scroll position) on every toolbar
+       collapse/expand. svh is also the conservative choice for a max-height
+       specifically -- it's never larger than the real visible viewport, so
+       the pane can't get sized past the bottom of the screen the way lvh
+       (the toolbar-hidden, larger figure) could when the toolbar is shown. */
+    max-height: calc(100svh - var(--space-lg) - 56px);
     overflow-y: auto;
   }
 }
@@ -878,7 +890,7 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  min-height: 100dvh;
+  min-height: 100svh; /* stable during toolbar collapse -- see .nooz-app-shell above */
   padding: var(--space-xxl) var(--space-lg);
   text-align: center;
 }
@@ -1841,7 +1853,11 @@ h1, h2, h3, h4 {
   position: relative;
   z-index: 2;
   transition: transform 0.35s ease;
-  will-change: transform;
+  /* No permanent will-change here: the transition itself already promotes a
+     layer for the drawer's slide animation while it's actually running. A
+     full-page layer left permanently composited is a documented WebKit
+     memory/repaint hazard, not a free win -- there's nothing about the Paper
+     sitting still that needs its own layer. */
 }
 .nooz-drawer {
   position: fixed;

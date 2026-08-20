@@ -14,7 +14,16 @@
 // with dynamic import() so their ESM packaging doesn't force this file (or the
 // sibling feed.js) to become a module.
 
-const TIMEOUT_MS = 15000;
+// Kept well under the platform's own gateway timeout for this deployment
+// (undocumented in-repo, but empirically observed to sit close to 15s: at
+// the old 15000ms value, a slow upstream would lose the race between this
+// AbortController firing and the platform giving up on the function first,
+// so the client got the platform's own opaque 502 instead of the honest
+// JSON error below -- same status code, but with no error message and, on
+// a background prefetch storm, indistinguishable from any other failure).
+// Shorter than that outer limit means this function's own clean response
+// wins the race every time.
+const TIMEOUT_MS = 8000;
 const MAX_BYTES = 3_000_000; // don't try to parse enormous pages
 
 module.exports = async function handler(req, res) {

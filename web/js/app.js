@@ -100,6 +100,10 @@ function pumpArticlePrefetch() {
     ensureArticle(item).finally(() => {
       articlePrefetchActive -= 1;
       pumpArticlePrefetch();
+      // The whole background queue just drained -- flush any rerender a
+      // burst of completions was coalescing rather than leave the last
+      // batch sitting out the rest of its timer for nothing.
+      if (articlePrefetchQueue.length === 0 && articlePrefetchActive === 0) flushArticleCoalesce();
     });
   }
 }
@@ -196,9 +200,22 @@ function installReadingClock() {
 // The Newspaper layout measures the masthead and fits a spread to the frame, so
 // it has to re-lay-out when the window changes size (and when the wide/narrow
 // two-up threshold is crossed). Debounced so a drag-resize doesn't thrash.
+//
+// iPadOS (and other mobile WebKit) browsers collapse and expand their own
+// toolbar chrome as the page scrolls, which fires plain 'resize' events with
+// only the viewport HEIGHT changing -- nothing in this app's layout depends
+// on that (the Newspaper's own page height already accounts for it via vh
+// units at layout time), so reacting to it just means rebuilding the whole
+// stage, including recreating the visible article's image, on every toolbar
+// twitch. Only a WIDTH change can move the wide/narrow column threshold, so
+// that's the only change worth a rerender.
 function installResizeReflow() {
   let timer = null;
+  let lastWidth = window.innerWidth;
   window.addEventListener('resize', () => {
+    const width = window.innerWidth;
+    if (width === lastWidth) return;
+    lastWidth = width;
     clearTimeout(timer);
     timer = setTimeout(() => rerender(), 150);
   });
@@ -600,6 +617,74 @@ function plainLength(html) {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().length;
 }
 
+// ---------------------------------------------------------------------------
+// Rerender policy for article completions
+//
+// The background prefetch pump (pumpArticlePrefetch, up to 3 at a time, a
+// queue up to FULL_ARTICLE_PREFETCH_CAP deep) runs ensureArticle() for every
+// visible item so "Full articles" can upgrade in place -- but a bare
+// rerender() on every single one of those completions means a full stage
+// rebuild once per item, spread over however long the whole queue takes to
+// drain. Each rebuild recreates the on-screen article's <img> from scratch;
+// Chrome keeps the already-decoded bitmap hot across that, so it's invisible
+// there, but WebKit re-decodes a freshly-created <img> node even when the
+// bytes are already cached, which reads as the lead photo popping out and
+// back in, roughly once per completion, for as long as the queue is running.
+//
+// The fix is to only rerender when a result can actually change what's on
+// screen right now, and to coalesce the rest into one rebuild instead of one
+// per item.
+const ARTICLE_COALESCE_MS = 1500;
+let articleCoalesceTimer = null;
+
+// Whether the view currently on screen lays out extracted article bodies at
+// all -- if it doesn't, a background item resolving has nothing to redraw.
+// 'reader' shows exactly one article (route.itemId); a different item
+// finishing has nothing to add there, and the itemId-matches case is handled
+// separately, before this is ever consulted. 'stand' inlines every visible
+// item's full extracted text when Settings > Articles > "Full articles" is
+// on (the default), so any item resolving there can extend what's already
+// showing; in excerpt mode the Paper only ever reads the feed's own summary,
+// never state.articles, so it has nothing to gain from a rerender either.
+// 'newsstand' is a browse surface (titles and counts only) and never reads
+// state.articles at all.
+function viewRendersArticleBodies(route) {
+  return route.view === 'stand' && getSettings().articleDisplay !== 'excerpt';
+}
+
+function flushArticleCoalesce() {
+  if (articleCoalesceTimer === null) return;
+  clearTimeout(articleCoalesceTimer);
+  articleCoalesceTimer = null;
+  rerender();
+}
+
+function rerenderForArticleResult(item) {
+  const route = parseRoute();
+  if (route.itemId === item.id) {
+    // The article on screen just resolved (or changed loading state) --
+    // nothing coalesces this, it should show up right away.
+    rerender();
+    return;
+  }
+  if (!viewRendersArticleBodies(route)) {
+    // Nothing on screen reads state.articles/articleStatus for this item
+    // right now. The result still lands in currentState, so the next real
+    // render (opening the item, a nav, a setting change) picks it up for
+    // free -- no rebuild needed to make that true.
+    return;
+  }
+  // One trailing rerender for however many of these land in the same burst,
+  // reset on every new arrival; pumpArticlePrefetch's finally callback
+  // flushes it immediately once the queue is fully drained so the last
+  // batch in a run isn't left waiting out a timer nobody will reset again.
+  clearTimeout(articleCoalesceTimer);
+  articleCoalesceTimer = setTimeout(() => {
+    articleCoalesceTimer = null;
+    rerender();
+  }, ARTICLE_COALESCE_MS);
+}
+
 async function ensureArticle(item) {
   if (!item || !item.link) return;
   const id = item.id;
@@ -614,12 +699,12 @@ async function ensureArticle(item) {
   if (cached && cached.html) {
     currentState.articles[id] = cached;
     currentState.articleStatus[id] = 'ready';
-    rerender();
+    rerenderForArticleResult(item);
     return;
   }
 
   currentState.articleStatus[id] = 'loading';
-  rerender();
+  rerenderForArticleResult(item);
 
   try {
     const res = await fetch(`/api/article?url=${encodeURIComponent(item.link)}`, {
@@ -646,7 +731,7 @@ async function ensureArticle(item) {
   } catch (_err) {
     currentState.articleStatus[id] = 'error';
   }
-  rerender();
+  rerenderForArticleResult(item);
 }
 
 // ---------------------------------------------------------------------------
