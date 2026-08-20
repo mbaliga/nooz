@@ -10,6 +10,21 @@ android {
     namespace = "${property("riverwip.packageBase")}"
     compileSdk = 35
 
+    // Must match :core:inference's own ndkVersion. That module builds the
+    // llama.cpp native libraries, but the *packaging* of them happens here,
+    // and two of AGP's release steps need an NDK resolvable in THIS module to
+    // run at all: stripping debug symbols out of every packaged .so, and
+    // extracting them into the bundle's native-debug-symbols metadata for
+    // Play. With no ndkVersion declared here, AGP couldn't find a strip tool,
+    // logged a warning, and packaged the libraries exactly as built —
+    // shipping ~156MB of unstripped native code (libllama-common.so alone was
+    // 78MB, against 4MB stripped) and no symbol file for Play to symbolicate
+    // native crashes with. Found by unzipping a real release .aab and running
+    // `file` over base/lib/arm64-v8a/*.so: everything CMake-built came back
+    // "not stripped", while the prebuilt onnxruntime .so from its AAR was
+    // already stripped by its own publisher.
+    ndkVersion = "27.2.12479018"
+
     defaultConfig {
         // Final applicationId — dev.asystemofcells.nooz, as registered in Play
         // Console. A separate property from riverwip.packageBase (used for
@@ -21,8 +36,8 @@ android {
         applicationId = "${property("riverwip.applicationId")}"
         minSdk = 31
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // onnxruntime-android (Nooz Cast) bundles a real native libonnxruntime.so

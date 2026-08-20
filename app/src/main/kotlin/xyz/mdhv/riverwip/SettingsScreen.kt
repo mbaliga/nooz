@@ -1144,7 +1144,7 @@ internal fun AboutSection() {
     // easy-to-find in-app contact section -- this needs to be right here on
     // the About tab, not several taps deep in Advanced settings.
     SectionHeading("Contact us")
-    ContactRow(FEEDBACK_EMAIL, "Questions, feedback, or a correction — email us directly.", "Nooz")
+    ContactRow(FEEDBACK_EMAIL, "Questions, feedback, or a correction: email us directly.", "Nooz")
 
     Text(
         "More from the studio",
