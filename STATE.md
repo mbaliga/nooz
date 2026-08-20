@@ -1131,6 +1131,52 @@ respect as the CI-caught log above.
     `ModelChoicePanel`'s on-device stanza both still said the on-device
     runtime wasn't wired.
 
+- **D33 — Web reader: iPadOS lead-image flicker, and the real shape of
+  /api/article's 502s (2026-08-20).** Two web-reader glitches from the same
+  session. **(a) The flicker** (commit `b6975d6`): reported from a 25s
+  iPadOS DuckDuckGo recording, the open article's lead image was popping out
+  and back in about once a second with no user interaction. Root cause was
+  `ensureArticle()` ending in a bare `rerender()` on every completion,
+  including the ones from the background prefetch pump (concurrency 3, up to
+  60 items queued) — so a full stage rebuild fired once per background item
+  for however long the queue took to drain, and each rebuild recreated the
+  on-screen `<img>` from a bare `src`. Chrome keeps the decoded bitmap hot
+  across that; WebKit re-decodes the fresh node regardless, which is the
+  flicker. Fixed with a completion rerender policy (`js/app.js`:
+  immediate rerender only if the resolved item is on screen, skip entirely
+  in views with no article bodies laid out, otherwise coalesce into one
+  trailing rerender per burst), `<img>` node reuse keyed by `src` in
+  `js/images.js` so a same-content rebuild moves the existing node instead
+  of recreating it, a resize listener that only re-lays-out on a real width
+  change (iPadOS fires height-only resizes as its toolbar collapses on
+  scroll), and `style.css` dropping the stage's permanent `will-change:
+  transform` plus switching its height rules from `dvh` to `svh` so the
+  collapsing toolbar stops perturbing layout. **(b) /api/article's 502s**:
+  the prior session's write-up (see D32-adjacent commit `b6975d6`'s message)
+  had traced production 502s to a bare, headerless `error code: 502` body
+  with no `x-vercel-id` — not this function's own JSON — and guessed the
+  timeout race was the cause. That guess was wrong. Probing
+  `?url=https%3A%2F%2Fdefinitely-not-a-real-host-zzz.invalid%2Fx` — a target
+  that can only fail inside the function's own `catch` block, never near a
+  gateway timeout — still came back as that same bare Cloudflare body with a
+  `cf-ray` header. Production sits behind Cloudflare in front of Vercel, and
+  Cloudflare replaces *any* origin 502 with its own edge error page,
+  unconditionally — so every honest per-item error this function ever
+  produced was being masked at the edge, regardless of timing.
+  `api/article.js`'s three upstream-failure paths (non-OK status, non-HTML
+  content-type, fetch/timeout catch) now return `200 + {error, html: null}`
+  instead of `502`/`415` — the same shape the existing extraction-failure
+  path already used, which the client (`ensureArticle()` in `js/app.js`)
+  already treats as the per-item `'error'` state for any response lacking
+  usable `html`, `dbPutArticle` included. `TIMEOUT_MS` stays at 8000 (it
+  still keeps the function under the platform's own gateway limit) but its
+  comment now states the real finding instead of the superseded race
+  theory. Left open, and out of this repo's reach: *why* some sites'
+  upstream fetches fail from Vercel's IPs at all — reuters.com and wsj.com
+  failed in under a second in the earlier probing, which reads like
+  bot-blocking rather than a timeout, but that can't be confirmed from
+  here.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

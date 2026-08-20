@@ -14,15 +14,19 @@
 // with dynamic import() so their ESM packaging doesn't force this file (or the
 // sibling feed.js) to become a module.
 
-// Kept well under the platform's own gateway timeout for this deployment
-// (undocumented in-repo, but empirically observed to sit close to 15s: at
-// the old 15000ms value, a slow upstream would lose the race between this
-// AbortController firing and the platform giving up on the function first,
-// so the client got the platform's own opaque 502 instead of the honest
-// JSON error below -- same status code, but with no error message and, on
-// a background prefetch storm, indistinguishable from any other failure).
-// Shorter than that outer limit means this function's own clean response
-// wins the race every time.
+// Production sits behind Cloudflare in front of Vercel, and Cloudflare
+// replaces any origin 502 response with its own bare "error code: 502"
+// text page -- no x-vercel-id, none of this function's own JSON, proven by
+// probing a URL that can only fail inside this function's own catch block.
+// That means every per-item upstream failure has to travel as a normal
+// 200 response with an {error, html: null} body -- the same shape the
+// extraction-failure path below already uses -- for the client to ever see
+// the honest message instead of a masked, contentless edge error.
+// The 8000ms value itself stays short for an unrelated reason: it keeps
+// this function comfortably under the platform's own gateway timeout for
+// this deployment (undocumented in-repo, but empirically observed to sit
+// close to 15s), so a slow upstream doesn't also cost the client the
+// platform's own opaque failure on top of this one.
 const TIMEOUT_MS = 8000;
 const MAX_BYTES = 3_000_000; // don't try to parse enormous pages
 
@@ -68,19 +72,19 @@ module.exports = async function handler(req, res) {
     });
     if (!upstream.ok) {
       clearTimeout(timer);
-      res.status(502).json({ error: `Upstream HTTP ${upstream.status}` });
+      res.status(200).json({ error: `Upstream HTTP ${upstream.status}`, html: null });
       return;
     }
     const ct = (upstream.headers.get('content-type') || '').toLowerCase();
     if (ct && !ct.includes('html')) {
       clearTimeout(timer);
-      res.status(415).json({ error: 'Not an HTML page' });
+      res.status(200).json({ error: 'Not an HTML page', html: null });
       return;
     }
     html = await readCapped(upstream, MAX_BYTES);
   } catch (err) {
     clearTimeout(timer);
-    res.status(502).json({ error: err.name === 'AbortError' ? 'Upstream timed out' : 'Upstream unreachable' });
+    res.status(200).json({ error: err.name === 'AbortError' ? 'Upstream timed out' : 'Upstream unreachable', html: null });
     return;
   }
   clearTimeout(timer);
