@@ -1,30 +1,35 @@
 A news reader built around a different question: not "what happened," but
 "what did I miss." It shows the shape of everything that came in from the
 sources you chose, laid alongside the shape of what you actually opened and
-read — so the gap between the two is something you can actually see.
+read, so the gap between the two is something you can see.
 
 It never claims to show "all the news." Every total in this app names its own
 denominator: coverage, topic mix, and every comparison are always drawn from
 the sources you chose to add, not from some universal feed.
 
-What it refuses to do:
-• No telemetry, analytics, or crash reporting. Nothing leaves your device
-  except your own requests to the sources you add.
+WHAT IT REFUSES TO DO
+• No telemetry, analytics or crash reporting. Nothing leaves your device except
+  your own requests to the sources you add.
 • No push notifications. Nothing interrupts you.
-• No engagement-driven ranking by default — chronological or grouped by
-  source; any other order is one you chose, and it's labeled.
+• No engagement-driven ranking by default. Chronological or grouped by source;
+  any other order is one you chose, and it is labeled.
 • Feeds end. An explicit marker shows where a source's feed stops, never an
   infinite scroll built to keep you reading.
-• No streaks, badges, or gamification of any kind.
-• Every classification, flag, or number is tappable to show the exact rule,
-  lexicon entry, or formula that produced it — nothing is a black box.
+• No streaks, badges or gamification of any kind.
+• Every classification, flag or number is tappable to show the exact rule,
+  lexicon entry or formula that produced it. Nothing is a black box.
 
-It also includes an optional, on-device tool for spotting loaded language in
-what you read (a "slammed," a "so-called," an unexplained intensifier) —
-flagged with its exact reason, and only ever changed with your explicit,
-reversible say-so.
+READING
+• Add feeds by URL, browse a short list of pre-checked starter sources, or
+  import an OPML file.
+• Full-text extraction when a feed only gives you a summary.
+• Light paper theme by default, with system and dark options.
+• Nothing about how you read is ranked, pushed or gamified back at you.
 
-Add feeds by URL, browse a short list of pre-checked starter sources, or
-import an OPML file. Read comfortably, with full-text extraction when a feed
-only gives you a summary. Nothing about how you read is ranked, pushed, or
-gamified back at you.
+SPOTTING LOADED LANGUAGE
+An optional, on-device tool for noticing loaded language in what you read: a
+"slammed," a "so-called," an unexplained intensifier. Each flag shows its exact
+reason, and only ever changes anything with your explicit, reversible say-so.
+
+Everything runs on your device. There is no account, and there is no server of
+ours for there to be an account on.
