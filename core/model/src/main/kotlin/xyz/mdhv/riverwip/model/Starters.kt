@@ -44,6 +44,25 @@ object Starters {
         url = url, verifiedAt = V3,
     )
 
+    private const val V4 = "2026-08-31"
+
+    /**
+     * India regional-language expansion (D35). Every entry below was fetched on
+     * 2026-08-31 with the User-Agent `HttpClient` actually sends, and checked
+     * on four axes rather than just "did it 200": a parseable feed root, at
+     * least five items, item titles in the *expected script*, and a newest item
+     * no more than a week old. That last pair matters more than it sounds —
+     * two candidate feeds returned a clean 200 with a `lastBuildDate` refreshed
+     * daily while every actual item was six weeks stale, and one returned a
+     * well-formed channel containing zero items.
+     */
+    private fun rssAug31(
+        id: String, title: String, url: String, region: String = "india",
+    ) = ServiceDef(
+        id = id, kind = "rss", title = title, tier = "A", region = region,
+        url = url, verifiedAt = V4,
+    )
+
     /** Concrete, verified RSS feeds — regionally balanced (global + India). */
     val verifiedFeeds: List<ServiceDef> = listOf(
         // --- Global ---
@@ -68,6 +87,59 @@ object Starters {
         rss("hindustan-times", "Hindustan Times: India", "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml", "india"),
         rss("business-standard", "Business Standard", "https://www.business-standard.com/rss/home_page_top_stories.rss", "india"),
         rss("scroll-in", "Scroll.in", "https://feeds.feedburner.com/ScrollinArticles", "india"),
+        // === India: regional languages (2026-08-31, D35) ===
+        // The language name stays in the visible title on purpose: the sources
+        // search is a plain substring match over exactly this string, so
+        // "Telugu" or "Odia" finds these without inferring language from a URL
+        // or adding a metadata field the catalogue schema (v1) doesn't have.
+        // --- Telugu ---
+        rssAug31("tv9-telugu-ap", "TV9 Telugu: Andhra Pradesh", "https://tv9telugu.com/andhra-pradesh/feed"),
+        rssAug31("tv9-telugu-telangana", "TV9 Telugu: Telangana", "https://tv9telugu.com/telangana/feed"),
+        rssAug31("sakshi-telugu", "Sakshi (Telugu)", "https://www.sakshi.com/rss.xml"),
+        // --- Tamil ---
+        rssAug31("daily-thanthi-tamil", "Daily Thanthi (Tamil)", "https://www.dailythanthi.com/feed"),
+        rssAug31("thanthi-tv-tamil", "Thanthi TV (Tamil)", "https://www.thanthitv.com/api/v1/collections/latest-news.rss"),
+        rssAug31("hindu-tamil", "Hindu Tamil Thisai (Tamil)", "https://www.hindutamil.in/feed"),
+        // --- Kannada ---
+        rssAug31("tv9-kannada", "TV9 Kannada", "https://www.tv9kannada.com/feed"),
+        // --- Malayalam ---
+        rssAug31("mathrubhumi-malayalam", "Mathrubhumi (Malayalam)", "https://www.mathrubhumi.com/rss/news"),
+        rssAug31("twentyfour-malayalam", "24 News (Malayalam)", "https://www.twentyfournews.com/feed"),
+        // --- Marathi ---
+        rssAug31("tv9-marathi", "TV9 Marathi", "https://www.tv9marathi.com/feed"),
+        // --- Gujarati ---
+        rssAug31("tv9-gujarati", "TV9 Gujarati", "https://www.tv9gujarati.com/feed"),
+        rssAug31("abp-asmita-gujarati", "ABP Asmita (Gujarati)", "https://gujarati.abplive.com/home/feed"),
+        // --- Bengali ---
+        rssAug31("abp-ananda-bengali", "ABP Ananda (Bengali)", "https://bengali.abplive.com/home/feed"),
+        // --- Punjabi ---
+        rssAug31("abp-sanjha-punjabi", "ABP Sanjha (Punjabi)", "https://punjabi.abplive.com/home/feed"),
+        // --- Odia ---
+        rssAug31("dharitri-odia", "Dharitri (Odia)", "https://www.dharitri.com/feed"),
+        rssAug31("samaja-odia", "The Samaja (Odia)", "https://www.samajalive.in/feed"),
+        // --- Urdu ---
+        rssAug31("siasat-urdu", "The Siasat Daily (Urdu)", "https://urdu.siasat.com/feed"),
+        // --- Northeast (English-language, the region's own wire) ---
+        rssAug31("northeast-now", "Northeast Now", "https://nenow.in/feed"),
+        // --- Hindi: national ---
+        rssAug31("abp-hindi", "ABP News (Hindi)", "https://www.abplive.com/home/feed"),
+        rssAug31("bhaskar-hindi", "Dainik Bhaskar (Hindi)", "https://www.bhaskar.com/rss-v1--category-1061.xml"),
+        // --- Hindi: state desks. ABP's own per-state sections; note their feed
+        // <title> is only the section slug ("bihar"), so the display name here
+        // is ours, not the publisher's.
+        rssAug31("abp-hindi-up-uk", "ABP Hindi: Uttar Pradesh & Uttarakhand", "https://www.abplive.com/news/states/up-uk/feed"),
+        rssAug31("abp-hindi-bihar", "ABP Hindi: Bihar", "https://www.abplive.com/news/states/bihar/feed"),
+        rssAug31("abp-hindi-delhi-ncr", "ABP Hindi: Delhi NCR", "https://www.abplive.com/news/states/delhi-ncr/feed"),
+        rssAug31("abp-hindi-rajasthan", "ABP Hindi: Rajasthan", "https://www.abplive.com/news/states/rajasthan/feed"),
+        rssAug31("abp-hindi-madhya-pradesh", "ABP Hindi: Madhya Pradesh", "https://www.abplive.com/news/states/madhya-pradesh/feed"),
+        rssAug31("abp-hindi-haryana", "ABP Hindi: Haryana", "https://www.abplive.com/news/states/haryana/feed"),
+        rssAug31("abp-hindi-punjab", "ABP Hindi: Punjab", "https://www.abplive.com/news/states/punjab/feed"),
+        rssAug31("abp-hindi-gujarat", "ABP Hindi: Gujarat", "https://www.abplive.com/news/states/gujarat/feed"),
+        rssAug31("abp-hindi-chhattisgarh", "ABP Hindi: Chhattisgarh", "https://www.abplive.com/news/states/chhattisgarh/feed"),
+        rssAug31("abp-hindi-jharkhand", "ABP Hindi: Jharkhand", "https://www.abplive.com/news/states/jharkhand/feed"),
+        rssAug31("abp-hindi-himachal-pradesh", "ABP Hindi: Himachal Pradesh", "https://www.abplive.com/news/states/himachal-pradesh/feed"),
+        rssAug31("abp-hindi-jammu-kashmir", "ABP Hindi: Jammu & Kashmir", "https://www.abplive.com/news/states/jammu-and-kashmir/feed"),
+        rssAug31("abp-hindi-maharashtra", "ABP Hindi: Maharashtra", "https://www.abplive.com/news/states/maharashtra/feed"),
         // === All-region expansion — every feed fetched and confirmed live on 2026-07-11 ===
         // --- Americas ---
         rssJul11("cbc-news-canada", "CBC News (Canada)", "https://www.cbc.ca/webfeed/rss/rss-topstories", "americas"),
@@ -239,7 +311,7 @@ object Starters {
     val seed: Catalogue
         get() = Catalogue(
             version = 1,
-            generatedAt = V,
+            generatedAt = V4,
             services = verifiedFeeds + builders + tierBReference,
         )
 

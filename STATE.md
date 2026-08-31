@@ -1217,6 +1217,45 @@ respect as the CI-caught log above.
   unverified here:** the on-device result on an actual S26+, since this sandbox
   has no Android SDK or emulator — the reporter's device is the real check.
 
+- **D35 — India regional-language starter pack, re-verified from a contributed
+  patch (2026-08-31).** A contributor (via the owner) sent a patch adding 28
+  India regional feeds. Its own STATE entry conceded the Gradle suite could not
+  be run in its author's workspace; what it could also not do was fetch the
+  endpoints, and **4 of the 28 did not survive contact with the network**:
+  - `abp-sanjha-punjabi` — hard 404 (a Laravel "Not Found" page). The working
+    path is `/home/feed`, not `/feed`.
+  - `thanthi-tv-tamil` — 200 with a well-formed `<channel>` containing **zero
+    items**. Replaced with the publisher's collections endpoint (40 items).
+  - `oneindia-gujarati`, `oneindia-odia` — 200, correct script, and a
+    `lastBuildDate` refreshed *daily*, but every actual item was ~6 weeks old.
+    A feed can look alive at the envelope and be abandoned at the contents.
+  Also, all five `oneindia.com` feeds 403 under the User-Agent the app really
+  sends; they only answer a UA containing "Mozilla". Rather than change the
+  app's UA to get past someone's bot rule, native publishers were found for
+  every language those feeds covered — so the pack needs no UA workaround at
+  all and the shipped `HttpClient` default is untouched.
+  **What landed: 33 feeds**, each fetched with `HttpClient`'s actual UA
+  (`river/0.1 (+news-omission-reader)` — deliberately not a spoofed one) and
+  gated on four axes, not just a 200: parseable feed root, ≥5 items, item
+  titles in the *expected script*, and a newest item ≤7 days old. Coverage:
+  Telugu ×3, Tamil ×3, Kannada, Malayalam ×2, Marathi, Gujarati ×2, Bengali,
+  Punjabi, Odia ×2, Urdu, Hindi national ×2, 13 ABP Hindi state desks, and
+  Northeast Now (English, the region's own wire). Tests pin one representative
+  id per language (so a publisher can be swapped without editing a lockstep
+  list, but losing a whole language fails), the ≥13 state desks, URL
+  uniqueness, and — because the sources search is a plain substring match on
+  `title` — that each language's *name* stays in some title, which is the only
+  reason typing "Odia" finds anything.
+  One rejected candidate worth recording: `sambadodisha.com/feed` returns 200
+  and looks like an Odia outlet, but serves casino spam. Fetching is what
+  caught it.
+  **Known, pre-existing gap left honest:** `catalogue/catalogue.snapshot.json`
+  mirrored only the original 2026-07-07 seed (25 services) and never took the
+  Jul-11/Jul-13 all-region expansions. This lands the 33 new entries there
+  (now 58) so the CI sentry actually watches them — the rot above is exactly
+  what the sentry is for — but the snapshot still lags `Starters.kt`'s ~141
+  feeds. Not silently fixed here; logged.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
@@ -1299,6 +1338,19 @@ respect as the CI-caught log above.
     Standard, Sudan Tribune, Daily Mirror & Newsfirst & FT.lk (Sri Lanka),
     bdnews24 (Bangladesh) (403/HTML on repeated checks — dropped rather than
     guessed around).
+- **2026-08-31** — India regional-language pack: 41 candidate endpoints fetched
+  with `HttpClient`'s own UA (never a spoofed one), **33 ship**. Gated on a
+  parseable root, ≥5 items, expected script, and a newest item ≤7 days old —
+  not merely a 200. Dropped after fetching: `punjabi.abplive.com/feed` (404,
+  the working path is `/home/feed`), `thanthitv.com/feed` (well-formed, zero
+  items), the five `oneindia.com` feeds (403 to any UA without "Mozilla"; two
+  of them additionally ~6 weeks stale behind a daily-refreshed
+  `lastBuildDate`), `sambadodisha.com/feed` (200, but serving casino spam),
+  plus Kerala Kaumudi, Deshabhimani, Manorama, Asianet, Madhyamam, MediaOne,
+  Janmabhumi, Prajavani, Udayavani, Vijaya Karnataka, Eenadu, Loksatta, Sakal,
+  Anandabazar, Navbharat Times, the Samayam family, Jagbani, and three
+  Assamese candidates (404/403/500/empty between them). **No Assamese feed
+  could be verified live — that language is an honest gap, not an oversight.**
 
 ---
 
