@@ -1177,6 +1177,46 @@ respect as the CI-caught log above.
   bot-blocking rather than a timeout, but that can't be confirmed from
   here.
 
+- **D34 — Dark mode: a follow-the-phone tint, and system bars that agree with
+  it (2026-08-31).** Reported from a Galaxy S26+: in dark mode the app's text
+  stayed black and unreadable. Three separate causes, all of them the same
+  underlying mistake — *two different components each answering "is it dark?"
+  their own way*.
+  **(a) No follow-the-phone mode at all.** `ThemeMode` was three literal tints
+  (White/Paper/Dark), all manual, defaulting to Paper — a deliberate call at
+  the time (see the enum's own doc), but it means a phone in dark mode got the
+  light app and no obvious way to discover otherwise. Added
+  `ThemeMode.SYSTEM`, resolving to Paper by day and the charcoal Dark tint by
+  night, and made it the **default for new installs**. The three tints are
+  untouched and an existing reader's persisted choice is read straight back out
+  of DataStore, so nobody's setting changes under them. `"system"` — a key from
+  the first theme iteration that had been aliased to Paper — now means what it
+  always said.
+  **(b) System-bar icons followed the OS while the app followed the setting.**
+  `enableEdgeToEdge()` with no arguments uses `SystemBarStyle.auto`, which reads
+  `Configuration.UI_MODE_NIGHT`. With the app on light Paper and the phone in
+  night mode, that put *light* status/nav icons on a *light* surface (and the
+  converse for a hand-picked Dark tint on a day-mode phone). Bar appearance is
+  now driven from the app's own resolved tint via `WindowCompat` in a
+  `SideEffect` (`MainActivity`), so there is exactly one answer to "which
+  surface is this".
+  **(c) OEM force-dark was left enabled.** The activity theme is now
+  `android:forceDarkAllowed=false`. One UI offers to force-darken apps it
+  believes have no dark theme; force-dark re-colours what it can reach and
+  leaves Compose's own drawing alone, which lands as near-black text on a
+  darkened field — exactly the symptom reported. Nooz ships its own tints, so
+  it has nothing to gain from the OS doing this and everything to lose.
+  Also: the pre-Compose window background was hardcoded `#121212`, a value
+  matching no surface the app actually paints (the Dark tint is `#262624`). It
+  is now night-qualified — paper by day, the real charcoal by night — so the
+  first frame matches the tint about to be painted instead of flashing.
+  `Theme.kt` resolves `SYSTEM` in exactly one place and every colour derives
+  from that. Verified by `:core:model` unit tests (`resolve`/`isDarkSurface`/
+  `next` invariants, including "SYSTEM never survives resolution" and "a flick
+  never lands back on SYSTEM"); 159 model tests green locally. **Honestly
+  unverified here:** the on-device result on an actual S26+, since this sandbox
+  has no Android SDK or emulator — the reporter's device is the real check.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

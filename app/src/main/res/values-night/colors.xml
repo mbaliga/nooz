@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night value for the pre-Compose window background. Mirrors the Dark
+         tint's actual surface in Theme.kt's CharcoalScheme (#262624) — a soft
+         charcoal, deliberately not the near-black #121212 this once used,
+         which matched no surface the app ever paints. -->
+    <color name="river_window_background">#FF262624</color>
+</resources>

@@ -1,5 +1,6 @@
 package xyz.mdhv.riverwip.design
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -92,17 +93,23 @@ private val CharcoalScheme = darkColorScheme(
 
 @Composable
 fun RiverTheme(
-    themeMode: ThemeMode = ThemeMode.PAPER,
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
     readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
     textScale: TextScale = TextScale.PEANUT,
     content: @Composable () -> Unit,
 ) {
-    val scheme = when (themeMode) {
+    // The one place SYSTEM becomes a literal tint. Everything downstream — the
+    // scheme, the extended tokens, and the system-bar icon contrast the host
+    // Activity sets — reads the same resolved answer, so the app surface and
+    // the status bar can no longer disagree about whether it is dark out.
+    val tint = themeMode.resolve(isSystemInDarkTheme())
+    val scheme = when (tint) {
         ThemeMode.WHITE -> WhiteScheme
-        ThemeMode.PAPER -> PaperScheme
         ThemeMode.DARK -> CharcoalScheme
+        // SYSTEM cannot survive resolve(); PAPER is the only tint left.
+        else -> PaperScheme
     }
-    val extended = if (themeMode == ThemeMode.DARK) DarkExtended else PaperExtended
+    val extended = if (tint == ThemeMode.DARK) DarkExtended else PaperExtended
     CompositionLocalProvider(LocalExtendedColors provides extended) {
         MaterialTheme(
             colorScheme = scheme,

@@ -53,6 +53,7 @@ import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -332,6 +333,24 @@ fun SettingsBody(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
             ) {
+                // Auto comes first: it is the default, and it is the answer for
+                // a reader whose phone is already in dark mode (D34).
+                SwatchCircle(
+                    label = "Follow the phone's light or dark setting",
+                    selected = settings.themeMode == ThemeMode.SYSTEM,
+                    background = Tokens.Palette.paperField,
+                    backgroundBrush = Brush.linearGradient(
+                        // A hard stop, not a blend: this swatch is two tints,
+                        // not a gradient the app could ever actually paint.
+                        0.0f to Tokens.Palette.paperField,
+                        0.5f to Tokens.Palette.paperField,
+                        0.5f to Color(0xFF262624),
+                        1.0f to Color(0xFF262624),
+                    ),
+                    glyph = null,
+                    letterColor = Tokens.Palette.paperInk,
+                    onClick = { vm.setTheme(ThemeMode.SYSTEM) },
+                )
                 SwatchCircle(
                     label = "White theme",
                     selected = settings.themeMode == ThemeMode.WHITE,
@@ -354,6 +373,18 @@ fun SettingsBody(
                     onClick = { vm.setTheme(ThemeMode.DARK) },
                 )
             }
+            // Says out loud what the split swatch means, and what picking a
+            // tint by hand costs: it stops following the phone.
+            Text(
+                when (settings.themeMode) {
+                    ThemeMode.SYSTEM -> "Following your phone — Paper by day, Dark at night."
+                    ThemeMode.WHITE -> "White, whatever your phone is set to."
+                    ThemeMode.PAPER -> "Paper, whatever your phone is set to."
+                    ThemeMode.DARK -> "Dark, whatever your phone is set to."
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             SectionHeading("Font")
@@ -1252,6 +1283,10 @@ private fun SwatchCircle(
     letterColor: Color,
     onClick: () -> Unit,
     fontFamily: FontFamily = HyleGroteskClassic,
+    /** Set instead of [background] to paint the swatch as more than one tint. */
+    backgroundBrush: Brush? = null,
+    /** The specimen letter. Null for the follow-the-phone swatch, whose two tints are the specimen. */
+    glyph: String? = "T",
 ) {
     val ring = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outlineVariant
     Box(modifier = Modifier.size(62.dp)) {
@@ -1260,17 +1295,22 @@ private fun SwatchCircle(
                 .size(56.dp)
                 .align(Alignment.Center)
                 .clip(CircleShape)
-                .background(background)
+                .then(
+                    if (backgroundBrush != null) Modifier.background(backgroundBrush)
+                    else Modifier.background(background),
+                )
                 .border(if (selected) Tokens.Border.thick else Tokens.Border.thin, ring, CircleShape)
                 .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
                 .semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                "T",
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
-                color = letterColor,
-            )
+            if (glyph != null) {
+                Text(
+                    glyph,
+                    style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
+                    color = letterColor,
+                )
+            }
         }
         if (selected) {
             Box(

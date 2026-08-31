@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Mirrors Tokens.Palette.fieldRaised (#121212). Kept in sync with the
-         design token contract; the Compose surfaces are the source of truth. -->
-    <color name="river_window_background">#FF121212</color>
+    <!-- The pre-Compose window background, day value. Mirrors
+         Tokens.Palette.paperField (#F7F6F3) — the Paper tint that
+         ThemeMode.SYSTEM resolves to on a light-mode phone, so the first frame
+         is the same paper the app is about to paint rather than a dark plate
+         that flashes and is replaced. The night value is in
+         values-night/colors.xml; the Compose surfaces stay the source of
+         truth for every frame after the first. -->
+    <color name="river_window_background">#FFF7F6F3</color>
 
     <!-- The adaptive launcher icon's background layer: the artwork's own
          black, so the paper sits on the field it was drawn against rather
          than a system-chosen plate. A flat colour rather than a bitmap so it
-         stays exact at every density and under every mask shape. -->
+         stays exact at every density and under every mask shape. Deliberately
+         NOT night-qualified — a launcher icon does not re-tint after dark. -->
     <color name="ic_launcher_background">#FF000000</color>
 </resources>

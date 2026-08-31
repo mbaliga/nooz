@@ -13,13 +13,17 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
@@ -122,6 +126,28 @@ fun RiverApp() {
             val current = if (attrs.screenBrightness < 0f) 0.5f else attrs.screenBrightness
             attrs.screenBrightness = (current + delta).coerceIn(0.05f, 1f)
             w.attributes = attrs
+        }
+    }
+
+    // System-bar icon contrast follows the *app's* resolved tint, not the OS
+    // night setting. enableEdgeToEdge()'s default SystemBarStyle.auto answers
+    // from Configuration.UI_MODE_NIGHT, which stops being the same question as
+    // "what is Nooz painting right now" the moment a reader picks a tint by
+    // hand — or, before D34, simply left the app on light Paper while the phone
+    // said night. Either way the bars drew light icons onto a light surface,
+    // which is the unreadable-in-dark-mode report this fixes. Re-runs whenever
+    // the tint or the phone's night setting changes.
+    val systemDark = isSystemInDarkTheme()
+    val darkSurface = settings.themeMode.isDarkSurface(systemDark)
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            activity?.window?.let { window ->
+                WindowCompat.getInsetsController(window, view).apply {
+                    isAppearanceLightStatusBars = !darkSurface
+                    isAppearanceLightNavigationBars = !darkSurface
+                }
+            }
         }
     }
 
@@ -280,7 +306,7 @@ fun RiverApp() {
                         onOpenClippings = onOpenClippings,
                         onBrightnessDelta = if (settings.twoFingerBrightness) adjustBrightness else { _ -> },
                         onThemeFlick = if (settings.twoFingerThemeFlick) {
-                            { settingsVm.setTheme(settings.themeMode.next()) }
+                            { settingsVm.setTheme(settings.themeMode.next(systemDark)) }
                         } else {
                             {}
                         },

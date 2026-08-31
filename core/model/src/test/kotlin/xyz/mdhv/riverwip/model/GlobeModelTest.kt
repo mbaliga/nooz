@@ -95,12 +95,50 @@ class GlobeModelTest {
         assertEquals("Global | All", global.summary())
     }
 
-    @Test fun legacyThemeKeysMapToPaper() {
-        assertEquals(ThemeMode.PAPER, ThemeMode.fromKey("light"))
-        assertEquals(ThemeMode.PAPER, ThemeMode.fromKey("system"))
+    @Test fun themeKeysMapToTints() {
         assertEquals(ThemeMode.WHITE, ThemeMode.fromKey("white"))
+        assertEquals(ThemeMode.PAPER, ThemeMode.fromKey("paper"))
         assertEquals(ThemeMode.DARK, ThemeMode.fromKey("dark"))
+        assertEquals(ThemeMode.PAPER, ThemeMode.fromKey(null))
+        // "light" stays a paper-toned legacy alias; "system" is no longer one —
+        // since D34 it means what it always said, so a reader who picked it in
+        // the first theme iteration gets the follow-the-phone behaviour back.
+        assertEquals(ThemeMode.PAPER, ThemeMode.fromKey("light"))
+        assertEquals(ThemeMode.SYSTEM, ThemeMode.fromKey("system"))
+    }
+
+    @Test fun themeFlickStillCyclesTheThreeLiteralTints() {
         assertEquals(ThemeMode.PAPER, ThemeMode.WHITE.next().next().next().next()) // cycle of 3
         assertEquals(ThemeMode.DARK, ThemeMode.PAPER.next())
+        // Flicking off SYSTEM steps onto an explicit tint that differs from
+        // whatever is currently on screen, rather than handing the tint back.
+        assertEquals(ThemeMode.WHITE, ThemeMode.SYSTEM.next(systemDark = true))
+        assertEquals(ThemeMode.DARK, ThemeMode.SYSTEM.next(systemDark = false))
+        // ...and the flick never lands back on SYSTEM from any tint.
+        for (mode in ThemeMode.entries) {
+            assertTrue("flick from $mode", mode.next(systemDark = true) != ThemeMode.SYSTEM)
+            assertTrue("flick from $mode", mode.next(systemDark = false) != ThemeMode.SYSTEM)
+        }
+    }
+
+    @Test fun systemThemeResolvesToARealTintAndDrivesBarContrast() {
+        assertEquals(ThemeMode.DARK, ThemeMode.SYSTEM.resolve(systemDark = true))
+        assertEquals(ThemeMode.PAPER, ThemeMode.SYSTEM.resolve(systemDark = false))
+        // A hand-picked tint ignores the phone entirely — that is the point of
+        // picking one, and the reason bar contrast must follow the resolved
+        // tint rather than Configuration.UI_MODE_NIGHT (the S26+ report).
+        assertEquals(ThemeMode.WHITE, ThemeMode.WHITE.resolve(systemDark = true))
+        assertEquals(ThemeMode.DARK, ThemeMode.DARK.resolve(systemDark = false))
+        // SYSTEM must never survive resolution, or a colour scheme lookup falls
+        // through to a default and the app paints a tint nobody chose.
+        for (systemDark in listOf(true, false)) {
+            for (mode in ThemeMode.entries) {
+                assertTrue("$mode resolved", mode.resolve(systemDark) != ThemeMode.SYSTEM)
+            }
+        }
+        assertTrue(ThemeMode.SYSTEM.isDarkSurface(systemDark = true))
+        assertFalse(ThemeMode.SYSTEM.isDarkSurface(systemDark = false))
+        assertFalse(ThemeMode.WHITE.isDarkSurface(systemDark = true))
+        assertTrue(ThemeMode.DARK.isDarkSurface(systemDark = false))
     }
 }

@@ -2,13 +2,28 @@
 <resources>
     <!--
       Activity-level theme used before Compose takes over (window background,
-      status bar). Dark-first; the window background is the raised surface
-      (#121212-class), never pure black. Mirrors the design token contract.
+      status bar). Only the first frame is drawn from here; every frame after
+      it comes from the Compose token contract in :core:design.
+
+      DayNight parent (API 29+, and this app is minSdk 31) so that first frame
+      matches ThemeMode.SYSTEM, which is the default since D34. The night
+      values live in values-night/.
     -->
-    <style name="Theme.River" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.River" parent="android:Theme.Material.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/river_window_background</item>
         <item name="android:statusBarColor">@color/river_window_background</item>
         <item name="android:navigationBarColor">@color/river_window_background</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <!-- Light surface by day: the bars need dark icons drawn on them. -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <!--
+          Never let the OS invert this app for us. Nooz ships its own three
+          tints plus a follow-the-phone mode, so an OEM force-dark pass (One UI
+          offers exactly this for apps it believes lack a dark theme) has
+          nothing to add and a great deal to break: it re-colours what it can
+          reach and leaves Compose's own drawing alone, which lands as
+          near-black text on a darkened field. That is the Galaxy S26+ report.
+        -->
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 </resources>
