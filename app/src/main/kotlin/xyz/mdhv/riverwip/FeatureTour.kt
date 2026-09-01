@@ -6,8 +6,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.R as DesignR
 
 /**
  * "What's inside" — the short tour of the things a reader will otherwise never
@@ -32,32 +34,16 @@ import xyz.mdhv.riverwip.design.Tokens
  * keeps it permanently, because every reader who onboarded before this existed
  * would otherwise never see it at all.
  */
-private data class TourEntry(val name: String, val body: String)
+private data class TourEntry(val name: Int, val body: Int)
 
+// The entries themselves are resource ids, so a translation of this tour is a
+// values-<locale>/strings.xml and nothing else. See core/design's strings.xml.
 private val TOUR_ENTRIES = listOf(
-    TourEntry(
-        "The Loom",
-        "What your sources actually sent you, woven against what you actually read. " +
-            "Pull down on your stand, or tap the coloured bar above the stories.",
-    ),
-    TourEntry(
-        "Nooz Flash",
-        "The day's headlines cut to a line each, with a way back into the full piece. " +
-            "Off until you switch it on, in Settings.",
-    ),
-    TourEntry(
-        "Nooz Cast",
-        "An article read aloud in a voice that runs on your phone rather than a server. " +
-            "Also in Settings; it asks before downloading anything.",
-    ),
-    TourEntry(
-        "Clippings",
-        "Tap the bookmark while reading to keep a piece. Clippings holds them as torn scraps of the paper.",
-    ),
-    TourEntry(
-        "Today in History",
-        "A short dated column above the day's stories, from Wikipedia's own \"on this day\". Off until you switch it on.",
-    ),
+    TourEntry(DesignR.string.tour_loom_name, DesignR.string.tour_loom_body),
+    TourEntry(DesignR.string.tour_flash_name, DesignR.string.tour_flash_body),
+    TourEntry(DesignR.string.tour_cast_name, DesignR.string.tour_cast_body),
+    TourEntry(DesignR.string.tour_clippings_name, DesignR.string.tour_clippings_body),
+    TourEntry(DesignR.string.tour_history_name, DesignR.string.tour_history_body),
 )
 
 /**
@@ -73,19 +59,19 @@ fun FeatureTourContent(modifier: Modifier = Modifier) {
         for (entry in TOUR_ENTRIES) {
             Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
                 Text(
-                    entry.name,
+                    stringResource(entry.name),
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Text(
-                    entry.body,
+                    stringResource(entry.body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
         Text(
-            "Nothing here reaches for anything you didn't ask for. The three switches above stay off until you turn them on.",
+            stringResource(DesignR.string.tour_footer),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.LocalView
@@ -31,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import xyz.mdhv.riverwip.design.RiverTheme
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.feature.reader.ClippingsScreen
 import xyz.mdhv.riverwip.feature.reader.ClippingsViewModel
@@ -250,10 +252,18 @@ fun RiverApp() {
             // `paneTitle` that changes with `screen` is what Compose turns into
             // the platform's window-state-changed event, which is the event
             // TalkBack reads aloud as "Loom".
+            val paneTitles = mapOf(
+                Screen.STAND to stringResource(DesignR.string.screen_paper),
+                Screen.EDIT to stringResource(DesignR.string.screen_sources_and_settings),
+                Screen.SETTINGS to stringResource(DesignR.string.screen_settings),
+                Screen.LOOM to stringResource(DesignR.string.screen_loom),
+                Screen.CLIPPINGS to stringResource(DesignR.string.screen_clippings),
+                Screen.LENS_WORDS to stringResource(DesignR.string.screen_lens_words),
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .semantics { paneTitle = screen.spokenTitle() },
+                    .semantics { paneTitle = paneTitles.getValue(screen) },
             ) {
             when (screen) {
                 Screen.STAND -> if (isExpandedWidth) {
@@ -384,18 +394,3 @@ fun RiverApp() {
     }
 }
 
-/**
- * What TalkBack says on arriving at a screen.
- *
- * Deliberately the name the reader already knows from the control they pressed
- * — "Loom", not "LoomScreen" or "river.LoomScreen" — so the announcement
- * confirms the action rather than describing the code.
- */
-private fun Screen.spokenTitle(): String = when (this) {
-    Screen.STAND -> "Paper"
-    Screen.EDIT -> "Sources and settings"
-    Screen.SETTINGS -> "Settings"
-    Screen.LOOM -> "Loom"
-    Screen.CLIPPINGS -> "Clippings"
-    Screen.LENS_WORDS -> "Lens word list"
-}

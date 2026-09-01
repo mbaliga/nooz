@@ -9,3 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.ksp) apply false
 }
+
+// The i18n ratchet. See gradle/i18n/verify-i18n.gradle.kts for what it checks
+// and why Android Lint's HardcodedText cannot do this job.
+apply(from = "gradle/i18n/verify-i18n.gradle.kts")

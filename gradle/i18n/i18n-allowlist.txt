@@ -1,0 +1,44 @@
+# Files still carrying interface copy in Kotlin, and how much.
+#
+# This is the i18n ratchet's baseline, not a permission slip. verifyI18n fails
+# if a file exceeds its number, if a file with no entry here has any hardcoded
+# copy at all, or if a file drops below its number without the number being
+# lowered. So the list can only shrink, a new screen is enforced from its first
+# commit, and finishing a file means deleting its line.
+#
+# HONEST LIMIT: the scanner matches literals at text call sites -- Text("…"),
+# text =, contentDescription =, label =, title = and friends. Copy that reaches
+# the screen some other way (built in a buildString, held in a val, passed to a
+# project composable as a bare positional argument) is not counted here. The
+# numbers below are therefore a floor on the work remaining, not a total.
+#
+#   <path relative to the repo root> <count>
+app/src/main/kotlin/xyz/mdhv/riverwip/LensWordListScreen.kt 9
+app/src/main/kotlin/xyz/mdhv/riverwip/ModelChoicePanel.kt 9
+app/src/main/kotlin/xyz/mdhv/riverwip/SettingsScreen.kt 69
+core/design/src/main/kotlin/xyz/mdhv/riverwip/design/Bars.kt 3
+core/design/src/main/kotlin/xyz/mdhv/riverwip/design/EmptyState.kt 1
+core/design/src/main/kotlin/xyz/mdhv/riverwip/design/GlobeCanvas.kt 1
+core/design/src/main/kotlin/xyz/mdhv/riverwip/design/NoResultsState.kt 1
+core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SearchBar.kt 1
+core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SectionHeading.kt 1
+core/design/src/main/kotlin/xyz/mdhv/riverwip/design/Wordmark.kt 1
+feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefinitionSheet.kt 2
+feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefuseBottomSheet.kt 8
+feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/LensAnnotatedParagraph.kt 2
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ArticleListScreen.kt 12
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ClippingsScreen.kt 5
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FlashCard.kt 10
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FoundQuote.kt 1
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/NewspaperReaderPane.kt 2
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ReaderDetailScreen.kt 13
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ReaderScreenTwoPane.kt 1
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/TodayInHistoryCard.kt 3
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/ContrastPanel.kt 9
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/CrossSectionPanel.kt 9
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/DayLoomCanvas.kt 6
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/FramingsPanel.kt 1
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomDatePicker.kt 2
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomScreen.kt 7
+feature/sources/src/main/kotlin/xyz/mdhv/riverwip/feature/sources/EditScreen.kt 20
+feature/sources/src/main/kotlin/xyz/mdhv/riverwip/feature/sources/SourcesUtilities.kt 10

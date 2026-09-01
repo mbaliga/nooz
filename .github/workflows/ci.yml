@@ -71,6 +71,12 @@ jobs:
       - name: Lint (foss)
         run: ./gradlew lintFossDebug --stacktrace
 
+      # The i18n ratchet. Not Lint's HardcodedText -- that check reads layout
+      # XML, and this app has none, so it passes a codebase where every visible
+      # word is a Kotlin literal.
+      - name: Interface copy is translatable
+        run: ./gradlew verifyI18n --stacktrace
+
       - name: Assemble (both flavors)
         run: ./gradlew assembleFossDebug assembleFullDebug --stacktrace
 
