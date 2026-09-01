@@ -90,9 +90,6 @@ class RiverDatabaseMigrationTest {
         dao.insert(ArticleTextEntity(itemId = "te", body = "ఆంధ్ర ప్రదేశ్ లో భారీ వర్షాలు కురిశాయి"))
         dao.insert(ArticleTextEntity(itemId = "hi", body = "मोदी और पुतिन के बीच बैठक हुई"))
 
-
-
-
         // Prefix matching is what ArticleSearch.toMatchQuery asks for.
         assertEquals(listOf("en"), dao.search("lawsuit*", 10).map { it.itemId })
         assertEquals(listOf("en"), dao.search("laws*", 10).map { it.itemId })
