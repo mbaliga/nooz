@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ar.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">يجري جمع أخبار اليوم…</string>
+    <string name="onboarding_headline">اقرأ ما هو موجود، ولاحظ ما هو غائب.</string>
+    <string name="onboarding_blurb">قارئ أخبار هادئ: ما أرسلته إليك مصادرك فعلًا، وبالوضوح نفسه، ما أغفلته. تُشير العدسة إلى اللغة المنحازة، ومع تنزيل قاموس تُعرِّف أي كلمة بالضغط المطوّل عليها. كل شيء يعمل على هاتفك افتراضيًا.</string>
+    <string name="onboarding_quick_setup">إعداد سريع</string>
+    <string name="onboarding_advanced_setup">إعداد متقدّم</string>
+    <string name="onboarding_skip">تخطٍّ</string>
+    <string name="onboarding_back">رجوع</string>
+    <string name="onboarding_done">تمّ</string>
+    <string name="onboarding_start_reading">ابدأ القراءة</string>
+    <string name="onboarding_lens_question">كيف ينبغي للعدسة أن تفكّر؟</string>
+    <string name="onboarding_reading_mode">وضع القراءة</string>
+    <string name="onboarding_mode_controls">إظهار الأدوات</string>
+    <string name="onboarding_mode_immersive">صفحة كاملة</string>
+    <string name="onboarding_mode_explainer">«إظهار الأدوات» يُبقي زر الرجوع وشريط الأدوات ظاهرَين. «صفحة كاملة» يخفيهما لتبقى الصفحة خالية؛ اسحب يمينًا للرجوع. يمكنك تغيير ذلك في أي وقت من الإعدادات.</string>
+    <string name="tour_title">ما بالداخل</string>
+    <string name="tour_loom_name">النَّول</string>
+    <string name="tour_loom_body">ما أرسلته إليك مصادرك فعلًا، منسوجًا في مقابل ما قرأته فعلًا. اسحب لأسفل في كشكك، أو المس الشريط الملوّن فوق الأخبار.</string>
+    <string name="tour_flash_name">نُوز فلاش</string>
+    <string name="tour_flash_body">عناوين اليوم مختصرة في سطر لكلٍّ منها، مع طريق عودة إلى المقال كاملًا. يبقى مُطفأً إلى أن تُشغّله من الإعدادات.</string>
+    <string name="tour_cast_name">نُوز كاست</string>
+    <string name="tour_cast_body">مقال يُقرأ بصوت يعمل على هاتفك لا على خادوم. في الإعدادات أيضًا؛ ويستأذنك قبل تنزيل أي شيء.</string>
+    <string name="tour_clippings_name">قصاصات</string>
+    <string name="tour_clippings_body">المس الإشارة المرجعية أثناء القراءة لتحتفظ بمقال. تحفظها القصاصات كقُصاصات ممزّقة من الجريدة.</string>
+    <string name="tour_history_name">اليوم في التاريخ</string>
+    <string name="tour_history_body">عمود قصير مؤرَّخ فوق أخبار اليوم، من باب «في مثل هذا اليوم» في ويكيبيديا. يبقى مُطفأً إلى أن تُشغّله.</string>
+    <string name="tour_footer">لا شيء هنا يمتدّ إلى ما لم تطلبه. تبقى المفاتيح الثلاثة أعلاه مُطفأة إلى أن تُشغّلها بنفسك.</string>
+    <string name="screen_paper">الجريدة</string>
+    <string name="screen_sources_and_settings">المصادر والإعدادات</string>
+    <string name="screen_settings">الإعدادات</string>
+    <string name="screen_loom">النَّول</string>
+    <string name="screen_clippings">قصاصات</string>
+    <string name="screen_lens_words">قائمة كلمات العدسة</string>
+    <string name="language_title">اللغة</string>
+    <string name="language_system_default">حسب هاتفي</string>
+    <string name="language_explainer">هذا نصّ نُوز نفسه. تبقى الأخبار دائمًا باللغة التي كتبها بها ناشرها.</string>
+    <string name="language_partial">%1$s · مُترجَم %2$d%%</string>
+    <string name="language_complete">%1$s</string>
+</resources>

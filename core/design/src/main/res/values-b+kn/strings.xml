@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/kn.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಸಂಗ್ರಹಿಸಲಾಗುತ್ತಿದೆ…</string>
+    <string name="onboarding_headline">ಇರುವುದನ್ನು ಓದಿ, ಇಲ್ಲದಿರುವುದನ್ನೂ ಗಮನಿಸಿ.</string>
+    <string name="onboarding_blurb">ಒಂದು ಶಾಂತ ಸುದ್ದಿ ಓದುಗ: ನೀವು ಆರಿಸಿದ ಮೂಲಗಳು ನಿಮಗೆ ನಿಜವಾಗಿ ಏನು ಕಳುಹಿಸಿದವು — ಮತ್ತು ಅಷ್ಟೇ ಸ್ಪಷ್ಟವಾಗಿ, ಏನನ್ನು ಬಿಟ್ಟುಬಿಟ್ಟವು. ಲೆನ್ಸ್ ಪಕ್ಷಪಾತದ ಭಾಷೆಯನ್ನು ಗುರುತಿಸುತ್ತದೆ, ನಿಘಂಟು ಇಳಿಸಿಕೊಂಡಿದ್ದರೆ ಯಾವುದೇ ಪದವನ್ನು ಒತ್ತಿ ಹಿಡಿದರೆ ಅರ್ಥ ತೋರಿಸುತ್ತದೆ. ಎಲ್ಲವೂ ಮೊದಲಿನಿಂದಲೂ ನಿಮ್ಮ ಫೋನಿನಲ್ಲೇ ನಡೆಯುತ್ತದೆ.</string>
+    <string name="onboarding_quick_setup">ತ್ವರಿತ ಹೊಂದಾಣಿಕೆ</string>
+    <string name="onboarding_advanced_setup">ವಿವರವಾದ ಹೊಂದಾಣಿಕೆ</string>
+    <string name="onboarding_skip">ಬಿಟ್ಟುಬಿಡಿ</string>
+    <string name="onboarding_back">ಹಿಂದೆ</string>
+    <string name="onboarding_done">ಆಯಿತು</string>
+    <string name="onboarding_start_reading">ಓದಲು ಶುರುಮಾಡಿ</string>
+    <string name="onboarding_lens_question">ಲೆನ್ಸ್ ಹೇಗೆ ಯೋಚಿಸಬೇಕು?</string>
+    <string name="onboarding_reading_mode">ಓದುವ ಕ್ರಮ</string>
+    <string name="onboarding_mode_controls">ನಿಯಂತ್ರಣಗಳನ್ನು ತೋರಿಸು</string>
+    <string name="onboarding_mode_immersive">ಪೂರ್ಣ ಪುಟ</string>
+    <string name="onboarding_mode_explainer">“ನಿಯಂತ್ರಣಗಳನ್ನು ತೋರಿಸು” ಆಯ್ಕೆಯಲ್ಲಿ ಹಿಂದಿರುಗುವ ಗುಂಡಿ ಮತ್ತು ಸಾಧನಪಟ್ಟಿ ಸ್ಪಷ್ಟವಾಗಿ ಕಾಣುತ್ತವೆ. “ಪೂರ್ಣ ಪುಟ” ಅವನ್ನು ಮರೆಮಾಡಿ ಪುಟವನ್ನು ಸರಳವಾಗಿ ಇಡುತ್ತದೆ; ಹಿಂದಿರುಗಲು ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ. ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಿಸಬಹುದು.</string>
+    <string name="tour_title">ಒಳಗೆ ಏನಿದೆ</string>
+    <string name="tour_loom_name">ಲೂಮ್</string>
+    <string name="tour_loom_body">ನಿಮ್ಮ ಮೂಲಗಳು ನಿಜವಾಗಿ ಏನು ಕಳುಹಿಸಿದವು, ನೀವು ನಿಜವಾಗಿ ಏನು ಓದಿದಿರಿ — ಎರಡನ್ನೂ ಒಟ್ಟಿಗೆ ನೇಯ್ದಂತೆ. ನಿಮ್ಮ ಸ್ಟ್ಯಾಂಡ್ ಮೇಲೆ ಕೆಳಕ್ಕೆ ಎಳೆಯಿರಿ, ಅಥವಾ ಸುದ್ದಿಗಳ ಮೇಲಿನ ಬಣ್ಣದ ಪಟ್ಟಿಯನ್ನು ಸ್ಪರ್ಶಿಸಿ.</string>
+    <string name="tour_flash_name">ನೂಜ಼್ ಫ್ಲ್ಯಾಶ್</string>
+    <string name="tour_flash_body">ದಿನದ ಮುಖ್ಯಾಂಶಗಳು ತಲಾ ಒಂದೇ ಸಾಲಿನಲ್ಲಿ, ಪೂರ್ಣ ಲೇಖನಕ್ಕೆ ಮರಳುವ ದಾರಿಯೊಂದಿಗೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಚಾಲೂ ಮಾಡುವವರೆಗೆ ಇದು ಆಫ್ ಆಗಿರುತ್ತದೆ.</string>
+    <string name="tour_cast_name">ನೂಜ಼್ ಕಾಸ್ಟ್</string>
+    <string name="tour_cast_body">ಸರ್ವರ್‌ನಲ್ಲಲ್ಲ, ನಿಮ್ಮ ಫೋನಿನಲ್ಲೇ ನಡೆಯುವ ಧ್ವನಿಯಲ್ಲಿ ಲೇಖನವನ್ನು ಓದಿ ಹೇಳಲಾಗುತ್ತದೆ. ಇದೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿದೆ; ಏನನ್ನಾದರೂ ಇಳಿಸುವ ಮೊದಲು ಕೇಳುತ್ತದೆ.</string>
+    <string name="tour_clippings_name">ಕತ್ತರಿಸಿದವು</string>
+    <string name="tour_clippings_body">ಓದುತ್ತಿರುವಾಗ ಬುಕ್‌ಮಾರ್ಕ್ ಸ್ಪರ್ಶಿಸಿ ಒಂದು ಲೇಖನವನ್ನು ಇಟ್ಟುಕೊಳ್ಳಿ. ಕತ್ತರಿಸಿದವು ಅವನ್ನು ಪತ್ರಿಕೆಯ ಹರಿದ ತುಣುಕುಗಳಂತೆ ಇರಿಸುತ್ತವೆ.</string>
+    <string name="tour_history_name">ಇಂದು ಇತಿಹಾಸದಲ್ಲಿ</string>
+    <string name="tour_history_body">ದಿನದ ಸುದ್ದಿಗಳ ಮೇಲೆ ಒಂದು ಚಿಕ್ಕ ದಿನಾಂಕವಾರು ಅಂಕಣ, ವಿಕಿಪೀಡಿಯದ ಸ್ವಂತ “ಇಂದಿನ ದಿನ”ದಿಂದ. ಚಾಲೂ ಮಾಡುವವರೆಗೆ ಆಫ್.</string>
+    <string name="tour_footer">ನೀವು ಕೇಳದ ಯಾವುದಕ್ಕೂ ಇಲ್ಲಿಂದ ಏನೂ ತಲುಪುವುದಿಲ್ಲ. ಮೇಲಿನ ಮೂರೂ ಸ್ವಿಚ್‌ಗಳು ನೀವು ಚಾಲೂ ಮಾಡುವವರೆಗೆ ಆಫ್ ಆಗಿಯೇ ಇರುತ್ತವೆ.</string>
+    <string name="screen_paper">ಪತ್ರಿಕೆ</string>
+    <string name="screen_sources_and_settings">ಮೂಲಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="screen_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="screen_loom">ಲೂಮ್</string>
+    <string name="screen_clippings">ಕತ್ತರಿಸಿದವು</string>
+    <string name="screen_lens_words">ಲೆನ್ಸ್ ಪದಪಟ್ಟಿ</string>
+    <string name="language_title">ಭಾಷೆ</string>
+    <string name="language_system_default">ಫೋನಿನಂತೆ</string>
+    <string name="language_explainer">ಇದು ನೂಜ಼್‌ನ ಸ್ವಂತ ಪಠ್ಯ. ಸುದ್ದಿಗಳು ಯಾವಾಗಲೂ ಪ್ರಕಾಶಕರು ಬರೆದ ಭಾಷೆಯಲ್ಲೇ ಇರುತ್ತವೆ.</string>
+    <string name="language_partial">%1$s · %2$d%% ಅನುವಾದಿತ</string>
+    <string name="language_complete">%1$s</string>
+</resources>

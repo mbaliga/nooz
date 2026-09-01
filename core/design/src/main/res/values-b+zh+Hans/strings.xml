@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/zh-Hans.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">正在汇集今天的新闻…</string>
+    <string name="onboarding_headline">读见到的，也留意没见到的。</string>
+    <string name="onboarding_blurb">一个安静的新闻阅读器：你选的信源究竟发来了什么，以及同样清楚地，它们略过了什么。透镜会标出带倾向的措辞；下载词典后，长按任何一个词即可查义。默认情况下，一切都在你的手机上运行。</string>
+    <string name="onboarding_quick_setup">快速设置</string>
+    <string name="onboarding_advanced_setup">进阶设置</string>
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_back">返回</string>
+    <string name="onboarding_done">完成</string>
+    <string name="onboarding_start_reading">开始阅读</string>
+    <string name="onboarding_lens_question">透镜该怎样判断？</string>
+    <string name="onboarding_reading_mode">阅读方式</string>
+    <string name="onboarding_mode_controls">显示控件</string>
+    <string name="onboarding_mode_immersive">整页沉浸</string>
+    <string name="onboarding_mode_explainer">“显示控件”会保留醒目的返回按钮和工具栏。“整页沉浸”把它们藏起来，让页面清爽；向右滑动即可返回。随时可在设置中更改。</string>
+    <string name="tour_title">里面有什么</string>
+    <string name="tour_loom_name">织机</string>
+    <string name="tour_loom_body">你的信源究竟发来了什么，与你究竟读了什么，织在一起。在报摊上下拉，或点一下新闻上方的彩色条。</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">当天的标题各压成一行，并留有回到全文的路。在设置中开启之前一直是关着的。</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">用一个跑在你手机上、而非服务器上的声音把文章念出来。同样在设置里；下载任何东西之前都会先问你。</string>
+    <string name="tour_clippings_name">剪报</string>
+    <string name="tour_clippings_body">阅读时点一下书签，把这篇留下来。剪报把它们当作从报纸上撕下的碎片收着。</string>
+    <string name="tour_history_name">历史上的今天</string>
+    <string name="tour_history_body">当天新闻上方一小段带日期的专栏，取自维基百科自己的“历史上的今天”。开启之前一直关着。</string>
+    <string name="tour_footer">这里没有任何东西会去取你没要过的东西。上面三个开关在你亲自打开之前都是关着的。</string>
+    <string name="screen_paper">报纸</string>
+    <string name="screen_sources_and_settings">信源与设置</string>
+    <string name="screen_settings">设置</string>
+    <string name="screen_loom">织机</string>
+    <string name="screen_clippings">剪报</string>
+    <string name="screen_lens_words">透镜词表</string>
+    <string name="language_title">语言</string>
+    <string name="language_system_default">跟随手机</string>
+    <string name="language_explainer">这是 Nooz 自己的文字。新闻始终保持发布方书写时所用的语言。</string>
+    <string name="language_partial">%1$s · 已翻译 %2$d%%</string>
+    <string name="language_complete">%1$s</string>
+</resources>

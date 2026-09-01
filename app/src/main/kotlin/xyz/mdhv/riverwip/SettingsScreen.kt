@@ -1,6 +1,7 @@
 package xyz.mdhv.riverwip
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import android.app.Activity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +48,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +96,10 @@ import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.DictionaryOption
 import xyz.mdhv.riverwip.model.ImageStyle
+import xyz.mdhv.riverwip.model.Locales
+import xyz.mdhv.riverwip.model.LocaleCoverage
 import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.ReaderFont
@@ -360,6 +365,9 @@ fun SettingsBody(
             if (!compact) CrashSection()
 
             WhatsInsideSection()
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            LanguageSection()
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             SectionHeading("Theme")
@@ -945,6 +953,120 @@ private fun WhatsInsideSection() {
     }
     if (expanded) {
         FeatureTourContent(modifier = Modifier.padding(bottom = Tokens.Spacing.xs))
+    }
+}
+
+/**
+ * The interface language.
+ *
+ * Every entry is labelled with the language's **own name for itself**. A picker
+ * written entirely in English is a picker for people who already have English,
+ * which is exactly the reader this list exists for.
+ *
+ * Each partial locale says how partial it is, from a count measured off the
+ * catalogues at build time rather than asserted here. Someone switching to a
+ * language that is a third done deserves to know that before the screen changes
+ * under them, not after.
+ *
+ * Only locales with something translated are offered. `Locales.ALL` is the list
+ * Nooz intends to support; `LocaleCoverage.SHIPPED` is what it actually has.
+ * Offering the difference would hand a reader their own language and then an
+ * English app.
+ */
+@Composable
+private fun LanguageSection() {
+    val context = LocalContext.current
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    var chosen by remember { mutableStateOf(AppLocale.current(context)) }
+
+    val offered = remember {
+        Locales.ALL.filter { it.tag in LocaleCoverage.SHIPPED }
+    }
+    val currentName = offered.firstOrNull { it.tag == chosen }?.endonym
+        ?: stringResource(DesignR.string.language_system_default)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            SectionHeading(stringResource(DesignR.string.language_title))
+            Text(
+                currentName,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+
+    if (!expanded) return
+
+    Text(
+        stringResource(DesignR.string.language_explainer),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(bottom = Tokens.Spacing.xs),
+    )
+
+    fun choose(tag: String) {
+        chosen = tag
+        if (AppLocale.set(context, tag)) (context as? Activity)?.recreate()
+    }
+
+    Column(modifier = Modifier.selectableGroup()) {
+        LanguageRow(
+            label = stringResource(DesignR.string.language_system_default),
+            selected = chosen == AppLocale.SYSTEM_DEFAULT,
+            onClick = { choose(AppLocale.SYSTEM_DEFAULT) },
+        )
+        for (locale in offered) {
+            val percent = LocaleCoverage.percentFor(locale.tag)
+            LanguageRow(
+                label = if (percent >= 100) {
+                    stringResource(DesignR.string.language_complete, locale.endonym)
+                } else {
+                    stringResource(DesignR.string.language_partial, locale.endonym, percent)
+                },
+                selected = chosen == locale.tag,
+                onClick = { choose(locale.tag) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguageRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            // selectable() rather than clickable(): it publishes the row's
+            // selected state to TalkBack, which a plain click target does not.
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
+    ) {
+        Text(
+            label,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        if (selected) {
+            Icon(
+                Icons.Filled.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
+        }
     }
 }
 

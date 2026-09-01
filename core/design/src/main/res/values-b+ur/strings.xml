@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ur.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">آج کی خبریں جمع کی جا رہی ہیں…</string>
+    <string name="onboarding_headline">جو ہے وہ پڑھیے، اور جو نہیں ہے اُسے بھی دیکھیے۔</string>
+    <string name="onboarding_blurb">ایک پُرسکون خبروں کا قاری: آپ کے چُنے ہوئے ذرائع نے آپ کو دراصل کیا بھیجا — اور اُتنی ہی صفائی سے، کیا چھوڑ دیا۔ لینس جانبدار زبان کی نشاندہی کرتا ہے، اور لغت اُتری ہو تو کسی بھی لفظ کو دیر تک دبانے پر اُس کے معنی بتاتا ہے۔ سب کچھ بطورِ طے شدہ آپ ہی کے فون پر چلتا ہے۔</string>
+    <string name="onboarding_quick_setup">فوری ترتیب</string>
+    <string name="onboarding_advanced_setup">تفصیلی ترتیب</string>
+    <string name="onboarding_skip">چھوڑیں</string>
+    <string name="onboarding_back">واپس</string>
+    <string name="onboarding_done">ہو گیا</string>
+    <string name="onboarding_start_reading">پڑھنا شروع کریں</string>
+    <string name="onboarding_lens_question">لینس کو کیسے سوچنا چاہیے؟</string>
+    <string name="onboarding_reading_mode">پڑھنے کا انداز</string>
+    <string name="onboarding_mode_controls">کنٹرول دکھائیں</string>
+    <string name="onboarding_mode_immersive">پورا صفحہ</string>
+    <string name="onboarding_mode_explainer">”کنٹرول دکھائیں“ میں واپسی کا بٹن اور آلاتی پٹی صاف نظر آتی رہتی ہے۔ ”پورا صفحہ“ اُنہیں چھپا دیتا ہے تاکہ صفحہ سادہ رہے؛ واپس جانے کے لیے دائیں طرف سوائپ کریں۔ ترتیبات میں اِسے جب چاہیں بدل سکتے ہیں۔</string>
+    <string name="tour_title">اندر کیا ہے</string>
+    <string name="tour_loom_name">لُوم</string>
+    <string name="tour_loom_body">آپ کے ذرائع نے دراصل کیا بھیجا، اور آپ نے دراصل کیا پڑھا — دونوں ایک ساتھ بُنے ہوئے۔ اپنے اسٹینڈ پر نیچے کھینچیں، یا خبروں کے اوپر رنگین پٹی کو چھوئیں۔</string>
+    <string name="tour_flash_name">نُوز فلیش</string>
+    <string name="tour_flash_body">دن کی سرخیاں، ہر ایک بس ایک سطر میں، اور پوری خبر تک واپسی کا راستہ بھی ساتھ۔ جب تک آپ ترتیبات میں اِسے چالو نہ کریں، یہ بند رہتا ہے۔</string>
+    <string name="tour_cast_name">نُوز کاسٹ</string>
+    <string name="tour_cast_body">مضمون ایسی آواز میں پڑھ کر سنایا جاتا ہے جو کسی سرور پر نہیں، آپ ہی کے فون پر چلتی ہے۔ یہ بھی ترتیبات میں ہے؛ کچھ بھی اُتارنے سے پہلے پوچھتا ہے۔</string>
+    <string name="tour_clippings_name">تراشے</string>
+    <string name="tour_clippings_body">پڑھتے ہوئے بُک مارک چھو کر کوئی خبر محفوظ کر لیں۔ تراشے اُنہیں اخبار کے پھٹے ٹکڑوں کی طرح رکھتے ہیں۔</string>
+    <string name="tour_history_name">آج تاریخ میں</string>
+    <string name="tour_history_body">دن کی خبروں کے اوپر ایک مختصر تاریخ وار کالم، ویکیپیڈیا کے اپنے ”آج کے دن“ سے۔ چالو کرنے تک بند۔</string>
+    <string name="tour_footer">یہاں کچھ بھی آپ کی اجازت کے بغیر کہیں نہیں پہنچتا۔ اوپر کے تینوں سوئچ اُس وقت تک بند رہتے ہیں جب تک آپ اُنہیں چالو نہ کریں۔</string>
+    <string name="screen_paper">اخبار</string>
+    <string name="screen_sources_and_settings">ذرائع اور ترتیبات</string>
+    <string name="screen_settings">ترتیبات</string>
+    <string name="screen_loom">لُوم</string>
+    <string name="screen_clippings">تراشے</string>
+    <string name="screen_lens_words">لینس لفظی فہرست</string>
+    <string name="language_title">زبان</string>
+    <string name="language_system_default">فون کے مطابق</string>
+    <string name="language_explainer">یہ نُوز کا اپنا متن ہے۔ خبریں ہمیشہ اُسی زبان میں رہتی ہیں جس میں اُن کے ناشر نے لکھی ہیں۔</string>
+    <string name="language_partial">%1$s · %2$d%% ترجمہ شدہ</string>
+    <string name="language_complete">%1$s</string>
+</resources>

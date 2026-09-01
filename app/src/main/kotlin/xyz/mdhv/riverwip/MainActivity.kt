@@ -47,6 +47,12 @@ import xyz.mdhv.riverwip.feature.sources.EditTab
 import xyz.mdhv.riverwip.feature.sources.SourcesViewModel
 
 class MainActivity : ComponentActivity() {
+    // The reader's chosen interface language, applied before any resource is
+    // resolved. A no-op on API 33+, where the platform has already done it.
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/fr.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Collecte des nouvelles du jour…</string>
+    <string name="onboarding_headline">Lisez ce qui est là, et remarquez ce qui n\'y est pas.</string>
+    <string name="onboarding_blurb">Un lecteur d\'actualités paisible : ce que vos sources vous ont réellement envoyé et, avec la même netteté, ce qu\'elles ont laissé de côté. La loupe signale le langage orienté et, une fois un dictionnaire téléchargé, définit n\'importe quel mot par appui long. Tout fonctionne sur votre téléphone par défaut.</string>
+    <string name="onboarding_quick_setup">Configuration rapide</string>
+    <string name="onboarding_advanced_setup">Configuration avancée</string>
+    <string name="onboarding_skip">Passer</string>
+    <string name="onboarding_back">Retour</string>
+    <string name="onboarding_done">Terminé</string>
+    <string name="onboarding_start_reading">Commencer à lire</string>
+    <string name="onboarding_lens_question">Comment la loupe doit-elle raisonner ?</string>
+    <string name="onboarding_reading_mode">Mode de lecture</string>
+    <string name="onboarding_mode_controls">Commandes visibles</string>
+    <string name="onboarding_mode_immersive">Immersif</string>
+    <string name="onboarding_mode_explainer">« Commandes visibles » garde un bouton retour bien en vue et la barre d\'outils. « Immersif » les masque pour une page nue ; balayez vers la droite pour revenir. Modifiable à tout moment dans les Réglages.</string>
+    <string name="tour_title">Ce qu\'il y a dedans</string>
+    <string name="tour_loom_name">Le Métier</string>
+    <string name="tour_loom_body">Ce que vos sources vous ont réellement envoyé, tissé face à ce que vous avez réellement lu. Tirez vers le bas sur votre kiosque, ou touchez la barre colorée au-dessus des articles.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">Les titres du jour ramenés à une ligne chacun, avec un chemin de retour vers l\'article complet. Désactivé tant que vous ne l\'activez pas, dans les Réglages.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Un article lu à voix haute par une voix qui tourne sur votre téléphone plutôt que sur un serveur. Également dans les Réglages ; il demande avant de télécharger quoi que ce soit.</string>
+    <string name="tour_clippings_name">Coupures</string>
+    <string name="tour_clippings_body">Touchez le signet pendant la lecture pour garder un article. Les Coupures les conservent comme des morceaux de journal déchirés.</string>
+    <string name="tour_history_name">Aujourd\'hui dans l\'histoire</string>
+    <string name="tour_history_body">Une courte colonne datée au-dessus des articles du jour, tirée de la rubrique « éphéméride » de Wikipédia. Désactivée tant que vous ne l\'activez pas.</string>
+    <string name="tour_footer">Rien ici ne va chercher quoi que ce soit que vous n\'ayez demandé. Les trois interrupteurs ci-dessus restent éteints tant que vous ne les allumez pas.</string>
+    <string name="screen_paper">Journal</string>
+    <string name="screen_sources_and_settings">Sources et réglages</string>
+    <string name="screen_settings">Réglages</string>
+    <string name="screen_loom">Métier</string>
+    <string name="screen_clippings">Coupures</string>
+    <string name="screen_lens_words">Liste de mots de la loupe</string>
+    <string name="language_title">Langue</string>
+    <string name="language_system_default">Comme mon téléphone</string>
+    <string name="language_explainer">Le texte propre à Nooz. Les articles restent toujours dans la langue où leur éditeur les a écrits.</string>
+    <string name="language_partial">%1$s · %2$d %% traduit</string>
+    <string name="language_complete">%1$s</string>
+</resources>

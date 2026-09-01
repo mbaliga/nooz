@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/mai.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">आइ केर खबरि जुटाओल जा रहल अछि…</string>
+    <string name="onboarding_headline">जे अछि से पढ़ू, आ जे नहि अछि ताहि पर सेहो ध्यान दिअ।</string>
+    <string name="onboarding_blurb">एक शांत समाचार पढ़निहार: अहाँक चुनल स्रोत सभ अहाँ लग वास्तव मे की पठौलक — आ ओतबे साफ ढंग सँ, की छोड़ि देलक। लेंस पक्षपाती भाषा केँ चिन्हैत अछि, आ शब्दकोश उतारल रहला पर कोनो शब्द केँ दबा कऽ रखला पर ओकर अर्थ देखबैत अछि। सभ किछु मूलतः अहींक फोन पर चलैत अछि।</string>
+    <string name="onboarding_quick_setup">झटपट सेटअप</string>
+    <string name="onboarding_advanced_setup">विस्तृत सेटअप</string>
+    <string name="onboarding_skip">छोड़ू</string>
+    <string name="onboarding_back">पाछाँ</string>
+    <string name="onboarding_done">भऽ गेल</string>
+    <string name="onboarding_start_reading">पढ़ब शुरू करू</string>
+    <string name="onboarding_lens_question">लेंस केना सोचय?</string>
+    <string name="onboarding_reading_mode">पढ़बाक ढंग</string>
+    <string name="onboarding_mode_controls">नियंत्रण देखाउ</string>
+    <string name="onboarding_mode_immersive">पूरा पन्ना</string>
+    <string name="onboarding_mode_explainer">“नियंत्रण देखाउ” मे पाछाँ जयबाक बटन आ उपयोगिता पट्टी साफ देखाइत रहैत अछि। “पूरा पन्ना” ओकरा नुका दैत अछि जाहि सँ पन्ना सादा रहय; पाछाँ जयबा लेल दहिना दिस स्वाइप करू। सेटिंग मे ई कहियो बदलल जा सकैत अछि।</string>
+    <string name="tour_title">एहि मे की अछि</string>
+    <string name="tour_loom_name">लूम</string>
+    <string name="tour_loom_body">अहाँक स्रोत वास्तव मे की पठौलक, आ अहाँ वास्तव मे की पढ़लहुँ — दुनू एक संग बुनल। अपन स्टैंड पर नीचाँ खींचू, वा खबरि सभक ऊपर रंगीन पट्टी केँ छुऊ।</string>
+    <string name="tour_flash_name">नूज़ फ्लैश</string>
+    <string name="tour_flash_body">दिन केर सुर्खी सभ, प्रत्येक बस एक पाँती मे, आ पूरा खबरि धरि घुरबाक बाट सेहो संगे। जा धरि अहाँ सेटिंग मे एकरा चालू नहि करब, ई बंद रहत।</string>
+    <string name="tour_cast_name">नूज़ कास्ट</string>
+    <string name="tour_cast_body">लेख एहन स्वर मे पढ़ि कऽ सुनाओल जाइत अछि जे कोनो सर्वर पर नहि, अहींक फोन पर चलैत अछि। ईहो सेटिंग मे अछि; किछु उतारबा सँ पहिने पुछैत अछि।</string>
+    <string name="tour_clippings_name">कतरनि</string>
+    <string name="tour_clippings_body">पढ़ैत काल बुकमार्क छुबि कऽ कोनो लेख राखि लिअ। कतरनि ओकरा अखबारक फाटल टुकड़ी जकाँ रखैत अछि।</string>
+    <string name="tour_history_name">आइ इतिहास मे</string>
+    <string name="tour_history_body">दिन केर खबरि सभक ऊपर एक छोट तिथिवार स्तंभ, विकिपीडिया केर अपन “आइ केर दिन” सँ। चालू नहि कयला धरि बंद।</string>
+    <string name="tour_footer">अहाँक कहने बिना एतय सँ किछु कतहु नहि पहुँचैत अछि। ऊपरक तीनू स्विच जा धरि अहाँ चालू नहि करब, बंद रहत।</string>
+    <string name="screen_paper">अखबार</string>
+    <string name="screen_sources_and_settings">स्रोत आ सेटिंग</string>
+    <string name="screen_settings">सेटिंग</string>
+    <string name="screen_loom">लूम</string>
+    <string name="screen_clippings">कतरनि</string>
+    <string name="screen_lens_words">लेंस शब्द-सूची</string>
+    <string name="language_title">भाषा</string>
+    <string name="language_system_default">फोन जकाँ</string>
+    <string name="language_explainer">ई नूज़ केर अपन पाठ अछि। खबरि सदिखन ओहि भाषा मे रहैत अछि जाहि मे प्रकाशक लिखने छथि।</string>
+    <string name="language_partial">%1$s · %2$d%% अनूदित</string>
+    <string name="language_complete">%1$s</string>
+</resources>

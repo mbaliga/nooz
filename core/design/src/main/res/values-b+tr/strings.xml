@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/tr.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Bugünün haberleri toplanıyor…</string>
+    <string name="onboarding_headline">Orada olanı okuyun, olmayanı da fark edin.</string>
+    <string name="onboarding_blurb">Sakin bir haber okuyucu: seçtiğiniz kaynakların size gerçekte ne gönderdiği ve aynı açıklıkla, neyi dışarıda bıraktığı. Mercek yüklü dili işaretler; bir sözlük indirdiyseniz uzun basışla herhangi bir kelimenin anlamını verir. Her şey varsayılan olarak telefonunuzda çalışır.</string>
+    <string name="onboarding_quick_setup">Hızlı kurulum</string>
+    <string name="onboarding_advanced_setup">Ayrıntılı kurulum</string>
+    <string name="onboarding_skip">Atla</string>
+    <string name="onboarding_back">Geri</string>
+    <string name="onboarding_done">Tamam</string>
+    <string name="onboarding_start_reading">Okumaya başla</string>
+    <string name="onboarding_lens_question">Mercek nasıl düşünsün?</string>
+    <string name="onboarding_reading_mode">Okuma biçimi</string>
+    <string name="onboarding_mode_controls">Denetimler görünür</string>
+    <string name="onboarding_mode_immersive">Tam sayfa</string>
+    <string name="onboarding_mode_explainer">“Denetimler görünür” geri düğmesini ve araç çubuğunu açıkça görünür tutar. “Tam sayfa” sayfayı çıplak bırakmak için onları gizler; geri dönmek için sağa kaydırın. Bunu Ayarlar\'dan istediğiniz zaman değiştirebilirsiniz.</string>
+    <string name="tour_title">İçinde ne var</string>
+    <string name="tour_loom_name">Tezgâh</string>
+    <string name="tour_loom_body">Kaynaklarınızın size gerçekte ne gönderdiği, gerçekte ne okuduğunuzla birlikte dokunmuş hâlde. Tezgâhınızda aşağı çekin ya da haberlerin üstündeki renkli şeride dokunun.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">Günün başlıkları birer satıra indirilmiş, tam metne dönüş yoluyla birlikte. Ayarlar\'dan açana kadar kapalıdır.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Bir yazının, sunucuda değil telefonunuzda çalışan bir sesle okunması. O da Ayarlar\'da; herhangi bir şey indirmeden önce sorar.</string>
+    <string name="tour_clippings_name">Kupürler</string>
+    <string name="tour_clippings_body">Okurken yer imine dokunup bir yazıyı saklayın. Kupürler onları gazeteden yırtılmış parçalar gibi tutar.</string>
+    <string name="tour_history_name">Tarihte bugün</string>
+    <string name="tour_history_body">Günün haberlerinin üstünde kısa, tarihli bir sütun; Vikipedi\'nin kendi “tarihte bugün”ünden. Açana kadar kapalıdır.</string>
+    <string name="tour_footer">Burada istemediğiniz hiçbir şeye uzanan bir şey yok. Yukarıdaki üç anahtar, siz açana kadar kapalı kalır.</string>
+    <string name="screen_paper">Gazete</string>
+    <string name="screen_sources_and_settings">Kaynaklar ve ayarlar</string>
+    <string name="screen_settings">Ayarlar</string>
+    <string name="screen_loom">Tezgâh</string>
+    <string name="screen_clippings">Kupürler</string>
+    <string name="screen_lens_words">Mercek kelime listesi</string>
+    <string name="language_title">Dil</string>
+    <string name="language_system_default">Telefonumla aynı</string>
+    <string name="language_explainer">Nooz\'un kendi metni. Haberler her zaman yayıncısının yazdığı dilde kalır.</string>
+    <string name="language_partial">%1$s · %%%2$d çevrildi</string>
+    <string name="language_complete">%1$s</string>
+</resources>

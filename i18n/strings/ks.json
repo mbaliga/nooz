@@ -1,0 +1,17 @@
+{
+  "onboarding_skip": "چھوڑیو",
+  "onboarding_back": "واپس",
+  "onboarding_done": "مکمل",
+  "onboarding_start_reading": "پرُن شروع کریو",
+  "onboarding_reading_mode": "پرنُک طریقہ",
+  "tour_title": "اَندر کیا چھُ",
+  "tour_clippings_name": "تراشہٕ",
+  "tour_history_name": "أز تاریخس منٛز",
+  "screen_paper": "اخبار",
+  "screen_settings": "ترتیبات",
+  "screen_clippings": "تراشہٕ",
+  "language_title": "زبان",
+  "language_system_default": "فونس مطابق",
+  "language_partial": "%1$s · %2$d%% ترجمہ کرنہٕ آمُت",
+  "language_complete": "%1$s"
+}

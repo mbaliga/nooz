@@ -1,39 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Nooz's interface copy, in one file.
-
-  WHY ONE FILE, IN THIS MODULE
-  Every UI module already depends on :core:design, so this is the one place all
-  of them can reach. That matters more than tidiness: a translator should be
-  handed a single file, not nine, and a locale's completeness should be one
-  number rather than nine.
+  GENERATED FILE — do not edit. Source: i18n/strings/en.json (words) and
+  i18n/strings/_sections.json (grouping); generator: tools/i18n/generate.py.
 
   ADDING A LANGUAGE
-  Copy this file to values-<qualifier>/strings.xml and translate the values.
-  That is the whole procedure — no Kotlin, no build change. Android resolves
-  each string separately and falls back to this file per key, so a half-finished
-  locale shows the half it has and English for the rest. Never a blank, never a
-  key name. Partial translations are therefore safe to ship, which is what makes
-  it possible to start thirty languages rather than finish two.
-  Locales.kt in :core:model is the list, and Locales.androidResourceQualifier()
-  turns a BCP 47 tag into the values- suffix Android wants.
+  Drop i18n/strings/<bcp47>.json next to en.json, translate the values, run the
+  generator. That is the whole procedure — no Kotlin, no build change.
+  Locales.kt in :core:model is the list the app offers.
+
+  Android resolves each string separately and falls back to this file per key,
+  so a half-finished locale shows the half it has and English for the rest.
+  Never a blank, never a key name. Partial translations are therefore safe to
+  ship, which is what makes it possible to start thirty languages rather than
+  finish two.
 
   WRITING THE COPY
-  The register is set in STATE.md and it is not decoration: descriptive, never
+  The register is set in STATE.md and is not decoration: descriptive, never
   scolding; shapes and counts, never FOMO or praise; and every total carries its
   denominator — the reader's own chosen sources, never "all the news". A
   translation that reads naturally but drops the denominator has changed what
   the app claims, so keep it.
-
-  Names are <screen>_<element>. Anything with a %s or %d keeps the same
-  arguments in the same meaning; use positional %1$s where a language needs a
-  different order.
 -->
 <resources>
 
-    <!-- ====================================================================
-         Onboarding: the first thing anyone sees.
-         ==================================================================== -->
+    <!-- Onboarding: the first thing anyone sees. -->
     <string name="onboarding_loading">Gathering today\'s stories…</string>
     <string name="onboarding_headline">Read what\'s there, and notice what isn\'t.</string>
     <string name="onboarding_blurb">A quiet news reader: what your sources actually sent you, and — just as plainly — what they left out. The lens flags loaded language, and with a dictionary downloaded it defines any word on a long-press. Everything runs on your phone by default.</string>
@@ -49,34 +39,21 @@
     <string name="onboarding_mode_immersive">Immersive</string>
     <string name="onboarding_mode_explainer">Controls shown keeps an obvious back button and the utility bar. Immersive hides them for a bare page; swipe right to go back. You can change this any time in Settings.</string>
 
-    <!-- ====================================================================
-         "What's inside": the short tour of things a reader would otherwise
-         never find. Shown once during onboarding, and kept in Settings.
-         ==================================================================== -->
+    <!-- "What's inside": the short tour of things a reader would otherwise never find. Shown once during onboarding, and kept in Settings so readers who onboarded before it existed still meet it. -->
     <string name="tour_title">What\'s inside</string>
-
     <string name="tour_loom_name">The Loom</string>
     <string name="tour_loom_body">What your sources actually sent you, woven against what you actually read. Pull down on your stand, or tap the coloured bar above the stories.</string>
-
     <string name="tour_flash_name">Nooz Flash</string>
     <string name="tour_flash_body">The day\'s headlines cut to a line each, with a way back into the full piece. Off until you switch it on, in Settings.</string>
-
     <string name="tour_cast_name">Nooz Cast</string>
     <string name="tour_cast_body">An article read aloud in a voice that runs on your phone rather than a server. Also in Settings; it asks before downloading anything.</string>
-
     <string name="tour_clippings_name">Clippings</string>
     <string name="tour_clippings_body">Tap the bookmark while reading to keep a piece. Clippings holds them as torn scraps of the paper.</string>
-
     <string name="tour_history_name">Today in History</string>
     <string name="tour_history_body">A short dated column above the day\'s stories, from Wikipedia\'s own “on this day”. Off until you switch it on.</string>
-
     <string name="tour_footer">Nothing here reaches for anything you didn\'t ask for. The three switches above stay off until you turn them on.</string>
 
-    <!-- ====================================================================
-         Screen names. These are what TalkBack announces on arrival, so they
-         are the names the reader already knows from the control they pressed —
-         "Loom", not "LoomScreen".
-         ==================================================================== -->
+    <!-- Screen names. These are what TalkBack announces on arrival, so they are the names the reader already knows from the control they pressed — "Loom", not "LoomScreen". -->
     <string name="screen_paper">Paper</string>
     <string name="screen_sources_and_settings">Sources and settings</string>
     <string name="screen_settings">Settings</string>
@@ -84,15 +61,11 @@
     <string name="screen_clippings">Clippings</string>
     <string name="screen_lens_words">Lens word list</string>
 
-    <!-- ====================================================================
-         The language picker.
-         ==================================================================== -->
+    <!-- The language picker. -->
     <string name="language_title">Language</string>
     <string name="language_system_default">Match my phone</string>
     <string name="language_explainer">Nooz\'s own text. Stories always stay in the language their publisher wrote them in.</string>
-    <!-- %1$s is a language's own name for itself; %2$d is how much of the app
-         is translated into it, 0–100. Shown so nobody is surprised by a screen
-         that is half in English. -->
+    <!-- %1$s is a language's own name for itself; %2$d is how much of the app is translated into it, 0–100. Shown so nobody is surprised by a screen that is half in English. -->
     <string name="language_partial">%1$s · %2$d%% translated</string>
     <string name="language_complete">%1$s</string>
 

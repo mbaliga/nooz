@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/sw.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Inakusanya habari za leo…</string>
+    <string name="onboarding_headline">Soma kilichopo, na utambue kisichokuwepo.</string>
+    <string name="onboarding_blurb">Kisomaji cha habari chenye utulivu: vyanzo ulivyochagua vilikutumia nini hasa — na kwa uwazi ule ule, viliacha nini. Lenzi huonyesha lugha yenye upendeleo, na ukiwa umepakua kamusi hufafanua neno lolote ukilibonyeza kwa muda. Kila kitu hufanya kazi kwenye simu yako kwa kawaida.</string>
+    <string name="onboarding_quick_setup">Usanidi wa haraka</string>
+    <string name="onboarding_advanced_setup">Usanidi wa kina</string>
+    <string name="onboarding_skip">Ruka</string>
+    <string name="onboarding_back">Rudi</string>
+    <string name="onboarding_done">Imekamilika</string>
+    <string name="onboarding_start_reading">Anza kusoma</string>
+    <string name="onboarding_lens_question">Lenzi ifikirije?</string>
+    <string name="onboarding_reading_mode">Namna ya kusoma</string>
+    <string name="onboarding_mode_controls">Vidhibiti vionekane</string>
+    <string name="onboarding_mode_immersive">Ukurasa mzima</string>
+    <string name="onboarding_mode_explainer">“Vidhibiti vionekane” huacha kitufe cha kurudi na upau wa vifaa vikionekana wazi. “Ukurasa mzima” huvificha ili ukurasa ubaki wazi; telezesha kulia ili kurudi. Unaweza kubadilisha hili wakati wowote katika Mipangilio.</string>
+    <string name="tour_title">Kilichomo ndani</string>
+    <string name="tour_loom_name">Mtande</string>
+    <string name="tour_loom_body">Vyanzo vyako vilikutumia nini hasa, vikifumwa pamoja na ulichosoma hasa. Vuta chini kwenye kibanda chako, au gusa upau wa rangi juu ya habari.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">Vichwa vya habari vya siku vikipunguzwa hadi mstari mmoja kila kimoja, na njia ya kurudi kwenye makala kamili. Kimezimwa hadi ukiwashe, katika Mipangilio.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Makala husomwa kwa sauti inayofanya kazi kwenye simu yako badala ya seva. Nayo iko katika Mipangilio; huuliza kabla ya kupakua chochote.</string>
+    <string name="tour_clippings_name">Vipande</string>
+    <string name="tour_clippings_body">Gusa alamisho unaposoma ili kuhifadhi makala. Vipande huvihifadhi kama vipande vilivyoraruliwa kwenye gazeti.</string>
+    <string name="tour_history_name">Leo katika historia</string>
+    <string name="tour_history_body">Safu fupi yenye tarehe juu ya habari za siku, kutoka “siku kama ya leo” ya Wikipedia yenyewe. Imezimwa hadi uiwashe.</string>
+    <string name="tour_footer">Hakuna kitu hapa kinachofuata chochote usichokiomba. Swichi tatu zilizo juu hubaki zimezimwa hadi wewe mwenyewe uziwashe.</string>
+    <string name="screen_paper">Gazeti</string>
+    <string name="screen_sources_and_settings">Vyanzo na mipangilio</string>
+    <string name="screen_settings">Mipangilio</string>
+    <string name="screen_loom">Mtande</string>
+    <string name="screen_clippings">Vipande</string>
+    <string name="screen_lens_words">Orodha ya maneno ya lenzi</string>
+    <string name="language_title">Lugha</string>
+    <string name="language_system_default">Fuata simu yangu</string>
+    <string name="language_explainer">Haya ni maneno ya Nooz yenyewe. Habari hubaki daima katika lugha aliyoandika mchapishaji wake.</string>
+    <string name="language_partial">%1$s · %2$d%% imetafsiriwa</string>
+    <string name="language_complete">%1$s</string>
+</resources>

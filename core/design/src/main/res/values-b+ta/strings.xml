@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ta.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">இன்றைய செய்திகள் திரட்டப்படுகின்றன…</string>
+    <string name="onboarding_headline">இருப்பதைப் படியுங்கள், இல்லாததையும் கவனியுங்கள்.</string>
+    <string name="onboarding_blurb">ஒரு அமைதியான செய்தி வாசிப்பான்: நீங்கள் தேர்ந்தெடுத்த ஆதாரங்கள் உண்மையில் உங்களுக்கு என்ன அனுப்பின — அதே தெளிவுடன், எதை விட்டுவிட்டன. லென்ஸ் சாய்வான மொழியைக் குறிக்கிறது; அகராதி இறக்கப்பட்டிருந்தால் எந்தச் சொல்லையும் நீண்ட நேரம் அழுத்தினால் பொருள் காட்டும். எல்லாமே இயல்பாக உங்கள் தொலைபேசியிலேயே இயங்குகிறது.</string>
+    <string name="onboarding_quick_setup">விரைவு அமைப்பு</string>
+    <string name="onboarding_advanced_setup">விரிவான அமைப்பு</string>
+    <string name="onboarding_skip">தவிர்</string>
+    <string name="onboarding_back">பின்</string>
+    <string name="onboarding_done">முடிந்தது</string>
+    <string name="onboarding_start_reading">படிக்கத் தொடங்குங்கள்</string>
+    <string name="onboarding_lens_question">லென்ஸ் எப்படிச் சிந்திக்க வேண்டும்?</string>
+    <string name="onboarding_reading_mode">வாசிப்பு முறை</string>
+    <string name="onboarding_mode_controls">கட்டுப்பாடுகளைக் காட்டு</string>
+    <string name="onboarding_mode_immersive">முழுப் பக்கம்</string>
+    <string name="onboarding_mode_explainer">“கட்டுப்பாடுகளைக் காட்டு” நிலையில் பின் செல்லும் பொத்தானும் பயன்பாட்டுப் பட்டையும் தெளிவாகத் தெரியும். “முழுப் பக்கம்” அவற்றை மறைத்துப் பக்கத்தை எளிமையாக வைக்கும்; பின் செல்ல வலப்புறம் இழுக்கவும். இதை அமைப்புகளில் எப்போது வேண்டுமானாலும் மாற்றலாம்.</string>
+    <string name="tour_title">உள்ளே என்ன இருக்கிறது</string>
+    <string name="tour_loom_name">லூம்</string>
+    <string name="tour_loom_body">உங்கள் ஆதாரங்கள் உண்மையில் என்ன அனுப்பின, நீங்கள் உண்மையில் என்ன படித்தீர்கள் — இரண்டும் ஒன்றாக நெய்யப்பட்டவை. உங்கள் ஸ்டாண்டில் கீழே இழுங்கள், அல்லது செய்திகளுக்கு மேலுள்ள வண்ணப் பட்டையைத் தொடுங்கள்.</string>
+    <string name="tour_flash_name">நூஸ் ஃபிளாஷ்</string>
+    <string name="tour_flash_body">நாளின் தலைப்புச் செய்திகள் தலா ஒரு வரியில், முழுக் கட்டுரைக்குத் திரும்பும் வழியுடன். அமைப்புகளில் இயக்கும் வரை இது நிறுத்தப்பட்டே இருக்கும்.</string>
+    <string name="tour_cast_name">நூஸ் காஸ்ட்</string>
+    <string name="tour_cast_body">சேவையகத்தில் அல்லாமல் உங்கள் தொலைபேசியிலேயே இயங்கும் குரலில் கட்டுரை வாசித்துக் காட்டப்படும். இதுவும் அமைப்புகளில்; எதையும் இறக்கும் முன் கேட்கும்.</string>
+    <string name="tour_clippings_name">வெட்டுகள்</string>
+    <string name="tour_clippings_body">படிக்கும்போது புத்தகக்குறியைத் தொட்டு ஒரு கட்டுரையைச் சேமியுங்கள். வெட்டுகள் அவற்றைப் பத்திரிகையின் கிழிந்த துண்டுகளாக வைத்திருக்கும்.</string>
+    <string name="tour_history_name">இன்று வரலாற்றில்</string>
+    <string name="tour_history_body">நாளின் செய்திகளுக்கு மேல் ஒரு சிறிய தேதிப் பத்தி, விக்கிப்பீடியாவின் சொந்த “இன்றைய தினம்” இலிருந்து. இயக்கும் வரை நிறுத்தப்பட்டிருக்கும்.</string>
+    <string name="tour_footer">நீங்கள் கேட்காத எதற்கும் இங்கிருந்து எதுவும் செல்வதில்லை. மேலுள்ள மூன்று நிலைமாற்றிகளும் நீங்கள் இயக்கும் வரை நின்றே இருக்கும்.</string>
+    <string name="screen_paper">பத்திரிகை</string>
+    <string name="screen_sources_and_settings">ஆதாரங்களும் அமைப்புகளும்</string>
+    <string name="screen_settings">அமைப்புகள்</string>
+    <string name="screen_loom">லூம்</string>
+    <string name="screen_clippings">வெட்டுகள்</string>
+    <string name="screen_lens_words">லென்ஸ் சொற்பட்டியல்</string>
+    <string name="language_title">மொழி</string>
+    <string name="language_system_default">தொலைபேசியைப் பின்பற்று</string>
+    <string name="language_explainer">இது நூஸின் சொந்த உரை. செய்திகள் எப்போதும் அவற்றை வெளியிட்டவர் எழுதிய மொழியிலேயே இருக்கும்.</string>
+    <string name="language_partial">%1$s · %2$d%% மொழிபெயர்க்கப்பட்டது</string>
+    <string name="language_complete">%1$s</string>
+</resources>

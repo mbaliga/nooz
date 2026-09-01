@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+"""
+Turn the translation catalogues into what each platform actually reads.
+
+WHY A GENERATOR AT ALL
+Nooz has two front ends and one set of words. Keeping Android's strings.xml and
+the web reader's catalogue as separate hand-maintained files means a translator
+does every language twice, and the two drift the moment anyone is in a hurry --
+which in practice means the web reader stays English. One source, two outputs,
+so "the web reader must also do the same" is structural rather than a promise.
+
+SOURCE OF TRUTH
+  i18n/strings/en.json    the base catalogue: key -> English
+  i18n/strings/<tag>.json a translation, keyed the same way
+
+Text in these files is plain and human: real apostrophes, real quotes, no
+platform escaping. Escaping belongs to whichever platform needs it, and doing it
+here would put backslashes in front of a translator.
+
+A translation may be partial. Any key it omits falls back to English -- Android
+resolves per key, and the web layer does the same -- so a locale can ship at a
+third done and show that third. Never a blank, never a key name.
+
+OUTPUTS (both generated; edit the JSON, not these)
+  core/design/src/main/res/values-<qualifier>/strings.xml
+  web/i18n/<tag>.json
+
+Run:  python3 tools/i18n/generate.py          write the outputs
+      python3 tools/i18n/generate.py --check  fail if they are out of date (CI)
+"""
+
+import json
+import pathlib
+import sys
+
+REPO = pathlib.Path(__file__).resolve().parents[2]
+CATALOGUES = REPO / "i18n" / "strings"
+ANDROID_RES = REPO / "core" / "design" / "src" / "main" / "res"
+LOCALE_CONFIG = REPO / "app" / "src" / "main" / "res" / "xml" / "locales_config.xml"
+COVERAGE_KT = (
+    REPO / "core" / "model" / "src" / "main" / "kotlin"
+    / "xyz" / "mdhv" / "riverwip" / "model" / "LocaleCoverage.kt"
+)
+WEB_OUT = REPO / "web" / "i18n"
+
+BASE_TAG = "en"
+
+BASE_HEADER = """<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE \u2014 do not edit. Source: i18n/strings/en.json (words) and
+  i18n/strings/_sections.json (grouping); generator: tools/i18n/generate.py.
+
+  ADDING A LANGUAGE
+  Drop i18n/strings/<bcp47>.json next to en.json, translate the values, run the
+  generator. That is the whole procedure \u2014 no Kotlin, no build change.
+  Locales.kt in :core:model is the list the app offers.
+
+  Android resolves each string separately and falls back to this file per key,
+  so a half-finished locale shows the half it has and English for the rest.
+  Never a blank, never a key name. Partial translations are therefore safe to
+  ship, which is what makes it possible to start thirty languages rather than
+  finish two.
+
+  WRITING THE COPY
+  The register is set in STATE.md and is not decoration: descriptive, never
+  scolding; shapes and counts, never FOMO or praise; and every total carries its
+  denominator \u2014 the reader's own chosen sources, never "all the news". A
+  translation that reads naturally but drops the denominator has changed what
+  the app claims, so keep it.
+-->
+<resources>
+"""
+
+HEADER = """<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/{tag}.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  {coverage} of {total} strings translated.
+-->
+<resources>
+"""
+
+
+def android_qualifier(tag: str) -> str:
+    """BCP 47 -> the `values-` suffix Android wants (`zh-Hans` -> `b+zh+Hans`)."""
+    return "b+" + tag.replace("-", "+")
+
+
+def escape_android(value: str) -> str:
+    """
+    Android's string resource escaping.
+
+    `&` and `<` are XML; `'` and `"` are aapt's own, and an unescaped apostrophe
+    is a build error rather than a warning. A leading `@` or `?` would be read as
+    a resource reference.
+    """
+    out = (
+        value.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("'", "\\'")
+        .replace('"', '\\"')
+        .replace("\n", "\\n")
+    )
+    if out[:1] in ("@", "?"):
+        out = "\\" + out
+    return out
+
+
+def load(tag: str) -> dict:
+    path = CATALOGUES / f"{tag}.json"
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def render_android(tag: str, strings: dict, base: dict) -> str:
+    lines = [HEADER.format(tag=tag, coverage=len(strings), total=len(base))]
+    for key in base:  # base order, so files line up for review
+        if key not in strings:
+            continue
+        lines.append(f'    <string name="{key}">{escape_android(strings[key])}</string>')
+    lines.append("</resources>\n")
+    return "\n".join(lines)
+
+
+def render_web(tag: str, strings: dict, base: dict) -> str:
+    ordered = {key: strings[key] for key in base if key in strings}
+    return json.dumps(ordered, ensure_ascii=False, indent=2) + "\n"
+
+
+def render_base(base: dict) -> str:
+    """The English resources, grouped and annotated from _sections.json."""
+    sections = json.loads((CATALOGUES / "_sections.json").read_text(encoding="utf-8"))["sections"]
+    placed = set()
+    out = [BASE_HEADER]
+    for section in sections:
+        keys = [k for k in base if k.startswith(section["prefix"])]
+        if not keys:
+            continue
+        placed.update(keys)
+        out.append("    <!-- " + section["title"] + " -->")
+        notes = section.get("notes", {})
+        for key in keys:
+            if key in notes:
+                out.append("    <!-- " + notes[key] + " -->")
+            out.append(f'    <string name="{key}">{escape_android(base[key])}</string>')
+        out.append("")
+    leftover = [k for k in base if k not in placed]
+    if leftover:
+        out.append("    <!-- Uncategorised: give these a section in _sections.json. -->")
+        for key in leftover:
+            out.append(f'    <string name="{key}">{escape_android(base[key])}</string>')
+        out.append("")
+    out.append("</resources>\n")
+    return "\n".join(out)
+
+
+def render_locale_config(tags: list[str]) -> str:
+    """
+    android:localeConfig -- the list Android's own per-app language picker
+    shows, from Android 13 onward.
+
+    Generated from the catalogues that actually exist, not from the languages
+    the app intends to support. Listing a locale with nothing translated would
+    offer someone their language in the system settings and then hand them an
+    English app, which is a worse answer than not offering it.
+    """
+    lines = [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        "<!--",
+        "  GENERATED FILE \u2014 do not edit. Generator: tools/i18n/generate.py",
+        "",
+        "  Only locales with a catalogue in i18n/strings/ appear here. A language",
+        "  listed in Locales.kt but not yet translated is a commitment, not a",
+        "  shipped locale, and must not be offered in the system picker.",
+        "-->",
+        '<locale-config xmlns:android="http://schemas.android.com/apk/res/android">',
+    ]
+    for tag in tags:
+        lines.append(f'    <locale android:name="{tag}" />')
+    lines.append("</locale-config>")
+    return "\n".join(lines) + "\n"
+
+
+def render_coverage(coverage: dict, total: int) -> str:
+    """
+    How much of the app each locale actually carries, as data the picker can
+    show. Measured, never asserted: a reader choosing a language deserves to
+    know before they switch that a third of it will still be in English.
+    """
+    rows = "\n".join(
+        f'    "{tag}" to {count},' for tag, count in sorted(coverage.items())
+    )
+    return f'''package xyz.mdhv.riverwip.model
+
+/**
+ * GENERATED FILE — do not edit. Generator: tools/i18n/generate.py
+ *
+ * How many of the interface's strings each locale has, counted from the
+ * catalogues in i18n/strings/. The language picker shows this so nobody
+ * chooses a language and is then surprised by a half-English screen.
+ */
+object LocaleCoverage {{
+    /** Strings in the base catalogue — the denominator. */
+    const val TOTAL = {total}
+
+    /** BCP 47 tag -> strings translated. Absent means none, so English. */
+    val TRANSLATED: Map<String, Int> = mapOf(
+{rows}
+    )
+
+    fun percentFor(tag: String): Int =
+        if (TOTAL == 0) 0 else (TRANSLATED[tag] ?: 0) * 100 / TOTAL
+
+    /** Locales with at least one translated string, i.e. worth offering. */
+    val SHIPPED: Set<String> = TRANSLATED.filterValues {{ it > 0 }}.keys
+}}
+'''
+
+
+def main() -> int:
+    check = "--check" in sys.argv
+    base = load(BASE_TAG)
+    if not base:
+        print(f"no base catalogue at {CATALOGUES / (BASE_TAG + '.json')}", file=sys.stderr)
+        return 2
+
+    wanted: dict[pathlib.Path, str] = {}
+    tags = sorted(p.stem for p in CATALOGUES.glob("*.json") if not p.stem.startswith("_"))
+    for tag in tags:
+        strings = load(tag)
+        # Keys a translation carries that the base does not are almost always a
+        # rename that was not propagated; silently dropping them would hide it.
+        unknown = [k for k in strings if k not in base]
+        if unknown:
+            print(f"{tag}.json: {len(unknown)} key(s) not in en.json: {', '.join(unknown[:5])}", file=sys.stderr)
+            return 2
+        wanted[WEB_OUT / f"{tag}.json"] = render_web(tag, strings, base)
+        if tag == BASE_TAG:
+            wanted[ANDROID_RES / "values" / "strings.xml"] = render_base(base)
+        else:
+            qualifier = android_qualifier(tag)
+            wanted[ANDROID_RES / f"values-{qualifier}" / "strings.xml"] = render_android(tag, strings, base)
+
+    coverage = {tag: len(load(tag)) for tag in tags}
+    shipped = [t for t in tags if coverage[t] > 0]
+    wanted[LOCALE_CONFIG] = render_locale_config(shipped)
+    wanted[COVERAGE_KT] = render_coverage(coverage, len(base))
+
+    stale = []
+    for path, content in wanted.items():
+        current = path.read_text(encoding="utf-8") if path.exists() else None
+        if current == content:
+            continue
+        stale.append(path.relative_to(REPO))
+        if not check:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+
+    # A locale removed from i18n/strings must not leave its generated output
+    # behind, or the app keeps shipping a language nobody maintains.
+    orphans = []
+    for existing in list(ANDROID_RES.glob("values-b+*/strings.xml")) + list(WEB_OUT.glob("*.json")):
+        if existing not in wanted:
+            orphans.append(existing.relative_to(REPO))
+            if not check:
+                existing.unlink()
+                if existing.parent.name.startswith("values-b+") and not any(existing.parent.iterdir()):
+                    existing.parent.rmdir()
+
+    if check and (stale or orphans):
+        for p in stale:
+            print(f"out of date: {p}")
+        for p in orphans:
+            print(f"orphaned:    {p}")
+        print("\nRun: python3 tools/i18n/generate.py", file=sys.stderr)
+        return 1
+
+    total = len(base)
+    print(f"{len(tags)} locale(s), {total} strings.")
+    for tag in tags:
+        pct = round(100 * coverage[tag] / total) if total else 0
+        print(f"  {tag:<8} {coverage[tag]:>4}/{total}  {pct:>3}%")
+    if stale or orphans:
+        print(f"wrote {len(stale)} file(s), removed {len(orphans)}.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

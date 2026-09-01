@@ -1650,6 +1650,61 @@ respect as the CI-caught log above.
   a catastrophic bug that does not exist. A test that cannot fail correctly is
   worse than no test, and the tell was that its answer was too dramatic.
 
+- **D47 — A language is now a data file, and thirty of them exist
+  (2026-09-01).** The owner's correction was blunt and correct: *"tractable but
+  taxes future copy change is not really tenable nor acceptable — please advise
+  and course correct so it becomes easier to add more languages as we go."*
+  This is the course correction, and the shape of it is the point.
+  **Adding a locale is one JSON file.** `i18n/strings/<bcp47>.json` next to
+  `en.json`, then `python3 tools/i18n/generate.py`. No Kotlin, no build change,
+  no call-site edits. The generator writes Android's `values-b+<tag>/
+  strings.xml`, the web reader's `web/i18n/<tag>.json`, `locales_config.xml`
+  and a `LocaleCoverage.kt` of measured completeness. Removing a locale is
+  deleting the same one file; the generator reaps the orphans.
+  **Partial is safe, and that is what makes thirty possible.** Android resolves
+  each string separately and falls back to `values/` per key; the web layer does
+  the same. A locale that is 41% done shows 41% in the reader's language and
+  English for the rest — never a blank, never a key name. Without that property
+  the only honest options are "finish a language or don't start it", which is
+  how apps end up with two.
+  **One source for both front ends.** Nooz has two clients and one set of words.
+  Two hand-maintained catalogues means a translator does every language twice
+  and the two drift the first time anyone is in a hurry — which in practice
+  means the web reader stays English. *"The web reader must also do the same"*
+  is now structural rather than a promise.
+  **The languages.** `Locales.kt` lists India's fifteen most-spoken in 2011
+  Census order (that is the order the picker offers, and for a reader without
+  English the first screenful is most of the decision), then fifteen more of the
+  world's, skipping Hindi/Bengali/Urdu already covered. Endonyms are the primary
+  label throughout: a picker written entirely in English is a picker for people
+  who already have English. Shipped: 29 locales plus English, 28 of them
+  complete for this first tranche of 37 strings.
+  **Two honest gaps, recorded rather than hidden.** Kashmiri ships at 41% — the
+  entries I could not write responsibly are absent, and fall back to English,
+  which is exactly what the per-key fallback is for. **Santali is in
+  `Locales.kt` and has no catalogue at all.** It is listed because omitting the
+  language of ~7.6 million people to avoid an imperfect answer is not a trade
+  this app gets to make quietly; it is *not* in `locales_config.xml`, because
+  offering someone their language in Android's system picker and then handing
+  them an English app is worse than not offering it. `locales_config.xml` is
+  generated from what exists, never from what is intended, precisely so that
+  distinction cannot rot.
+  **Verified in the artefact, not the source.** `assembleFullDebug` produces an
+  APK whose `resources.arsc` contains the Hindi, Tamil, Urdu, Punjabi and
+  Chinese strings — checked by reading the built APK, since a generator that
+  writes plausible XML nobody packages is the failure mode worth guarding
+  against.
+  **Switching.** API 33+ uses the platform `LocaleManager`, so the choice lives
+  where every other app keeps it (Settings › Apps › Nooz › Language) and
+  survives reinstalls; API 31–32 mirrors it in SharedPreferences and applies it
+  in `attachBaseContext`, which needs the answer synchronously and so cannot use
+  the DataStore that holds everything else. Deliberately not AppCompat:
+  `setApplicationLocales` would cover both, but needs an AppCompat activity and
+  theme, and this app is Compose over platform themes on purpose (D34).
+  **Still to do:** 219 strings remain in Kotlin, ratcheted per file by
+  `verifyI18n`. Each future tranche is appended to `en.json` and every locale
+  file, so the cost of language number thirty-one is unchanged by any of it.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

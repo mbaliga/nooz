@@ -77,6 +77,13 @@ jobs:
       - name: Interface copy is translatable
         run: ./gradlew verifyI18n --stacktrace
 
+      # strings.xml, locales_config.xml, LocaleCoverage.kt and the web
+      # catalogues are all generated from i18n/strings/. Editing a generated
+      # file by hand would work locally and be silently reverted by the next
+      # run of the generator, so the build refuses to let the two diverge.
+      - name: Translations are regenerated from their source
+        run: python3 tools/i18n/generate.py --check
+
       - name: Assemble (both flavors)
         run: ./gradlew assembleFossDebug assembleFullDebug --stacktrace
 

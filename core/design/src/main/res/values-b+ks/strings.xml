@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ks.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  15 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_skip">چھوڑیو</string>
+    <string name="onboarding_back">واپس</string>
+    <string name="onboarding_done">مکمل</string>
+    <string name="onboarding_start_reading">پرُن شروع کریو</string>
+    <string name="onboarding_reading_mode">پرنُک طریقہ</string>
+    <string name="tour_title">اَندر کیا چھُ</string>
+    <string name="tour_clippings_name">تراشہٕ</string>
+    <string name="tour_history_name">أز تاریخس منٛز</string>
+    <string name="screen_paper">اخبار</string>
+    <string name="screen_settings">ترتیبات</string>
+    <string name="screen_clippings">تراشہٕ</string>
+    <string name="language_title">زبان</string>
+    <string name="language_system_default">فونس مطابق</string>
+    <string name="language_partial">%1$s · %2$d%% ترجمہ کرنہٕ آمُت</string>
+    <string name="language_complete">%1$s</string>
+</resources>

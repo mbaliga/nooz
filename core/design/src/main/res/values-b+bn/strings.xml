@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/bn.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">আজকের খবর সংগ্রহ করা হচ্ছে…</string>
+    <string name="onboarding_headline">যা আছে তা পড়ুন, আর যা নেই তাও লক্ষ করুন।</string>
+    <string name="onboarding_blurb">একটি শান্ত সংবাদ পাঠক: আপনার বেছে নেওয়া উৎসগুলি আপনাকে সত্যিই কী পাঠিয়েছে — এবং ঠিক ততটাই স্পষ্টভাবে, কী বাদ দিয়েছে। লেন্স পক্ষপাতদুষ্ট ভাষা চিহ্নিত করে, আর অভিধান নামানো থাকলে যেকোনো শব্দে চেপে ধরলে তার অর্থ দেখায়। সবকিছুই ডিফল্টভাবে আপনার ফোনেই চলে।</string>
+    <string name="onboarding_quick_setup">দ্রুত সেটআপ</string>
+    <string name="onboarding_advanced_setup">বিস্তারিত সেটআপ</string>
+    <string name="onboarding_skip">এড়িয়ে যান</string>
+    <string name="onboarding_back">পিছনে</string>
+    <string name="onboarding_done">হয়ে গেছে</string>
+    <string name="onboarding_start_reading">পড়া শুরু করুন</string>
+    <string name="onboarding_lens_question">লেন্স কীভাবে ভাববে?</string>
+    <string name="onboarding_reading_mode">পড়ার ধরন</string>
+    <string name="onboarding_mode_controls">নিয়ন্ত্রণ দেখান</string>
+    <string name="onboarding_mode_immersive">পূর্ণ পাতা</string>
+    <string name="onboarding_mode_explainer">“নিয়ন্ত্রণ দেখান”-এ ফিরে যাওয়ার বোতাম আর সহায়ক বারটি স্পষ্ট থাকে। “পূর্ণ পাতা” সেগুলি লুকিয়ে রাখে যাতে পাতাটি সাদামাটা থাকে; ফিরতে ডানদিকে সোয়াইপ করুন। সেটিংসে যেকোনো সময় এটি বদলানো যায়।</string>
+    <string name="tour_title">ভিতরে যা আছে</string>
+    <string name="tour_loom_name">লুম</string>
+    <string name="tour_loom_body">আপনার উৎসগুলি সত্যিই কী পাঠিয়েছে, আর আপনি সত্যিই কী পড়েছেন — দুটি একসঙ্গে বোনা। আপনার স্ট্যান্ডে নিচের দিকে টানুন, বা খবরের উপরের রঙিন বারটিতে চাপ দিন।</string>
+    <string name="tour_flash_name">নূজ় ফ্ল্যাশ</string>
+    <string name="tour_flash_body">দিনের শিরোনামগুলি এক লাইনে, আর পুরো লেখায় ফেরার পথও সঙ্গে। সেটিংসে চালু না করা পর্যন্ত এটি বন্ধ থাকে।</string>
+    <string name="tour_cast_name">নূজ় কাস্ট</string>
+    <string name="tour_cast_body">লেখাটি এমন কণ্ঠে পড়ে শোনানো হয় যা কোনো সার্ভারে নয়, আপনার ফোনেই চলে। এটিও সেটিংসে; কিছু নামানোর আগে জিজ্ঞাসা করে নেয়।</string>
+    <string name="tour_clippings_name">কাটিং</string>
+    <string name="tour_clippings_body">পড়ার সময় বুকমার্কে চাপ দিয়ে কোনো লেখা রেখে দিন। কাটিং সেগুলিকে কাগজের ছেঁড়া টুকরোর মতো রাখে।</string>
+    <string name="tour_history_name">আজকের দিনে ইতিহাস</string>
+    <string name="tour_history_body">দিনের খবরের উপরে একটি ছোট তারিখওয়ালা স্তম্ভ, উইকিপিডিয়ার নিজস্ব “আজকের দিনে” থেকে। চালু না করা পর্যন্ত বন্ধ থাকে।</string>
+    <string name="tour_footer">এখানে কিছুই আপনার অনুমতি ছাড়া কোথাও পৌঁছায় না। উপরের তিনটি সুইচ আপনি চালু না করা পর্যন্ত বন্ধই থাকে।</string>
+    <string name="screen_paper">কাগজ</string>
+    <string name="screen_sources_and_settings">উৎস ও সেটিংস</string>
+    <string name="screen_settings">সেটিংস</string>
+    <string name="screen_loom">লুম</string>
+    <string name="screen_clippings">কাটিং</string>
+    <string name="screen_lens_words">লেন্স শব্দতালিকা</string>
+    <string name="language_title">ভাষা</string>
+    <string name="language_system_default">ফোনের মতোই</string>
+    <string name="language_explainer">এটি নূজ়-এর নিজস্ব লেখা। খবর সবসময় সেই ভাষাতেই থাকে যে ভাষায় প্রকাশক লিখেছেন।</string>
+    <string name="language_partial">%1$s · %2$d%% অনূদিত</string>
+    <string name="language_complete">%1$s</string>
+</resources>

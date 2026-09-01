@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/or.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">ଆଜିର ଖବର ସଂଗ୍ରହ କରାଯାଉଛି…</string>
+    <string name="onboarding_headline">ଯାହା ଅଛି ତାହା ପଢ଼ନ୍ତୁ, ଆଉ ଯାହା ନାହିଁ ତାହା ମଧ୍ୟ ଲକ୍ଷ୍ୟ କରନ୍ତୁ।</string>
+    <string name="onboarding_blurb">ଏକ ଶାନ୍ତ ଖବର ପାଠକ: ଆପଣ ବାଛିଥିବା ଉତ୍ସଗୁଡ଼ିକ ଆପଣଙ୍କୁ ପ୍ରକୃତରେ କ’ଣ ପଠାଇଲେ — ଏବଂ ସେତିକି ସ୍ପଷ୍ଟ ଭାବେ, କ’ଣ ଛାଡ଼ିଦେଲେ। ଲେନ୍ସ ପକ୍ଷପାତୀ ଭାଷାକୁ ଚିହ୍ନଟ କରେ, ଆଉ ଅଭିଧାନ ଡାଉନଲୋଡ ହୋଇଥିଲେ ଯେକୌଣସି ଶବ୍ଦକୁ ଚାପି ଧରିଲେ ତାହାର ଅର୍ଥ ଦେଖାଏ। ସବୁକିଛି ପୂର୍ବନିର୍ଧାରିତ ଭାବେ ଆପଣଙ୍କ ଫୋନରେ ହିଁ ଚାଲେ।</string>
+    <string name="onboarding_quick_setup">ଶୀଘ୍ର ସେଟଅପ</string>
+    <string name="onboarding_advanced_setup">ବିସ୍ତୃତ ସେଟଅପ</string>
+    <string name="onboarding_skip">ଛାଡ଼ନ୍ତୁ</string>
+    <string name="onboarding_back">ପଛକୁ</string>
+    <string name="onboarding_done">ହୋଇଗଲା</string>
+    <string name="onboarding_start_reading">ପଢ଼ିବା ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="onboarding_lens_question">ଲେନ୍ସ କିପରି ଭାବିବ?</string>
+    <string name="onboarding_reading_mode">ପଢ଼ିବା ଢଙ୍ଗ</string>
+    <string name="onboarding_mode_controls">ନିୟନ୍ତ୍ରଣ ଦେଖାନ୍ତୁ</string>
+    <string name="onboarding_mode_immersive">ପୂର୍ଣ୍ଣ ପୃଷ୍ଠା</string>
+    <string name="onboarding_mode_explainer">“ନିୟନ୍ତ୍ରଣ ଦେଖାନ୍ତୁ”ରେ ପଛକୁ ଯିବା ବଟନ ଓ ଉପଯୋଗିତା ପଟି ସ୍ପଷ୍ଟ ଦିଶେ। “ପୂର୍ଣ୍ଣ ପୃଷ୍ଠା” ସେଗୁଡ଼ିକୁ ଲୁଚାଇ ପୃଷ୍ଠାକୁ ସରଳ ରଖେ; ପଛକୁ ଯିବାକୁ ଡାହାଣକୁ ସ୍ୱାଇପ କରନ୍ତୁ। ସେଟିଂସରେ ଏହା ଯେକୌଣସି ସମୟରେ ବଦଳାଇ ପାରିବେ।</string>
+    <string name="tour_title">ଭିତରେ କ’ଣ ଅଛି</string>
+    <string name="tour_loom_name">ଲୁମ</string>
+    <string name="tour_loom_body">ଆପଣଙ୍କ ଉତ୍ସ ପ୍ରକୃତରେ କ’ଣ ପଠାଇଲେ, ଆଉ ଆପଣ ପ୍ରକୃତରେ କ’ଣ ପଢ଼ିଲେ — ଦୁଇଟି ଏକାଠି ବୁଣା। ଆପଣଙ୍କ ଷ୍ଟାଣ୍ଡରେ ତଳକୁ ଟାଣନ୍ତୁ, କିମ୍ବା ଖବର ଉପରର ରଙ୍ଗୀନ ପଟିକୁ ଛୁଅଁନ୍ତୁ।</string>
+    <string name="tour_flash_name">ନୁଜ ଫ୍ଲାସ</string>
+    <string name="tour_flash_body">ଦିନର ଶିରୋନାମା ପ୍ରତ୍ୟେକ ଗୋଟିଏ ଧାଡ଼ିରେ, ଆଉ ପୂରା ଲେଖା ପାଖକୁ ଫେରିବାର ବାଟ ମଧ୍ୟ ସାଙ୍ଗରେ। ସେଟିଂସରେ ଚାଲୁ ନକରିବା ଯାଏଁ ଏହା ବନ୍ଦ ରହେ।</string>
+    <string name="tour_cast_name">ନୁଜ କାଷ୍ଟ</string>
+    <string name="tour_cast_body">ଲେଖାଟି ଏପରି ସ୍ୱରରେ ପଢ଼ି ଶୁଣାଯାଏ ଯାହା ସର୍ଭରରେ ନୁହେଁ, ଆପଣଙ୍କ ଫୋନରେ ହିଁ ଚାଲେ। ଏହା ମଧ୍ୟ ସେଟିଂସରେ ଅଛି; କିଛି ଡାଉନଲୋଡ କରିବା ପୂର୍ବରୁ ପଚାରେ।</string>
+    <string name="tour_clippings_name">କାଟଣା</string>
+    <string name="tour_clippings_body">ପଢ଼ିବା ସମୟରେ ବୁକମାର୍କ ଛୁଇଁ ଗୋଟିଏ ଲେଖା ରଖିଦିଅନ୍ତୁ। କାଟଣା ସେଗୁଡ଼ିକୁ ଖବରକାଗଜର ଛିଣ୍ଡା ଖଣ୍ଡ ପରି ରଖେ।</string>
+    <string name="tour_history_name">ଆଜି ଇତିହାସରେ</string>
+    <string name="tour_history_body">ଦିନର ଖବର ଉପରେ ଏକ ଛୋଟ ତାରିଖଯୁକ୍ତ ସ୍ତମ୍ଭ, ଉଇକିପିଡ଼ିଆର ନିଜସ୍ୱ “ଆଜିର ଦିନରେ”ରୁ। ଚାଲୁ ନକରିବା ଯାଏଁ ବନ୍ଦ।</string>
+    <string name="tour_footer">ଆପଣ ନ କହିଲେ ଏଠାରୁ କିଛି କେଉଁଠାକୁ ଯାଏ ନାହିଁ। ଉପରର ତିନୋଟି ସୁଇଚ ଆପଣ ଚାଲୁ ନକରିବା ଯାଏଁ ବନ୍ଦ ରହେ।</string>
+    <string name="screen_paper">ଖବରକାଗଜ</string>
+    <string name="screen_sources_and_settings">ଉତ୍ସ ଓ ସେଟିଂସ</string>
+    <string name="screen_settings">ସେଟିଂସ</string>
+    <string name="screen_loom">ଲୁମ</string>
+    <string name="screen_clippings">କାଟଣା</string>
+    <string name="screen_lens_words">ଲେନ୍ସ ଶବ୍ଦ ତାଲିକା</string>
+    <string name="language_title">ଭାଷା</string>
+    <string name="language_system_default">ଫୋନ ଅନୁଯାୟୀ</string>
+    <string name="language_explainer">ଏହା ନୁଜର ନିଜସ୍ୱ ଲେଖା। ଖବର ସବୁବେଳେ ପ୍ରକାଶକ ଯେଉଁ ଭାଷାରେ ଲେଖିଛନ୍ତି ସେହି ଭାଷାରେ ହିଁ ରହେ।</string>
+    <string name="language_partial">%1$s · %2$d%% ଅନୂଦିତ</string>
+    <string name="language_complete">%1$s</string>
+</resources>

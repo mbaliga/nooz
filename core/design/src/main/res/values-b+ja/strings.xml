@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ja.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">今日のニュースを集めています…</string>
+    <string name="onboarding_headline">そこにあるものを読み、ないものに気づく。</string>
+    <string name="onboarding_blurb">静かなニュースリーダー。選んだ情報源が実際に届けたものと、同じくらいはっきりと、届けなかったもの。レンズは偏った言い回しに印をつけ、辞書を入れておけば長押しでどの語も引けます。既定ではすべて端末の中だけで動きます。</string>
+    <string name="onboarding_quick_setup">かんたん設定</string>
+    <string name="onboarding_advanced_setup">詳細設定</string>
+    <string name="onboarding_skip">スキップ</string>
+    <string name="onboarding_back">戻る</string>
+    <string name="onboarding_done">完了</string>
+    <string name="onboarding_start_reading">読みはじめる</string>
+    <string name="onboarding_lens_question">レンズはどう判断すべきですか。</string>
+    <string name="onboarding_reading_mode">読み方</string>
+    <string name="onboarding_mode_controls">操作を表示</string>
+    <string name="onboarding_mode_immersive">全画面</string>
+    <string name="onboarding_mode_explainer">「操作を表示」は戻るボタンとツールバーを見えるままにします。「全画面」はそれらを隠して紙面だけにします。戻るときは右へスワイプしてください。設定でいつでも変更できます。</string>
+    <string name="tour_title">中身</string>
+    <string name="tour_loom_name">織り機</string>
+    <string name="tour_loom_body">情報源が実際に届けたものと、あなたが実際に読んだものを、織り合わせて見せます。スタンドを下に引くか、記事の上の色帯を押してください。</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">その日の見出しを一本一行に詰め、全文へ戻る道もついています。設定でオンにするまでは切ったままです。</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">サーバーではなく端末の中で動く声で、記事を読み上げます。これも設定にあります。何かを取得する前に必ず尋ねます。</string>
+    <string name="tour_clippings_name">切り抜き</string>
+    <string name="tour_clippings_body">読みながらしおりに触れると、その記事を取っておけます。切り抜きは、それらを紙面から破り取った断片として保ちます。</string>
+    <string name="tour_history_name">今日は何の日</string>
+    <string name="tour_history_body">その日の記事の上に置く、日付つきの短い欄。ウィキペディア自身の「今日は何の日」から。オンにするまでは切ったままです。</string>
+    <string name="tour_footer">ここには、あなたが頼んでいないものを取りにいくものはありません。上の三つのスイッチは、あなたが入れるまで切れたままです。</string>
+    <string name="screen_paper">紙面</string>
+    <string name="screen_sources_and_settings">情報源と設定</string>
+    <string name="screen_settings">設定</string>
+    <string name="screen_loom">織り機</string>
+    <string name="screen_clippings">切り抜き</string>
+    <string name="screen_lens_words">レンズの語リスト</string>
+    <string name="language_title">言語</string>
+    <string name="language_system_default">端末に合わせる</string>
+    <string name="language_explainer">Nooz 自身の文言です。記事は常に、発行元が書いた言語のままです。</string>
+    <string name="language_partial">%1$s · %2$d%% 翻訳済み</string>
+    <string name="language_complete">%1$s</string>
+</resources>

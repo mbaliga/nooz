@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/pt.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">A reunir as notícias de hoje…</string>
+    <string name="onboarding_headline">Leia o que está lá, e repare no que não está.</string>
+    <string name="onboarding_blurb">Um leitor de notícias sossegado: o que as suas fontes lhe enviaram de facto e, com a mesma clareza, o que deixaram de fora. A lente assinala linguagem tendenciosa e, com um dicionário descarregado, define qualquer palavra com um toque longo. Tudo corre no seu telemóvel por predefinição.</string>
+    <string name="onboarding_quick_setup">Configuração rápida</string>
+    <string name="onboarding_advanced_setup">Configuração avançada</string>
+    <string name="onboarding_skip">Ignorar</string>
+    <string name="onboarding_back">Voltar</string>
+    <string name="onboarding_done">Concluído</string>
+    <string name="onboarding_start_reading">Começar a ler</string>
+    <string name="onboarding_lens_question">Como deve a lente pensar?</string>
+    <string name="onboarding_reading_mode">Modo de leitura</string>
+    <string name="onboarding_mode_controls">Com controlos</string>
+    <string name="onboarding_mode_immersive">Imersivo</string>
+    <string name="onboarding_mode_explainer">«Com controlos» mantém à vista um botão de voltar e a barra de utilidades. «Imersivo» esconde-os para deixar a página nua; deslize para a direita para voltar. Pode mudar isto quando quiser nas Definições.</string>
+    <string name="tour_title">O que há cá dentro</string>
+    <string name="tour_loom_name">O Tear</string>
+    <string name="tour_loom_body">O que as suas fontes lhe enviaram de facto, tecido contra o que leu de facto. Puxe para baixo na sua banca, ou toque na barra colorida por cima das notícias.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">As manchetes do dia reduzidas a uma linha cada, com um caminho de volta ao artigo completo. Desligado até o ligar, nas Definições.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Um artigo lido em voz alta por uma voz que corre no seu telemóvel e não num servidor. Também nas Definições; pergunta antes de descarregar seja o que for.</string>
+    <string name="tour_clippings_name">Recortes</string>
+    <string name="tour_clippings_body">Toque no marcador enquanto lê para guardar um artigo. Os Recortes guardam-nos como pedaços rasgados do jornal.</string>
+    <string name="tour_history_name">Hoje na história</string>
+    <string name="tour_history_body">Uma coluna curta e datada por cima das notícias do dia, vinda do «neste dia» da própria Wikipédia. Desligada até a ligar.</string>
+    <string name="tour_footer">Nada aqui vai buscar o que não pediu. Os três interruptores acima ficam desligados até que os ligue.</string>
+    <string name="screen_paper">Jornal</string>
+    <string name="screen_sources_and_settings">Fontes e definições</string>
+    <string name="screen_settings">Definições</string>
+    <string name="screen_loom">Tear</string>
+    <string name="screen_clippings">Recortes</string>
+    <string name="screen_lens_words">Lista de palavras da lente</string>
+    <string name="language_title">Idioma</string>
+    <string name="language_system_default">O do meu telemóvel</string>
+    <string name="language_explainer">O texto do próprio Nooz. As notícias mantêm-se sempre na língua em que quem as publicou as escreveu.</string>
+    <string name="language_partial">%1$s · %2$d%% traduzido</string>
+    <string name="language_complete">%1$s</string>
+</resources>

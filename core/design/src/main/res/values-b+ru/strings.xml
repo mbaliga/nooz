@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ru.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Собираем сегодняшние новости…</string>
+    <string name="onboarding_headline">Читайте то, что есть, и замечайте то, чего нет.</string>
+    <string name="onboarding_blurb">Спокойная читалка новостей: что ваши источники на самом деле вам прислали — и так же ясно, что они обошли молчанием. Линза отмечает предвзятые формулировки, а с загруженным словарём объясняет любое слово по долгому нажатию. Всё по умолчанию работает на вашем телефоне.</string>
+    <string name="onboarding_quick_setup">Быстрая настройка</string>
+    <string name="onboarding_advanced_setup">Подробная настройка</string>
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_back">Назад</string>
+    <string name="onboarding_done">Готово</string>
+    <string name="onboarding_start_reading">Начать читать</string>
+    <string name="onboarding_lens_question">Как должна рассуждать линза?</string>
+    <string name="onboarding_reading_mode">Режим чтения</string>
+    <string name="onboarding_mode_controls">С элементами управления</string>
+    <string name="onboarding_mode_immersive">Во весь экран</string>
+    <string name="onboarding_mode_explainer">«С элементами управления» оставляет на виду кнопку возврата и служебную панель. «Во весь экран» прячет их, чтобы страница была голой; чтобы вернуться, проведите вправо. Изменить это можно в любой момент в настройках.</string>
+    <string name="tour_title">Что внутри</string>
+    <string name="tour_loom_name">Ткацкий стан</string>
+    <string name="tour_loom_body">Что ваши источники на самом деле прислали, сотканное вместе с тем, что вы на самом деле прочли. Потяните вниз на своей витрине или коснитесь цветной полосы над новостями.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">Заголовки дня, сжатые до одной строки каждый, с дорогой обратно к полному тексту. Выключено, пока вы не включите его в настройках.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Статья, прочитанная вслух голосом, который работает на вашем телефоне, а не на сервере. Тоже в настройках; спрашивает, прежде чем что-либо скачать.</string>
+    <string name="tour_clippings_name">Вырезки</string>
+    <string name="tour_clippings_body">Коснитесь закладки во время чтения, чтобы сохранить материал. Вырезки хранят их как оторванные клочки газеты.</string>
+    <string name="tour_history_name">Сегодня в истории</string>
+    <string name="tour_history_body">Короткая датированная колонка над новостями дня, из раздела «в этот день» самой Википедии. Выключена, пока вы её не включите.</string>
+    <string name="tour_footer">Ничто здесь не тянется за тем, о чём вы не просили. Три переключателя выше остаются выключенными, пока вы сами их не включите.</string>
+    <string name="screen_paper">Газета</string>
+    <string name="screen_sources_and_settings">Источники и настройки</string>
+    <string name="screen_settings">Настройки</string>
+    <string name="screen_loom">Стан</string>
+    <string name="screen_clippings">Вырезки</string>
+    <string name="screen_lens_words">Список слов линзы</string>
+    <string name="language_title">Язык</string>
+    <string name="language_system_default">Как на телефоне</string>
+    <string name="language_explainer">Это собственный текст Nooz. Новости всегда остаются на том языке, на котором их написал издатель.</string>
+    <string name="language_partial">%1$s · переведено %2$d%%</string>
+    <string name="language_complete">%1$s</string>
+</resources>

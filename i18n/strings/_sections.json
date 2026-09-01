@@ -1,0 +1,24 @@
+{
+  "_comment": "How the generated strings.xml is grouped and annotated. Keys not listed here land in a final 'Uncategorised' block, which is a nudge to file them rather than an error.",
+  "sections": [
+    {
+      "title": "Onboarding: the first thing anyone sees.",
+      "prefix": "onboarding_"
+    },
+    {
+      "title": "\"What's inside\": the short tour of things a reader would otherwise never find. Shown once during onboarding, and kept in Settings so readers who onboarded before it existed still meet it.",
+      "prefix": "tour_"
+    },
+    {
+      "title": "Screen names. These are what TalkBack announces on arrival, so they are the names the reader already knows from the control they pressed — \"Loom\", not \"LoomScreen\".",
+      "prefix": "screen_"
+    },
+    {
+      "title": "The language picker.",
+      "prefix": "language_",
+      "notes": {
+        "language_partial": "%1$s is a language's own name for itself; %2$d is how much of the app is translated into it, 0–100. Shown so nobody is surprised by a screen that is half in English."
+      }
+    }
+  ]
+}

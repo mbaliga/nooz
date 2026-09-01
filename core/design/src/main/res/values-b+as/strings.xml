@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/as.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">আজিৰ বাতৰি গোটোৱা হৈছে…</string>
+    <string name="onboarding_headline">যি আছে সেয়া পঢ়ক, আৰু যি নাই সেয়াও লক্ষ্য কৰক।</string>
+    <string name="onboarding_blurb">এটা শান্ত বাতৰি পঢ়ুৱৈ: আপুনি বাছি লোৱা উৎসবোৰে আপোনালৈ সঁচাকৈয়ে কি পঠিয়ালে — আৰু ঠিক ততটাই স্পষ্টকৈ, কি এৰি থৈ গ’ল। লেন্সে পক্ষপাতী ভাষা চিহ্নিত কৰে, আৰু অভিধান নমোৱা থাকিলে যিকোনো শব্দ টিপি ধৰিলে তাৰ অৰ্থ দেখুৱায়। সকলোবোৰ অবিকল্পিতভাৱে আপোনাৰ ফোনতে চলে।</string>
+    <string name="onboarding_quick_setup">ক্ষিপ্ৰ ছেটআপ</string>
+    <string name="onboarding_advanced_setup">বিতং ছেটআপ</string>
+    <string name="onboarding_skip">এৰি যাওক</string>
+    <string name="onboarding_back">পিছলৈ</string>
+    <string name="onboarding_done">হ’ল</string>
+    <string name="onboarding_start_reading">পঢ়িবলৈ আৰম্ভ কৰক</string>
+    <string name="onboarding_lens_question">লেন্সে কেনেকৈ ভাবিব?</string>
+    <string name="onboarding_reading_mode">পঢ়াৰ ধৰণ</string>
+    <string name="onboarding_mode_controls">নিয়ন্ত্ৰণ দেখুৱাওক</string>
+    <string name="onboarding_mode_immersive">সম্পূৰ্ণ পৃষ্ঠা</string>
+    <string name="onboarding_mode_explainer">“নিয়ন্ত্ৰণ দেখুৱাওক”ত পিছলৈ যোৱা বুটাম আৰু সহায়ক পটিটো স্পষ্টকৈ থাকে। “সম্পূৰ্ণ পৃষ্ঠা”ই সেইবোৰ লুকুৱাই পৃষ্ঠাটো সাধাৰণ কৰি ৰাখে; ঘূৰি যাবলৈ সোঁফালে ছোৱাইপ কৰক। ছেটিংছত ইয়াক যিকোনো সময়তে সলনি কৰিব পাৰি।</string>
+    <string name="tour_title">ভিতৰত কি আছে</string>
+    <string name="tour_loom_name">লুম</string>
+    <string name="tour_loom_body">আপোনাৰ উৎসবোৰে সঁচাকৈয়ে কি পঠিয়ালে, আৰু আপুনি সঁচাকৈয়ে কি পঢ়িলে — দুয়োটা একেলগে বোৱা। আপোনাৰ ষ্টেণ্ডত তললৈ টানক, বা বাতৰিৰ ওপৰৰ ৰঙীন পটিটো স্পৰ্শ কৰক।</string>
+    <string name="tour_flash_name">নূজ ফ্লেশ</string>
+    <string name="tour_flash_body">দিনটোৰ শিৰোনামবোৰ এটা এটা শাৰীত, আৰু গোটেই লেখাটোলৈ উভতি যোৱাৰ বাটো লগতে। ছেটিংছত চলু নকৰালৈকে ই বন্ধ হৈ থাকে।</string>
+    <string name="tour_cast_name">নূজ কাষ্ট</string>
+    <string name="tour_cast_body">চাৰ্ভাৰত নহয়, আপোনাৰ ফোনতে চলা এটা মাতেৰে লেখাটো পঢ়ি শুনোৱা হয়। এইটোও ছেটিংছত; কিবা নমোৱাৰ আগতে সুধিয়েহে লয়।</string>
+    <string name="tour_clippings_name">কটা টুকুৰা</string>
+    <string name="tour_clippings_body">পঢ়ি থাকোঁতে বুকমাৰ্কত স্পৰ্শ কৰি কোনো লেখা ৰাখি থওক। কটা টুকুৰাই সেইবোৰক কাকতৰ ছিগা টুকুৰাৰ দৰে ৰাখে।</string>
+    <string name="tour_history_name">আজিৰ দিনটোত ইতিহাসত</string>
+    <string name="tour_history_body">দিনটোৰ বাতৰিৰ ওপৰত এটা সৰু তাৰিখযুক্ত স্তম্ভ, ৱিকিপিডিয়াৰ নিজৰ “আজিৰ দিনত”ৰ পৰা। চলু নকৰালৈকে বন্ধ।</string>
+    <string name="tour_footer">আপুনি নোকোৱাকৈ ইয়াৰ পৰা একো ক’লৈকো নাযায়। ওপৰৰ তিনিওটা ছুইচ আপুনি চলু নকৰালৈকে বন্ধ হৈয়ে থাকে।</string>
+    <string name="screen_paper">বাতৰি কাকত</string>
+    <string name="screen_sources_and_settings">উৎস আৰু ছেটিংছ</string>
+    <string name="screen_settings">ছেটিংছ</string>
+    <string name="screen_loom">লুম</string>
+    <string name="screen_clippings">কটা টুকুৰা</string>
+    <string name="screen_lens_words">লেন্স শব্দ তালিকা</string>
+    <string name="language_title">ভাষা</string>
+    <string name="language_system_default">ফোনৰ দৰে</string>
+    <string name="language_explainer">এইটো নূজৰ নিজৰ লেখা। বাতৰি সদায় প্ৰকাশকে যি ভাষাত লিখিছে সেই ভাষাতেই থাকে।</string>
+    <string name="language_partial">%1$s · %2$d%% অনূদিত</string>
+    <string name="language_complete">%1$s</string>
+</resources>

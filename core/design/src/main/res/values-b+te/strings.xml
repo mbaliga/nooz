@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/te.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">ఈ రోజు వార్తలు సేకరిస్తున్నాం…</string>
+    <string name="onboarding_headline">ఉన్నదాన్ని చదవండి, లేనిదాన్ని గమనించండి.</string>
+    <string name="onboarding_blurb">ఒక నెమ్మదైన వార్తా రీడర్: మీరు ఎంచుకున్న మూలాలు మీకు నిజంగా ఏమి పంపాయి — అంతే స్పష్టంగా, ఏమి వదిలేశాయి. లెన్స్ పక్షపాత భాషను గుర్తిస్తుంది, నిఘంటువు దించుకుంటే ఏ పదాన్నైనా నొక్కి పట్టుకుంటే అర్థం చూపుతుంది. అన్నీ మొదటి నుంచీ మీ ఫోన్‌లోనే నడుస్తాయి.</string>
+    <string name="onboarding_quick_setup">త్వరిత అమరిక</string>
+    <string name="onboarding_advanced_setup">వివరమైన అమరిక</string>
+    <string name="onboarding_skip">వదిలేయండి</string>
+    <string name="onboarding_back">వెనక్కి</string>
+    <string name="onboarding_done">అయ్యింది</string>
+    <string name="onboarding_start_reading">చదవడం మొదలుపెట్టండి</string>
+    <string name="onboarding_lens_question">లెన్స్ ఎలా ఆలోచించాలి?</string>
+    <string name="onboarding_reading_mode">చదివే విధానం</string>
+    <string name="onboarding_mode_controls">నియంత్రణలు చూపు</string>
+    <string name="onboarding_mode_immersive">పూర్తి పేజీ</string>
+    <string name="onboarding_mode_explainer">“నియంత్రణలు చూపు”లో వెనక్కి వెళ్ళే బటన్, ఉపయోగ పట్టీ స్పష్టంగా ఉంటాయి. “పూర్తి పేజీ” వాటిని దాచి పేజీని సాదాగా ఉంచుతుంది; వెనక్కి వెళ్ళడానికి కుడివైపు స్వైప్ చేయండి. దీన్ని సెట్టింగ్‌లలో ఎప్పుడైనా మార్చుకోవచ్చు.</string>
+    <string name="tour_title">లోపల ఏముంది</string>
+    <string name="tour_loom_name">లూమ్</string>
+    <string name="tour_loom_body">మీ మూలాలు నిజంగా ఏమి పంపాయి, మీరు నిజంగా ఏమి చదివారు — రెండూ కలిపి నేసినట్లు. మీ స్టాండ్‌పై కిందికి లాగండి, లేదా వార్తల పైన ఉన్న రంగుల పట్టీని తాకండి.</string>
+    <string name="tour_flash_name">నూజ్ ఫ్లాష్</string>
+    <string name="tour_flash_body">రోజు శీర్షికలు ఒక్కొక్కటి ఒక్క వాక్యంలో, పూర్తి కథనానికి తిరిగి వెళ్ళే దారితో పాటు. సెట్టింగ్‌లలో ఆన్ చేసేవరకు ఇది ఆఫ్‌లోనే ఉంటుంది.</string>
+    <string name="tour_cast_name">నూజ్ కాస్ట్</string>
+    <string name="tour_cast_body">సర్వర్‌లో కాకుండా మీ ఫోన్‌లోనే నడిచే గొంతుతో కథనం చదివి వినిపిస్తుంది. ఇదీ సెట్టింగ్‌లలోనే; ఏదైనా దించుకునే ముందు అడుగుతుంది.</string>
+    <string name="tour_clippings_name">కత్తిరింపులు</string>
+    <string name="tour_clippings_body">చదువుతూ బుక్‌మార్క్ తాకి ఒక కథనాన్ని దాచుకోండి. కత్తిరింపులు వాటిని పత్రిక చిరుగు ముక్కల్లా ఉంచుతాయి.</string>
+    <string name="tour_history_name">ఈ రోజు చరిత్రలో</string>
+    <string name="tour_history_body">రోజు వార్తల పైన ఒక చిన్న తేదీల కాలమ్, వికీపీడియా సొంత “ఈ రోజున” నుంచి. ఆన్ చేసేవరకు ఆఫ్.</string>
+    <string name="tour_footer">మీరు అడగనిదేదీ ఇక్కడి నుంచి ఎక్కడికీ చేరదు. పైన ఉన్న మూడు స్విచ్‌లూ మీరు ఆన్ చేసేవరకు ఆఫ్‌లోనే ఉంటాయి.</string>
+    <string name="screen_paper">పత్రిక</string>
+    <string name="screen_sources_and_settings">మూలాలు, సెట్టింగ్‌లు</string>
+    <string name="screen_settings">సెట్టింగ్‌లు</string>
+    <string name="screen_loom">లూమ్</string>
+    <string name="screen_clippings">కత్తిరింపులు</string>
+    <string name="screen_lens_words">లెన్స్ పదజాబితా</string>
+    <string name="language_title">భాష</string>
+    <string name="language_system_default">ఫోన్ ప్రకారం</string>
+    <string name="language_explainer">ఇది నూజ్ సొంత పాఠ్యం. వార్తలు ఎప్పుడూ ప్రచురణకర్త రాసిన భాషలోనే ఉంటాయి.</string>
+    <string name="language_partial">%1$s · %2$d%% అనువదితం</string>
+    <string name="language_complete">%1$s</string>
+</resources>

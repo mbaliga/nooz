@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/it.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Raccolta delle notizie di oggi…</string>
+    <string name="onboarding_headline">Leggi ciò che c\'è, e nota ciò che manca.</string>
+    <string name="onboarding_blurb">Un lettore di notizie tranquillo: ciò che le tue fonti ti hanno davvero mandato e, con la stessa chiarezza, ciò che hanno tralasciato. La lente segnala il linguaggio tendenzioso e, con un dizionario scaricato, definisce qualsiasi parola con una pressione prolungata. Tutto gira sul tuo telefono, per impostazione predefinita.</string>
+    <string name="onboarding_quick_setup">Configurazione rapida</string>
+    <string name="onboarding_advanced_setup">Configurazione avanzata</string>
+    <string name="onboarding_skip">Salta</string>
+    <string name="onboarding_back">Indietro</string>
+    <string name="onboarding_done">Fatto</string>
+    <string name="onboarding_start_reading">Inizia a leggere</string>
+    <string name="onboarding_lens_question">Come deve ragionare la lente?</string>
+    <string name="onboarding_reading_mode">Modo di lettura</string>
+    <string name="onboarding_mode_controls">Con i comandi</string>
+    <string name="onboarding_mode_immersive">Pagina intera</string>
+    <string name="onboarding_mode_explainer">«Con i comandi» tiene in vista un pulsante indietro e la barra degli strumenti. «Pagina intera» li nasconde per lasciare la pagina nuda; scorri verso destra per tornare. Puoi cambiarlo quando vuoi nelle Impostazioni.</string>
+    <string name="tour_title">Cosa c\'è dentro</string>
+    <string name="tour_loom_name">Il Telaio</string>
+    <string name="tour_loom_body">Ciò che le tue fonti ti hanno davvero mandato, intrecciato con ciò che hai davvero letto. Tira verso il basso sulla tua edicola, oppure tocca la barra colorata sopra le notizie.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">I titoli del giorno ridotti a una riga ciascuno, con una via di ritorno all\'articolo intero. Spento finché non lo accendi, nelle Impostazioni.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Un articolo letto ad alta voce da una voce che gira sul tuo telefono anziché su un server. Anche questo nelle Impostazioni; chiede prima di scaricare qualsiasi cosa.</string>
+    <string name="tour_clippings_name">Ritagli</string>
+    <string name="tour_clippings_body">Tocca il segnalibro mentre leggi per tenere un pezzo. I Ritagli li conservano come brandelli strappati dal giornale.</string>
+    <string name="tour_history_name">Oggi nella storia</string>
+    <string name="tour_history_body">Una breve colonna datata sopra le notizie del giorno, dall\'«accadde oggi» di Wikipedia. Spenta finché non la accendi.</string>
+    <string name="tour_footer">Qui non c\'è nulla che vada a prendere qualcosa che tu non abbia chiesto. I tre interruttori qui sopra restano spenti finché non li accendi tu.</string>
+    <string name="screen_paper">Giornale</string>
+    <string name="screen_sources_and_settings">Fonti e impostazioni</string>
+    <string name="screen_settings">Impostazioni</string>
+    <string name="screen_loom">Telaio</string>
+    <string name="screen_clippings">Ritagli</string>
+    <string name="screen_lens_words">Elenco di parole della lente</string>
+    <string name="language_title">Lingua</string>
+    <string name="language_system_default">Come il telefono</string>
+    <string name="language_explainer">Il testo di Nooz stesso. Le notizie restano sempre nella lingua in cui chi le pubblica le ha scritte.</string>
+    <string name="language_partial">%1$s · %2$d%% tradotto</string>
+    <string name="language_complete">%1$s</string>
+</resources>

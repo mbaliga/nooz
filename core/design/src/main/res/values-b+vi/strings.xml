@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/vi.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Đang thu thập tin tức hôm nay…</string>
+    <string name="onboarding_headline">Đọc những gì có, và để ý những gì không có.</string>
+    <string name="onboarding_blurb">Một trình đọc tin điềm tĩnh: các nguồn bạn chọn thực sự đã gửi gì cho bạn — và cũng rõ ràng như thế, họ đã bỏ qua điều gì. Thấu kính đánh dấu ngôn từ thiên lệch, và khi đã tải từ điển thì nhấn giữ bất kỳ từ nào để xem nghĩa. Mọi thứ mặc định chạy ngay trên điện thoại của bạn.</string>
+    <string name="onboarding_quick_setup">Thiết lập nhanh</string>
+    <string name="onboarding_advanced_setup">Thiết lập nâng cao</string>
+    <string name="onboarding_skip">Bỏ qua</string>
+    <string name="onboarding_back">Quay lại</string>
+    <string name="onboarding_done">Xong</string>
+    <string name="onboarding_start_reading">Bắt đầu đọc</string>
+    <string name="onboarding_lens_question">Thấu kính nên suy xét thế nào?</string>
+    <string name="onboarding_reading_mode">Kiểu đọc</string>
+    <string name="onboarding_mode_controls">Hiện các nút</string>
+    <string name="onboarding_mode_immersive">Toàn trang</string>
+    <string name="onboarding_mode_explainer">“Hiện các nút” giữ nút quay lại và thanh tiện ích luôn thấy rõ. “Toàn trang” ẩn chúng đi để trang thật trơ trụi; vuốt sang phải để quay lại. Bạn có thể đổi bất cứ lúc nào trong Cài đặt.</string>
+    <string name="tour_title">Bên trong có gì</string>
+    <string name="tour_loom_name">Khung cửi</string>
+    <string name="tour_loom_body">Những gì nguồn của bạn thực sự đã gửi, dệt cùng với những gì bạn thực sự đã đọc. Kéo xuống trên sạp báo, hoặc chạm vào thanh màu phía trên các tin.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">Các tựa đề trong ngày rút gọn còn một dòng mỗi tin, kèm lối quay lại bài đầy đủ. Tắt cho tới khi bạn bật nó trong Cài đặt.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Bài báo được đọc lên bằng một giọng chạy trên điện thoại của bạn chứ không phải trên máy chủ. Cũng nằm trong Cài đặt; nó hỏi trước khi tải bất cứ thứ gì.</string>
+    <string name="tour_clippings_name">Mẩu cắt</string>
+    <string name="tour_clippings_body">Chạm vào dấu trang khi đang đọc để giữ lại một bài. Mẩu cắt giữ chúng như những mảnh báo xé ra.</string>
+    <string name="tour_history_name">Ngày này trong lịch sử</string>
+    <string name="tour_history_body">Một cột ngắn có ghi ngày, đặt trên các tin trong ngày, lấy từ mục “ngày này năm xưa” của chính Wikipedia. Tắt cho tới khi bạn bật.</string>
+    <string name="tour_footer">Ở đây không có gì với tay tới thứ bạn không yêu cầu. Ba công tắc phía trên vẫn tắt cho tới khi chính bạn bật chúng.</string>
+    <string name="screen_paper">Tờ báo</string>
+    <string name="screen_sources_and_settings">Nguồn và cài đặt</string>
+    <string name="screen_settings">Cài đặt</string>
+    <string name="screen_loom">Khung cửi</string>
+    <string name="screen_clippings">Mẩu cắt</string>
+    <string name="screen_lens_words">Danh sách từ của thấu kính</string>
+    <string name="language_title">Ngôn ngữ</string>
+    <string name="language_system_default">Theo điện thoại</string>
+    <string name="language_explainer">Đây là chữ của riêng Nooz. Tin bài luôn giữ nguyên ngôn ngữ mà nơi xuất bản đã viết.</string>
+    <string name="language_partial">%1$s · đã dịch %2$d%%</string>
+    <string name="language_complete">%1$s</string>
+</resources>

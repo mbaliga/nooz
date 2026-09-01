@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/de.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Die Nachrichten des Tages werden gesammelt…</string>
+    <string name="onboarding_headline">Lies, was da ist – und sieh, was fehlt.</string>
+    <string name="onboarding_blurb">Ein ruhiger Nachrichtenleser: was deine Quellen dir tatsächlich geschickt haben – und ebenso deutlich, was sie ausgelassen haben. Die Lupe markiert wertende Sprache und erklärt, sobald ein Wörterbuch geladen ist, jedes Wort per langem Druck. Alles läuft standardmäßig auf deinem Telefon.</string>
+    <string name="onboarding_quick_setup">Schnelle Einrichtung</string>
+    <string name="onboarding_advanced_setup">Erweiterte Einrichtung</string>
+    <string name="onboarding_skip">Überspringen</string>
+    <string name="onboarding_back">Zurück</string>
+    <string name="onboarding_done">Fertig</string>
+    <string name="onboarding_start_reading">Lesen beginnen</string>
+    <string name="onboarding_lens_question">Wie soll die Lupe denken?</string>
+    <string name="onboarding_reading_mode">Lesemodus</string>
+    <string name="onboarding_mode_controls">Mit Bedienelementen</string>
+    <string name="onboarding_mode_immersive">Ganzseitig</string>
+    <string name="onboarding_mode_explainer">„Mit Bedienelementen“ lässt eine deutliche Zurück-Schaltfläche und die Werkzeugleiste sichtbar. „Ganzseitig“ blendet sie aus, damit die Seite nackt bleibt; zum Zurückgehen nach rechts wischen. Jederzeit in den Einstellungen änderbar.</string>
+    <string name="tour_title">Was drin ist</string>
+    <string name="tour_loom_name">Der Webstuhl</string>
+    <string name="tour_loom_body">Was deine Quellen dir tatsächlich geschickt haben, verwoben mit dem, was du tatsächlich gelesen hast. Zieh an deinem Kiosk nach unten oder tippe auf den farbigen Balken über den Meldungen.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">Die Schlagzeilen des Tages auf je eine Zeile gekürzt, mit einem Weg zurück in den ganzen Text. Aus, bis du es in den Einstellungen einschaltest.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Ein Artikel, vorgelesen von einer Stimme, die auf deinem Telefon läuft statt auf einem Server. Ebenfalls in den Einstellungen; fragt, bevor sie irgendetwas herunterlädt.</string>
+    <string name="tour_clippings_name">Ausschnitte</string>
+    <string name="tour_clippings_body">Tippe beim Lesen auf das Lesezeichen, um einen Text aufzuheben. Ausschnitte bewahrt sie als herausgerissene Zeitungsfetzen.</string>
+    <string name="tour_history_name">Heute in der Geschichte</string>
+    <string name="tour_history_body">Eine kurze datierte Spalte über den Meldungen des Tages, aus Wikipedias eigenem „Was geschah am“. Aus, bis du sie einschaltest.</string>
+    <string name="tour_footer">Nichts hier greift nach etwas, worum du nicht gebeten hast. Die drei Schalter oben bleiben aus, bis du sie einschaltest.</string>
+    <string name="screen_paper">Zeitung</string>
+    <string name="screen_sources_and_settings">Quellen und Einstellungen</string>
+    <string name="screen_settings">Einstellungen</string>
+    <string name="screen_loom">Webstuhl</string>
+    <string name="screen_clippings">Ausschnitte</string>
+    <string name="screen_lens_words">Wortliste der Lupe</string>
+    <string name="language_title">Sprache</string>
+    <string name="language_system_default">Wie mein Telefon</string>
+    <string name="language_explainer">Nooz’ eigener Text. Meldungen bleiben immer in der Sprache, in der ihr Herausgeber sie geschrieben hat.</string>
+    <string name="language_partial">%1$s · %2$d %% übersetzt</string>
+    <string name="language_complete">%1$s</string>
+</resources>

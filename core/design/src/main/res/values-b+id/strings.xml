@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/id.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">Mengumpulkan berita hari ini…</string>
+    <string name="onboarding_headline">Baca yang ada, dan perhatikan yang tidak ada.</string>
+    <string name="onboarding_blurb">Pembaca berita yang tenang: apa yang benar-benar dikirim sumber pilihan Anda dan, sama jelasnya, apa yang mereka tinggalkan. Lensa menandai bahasa yang bermuatan, dan dengan kamus terunduh ia menjelaskan kata mana pun lewat tekan-tahan. Semuanya berjalan di ponsel Anda secara bawaan.</string>
+    <string name="onboarding_quick_setup">Penyiapan cepat</string>
+    <string name="onboarding_advanced_setup">Penyiapan lanjutan</string>
+    <string name="onboarding_skip">Lewati</string>
+    <string name="onboarding_back">Kembali</string>
+    <string name="onboarding_done">Selesai</string>
+    <string name="onboarding_start_reading">Mulai membaca</string>
+    <string name="onboarding_lens_question">Bagaimana lensa sebaiknya berpikir?</string>
+    <string name="onboarding_reading_mode">Mode membaca</string>
+    <string name="onboarding_mode_controls">Kontrol terlihat</string>
+    <string name="onboarding_mode_immersive">Halaman penuh</string>
+    <string name="onboarding_mode_explainer">“Kontrol terlihat” mempertahankan tombol kembali dan bilah alat agar jelas terlihat. “Halaman penuh” menyembunyikannya supaya halaman polos; geser ke kanan untuk kembali. Anda bisa mengubahnya kapan saja di Pengaturan.</string>
+    <string name="tour_title">Apa saja isinya</string>
+    <string name="tour_loom_name">Alat Tenun</string>
+    <string name="tour_loom_body">Apa yang benar-benar dikirim sumber Anda, ditenun berdampingan dengan apa yang benar-benar Anda baca. Tarik ke bawah pada lapak Anda, atau ketuk bilah berwarna di atas berita.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">Judul-judul hari ini dipangkas jadi satu baris masing-masing, dengan jalan kembali ke tulisan utuhnya. Mati sampai Anda menyalakannya, di Pengaturan.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">Artikel dibacakan dengan suara yang berjalan di ponsel Anda, bukan di server. Juga di Pengaturan; ia bertanya sebelum mengunduh apa pun.</string>
+    <string name="tour_clippings_name">Guntingan</string>
+    <string name="tour_clippings_body">Ketuk penanda saat membaca untuk menyimpan sebuah tulisan. Guntingan menyimpannya seperti sobekan koran.</string>
+    <string name="tour_history_name">Hari ini dalam sejarah</string>
+    <string name="tour_history_body">Kolom pendek bertanggal di atas berita hari itu, dari “peristiwa hari ini” milik Wikipedia sendiri. Mati sampai Anda menyalakannya.</string>
+    <string name="tour_footer">Tidak ada di sini yang menjangkau apa pun yang tidak Anda minta. Ketiga sakelar di atas tetap mati sampai Anda menyalakannya.</string>
+    <string name="screen_paper">Koran</string>
+    <string name="screen_sources_and_settings">Sumber dan pengaturan</string>
+    <string name="screen_settings">Pengaturan</string>
+    <string name="screen_loom">Alat Tenun</string>
+    <string name="screen_clippings">Guntingan</string>
+    <string name="screen_lens_words">Daftar kata lensa</string>
+    <string name="language_title">Bahasa</string>
+    <string name="language_system_default">Ikuti ponsel saya</string>
+    <string name="language_explainer">Teks milik Nooz sendiri. Berita selalu tetap dalam bahasa yang dipakai penerbitnya.</string>
+    <string name="language_partial">%1$s · %2$d%% diterjemahkan</string>
+    <string name="language_complete">%1$s</string>
+</resources>

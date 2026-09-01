@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ml.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  37 of 37 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_loading">ഇന്നത്തെ വാർത്തകൾ ശേഖരിക്കുന്നു…</string>
+    <string name="onboarding_headline">ഉള്ളത് വായിക്കുക, ഇല്ലാത്തതും ശ്രദ്ധിക്കുക.</string>
+    <string name="onboarding_blurb">ഒരു ശാന്തമായ വാർത്താ വായനക്കാരൻ: നിങ്ങൾ തിരഞ്ഞെടുത്ത ഉറവിടങ്ങൾ യഥാർത്ഥത്തിൽ എന്താണ് അയച്ചത് — അതേ വ്യക്തതയോടെ, എന്താണ് വിട്ടുകളഞ്ഞത്. ലെൻസ് ചായ്‌വുള്ള ഭാഷ അടയാളപ്പെടുത്തുന്നു; നിഘണ്ടു ഇറക്കിയിട്ടുണ്ടെങ്കിൽ ഏതു വാക്കിലും അമർത്തിപ്പിടിച്ചാൽ അർത്ഥം കാണിക്കും. എല്ലാം സ്വതവേ നിങ്ങളുടെ ഫോണിൽത്തന്നെയാണ് പ്രവർത്തിക്കുന്നത്.</string>
+    <string name="onboarding_quick_setup">വേഗ ക്രമീകരണം</string>
+    <string name="onboarding_advanced_setup">വിശദമായ ക്രമീകരണം</string>
+    <string name="onboarding_skip">ഒഴിവാക്കുക</string>
+    <string name="onboarding_back">പിന്നോട്ട്</string>
+    <string name="onboarding_done">കഴിഞ്ഞു</string>
+    <string name="onboarding_start_reading">വായന തുടങ്ങുക</string>
+    <string name="onboarding_lens_question">ലെൻസ് എങ്ങനെ ചിന്തിക്കണം?</string>
+    <string name="onboarding_reading_mode">വായനാരീതി</string>
+    <string name="onboarding_mode_controls">നിയന്ത്രണങ്ങൾ കാണിക്കുക</string>
+    <string name="onboarding_mode_immersive">പൂർണ താൾ</string>
+    <string name="onboarding_mode_explainer">“നിയന്ത്രണങ്ങൾ കാണിക്കുക” എന്നതിൽ പിന്നോട്ടു പോകാനുള്ള ബട്ടണും ഉപകരണപ്പട്ടയും വ്യക്തമായി കാണാം. “പൂർണ താൾ” അവ മറച്ച് താൾ ലളിതമാക്കുന്നു; പിന്നോട്ടു പോകാൻ വലത്തേക്കു സ്വൈപ്പ് ചെയ്യുക. ഇത് ക്രമീകരണങ്ങളിൽ എപ്പോൾ വേണമെങ്കിലും മാറ്റാം.</string>
+    <string name="tour_title">അകത്ത് എന്താണുള്ളത്</string>
+    <string name="tour_loom_name">ലൂം</string>
+    <string name="tour_loom_body">നിങ്ങളുടെ ഉറവിടങ്ങൾ യഥാർത്ഥത്തിൽ എന്ത് അയച്ചു, നിങ്ങൾ യഥാർത്ഥത്തിൽ എന്തു വായിച്ചു — രണ്ടും ഒരുമിച്ചു നെയ്തത്. നിങ്ങളുടെ സ്റ്റാൻഡിൽ താഴേക്കു വലിക്കുക, അല്ലെങ്കിൽ വാർത്തകൾക്കു മുകളിലുള്ള നിറപ്പട്ടയിൽ തൊടുക.</string>
+    <string name="tour_flash_name">നൂസ് ഫ്ലാഷ്</string>
+    <string name="tour_flash_body">ദിവസത്തെ തലക്കെട്ടുകൾ ഓരോന്നും ഒറ്റ വരിയിൽ, മുഴുവൻ ലേഖനത്തിലേക്കു മടങ്ങാനുള്ള വഴിയോടെ. ക്രമീകരണങ്ങളിൽ ഓണാക്കുന്നതുവരെ ഇത് ഓഫായിരിക്കും.</string>
+    <string name="tour_cast_name">നൂസ് കാസ്റ്റ്</string>
+    <string name="tour_cast_body">സെർവറിലല്ല, നിങ്ങളുടെ ഫോണിൽത്തന്നെ പ്രവർത്തിക്കുന്ന ശബ്ദത്തിൽ ലേഖനം വായിച്ചു കേൾപ്പിക്കുന്നു. ഇതും ക്രമീകരണങ്ങളിലാണ്; എന്തെങ്കിലും ഇറക്കുന്നതിനു മുൻപ് ചോദിക്കും.</string>
+    <string name="tour_clippings_name">വെട്ടിയെടുത്തവ</string>
+    <string name="tour_clippings_body">വായിക്കുമ്പോൾ ബുക്ക്‌മാർക്കിൽ തൊട്ട് ഒരു ലേഖനം സൂക്ഷിക്കുക. വെട്ടിയെടുത്തവ അവയെ പത്രത്തിന്റെ കീറിയ കഷണങ്ങളായി സൂക്ഷിക്കുന്നു.</string>
+    <string name="tour_history_name">ഇന്ന് ചരിത്രത്തിൽ</string>
+    <string name="tour_history_body">ദിവസത്തെ വാർത്തകൾക്കു മുകളിൽ ഒരു ചെറിയ തീയതിക്കോളം, വിക്കിപീഡിയയുടെ സ്വന്തം “ഈ ദിവസം”-ൽ നിന്ന്. ഓണാക്കുന്നതുവരെ ഓഫ്.</string>
+    <string name="tour_footer">നിങ്ങൾ ചോദിക്കാത്ത ഒന്നിലേക്കും ഇവിടെ നിന്ന് ഒന്നും എത്തുന്നില്ല. മുകളിലെ മൂന്നു സ്വിച്ചുകളും നിങ്ങൾ ഓണാക്കുന്നതുവരെ ഓഫായിത്തന്നെ ഇരിക്കും.</string>
+    <string name="screen_paper">പത്രം</string>
+    <string name="screen_sources_and_settings">ഉറവിടങ്ങളും ക്രമീകരണങ്ങളും</string>
+    <string name="screen_settings">ക്രമീകരണങ്ങൾ</string>
+    <string name="screen_loom">ലൂം</string>
+    <string name="screen_clippings">വെട്ടിയെടുത്തവ</string>
+    <string name="screen_lens_words">ലെൻസ് പദപ്പട്ടിക</string>
+    <string name="language_title">ഭാഷ</string>
+    <string name="language_system_default">ഫോൺ അനുസരിച്ച്</string>
+    <string name="language_explainer">ഇത് നൂസിന്റെ സ്വന്തം എഴുത്താണ്. വാർത്തകൾ എപ്പോഴും പ്രസാധകൻ എഴുതിയ ഭാഷയിൽത്തന്നെ നിൽക്കും.</string>
+    <string name="language_partial">%1$s · %2$d%% വിവർത്തനം ചെയ്തു</string>
+    <string name="language_complete">%1$s</string>
+</resources>
