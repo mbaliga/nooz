@@ -1531,9 +1531,52 @@ respect as the CI-caught log above.
   instruction is gone, and that an empty day still says something true. Note the
   honest limit — this proves the tree carries the data and the actions; it does
   **not** prove what TalkBack utters, and no device here can.
-  Remaining from the audit's P0: the three web blockers (`role="button"`
-  wrapping whole article bodies), screen-change announcements, and focus
-  restoration on the web's full-stage rebuild.
+  Remaining from the audit's P0 after D43: screen-change announcements, and
+  focus restoration on the web's full-stage rebuild.
+
+- **D43 — The web reader's stories are headings and links again, not buttons
+  wrapping whole articles (2026-09-01).** The audit's remaining P0 blockers.
+  Every story on the Paper, and every row in Clippings, was `role="button"` on
+  the container itself with the entire article nested inside it. Two
+  consequences, neither of them visible to a sighted tester:
+  `button` computes its accessible name from its contents *and flattens their
+  structure*, so each card's name was **an entire article read as one unbroken
+  string**, and the `<h2>` inside it stopped being a heading. Heading navigation
+  on the front page returned the masthead and nothing else; the links list was
+  empty. Those are the two ways a screen-reader user skims a page, and the Paper
+  offered neither. Second, the bookmark and the image-style chips became
+  interactive elements nested inside a button — invalid, and handled differently
+  by every engine.
+  **The headline is now the control.** A real `<a href="#/reader/…">` inside the
+  existing heading: the heading comes back, the name is the title alone, the
+  story lands in the links list, and keyboard operation is free rather than
+  hand-rolled. The card keeps a plain click listener so the large pointer target
+  survives — it has simply stopped pretending to be a control. `setAttribute`,
+  not the `.href` setter, because the setter resolves against the document URL
+  and re-serialises, which can decode escapes an item id needs to keep.
+  **Read state is spoken.** `.is-read` only dimmed the headline, so "have I read
+  this?" was carried by colour alone. A `nooz-visually-hidden` "Read." now sits
+  inside the heading.
+  **The web Loom had the same defect as the Android one, plus a worse one.**
+  Each tube was an SVG `<path>` carrying `role="button"`, `tabindex="0"` and its
+  counts in an `aria-label`. None of it was ever reachable: the `<svg>` declares
+  `role="img"`, which makes its whole subtree **one leaf** in the accessibility
+  tree, and Safari does not honour `tabindex` on SVG shapes regardless. It
+  looked like access and was not. The per-stream numbers now live in ordinary
+  `<button>` stream keys — off-screen until focus lands inside, then they slide
+  in as a legend, because a sighted keyboard user has to see where the focus
+  ring went. `describeLoom` gained the same supply-side fix as its Android twin,
+  and both stopped saying "1 sources".
+  **Evidence, again, is half of it.** `web/tests/a11y.test.mjs` runs the real
+  view modules against a real DOM (linkedom, already a dependency) and inspects
+  what comes out: no card claims to be a button, no control is nested inside a
+  fake one, every headline is a heading containing a link, an awkward item id
+  still produces a usable href, the read marker lands on the story that was
+  read, the card click still fires exactly once, and each Loom stream is a named
+  button whose selection is announced. Both reading modes are covered —
+  Newspaper mode is a separate code path a manual pass would probably not have
+  opened. Verified by mutation: reintroducing `role="button"` on a column story
+  fails the suite.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

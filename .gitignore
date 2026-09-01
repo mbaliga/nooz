@@ -19,3 +19,6 @@ local.properties
 keystore.properties
 *.keystore
 !debug.keystore
+
+# Node dependencies for the web reader (web/package.json is the source of truth).
+node_modules/

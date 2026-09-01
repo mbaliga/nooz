@@ -70,17 +70,39 @@ function buildListItem(item, state, actions) {
   const row = document.createElement('div');
   row.className = 'nooz-list-item is-clipped';
   if (isRead) row.classList.add('is-read');
-  row.setAttribute('role', 'button');
-  row.setAttribute('tabindex', '0');
 
   const topRow = document.createElement('div');
   topRow.className = 'nooz-row nooz-row--sm';
   topRow.style.flexWrap = 'nowrap';
   topRow.style.justifyContent = 'space-between';
 
-  const title = document.createElement('span');
+  // The title is the row's control, not the row. `role="button"` on the row
+  // took its accessible name from everything inside it -- title, source, date
+  // and the "Remove clipping" button all read as one string -- and buried a
+  // real <button> inside a fake one. A link names itself with just the title
+  // and lands in the links list, which is how a clipping gets found again.
+  const title = document.createElement('h3');
   title.className = 'nooz-list-item-title';
-  title.textContent = item.title || '(untitled)';
+  if (isRead) {
+    const mark = document.createElement('span');
+    mark.className = 'nooz-visually-hidden';
+    mark.textContent = 'Read. ';
+    title.appendChild(mark);
+  }
+  const link = document.createElement('a');
+  link.className = 'nooz-headline-link';
+  // setAttribute, not the .href setter: the setter resolves against the
+  // document URL and re-serialises, which can decode escapes an item id needs
+  // to keep. The attribute is stored exactly as written.
+  link.setAttribute('href', `#/reader/${encodeURIComponent(item.id)}`);
+  link.textContent = item.title || '(untitled)';
+  link.addEventListener('click', (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+        event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    actions.openItem(item.id);
+  });
+  title.appendChild(link);
   topRow.appendChild(title);
 
   const unclipBtn = document.createElement('button');
@@ -98,14 +120,12 @@ function buildListItem(item, state, actions) {
   row.appendChild(topRow);
   row.appendChild(buildByline(item, state));
 
-  const activate = () => actions.openItem(item.id);
-  row.addEventListener('click', activate);
-  row.addEventListener('keydown', (event) => {
-    if (event.target !== row) return; // let the nested unclip button handle its own keys
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      activate();
-    }
+  // The whole row stays a pointer target -- it is just no longer pretending to
+  // be a control. Clicks that land on the title link or the unclip button are
+  // theirs to handle.
+  row.addEventListener('click', (event) => {
+    if (event.target.closest('a, button')) return;
+    actions.openItem(item.id);
   });
 
   li.appendChild(row);

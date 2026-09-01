@@ -40,6 +40,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # The accessibility tests render the real view modules into a real DOM
+      # (linkedom), so the dependencies have to be present -- `npm test` alone
+      # used to be enough only because the first test file imported nothing.
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
       - name: Web reader unit tests
         run: npm test
         working-directory: web

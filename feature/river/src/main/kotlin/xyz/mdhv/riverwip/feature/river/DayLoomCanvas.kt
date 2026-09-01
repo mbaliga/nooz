@@ -290,7 +290,8 @@ private fun hitBand(loom: DayLoomLayout.Loom, x: Float, y: Float): DayLoomLayout
 private const val SPOKEN_SUPPLY_TOPICS = 5
 
 private fun describeLoom(loom: DayLoomLayout.Loom, enabledSourceCount: Int): String {
-    if (loom.totalFlowed == 0) return "Nothing flowed from your $enabledSourceCount sources this day."
+    val sources = "$enabledSourceCount " + if (enabledSourceCount == 1) "source" else "sources"
+    if (loom.totalFlowed == 0) return "Nothing flowed from your $sources this day."
 
     // The supply side used to be a single grand total, because this only ever
     // enumerated `bands.filter { it.consumed }` — topics with at least one read.
@@ -300,7 +301,7 @@ private fun describeLoom(loom: DayLoomLayout.Loom, enabledSourceCount: Int): Str
     val named = bySupply.take(SPOKEN_SUPPLY_TOPICS).filter { it.flowed > 0 }
     val rest = bySupply.drop(SPOKEN_SUPPLY_TOPICS).count { it.flowed > 0 }
     val flowedLine = buildString {
-        append("${loom.totalFlowed} stories flowed from your $enabledSourceCount sources")
+        append("${loom.totalFlowed} stories flowed from your $sources")
         if (named.isNotEmpty()) {
             append(": ")
             append(named.joinToString(", ") { "${it.topic.placeholderLabel} ${it.flowed}" })

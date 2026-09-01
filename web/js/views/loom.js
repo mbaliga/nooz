@@ -464,17 +464,16 @@ function buildLoomView(flowed, read, enabledSourceCount) {
     path.setAttribute('fill', PALETTE[band.key] || PALETTE.general);
     path.setAttribute('class', 'nooz-loom-tube');
     path.style.cursor = 'pointer';
-    path.setAttribute('tabindex', '0');
-    path.setAttribute('role', 'button');
-    path.setAttribute('aria-label',
-      `${band.label}: ${band.flowed} flowed${band.read > 0 ? `, ${band.read} read` : ', none read'}`);
+    // No role, no tabindex, no aria-label on the tube. The <svg> above declares
+    // role="img", which makes the entire subtree a single leaf in the
+    // accessibility tree — so these were never reachable by any screen reader,
+    // in any engine, and `tabindex` on an SVG shape is not honoured by Safari
+    // at all. They looked like access and were not. The real route is the
+    // stream keys below, which are ordinary buttons.
     const pick = () => selectBand(selectedKey === band.key ? null : band);
     path.addEventListener('click', pick);
-    path.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); }
-    });
     group.appendChild(path);
-    paths.push({ band, path });
+    paths.push({ band, path, pick });
   }
 
   stage.appendChild(svg);
@@ -505,11 +504,44 @@ function buildLoomView(flowed, read, enabledSourceCount) {
   denom.textContent = `${loom.totalFlowed} flowed · ${loom.totalRead} read · from ${enabledSourceCount} ${enabledSourceCount === 1 ? 'source' : 'sources'}`;
   stage.appendChild(denom);
 
+  // The stream keys: one plain <button> per tube, carrying that tube's own
+  // numbers in its label. This is the only way the per-stream counts exist for
+  // a keyboard or a screen reader — the drawing is a picture, and its summary
+  // can only afford the largest few topics.
+  //
+  // Off-screen until something in it takes focus, then it slides in as a
+  // legend, so a sighted keyboard user can see where the focus ring went
+  // rather than watching it vanish into the page.
+  const keys = document.createElement('div');
+  keys.className = 'nooz-loom-keys';
+  const keysLabel = document.createElement('p');
+  keysLabel.className = 'nooz-loom-keys-label';
+  keysLabel.id = 'nooz-loom-keys-label';
+  keysLabel.textContent = 'Streams';
+  keys.appendChild(keysLabel);
+  keys.setAttribute('role', 'group');
+  keys.setAttribute('aria-labelledby', keysLabel.id);
+  for (const { band, pick } of paths) {
+    const key = document.createElement('button');
+    key.type = 'button';
+    key.className = 'nooz-loom-key';
+    key.style.setProperty('--key-colour', PALETTE[band.key] || PALETTE.general);
+    key.textContent =
+      `${band.label}: ${band.flowed} flowed${band.read > 0 ? `, ${band.read} read` : ', none read'}`;
+    key.setAttribute('aria-pressed', 'false');
+    key.addEventListener('click', pick);
+    keys.appendChild(key);
+    band.keyEl = key;
+  }
+  stage.appendChild(keys);
+
   function selectBand(band) {
     selectedKey = band ? band.key : null;
     for (const { band: b, path } of paths) {
       const faded = selectedKey != null && b.key !== selectedKey;
       path.style.opacity = faded ? '0.22' : '1';
+      // Selection was conveyed by opacity alone; aria-pressed says it out loud.
+      if (b.keyEl) b.keyEl.setAttribute('aria-pressed', selectedKey === b.key ? 'true' : 'false');
     }
     if (band) {
       inspect.hidden = false;
@@ -549,13 +581,36 @@ function ghostFanDots() {
   return dots;
 }
 
+// How many topics the spoken summary names before it starts counting them.
+// Kept short deliberately: this is read aloud in one breath before anything
+// else on the screen, and the stream keys carry the full list.
+const SPOKEN_SUPPLY_TOPICS = 5;
+
 function describeLoom(loom, enabledSourceCount) {
-  if (loom.totalFlowed === 0) return `Nothing flowed from your ${enabledSourceCount} sources this day.`;
+  const sources = `${enabledSourceCount} ${enabledSourceCount === 1 ? 'source' : 'sources'}`;
+  if (loom.totalFlowed === 0) return `Nothing flowed from your ${sources} this day.`;
+
+  // The supply side used to be a single grand total, because this enumerated
+  // only `bands.filter((b) => b.consumed)` — topics with at least one read. A
+  // topic that flooded the feed and was never opened was therefore never named,
+  // which is precisely the omission this whole screen exists to show.
+  const bySupply = loom.bands.slice().sort((a, b) => b.flowed - a.flowed);
+  const named = bySupply.slice(0, SPOKEN_SUPPLY_TOPICS).filter((b) => b.flowed > 0);
+  const rest = bySupply.slice(SPOKEN_SUPPLY_TOPICS).filter((b) => b.flowed > 0).length;
+  let flowedLine = `${loom.totalFlowed} stories flowed from your ${sources}`;
+  if (named.length > 0) {
+    flowedLine += ': ' + named.map((b) => `${b.label} ${b.flowed}`).join(', ');
+    if (rest > 0) flowedLine += `, and ${rest} more topics`;
+  }
+
   const read = loom.bands.filter((b) => b.consumed).slice().sort((a, b) => b.read - a.read);
   const readLine = read.length === 0
-    ? 'none of it read'
-    : `${loom.totalRead} read: ` + read.map((b) => `${b.label} ${b.read}`).join(', ');
-  return `Day loom. ${loom.totalFlowed} stories flowed from your ${enabledSourceCount} sources; ${readLine}. Tap a stream for its counts.`;
+    ? 'You read none of it'
+    : `You read ${loom.totalRead}: ` + read.map((b) => `${b.label} ${b.read}`).join(', ');
+
+  // No longer "Tap a stream": there is nothing in the drawing a screen reader
+  // can land a tap on. The stream keys are the route that actually exists.
+  return `Day loom. ${flowedLine}. ${readLine}. The stream keys give a single stream's counts.`;
 }
 
 // ---------------------------------------------------------------------------

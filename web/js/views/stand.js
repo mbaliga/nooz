@@ -378,13 +378,13 @@ function buildArticleEls(item, state, actions, showImages, isLead) {
   const els = [];
   const head = document.createElement('div');
   head.className = 'nooz-art-head' + (isLead ? ' nooz-art-head--lead' : '');
-  head.setAttribute('role', 'button');
-  head.setAttribute('tabindex', '0');
   if (state.readIds && state.readIds.has(item.id)) head.classList.add('is-read');
   head.appendChild(kicker(item));
   const h = document.createElement(isLead ? 'h2' : 'h3');
   h.className = 'nooz-art-headline' + (isLead ? ' nooz-art-headline--lead' : '');
-  h.textContent = item.title || '(untitled)';
+  const headMark = readMarker(item, state);
+  if (headMark) h.appendChild(headMark);
+  h.appendChild(headlineLink(item, actions, item.title || '(untitled)'));
   head.appendChild(h);
   if (showImages && item.image) {
     const fig = isLead
@@ -398,7 +398,7 @@ function buildArticleEls(item, state, actions, showImages, isLead) {
     if (fig) head.appendChild(fig);
   }
   head.appendChild(byline(item, state));
-  wire(head, () => actions.openItem(item.id));
+  cardActivation(head, item, actions);
   els.push(head);
 
   const body = buildBodyBlocks(item, state);
@@ -680,11 +680,73 @@ function pagerLabel(spread, shown, pageCount) {
 // Stories
 // ---------------------------------------------------------------------------
 
+/**
+ * Turns a headline element into the story's actual control.
+ *
+ * Every story card used to be `role="button"` on the <article> itself, with the
+ * whole article body nested inside it. Two things follow from that, and both
+ * are severe:
+ *
+ *  - `button` takes its accessible name from its contents and prunes their
+ *    structure, so the card's name was an *entire article* read as one string,
+ *    and the <h2> inside stopped being a heading. Heading navigation on the
+ *    Paper returned only the masthead, and the links list was empty — the two
+ *    ways a screen-reader user skims a page, both gone.
+ *  - Interactive descendants (the image style toggles, the bookmark) became
+ *    nested interactives inside a button, which is invalid and behaves
+ *    differently in every engine.
+ *
+ * The headline link is the fix: a real <a href="#/reader/…"> restores the
+ * heading, gives the story a name that is just its title, puts it in the links
+ * list, and is keyboard-operable for free. The card keeps a plain click
+ * listener so the large tap target survives for pointer users — it is simply no
+ * longer pretending to be a control.
+ */
+function headlineLink(item, actions, text) {
+  const link = document.createElement('a');
+  link.className = 'nooz-headline-link';
+  // setAttribute, not the .href setter: the setter resolves against the
+  // document URL and re-serialises, which can decode escapes an item id needs
+  // to keep. The attribute is stored exactly as written.
+  link.setAttribute('href', `#/reader/${encodeURIComponent(item.id)}`);
+  link.textContent = text;
+  link.addEventListener('click', (event) => {
+    // Let modified clicks (new tab, download) behave normally.
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+        event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    actions.openItem(item.id);
+  });
+  return link;
+}
+
+/**
+ * Read state as text, not only as a colour.
+ *
+ * `.is-read` dims the headline and nothing else, so "have I read this?" was
+ * conveyed by colour alone — invisible to a screen reader and to anyone who
+ * cannot distinguish the two greys.
+ */
+function readMarker(item, state) {
+  if (!state.readIds || !state.readIds.has(item.id)) return null;
+  const mark = document.createElement('span');
+  mark.className = 'nooz-visually-hidden';
+  mark.textContent = 'Read. ';
+  return mark;
+}
+
+/** A whole-card click target that is not itself a control. */
+function cardActivation(el, item, actions) {
+  el.addEventListener('click', (event) => {
+    // The headline link, the bookmark and the image controls handle themselves.
+    if (event.target.closest('a, button')) return;
+    actions.openItem(item.id);
+  });
+}
+
 function buildLeadStory(item, state, actions, showImages, imageStyle, continued) {
   const story = document.createElement('article');
   story.className = 'nooz-lead';
-  story.setAttribute('role', 'button');
-  story.setAttribute('tabindex', '0');
   if (state.readIds.has(item.id)) story.classList.add('is-read');
 
   if (showImages && item.image) {
@@ -703,7 +765,9 @@ function buildLeadStory(item, state, actions, showImages, imageStyle, continued)
 
   const headline = document.createElement('h2');
   headline.className = 'nooz-lead-headline';
-  headline.textContent = item.title || '(untitled)';
+  const leadMark = readMarker(item, state);
+  if (leadMark) headline.appendChild(leadMark);
+  headline.appendChild(headlineLink(item, actions, item.title || '(untitled)'));
   body.appendChild(headline);
 
   if (isFullDisplay(state)) {
@@ -723,7 +787,7 @@ function buildLeadStory(item, state, actions, showImages, imageStyle, continued)
   body.appendChild(cont);
 
   story.appendChild(body);
-  wire(story, () => actions.openItem(item.id));
+  cardActivation(story, item, actions);
   return story;
 }
 
@@ -769,15 +833,15 @@ function buildFullBody(item, state) {
 function buildColumnStory(item, state, actions, showImages) {
   const story = document.createElement('article');
   story.className = 'nooz-col-story';
-  story.setAttribute('role', 'button');
-  story.setAttribute('tabindex', '0');
   if (state.readIds.has(item.id)) story.classList.add('is-read');
 
   story.appendChild(kicker(item));
 
   const headline = document.createElement('h3');
   headline.className = 'nooz-col-headline';
-  headline.textContent = item.title || '(untitled)';
+  const colMark = readMarker(item, state);
+  if (colMark) headline.appendChild(colMark);
+  headline.appendChild(headlineLink(item, actions, item.title || '(untitled)'));
   story.appendChild(headline);
 
   if (showImages && item.image) {
@@ -795,7 +859,7 @@ function buildColumnStory(item, state, actions, showImages) {
   }
 
   story.appendChild(byline(item, state));
-  wire(story, () => actions.openItem(item.id));
+  cardActivation(story, item, actions);
   return story;
 }
 
@@ -818,17 +882,6 @@ function byline(item, state) {
   when.textContent = formatShortDate(item.publishedAt);
   line.appendChild(when);
   return line;
-}
-
-function wire(el, activate) {
-  el.addEventListener('click', activate);
-  el.addEventListener('keydown', (event) => {
-    if (event.target !== el) return;
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      activate();
-    }
-  });
 }
 
 function clampText(text, max) {
