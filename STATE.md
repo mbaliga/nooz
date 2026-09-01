@@ -1611,6 +1611,45 @@ respect as the CI-caught log above.
   object graph, and the run stops producing output instead of a failure
   message — a suite that hangs on the bug it catches is not a suite.
 
+- **D45 — Arriving at a screen is announced (2026-09-01).** Every top-level
+  screen swap happens inside one activity and one composable, so nothing told
+  TalkBack the screen had changed: opening the Loom produced no announcement at
+  all, just a silently different set of nodes under the same window. The screen
+  switch is now wrapped in a pane whose `paneTitle` changes with it, which is
+  what Compose turns into the platform's window-state-changed event — the event
+  TalkBack reads aloud. Titles are the names the reader already knows from the
+  control they pressed ("Loom", not "LoomScreen").
+  **Honest limit:** this one is reasoned and compiled, not observed.
+  `MainActivity` needs the whole DI graph to compose, so there is no cheap
+  JVM test for it, and unlike D42 there is no assertion behind this claim.
+
+- **D46 — Android's font fallback already covers every script the catalogue
+  ships, so no fonts need bundling. This corrects an earlier claim of mine
+  (2026-09-01).** I had recorded non-Latin font coverage as the gate on the
+  whole locale rollout. It is not, and the reasoning behind that was wrong.
+  The premise was right: `fontTools` on the ten bundled faces shows Hyle
+  Grotesk at 735 codepoints (Latin + Greek) and Hyle Print / PT Serif at
+  1163/717 (Latin + Cyrillic + Greek). **Not one of them carries a single
+  Indic, Arabic or CJK glyph** — and the app already ships 33 India regional
+  feeds in eleven scripts.
+  What I got wrong was assuming a bundled font means tofu. AOSP
+  `Typeface.java` (android14-release) settles it: `Typeface.Builder.build()`
+  wraps its single family in `CustomFallbackBuilder`, and so does
+  `createFromResources` for XML families. `CustomFallbackBuilder.build()` passes
+  `getSystemDefaultTypeface(mFallbackName)` into `nativeCreateFromArray`, and
+  `mFallbackName` defaults to null, which that method resolves to
+  `Typeface.DEFAULT` — the full system font collection, Noto chain included.
+  A missing glyph therefore falls through to the platform's own fonts. Compose's
+  `Font(resId)`, `ResourcesCompat.getFont` and `NewspaperShare`'s `Canvas`
+  drawing all converge on that same path.
+  **Consequence:** no Noto bundling (which would have added megabytes), and the
+  locale rollout is not gated on fonts. Worth recording how nearly this went the
+  other way: the first attempt to check it was a Robolectric probe calling
+  `Paint.hasGlyph`, which reported Latin "A" missing from the *default* paint —
+  it was measuring Robolectric's stub, not Android, and would have "confirmed"
+  a catastrophic bug that does not exist. A test that cannot fail correctly is
+  worse than no test, and the tell was that its answer was too dramatic.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
