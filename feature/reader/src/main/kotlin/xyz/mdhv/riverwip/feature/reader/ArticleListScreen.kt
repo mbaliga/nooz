@@ -46,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -83,6 +84,7 @@ import xyz.mdhv.riverwip.design.R
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
+import xyz.mdhv.riverwip.model.ArticleSearch
 import xyz.mdhv.riverwip.model.Diversifier
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.ReadMarkStyle
@@ -170,7 +172,24 @@ fun ArticleListScreen(
     var showUnreadOnly by rememberSaveable { mutableStateOf(false) }
     val unreadFiltered = if (showUnreadOnly) items.filter { it.id !in readIds } else items
     val q = searchQuery.trim()
-    val searched = if (q.isEmpty()) unreadFiltered else unreadFiltered.filter { it.title.contains(q, ignoreCase = true) }
+
+    // Body search (D37). Titles and summaries are matched here, in memory,
+    // because they exist for every item; bodies are matched by the FTS index in
+    // the view model, because they only exist for articles actually opened and
+    // matching them is a database query. Searching only one of the two would
+    // quietly answer a narrower question than the reader asked.
+    val bodyMatches by vm.bodySearchMatches.collectAsStateWithLifecycle()
+    LaunchedEffect(q) { vm.searchBodies(q) }
+    val terms = remember(q) { ArticleSearch.terms(q) }
+    val searched = if (terms.isEmpty()) {
+        unreadFiltered
+    } else {
+        unreadFiltered.filter { item ->
+            ArticleSearch.matchesPrefixes(item.title, terms) ||
+                item.summary?.let { ArticleSearch.matchesPrefixes(it, terms) } == true ||
+                item.id in bodyMatches
+        }
+    }
     val sorted = if (groupedBySource) searched.sortedBy { sourceTitles[it.sourceId]?.lowercase() ?: "" } else searched
     val displayedItems = if (diversified) remember(sorted) { Diversifier.spread(sorted) } else sorted
 
@@ -408,6 +427,10 @@ fun ArticleListScreen(
                             ItemRow(
                                 item = item,
                                 sourceTitle = sourceTitles[item.sourceId],
+                                // Shown only when the match came from the body:
+                                // a result whose headline contains none of the
+                                // search terms otherwise just looks like a bug.
+                                matchSnippet = bodyMatches[item.id],
                                 read = item.id in readIds,
                                 readMarkStyle = readMarkStyle,
                                 showFeedImages = showFeedImages,
@@ -688,6 +711,8 @@ private fun RegionTopicFilterSheet(
 private fun ItemRow(
     item: Item,
     sourceTitle: String?,
+    /** An excerpt of the article body around the search hit, when it matched there. */
+    matchSnippet: String? = null,
     read: Boolean,
     readMarkStyle: ReadMarkStyle,
     showFeedImages: Boolean,
@@ -743,6 +768,14 @@ private fun ItemRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
             )
+            if (matchSnippet != null) {
+                Text(
+                    matchSnippet,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                )
+            }
         }
     }
 }

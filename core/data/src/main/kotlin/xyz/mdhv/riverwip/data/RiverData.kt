@@ -58,6 +58,7 @@ class RiverData private constructor(
             val fullTextCache = FullTextCache(File(appContext.cacheDir, "full-text"), DEFAULT_FULL_TEXT_CACHE_BYTES)
             val articleRepository = ArticleRepository(
                 itemDao = db.itemDao(), fetcher = HttpArticleFetcher(http), cache = fullTextCache,
+                articleTextDao = db.articleTextDao(),
             )
             val sourceRepository = SourceRepository(dao = db.sourceDao(), probe = probe)
             val readEventRepository = ReadEventRepository(dao = db.readEventDao())
@@ -84,7 +85,7 @@ class RiverData private constructor(
                     clippingRepository = clippingRepository,
                     readEventRepository = readEventRepository,
                 ),
-                workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository),
+                workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository, articleRepository),
             )
         }
     }

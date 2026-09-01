@@ -6,10 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -31,6 +33,7 @@ import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.inference.SynthesisRequest
 import xyz.mdhv.riverwip.inference.SynthesisResult
 import xyz.mdhv.riverwip.inference.TtsProvider
+import xyz.mdhv.riverwip.model.ArticleSearch
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.DwellBucket
@@ -134,6 +137,14 @@ private const val CAST_NOT_CONFIGURED_REASON = "Nooz Cast won't work until the o
 private const val READING_CLOCK_TICK_MS = 5_000L
 private const val READING_ASIDE_INTERVAL_MS = 6 * 60 * 1_000L
 
+/**
+ * Debounce before a body search hits the FTS index (D37). The caller is a text
+ * field, so without this every keystroke is a database query — and the early
+ * keystrokes are the most expensive, since a one- or two-letter prefix matches
+ * a large share of the corpus.
+ */
+private const val SEARCH_DEBOUNCE_MS = 220L
+
 /** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
 data class RefreshResult(
     val newItems: Int,
@@ -166,6 +177,53 @@ class ReaderViewModel(
     val readIds: StateFlow<Set<String>> = readEventRepository.observeAll()
         .map { events -> events.map { it.itemId }.toSet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
+
+    /**
+     * Snippets from article *bodies* matching the current search, keyed by item
+     * id (D37).
+     *
+     * The Stand's search used to be a substring match on the headline alone,
+     * which only ever worked if the reader remembered words from the headline —
+     * and fuzzy recall almost never does. What survives is usually a phrase from
+     * the middle of a piece. Those bodies live in the `article_text` FTS index,
+     * which is a database query, so unlike the title filter it cannot be done
+     * inline in composition.
+     *
+     * The value is the snippet rather than a bare id so the list can show *why*
+     * a story matched — without that, a result whose headline contains none of
+     * the search terms just looks like a bug.
+     */
+    private val _bodySearchMatches = MutableStateFlow<Map<String, String>>(emptyMap())
+    val bodySearchMatches: StateFlow<Map<String, String>> = _bodySearchMatches.asStateFlow()
+
+    private var bodySearchJob: Job? = null
+
+    /**
+     * Runs a body search, debounced, cancelling whatever was in flight — the
+     * caller is a text field, so this is invoked on every keystroke.
+     */
+    fun searchBodies(raw: String) {
+        bodySearchJob?.cancel()
+        val match = ArticleSearch.toMatchQuery(raw)
+        if (match == null) {
+            // No query. Deliberately clears rather than leaving stale hits
+            // behind, which would keep matches on screen after the box is
+            // emptied.
+            _bodySearchMatches.value = emptyMap()
+            return
+        }
+        val terms = ArticleSearch.terms(raw)
+        bodySearchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            // A malformed MATCH throws rather than returning nothing; the query
+            // builder makes that structurally unreachable, but a search box is
+            // the wrong place to find out it was wrong.
+            val hits = runCatching { articleRepository.searchBodies(match) }.getOrDefault(emptyList())
+            _bodySearchMatches.value = hits.mapNotNull { hit ->
+                ArticleSearch.snippet(hit.body, terms)?.let { hit.itemId to it }
+            }.toMap()
+        }
+    }
 
     /** Save or unsave the article as a Nooz-paper clipping. */
     fun toggleClip(item: Item) {

@@ -1284,6 +1284,60 @@ respect as the CI-caught log above.
   were `remember`, not `rememberSaveable`, so rotating the phone mid-setup
   dropped the reader back at Welcome having lost whichever door they picked.
 
+- **D37 — Search that reaches into the articles, and the app's first real
+  migration (2026-09-01).** Owner: search should be "rich wrt what's in the
+  articles so a person can search based on recall alone that they saw something
+  or read something that they remember fuzzily." The Stand's search was
+  `title.contains(q)` — it could only find a story if the reader remembered
+  words from its *headline*, which fuzzy recall almost never preserves.
+  Article prose existed **only** as loose `.txt` files in `FullTextCache`, a
+  class with no way to enumerate or query them, so there was nothing to search.
+  Added `article_text`, an FTS4 index written from `ArticleRepository`
+  alongside the cache, with `ArticleSearch` in `:core:model` as the pure half
+  (query building + snippet extraction, unit-tested). Results now match title,
+  summary **and** body, and a body match shows the excerpt it matched on —
+  without that, a result whose headline contains none of the search terms just
+  looks like a bug.
+  **Four real defects were caught by testing this rather than reasoning about
+  it, three of which would have shipped silently:**
+  1. **`AND` is not an operator.** SQLite builds FTS4 with standard query
+     syntax unless compiled with `SQLITE_ENABLE_FTS3_PARENTHESIS`; there,
+     whitespace already means AND and the word `AND` is *another search term*.
+     Joining terms with `" AND "` demanded the article also contain the literal
+     word "and" — which most prose does, so this would have hidden in plain
+     sight and eaten only the occasional short article.
+  2. **The index would have held exactly one row.** FTS4's only key is its
+     implicit rowid and `0` is a *valid* rowid, so every insert supplied 0 and
+     `REPLACE`-on-conflict made each newly indexed article overwrite the last.
+     `autoGenerate = true` fixes it; the table looked entirely healthy either
+     way.
+  3. **Indic scripts were being shredded.** Tokenising on `!isLetterOrDigit()`
+     splits on combining marks — which is how Telugu, Devanagari, Gujarati and
+     Odia write their vowels — so words broke mid-cluster and search was
+     unusable for exactly the languages D35 had just added feeds for. The FTS
+     side needed `unicode61` for the same reason; the default `simple`
+     tokenizer treats every non-ASCII byte as a separator.
+  4. **Function words excluded the answer.** Terms are ANDed, so "floods in
+     nepal" demanded a word starting "in", which the headline "Flash floods on
+     the Nepal-Tibet border" hasn't got.
+  **The migration is the bigger finding.** `RiverDatabase` was still built with
+  `fallbackToDestructiveMigration()` alone under a comment reading "v1 schema is
+  unshipped; destructive fallback is fine until the first release" — untrue
+  since versionCode 2. Bumping the version for this feature would have answered
+  the upgrade by **deleting every shipped reader's clippings, read events and
+  weekly aggregates**: the entire history the Loom draws. v4 therefore ships a
+  real `MIGRATION_3_4`, schemas are now exported to `core/data/schemas/` and
+  checked in, and `RiverDatabaseMigrationTest` opens a real v3 database, runs
+  the migration and asserts the old rows are still there. Destructive fallback
+  is kept only as the last resort it was always meant to be, for pre-release
+  databases with no path forward. The migration DDL is copied verbatim from
+  Room's own exported `4.json`, since Room compares that statement on open and a
+  hand-written near-miss passes review and then throws on a real device.
+  Bounds: index rows are dropped when their items age out of the ~60-day
+  retention (`FetchWorker`), and opening an article cached before the index
+  existed backfills it — there is no batch migration over the existing 200MB
+  cache. 180 model + 46 data tests green.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
