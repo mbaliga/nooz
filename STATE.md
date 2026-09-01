@@ -1949,6 +1949,29 @@ respect as the CI-caught log above.
   masthead is a bug, and routing them through keys would mean thirty identical
   copies of one word and thirty chances for one to drift.
 
+- **D56 — Android actually *picks* the translations, now checked rather than
+  assumed (2026-09-01).** A real hole in how D47 was verified. That entry proved
+  the Hindi, Tamil, Urdu and Punjabi strings were in `resources.arsc` — which
+  establishes they were **packaged**, and nothing more. Resource *selection* is a
+  separate mechanism: it depends on the `values-b+<tag>` qualifier being spelled
+  exactly as `Locales.androidResourceQualifier` spells it, on the library
+  module's resources merging into the app, and on the tag Android derives from
+  the device locale matching. Get any of that wrong and **every locale falls back
+  to English silently, with the strings still sitting in the APK exactly where
+  the earlier check found them.** The check could not have told the difference.
+  `LocaleResolutionTest` closes it with `@Config(qualifiers = …)`, which runs the
+  real resolver: English as the base, Hindi, Tamil and Urdu resolving,
+  `b+zh+Hans` (the one tag with a script subtag, and the one place the BCP 47
+  conversion could break), `b+mai` (three-letter codes take a different path in
+  some resolvers than two-letter ones), an unshipped locale landing on English
+  rather than a blank, format arguments surviving translation, and — the property
+  the whole "partial is safe" design rests on — Kashmiri resolving its one
+  translated key while an untranslated one falls back per key.
+  Mutation-verified by moving `values-b+ta` out of the tree: `tamilResolves`
+  fails. The general lesson is the one worth keeping: **"the artefact contains
+  it" and "the artefact uses it" are different claims,** and the first is much
+  easier to check, which is exactly why it is the one that gets checked.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
