@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Was sich seit dem letzten Zeitraum geändert hat</string>
     <string name="cross_no_earlier">Noch kein früherer Zeitraum zum Vergleichen.</string>
     <string name="cross_steady">Deine Themenmischung blieb stabil.</string>
+    <string name="stand_title">Der Kiosk</string>
+    <string name="stand_subtitle">Blättere durch die Zeitungen. Wähle einen Stapel, um diesen Ausschnitt zu lesen.</string>
+    <string name="stand_empty">Der Kiosk ist leer</string>
+    <string name="stand_loom_edition">Webstuhl-Ausgabe</string>
+    <string name="stand_woven_from">Gewebt aus deinen eigenen Quellen</string>
+    <string name="stand_your_source">Deine Quellen, deine Nachrichten</string>
+    <string name="stand_setting_paper">Die Seite wird gesetzt…</string>
+    <string name="stand_turn_back">‹ Vorige Seite</string>
+    <string name="stand_turn_page">Umblättern ›</string>
+    <string name="stand_continue_reading">Weiterlesen →</string>
+    <string name="stand_no_full_text">Der volle Text steht nicht in diesem Feed. Öffne die Meldung, um sie an der Quelle zu lesen.</string>
+    <string name="stand_no_full_text_yet">Der volle Text steht noch nicht in diesem Feed. Öffne die Meldung, um sie an der Quelle zu lesen.</string>
+    <string name="reader_share_item">Diesen Beitrag teilen</string>
+    <string name="reader_fetching">Der ganze Artikel wird geholt…</string>
+    <string name="reader_no_text">Der Feed dieser Quelle enthielt den Artikeltext nicht. Lies den ganzen Beitrag unten an der Quelle.</string>
+    <string name="reader_read_at_source">An der Quelle lesen</string>
+    <string name="reader_no_link">Der Feed dieses Beitrags enthielt keinen brauchbaren Link zurück zur Quelle.</string>
+    <string name="loom_subtitle">Was von deinen Quellen kam, verwoben mit dem, was du tatsächlich gelesen hast.</string>
+    <string name="loom_strip_open">Den Webstuhl öffnen — was kam, verwoben mit dem, was du gelesen hast</string>
+    <string name="loom_strip_label">Webstuhl</string>
+    <string name="loom_bar_label">Der Tag, nach Thema.</string>
+    <string name="loom_streams">Stränge</string>
+    <string name="loom_where_reading">Woher deine Lektüre kam</string>
+    <string name="loom_nothing_read_yet">Du hast noch nichts gelesen — der Streifen füllt sich, während du Meldungen öffnest.</string>
+    <string name="loom_nothing_to_weave">Noch nichts zu weben</string>
+    <string name="clippings_empty">Noch nichts ausgeschnitten</string>
+    <string name="clippings_empty_body">Tippe bei einer Meldung auf das Ausschnitt-Symbol, um sie hier aufzuheben — sie bleibt, auch wenn du ihre Quelle später entfernst oder abschaltest.</string>
+    <string name="clippings_remove">Ausschnitt entfernen</string>
+    <string name="sources_title">Quellen</string>
+    <string name="sources_add">Quelle hinzufügen</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">Feed-URL</string>
+    <string name="sources_add_button">Hinzufügen</string>
+    <string name="sources_your_feeds">Deine Feeds</string>
+    <string name="sources_remove">Entfernen</string>
+    <string name="sources_checking">Wird geprüft…</string>
+    <string name="sources_not_checked">Noch nicht geprüft</string>
+    <string name="sources_starters">Startquellen</string>
+    <string name="sources_no_starters">Keine Startquellen verfügbar.</string>
+    <string name="sources_starters_body">Eine kurze Liste geprüfter, aktuell laufender Feeds — schalte ein, was dir gefällt.</string>
 </resources>

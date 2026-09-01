@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">지난 기간에 견주어 달라진 것</string>
     <string name="cross_no_earlier">견줄 지난 기간이 아직 없습니다.</string>
     <string name="cross_steady">주제 구성이 그대로였습니다.</string>
+    <string name="stand_title">가판대</string>
+    <string name="stand_subtitle">신문을 훑어보세요. 한 더미를 골라 그 부분을 읽습니다.</string>
+    <string name="stand_empty">가판대가 비었습니다</string>
+    <string name="stand_loom_edition">베틀판</string>
+    <string name="stand_woven_from">당신이 고른 출처로 짠 것</string>
+    <string name="stand_your_source">당신의 출처, 당신의 뉴스</string>
+    <string name="stand_setting_paper">지면을 짜는 중…</string>
+    <string name="stand_turn_back">‹ 앞 지면</string>
+    <string name="stand_turn_page">지면 넘기기 ›</string>
+    <string name="stand_continue_reading">계속 읽기 →</string>
+    <string name="stand_no_full_text">전문이 이 피드에 없습니다. 출처에서 읽으려면 기사를 여세요.</string>
+    <string name="stand_no_full_text_yet">전문이 아직 이 피드에 없습니다. 출처에서 읽으려면 기사를 여세요.</string>
+    <string name="reader_share_item">이 기사 공유</string>
+    <string name="reader_fetching">전문을 가져오는 중…</string>
+    <string name="reader_no_text">이 출처의 피드에 기사 본문이 없었습니다. 아래 출처에서 전문을 읽으세요.</string>
+    <string name="reader_read_at_source">출처에서 읽기</string>
+    <string name="reader_no_link">이 기사의 피드에 출처로 돌아갈 쓸 만한 링크가 없었습니다.</string>
+    <string name="loom_subtitle">출처가 보낸 것과, 당신이 실제로 읽은 것을 나란히 짜서.</string>
+    <string name="loom_strip_open">베틀 열기 — 무엇이 흘러왔고, 읽은 것과 어떻게 짜이는지</string>
+    <string name="loom_strip_label">베틀</string>
+    <string name="loom_bar_label">그날을 주제별로.</string>
+    <string name="loom_streams">줄기</string>
+    <string name="loom_where_reading">당신의 읽기는 어디에서 왔나</string>
+    <string name="loom_nothing_read_yet">아직 읽은 것이 없습니다 — 기사를 열수록 이 띠가 채워집니다.</string>
+    <string name="loom_nothing_to_weave">아직 짤 것이 없습니다</string>
+    <string name="clippings_empty">아직 스크랩이 없습니다</string>
+    <string name="clippings_empty_body">어느 기사에서든 스크랩 아이콘을 누르면 여기에 남습니다. 나중에 그 출처를 지우거나 꺼도 그대로 남아 있습니다.</string>
+    <string name="clippings_remove">스크랩 지우기</string>
+    <string name="sources_title">출처</string>
+    <string name="sources_add">출처 추가</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">피드 주소</string>
+    <string name="sources_add_button">추가</string>
+    <string name="sources_your_feeds">당신의 피드</string>
+    <string name="sources_remove">지우기</string>
+    <string name="sources_checking">확인하는 중…</string>
+    <string name="sources_not_checked">아직 확인 전</string>
+    <string name="sources_starters">시작 출처</string>
+    <string name="sources_no_starters">시작 출처가 없습니다.</string>
+    <string name="sources_starters_body">미리 확인해 둔, 지금도 살아 있는 피드의 짧은 목록입니다. 마음에 드는 것을 켜세요.</string>
 </resources>

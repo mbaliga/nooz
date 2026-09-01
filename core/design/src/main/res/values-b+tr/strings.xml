@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Önceki döneme göre ne değişti</string>
     <string name="cross_no_earlier">Karşılaştıracak önceki bir dönem henüz yok.</string>
     <string name="cross_steady">Konu karışımınız sabit kaldı.</string>
+    <string name="stand_title">Tezgâh</string>
+    <string name="stand_subtitle">Gazeteleri karıştırın. Bir yığın seçip o dilimi okuyun.</string>
+    <string name="stand_empty">Tezgâh boş</string>
+    <string name="stand_loom_edition">Tezgâh Baskısı</string>
+    <string name="stand_woven_from">Kendi kaynaklarınızdan dokundu</string>
+    <string name="stand_your_source">Kaynağınız, haberiniz</string>
+    <string name="stand_setting_paper">Sayfa diziliyor…</string>
+    <string name="stand_turn_back">‹ Önceki sayfa</string>
+    <string name="stand_turn_page">Sayfayı çevir ›</string>
+    <string name="stand_continue_reading">Okumaya devam →</string>
+    <string name="stand_no_full_text">Tam metin bu akışta yok. Kaynağında okumak için haberi açın.</string>
+    <string name="stand_no_full_text_yet">Tam metin bu akışta henüz yok. Kaynağında okumak için haberi açın.</string>
+    <string name="reader_share_item">Bu yazıyı paylaş</string>
+    <string name="reader_fetching">Yazının tamamı getiriliyor…</string>
+    <string name="reader_no_text">Bu kaynağın akışında yazının metni yoktu. Tamamını aşağıda kaynağında okuyun.</string>
+    <string name="reader_read_at_source">Kaynağında oku</string>
+    <string name="reader_no_link">Bu yazının akışında kaynağına dönecek kullanılabilir bir bağlantı yoktu.</string>
+    <string name="loom_subtitle">Kaynaklarınızdan ne aktığı, gerçekte ne okuduğunuzla birlikte dokunmuş hâlde.</string>
+    <string name="loom_strip_open">Tezgâhı aç — ne aktığı, okuduklarınızla dokunmuş hâlde</string>
+    <string name="loom_strip_label">Tezgâh</string>
+    <string name="loom_bar_label">Gün, konulara göre.</string>
+    <string name="loom_streams">Akışlar</string>
+    <string name="loom_where_reading">Okumanız nereden geldi</string>
+    <string name="loom_nothing_read_yet">Henüz bir şey okumadınız — haberleri açtıkça bu şerit dolar.</string>
+    <string name="loom_nothing_to_weave">Dokunacak bir şey henüz yok</string>
+    <string name="clippings_empty">Henüz kupür yok</string>
+    <string name="clippings_empty_body">Herhangi bir yazıdaki kupür simgesine dokunarak onu buraya alın: sonradan kaynağını kaldırsanız ya da kapatsanız da kalır.</string>
+    <string name="clippings_remove">Kupürü kaldır</string>
+    <string name="sources_title">Kaynaklar</string>
+    <string name="sources_add">Kaynak ekle</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">Akış adresi</string>
+    <string name="sources_add_button">Ekle</string>
+    <string name="sources_your_feeds">Akışlarınız</string>
+    <string name="sources_remove">Kaldır</string>
+    <string name="sources_checking">Denetleniyor…</string>
+    <string name="sources_not_checked">Henüz denetlenmedi</string>
+    <string name="sources_starters">Başlangıç kaynakları</string>
+    <string name="sources_no_starters">Başlangıç kaynağı yok.</string>
+    <string name="sources_starters_body">Önceden denetlenmiş, şu anda çalışan akışlardan kısa bir liste — beğendiğinizi açın.</string>
 </resources>

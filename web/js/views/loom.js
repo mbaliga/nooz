@@ -23,6 +23,7 @@
 // been opened (state.readIds) -- so it's honest by construction: it can only
 // show what your own sources served and what you did with it.
 
+import { t } from '../i18n.js';
 import { classifyItem, TOPICS, TOPIC_LABEL } from '../topics.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -57,11 +58,11 @@ export function render(container, state, actions) {
   header.className = 'nooz-loom-header';
   const title = document.createElement('h1');
   title.className = 'nooz-loom-title';
-  title.textContent = 'The Loom';
+  title.textContent = t('screen_loom', 'The Loom');
   header.appendChild(title);
   const sub = document.createElement('p');
   sub.className = 'nooz-loom-sub';
-  sub.textContent = 'What flowed from your sources, woven against what you actually read.';
+  sub.textContent = t('loom_subtitle', 'What flowed from your sources, woven against what you actually read.');
   header.appendChild(sub);
   root.appendChild(header);
 
@@ -113,7 +114,7 @@ export function render(container, state, actions) {
     tabButtons[mode] = b;
     return b;
   }
-  makeTab('loom', 'Loom');
+  makeTab('loom', t('loom_strip_label', 'Loom'));
   makeTab('contrast', 'Contrast');
 
   function draw() {
@@ -151,11 +152,11 @@ export function buildLoomStrip(state, actions) {
   const strip = document.createElement('button');
   strip.type = 'button';
   strip.className = 'nooz-loomstrip';
-  strip.setAttribute('aria-label', 'Open the Loom -- what flowed, woven against what you read');
+  strip.setAttribute('aria-label', t('loom_strip_open', 'Open the Loom — what flowed, woven against what you read'));
 
   const label = document.createElement('span');
   label.className = 'nooz-loomstrip-label';
-  label.textContent = 'Loom';
+  label.textContent = t('loom_strip_label', 'Loom');
   strip.appendChild(label);
 
   const bar = document.createElement('span');
@@ -262,7 +263,7 @@ function buildLoomBar(rows, total) {
   const bar = document.createElement('div');
   bar.className = 'nooz-loombar';
   bar.setAttribute('role', 'img');
-  bar.setAttribute('aria-label', 'The day, by topic.');
+  bar.setAttribute('aria-label', t('loom_bar_label', 'The day, by topic.'));
 
   for (const row of rows) {
     const seg = document.createElement('div');
@@ -387,7 +388,7 @@ function buildLoomView(flowed, read, enabledSourceCount) {
     box.className = 'nooz-empty-state';
     const t = document.createElement('p');
     t.className = 'nooz-empty-state-text';
-    t.textContent = 'Nothing flowed this day. The loom weaves once your sources do.';
+    t.textContent = t('loom_empty', 'Nothing flowed this day. The loom weaves once your sources do.');
     box.appendChild(t);
     return box;
   }
@@ -517,7 +518,7 @@ function buildLoomView(flowed, read, enabledSourceCount) {
   const keysLabel = document.createElement('p');
   keysLabel.className = 'nooz-loom-keys-label';
   keysLabel.id = 'nooz-loom-keys-label';
-  keysLabel.textContent = 'Streams';
+  keysLabel.textContent = t('loom_streams', 'Streams');
   keys.appendChild(keysLabel);
   keys.setAttribute('role', 'group');
   keys.setAttribute('aria-labelledby', keysLabel.id);
@@ -816,7 +817,7 @@ function buildRegionStrip(items, state) {
 
   const heading = document.createElement('p');
   heading.className = 'nooz-section-title';
-  heading.textContent = 'Where your reading came from';
+  heading.textContent = t('loom_where_reading', 'Where your reading came from');
   wrap.appendChild(heading);
 
   const regionOf = new Map((state.sources || []).map((s) => [s.id, s.region]));
@@ -834,7 +835,7 @@ function buildRegionStrip(items, state) {
     none.className = 'nooz-empty-state-text';
     none.style.textAlign = 'left';
     none.style.maxWidth = 'none';
-    none.textContent = "You haven't read anything yet -- the strip fills in as you open stories.";
+    none.textContent = t('loom_nothing_read_yet', 'You haven’t read anything yet — the strip fills in as you open stories.');
     wrap.appendChild(none);
     return wrap;
   }
@@ -889,7 +890,7 @@ function emptyState(state) {
   wrap.className = 'nooz-empty-state';
   const title = document.createElement('p');
   title.className = 'nooz-empty-state-title';
-  title.textContent = 'Nothing to weave yet';
+  title.textContent = t('loom_nothing_to_weave', 'Nothing to weave yet');
   wrap.appendChild(title);
   const text = document.createElement('p');
   text.className = 'nooz-empty-state-text';

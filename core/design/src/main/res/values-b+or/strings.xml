@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">ଗତ ସମୟଠାରୁ କ’ଣ ବଦଳିଲା</string>
     <string name="cross_no_earlier">ତୁଳନା ପାଇଁ ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ପୂର୍ବ ସମୟ ନାହିଁ।</string>
     <string name="cross_steady">ଆପଣଙ୍କ ବିଷୟ ମିଶ୍ରଣ ସ୍ଥିର ରହିଲା।</string>
+    <string name="stand_title">ଷ୍ଟାଣ୍ଡ</string>
+    <string name="stand_subtitle">ଖବରକାଗଜ ଓଲଟାନ୍ତୁ। ଗୋଟିଏ ଗଦା ବାଛି ସେହି ଅଂଶ ପଢ଼ନ୍ତୁ।</string>
+    <string name="stand_empty">ଷ୍ଟାଣ୍ଡ ଖାଲି ଅଛି</string>
+    <string name="stand_loom_edition">ଲୁମ ସଂସ୍କରଣ</string>
+    <string name="stand_woven_from">ଆପଣଙ୍କ ନିଜ ଉତ୍ସରୁ ବୁଣା</string>
+    <string name="stand_your_source">ଆପଣଙ୍କ ଉତ୍ସ, ଆପଣଙ୍କ ଖବର</string>
+    <string name="stand_setting_paper">ପୃଷ୍ଠା ସଜାଯାଉଛି…</string>
+    <string name="stand_turn_back">‹ ପୂର୍ବ ପୃଷ୍ଠା</string>
+    <string name="stand_turn_page">ପରବର୍ତ୍ତୀ ପୃଷ୍ଠା ›</string>
+    <string name="stand_continue_reading">ପଢ଼ିବା ଜାରି ରଖନ୍ତୁ →</string>
+    <string name="stand_no_full_text">ଏହି ଫିଡ୍‌ରେ ପୂରା ଲେଖା ନାହିଁ। ଉତ୍ସରେ ପଢ଼ିବାକୁ ଖବର ଖୋଲନ୍ତୁ।</string>
+    <string name="stand_no_full_text_yet">ଏହି ଫିଡ୍‌ରେ ଏପର୍ଯ୍ୟନ୍ତ ପୂରା ଲେଖା ନାହିଁ। ଉତ୍ସରେ ପଢ଼ିବାକୁ ଖବର ଖୋଲନ୍ତୁ।</string>
+    <string name="reader_share_item">ଏହି ଖବର ସେୟାର କରନ୍ତୁ</string>
+    <string name="reader_fetching">ପୂରା ଲେଖା ଅଣାଯାଉଛି…</string>
+    <string name="reader_no_text">ଏହି ଉତ୍ସର ଫିଡ୍‌ରେ ଲେଖାର ପାଠ ନଥିଲା। ତଳେ ଉତ୍ସରେ ପୂରା ଲେଖା ପଢ଼ନ୍ତୁ।</string>
+    <string name="reader_read_at_source">ଉତ୍ସରେ ପଢ଼ନ୍ତୁ</string>
+    <string name="reader_no_link">ଏହି ଖବରର ଫିଡ୍‌ରେ ଉତ୍ସକୁ ଫେରିବାର କୌଣସି କାମର ଲିଙ୍କ ନଥିଲା।</string>
+    <string name="loom_subtitle">ଆପଣଙ୍କ ଉତ୍ସରୁ କ’ଣ ବହିଲା, ଆଉ ଆପଣ ପ୍ରକୃତରେ କ’ଣ ପଢ଼ିଲେ — ଦୁଇଟି ଏକାଠି ବୁଣା।</string>
+    <string name="loom_strip_open">ଲୁମ ଖୋଲନ୍ତୁ — କ’ଣ ବହିଲା, ଆପଣ ପଢ଼ିଥିବା ସହ ବୁଣା</string>
+    <string name="loom_strip_label">ଲୁମ</string>
+    <string name="loom_bar_label">ଦିନ, ବିଷୟ ଅନୁସାରେ।</string>
+    <string name="loom_streams">ଧାରା</string>
+    <string name="loom_where_reading">ଆପଣଙ୍କ ପଠନ କେଉଁଠାରୁ ଆସିଲା</string>
+    <string name="loom_nothing_read_yet">ଆପଣ ଏପର୍ଯ୍ୟନ୍ତ କିଛି ପଢ଼ିନାହାନ୍ତି — ଖବର ଖୋଲିଲେ ଏହି ପଟି ଭରିଯିବ।</string>
+    <string name="loom_nothing_to_weave">ଏପର୍ଯ୍ୟନ୍ତ ବୁଣିବାକୁ କିଛି ନାହିଁ</string>
+    <string name="clippings_empty">ଏପର୍ଯ୍ୟନ୍ତ କିଛି କଟାଯାଇନାହିଁ</string>
+    <string name="clippings_empty_body">ଯେକୌଣସି ଖବରର କାଟଣା ଚିହ୍ନ ଛୁଇଁ ତାହା ଏଠାରେ ରଖିଦିଅନ୍ତୁ — ପରେ ତାହାର ଉତ୍ସ ହଟାଇଲେ କି ବନ୍ଦ କଲେ ମଧ୍ୟ ତାହା ରହିବ।</string>
+    <string name="clippings_remove">କାଟଣା ହଟାନ୍ତୁ</string>
+    <string name="sources_title">ଉତ୍ସ</string>
+    <string name="sources_add">ଉତ୍ସ ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">ଫିଡ୍ URL</string>
+    <string name="sources_add_button">ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="sources_your_feeds">ଆପଣଙ୍କ ଫିଡ୍</string>
+    <string name="sources_remove">ହଟାନ୍ତୁ</string>
+    <string name="sources_checking">ଯାଞ୍ଚ କରାଯାଉଛି…</string>
+    <string name="sources_not_checked">ଏପର୍ଯ୍ୟନ୍ତ ଯାଞ୍ଚ ହୋଇନାହିଁ</string>
+    <string name="sources_starters">ଆରମ୍ଭିକ ଉତ୍ସ</string>
+    <string name="sources_no_starters">କୌଣସି ଆରମ୍ଭିକ ଉତ୍ସ ଉପଲବ୍ଧ ନାହିଁ।</string>
+    <string name="sources_starters_body">ଆଗରୁ ଯାଞ୍ଚ ହୋଇଥିବା, ବର୍ତ୍ତମାନ ସଚଳ ଫିଡ୍‌ର ଏକ ଛୋଟ ତାଲିକା — ଯାହା ଭଲ ଲାଗେ ଚାଲୁ କରନ୍ତୁ।</string>
 </resources>

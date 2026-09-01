@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Kilichobadilika tangu kipindi kilichopita</string>
     <string name="cross_no_earlier">Bado hakuna kipindi cha awali cha kulinganisha.</string>
     <string name="cross_steady">Mchanganyiko wako wa mada ulibaki thabiti.</string>
+    <string name="stand_title">Kibanda</string>
+    <string name="stand_subtitle">Pitia magazeti. Chagua rundo ili kusoma sehemu hiyo.</string>
+    <string name="stand_empty">Kibanda ni kitupu</string>
+    <string name="stand_loom_edition">Toleo la Mtande</string>
+    <string name="stand_woven_from">Imefumwa kutoka vyanzo vyako mwenyewe</string>
+    <string name="stand_your_source">Chanzo chako, habari zako</string>
+    <string name="stand_setting_paper">Inapanga ukurasa…</string>
+    <string name="stand_turn_back">‹ Ukurasa uliopita</string>
+    <string name="stand_turn_page">Geuza ukurasa ›</string>
+    <string name="stand_continue_reading">Endelea kusoma →</string>
+    <string name="stand_no_full_text">Maandishi kamili hayamo kwenye mpasho huu. Fungua habari ili kuisoma kwenye chanzo.</string>
+    <string name="stand_no_full_text_yet">Maandishi kamili bado hayamo kwenye mpasho huu. Fungua habari ili kuisoma kwenye chanzo.</string>
+    <string name="reader_share_item">Shiriki habari hii</string>
+    <string name="reader_fetching">Inaleta makala kamili…</string>
+    <string name="reader_no_text">Mpasho wa chanzo hiki haukuwa na maandishi ya makala. Soma makala kamili kwenye chanzo, hapa chini.</string>
+    <string name="reader_read_at_source">Soma kwenye chanzo</string>
+    <string name="reader_no_link">Mpasho wa habari hii haukuwa na kiungo kinachotumika kurudi kwenye chanzo chake.</string>
+    <string name="loom_subtitle">Kilichotiririka kutoka vyanzo vyako, kikifumwa pamoja na ulichosoma hasa.</string>
+    <string name="loom_strip_open">Fungua Mtande — kilichotiririka, kikifumwa na ulichosoma</string>
+    <string name="loom_strip_label">Mtande</string>
+    <string name="loom_bar_label">Siku, kwa mada.</string>
+    <string name="loom_streams">Mikondo</string>
+    <string name="loom_where_reading">Usomaji wako ulitoka wapi</string>
+    <string name="loom_nothing_read_yet">Bado hujasoma chochote — upau hujaa kadri unavyofungua habari.</string>
+    <string name="loom_nothing_to_weave">Bado hakuna cha kufuma</string>
+    <string name="clippings_empty">Bado hakuna kipande</string>
+    <string name="clippings_empty_body">Gusa alama ya kipande kwenye habari yoyote ili kuihifadhi hapa: hubaki hata ukiondoa au kuzima chanzo chake baadaye.</string>
+    <string name="clippings_remove">Ondoa kipande</string>
+    <string name="sources_title">Vyanzo</string>
+    <string name="sources_add">Ongeza chanzo</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">Anwani ya mpasho</string>
+    <string name="sources_add_button">Ongeza</string>
+    <string name="sources_your_feeds">Mipasho yako</string>
+    <string name="sources_remove">Ondoa</string>
+    <string name="sources_checking">Inakagua…</string>
+    <string name="sources_not_checked">Bado haijakaguliwa</string>
+    <string name="sources_starters">Vyanzo vya kuanzia</string>
+    <string name="sources_no_starters">Hakuna vyanzo vya kuanzia.</string>
+    <string name="sources_starters_body">Orodha fupi ya mipasho iliyokaguliwa na inayofanya kazi sasa — washa unayoipenda.</string>
 </resources>

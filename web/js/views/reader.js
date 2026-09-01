@@ -10,6 +10,7 @@
 // Feed-derived text is only ever set via .textContent; the one href that
 // becomes a link (the source URL) is restricted to http(s) first.
 
+import { t } from '../i18n.js';
 import { sanitizeHtml } from '../sanitize.js';
 import { annotate } from '../lens.js';
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
@@ -88,10 +89,10 @@ function buildBackControl(actions) {
   const backBtn = document.createElement('button');
   backBtn.type = 'button';
   backBtn.className = 'nooz-button';
-  backBtn.setAttribute('aria-label', 'Back to your stand');
+  backBtn.setAttribute('aria-label', t('reader_back_to_stand', 'Back to your stand'));
   backBtn.appendChild(createBackIcon());
   const label = document.createElement('span');
-  label.textContent = 'Back to your stand';
+  label.textContent = t('reader_back_to_stand', 'Back to your stand');
   backBtn.appendChild(label);
   backBtn.addEventListener('click', () => actions.goTo('stand'));
   row.appendChild(backBtn);
@@ -119,7 +120,7 @@ function buildMissingItemEmptyState(state, actions) {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'nooz-button nooz-button--primary';
-  btn.textContent = 'Back to your stand';
+  btn.textContent = t('reader_back_to_stand', 'Back to your stand');
   btn.addEventListener('click', () => actions.goTo('stand'));
   wrap.appendChild(btn);
 
@@ -159,7 +160,7 @@ function buildReaderActions(item, state, actions) {
   const shareBtn = document.createElement('button');
   shareBtn.type = 'button';
   shareBtn.className = 'nooz-button-icon';
-  shareBtn.setAttribute('aria-label', 'Share this item');
+  shareBtn.setAttribute('aria-label', t('reader_share_item', 'Share this item'));
   shareBtn.appendChild(createShareIcon());
   shareBtn.addEventListener('click', () => actions.shareItem(item.id));
   row.appendChild(shareBtn);
@@ -244,12 +245,12 @@ function buildBody(item, state) {
   if (status === 'loading') {
     const loading = document.createElement('p');
     loading.className = 'nooz-reader-loading';
-    loading.textContent = 'Fetching the full article…';
+    loading.textContent = t('reader_fetching', 'Fetching the full article…');
     body.appendChild(loading);
   } else if (!renderedHtml) {
     const p = document.createElement('p');
     p.className = 'nooz-reader-thin';
-    p.textContent = "This source's feed didn't include the article text. Read the full piece at the source below.";
+    p.textContent = t('reader_no_text', 'This source’s feed didn’t include the article text. Read the full piece at the source below.');
     body.appendChild(p);
   }
 
@@ -293,13 +294,13 @@ function buildSourceSection(item, state) {
     link.href = url;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
-    link.textContent = 'Read at the source';
+    link.textContent = t('reader_read_at_source', 'Read at the source');
     wrap.appendChild(link);
   } else {
     const missing = document.createElement('p');
     missing.className = 'nooz-empty-state-text';
     missing.style.margin = '0';
-    missing.textContent = "This item's feed didn't include a usable link back to its source.";
+    missing.textContent = t('reader_no_link', 'This item’s feed didn’t include a usable link back to its source.');
     wrap.appendChild(missing);
   }
 

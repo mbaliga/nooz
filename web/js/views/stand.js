@@ -11,6 +11,7 @@
 // by default, switchable from the chip on the lead photo); the extracted/feed
 // image URLs were already restricted to https by feeds.js.
 
+import { t } from '../i18n.js';
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
 import { frameImage } from '../images.js';
 import { buildLoomStrip } from './loom.js';
@@ -445,7 +446,7 @@ function buildBodyBlocks(item, state) {
   if (blocks.length === 0) {
     const p = document.createElement('p');
     p.className = 'nooz-art-b nooz-art-b--thin';
-    p.textContent = 'The full text is not in this feed. Open the story to read it at the source.';
+    p.textContent = t('stand_no_full_text', 'The full text is not in this feed. Open the story to read it at the source.');
     blocks.push(p);
   }
   return blocks;
@@ -485,10 +486,10 @@ function buildFrontNameplate(state) {
   top.className = 'nooz-np-topline';
   const ed = document.createElement('span');
   ed.className = 'nooz-np-edition';
-  ed.textContent = 'The Loom Edition';
+  ed.textContent = t('stand_loom_edition', 'The Loom Edition');
   const tag = document.createElement('span');
   tag.className = 'nooz-np-tagline';
-  tag.textContent = 'Woven from your own sources';
+  tag.textContent = t('stand_woven_from', 'Woven from your own sources');
   top.appendChild(ed);
   top.appendChild(tag);
   wrap.appendChild(top);
@@ -505,7 +506,7 @@ function buildFrontNameplate(state) {
   d1.textContent = fullToday();
   const d2 = document.createElement('span');
   d2.className = 'nooz-np-dateline-mid';
-  d2.textContent = 'Your Source, Your News';
+  d2.textContent = t('stand_your_source', 'Your Source, Your News');
   const d3 = document.createElement('span');
   d3.textContent = `${enabled} ${enabled === 1 ? 'source' : 'sources'}`;
   dateline.appendChild(d1);
@@ -638,7 +639,7 @@ function buildVisiblePage(state, actions, page, dims) {
 function newspaperLoading() {
   const p = document.createElement('p');
   p.className = 'nooz-np-loading';
-  p.textContent = 'Setting the paper…';
+  p.textContent = t('stand_setting_paper', 'Setting the paper…');
   return p;
 }
 
@@ -649,7 +650,7 @@ function buildPager(spread, maxSpread, shown, pageCount, doTurn) {
   const prev = document.createElement('button');
   prev.type = 'button';
   prev.className = 'nooz-button nooz-pager-btn';
-  prev.textContent = '‹ Turn back';
+  prev.textContent = t('stand_turn_back', '‹ Turn back');
   prev.disabled = spread <= 0;
   prev.addEventListener('click', () => doTurn(-1));
   pager.appendChild(prev);
@@ -662,7 +663,7 @@ function buildPager(spread, maxSpread, shown, pageCount, doTurn) {
   const next = document.createElement('button');
   next.type = 'button';
   next.className = 'nooz-button nooz-pager-btn';
-  next.textContent = 'Turn page ›';
+  next.textContent = t('stand_turn_page', 'Turn page ›');
   next.disabled = spread >= maxSpread;
   next.addEventListener('click', () => doTurn(1));
   pager.appendChild(next);
@@ -731,7 +732,7 @@ function readMarker(item, state) {
   if (!state.readIds || !state.readIds.has(item.id)) return null;
   const mark = document.createElement('span');
   mark.className = 'nooz-visually-hidden';
-  mark.textContent = 'Read. ';
+  mark.textContent = t('list_read', 'Read') + '. ';
   return mark;
 }
 
@@ -783,7 +784,7 @@ function buildLeadStory(item, state, actions, showImages, imageStyle, continued)
 
   const cont = document.createElement('span');
   cont.className = 'nooz-continue';
-  cont.textContent = 'Continue reading →';
+  cont.textContent = t('stand_continue_reading', 'Continue reading →');
   body.appendChild(cont);
 
   story.appendChild(body);
@@ -818,7 +819,7 @@ function buildFullBody(item, state) {
   } else {
     const p = document.createElement('p');
     p.className = 'nooz-reader-thin';
-    p.textContent = 'The full text is not in this feed yet. Open the story to read it at the source.';
+    p.textContent = t('stand_no_full_text_yet', 'The full text is not in this feed yet. Open the story to read it at the source.');
     wrap.appendChild(p);
   }
 

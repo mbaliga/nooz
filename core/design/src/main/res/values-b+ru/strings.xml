@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Что изменилось с прошлого периода</string>
     <string name="cross_no_earlier">Прошлого периода для сравнения пока нет.</string>
     <string name="cross_steady">Ваш набор тем не изменился.</string>
+    <string name="stand_title">Витрина</string>
+    <string name="stand_subtitle">Пролистайте газеты. Выберите стопку, чтобы прочесть этот срез.</string>
+    <string name="stand_empty">Витрина пуста</string>
+    <string name="stand_loom_edition">Выпуск «Стан»</string>
+    <string name="stand_woven_from">Соткано из ваших собственных источников</string>
+    <string name="stand_your_source">Ваши источники, ваши новости</string>
+    <string name="stand_setting_paper">Верстается полоса…</string>
+    <string name="stand_turn_back">‹ Предыдущая страница</string>
+    <string name="stand_turn_page">Перевернуть ›</string>
+    <string name="stand_continue_reading">Читать дальше →</string>
+    <string name="stand_no_full_text">Полного текста в этой ленте нет. Откройте новость, чтобы прочесть её в источнике.</string>
+    <string name="stand_no_full_text_yet">Полного текста в этой ленте пока нет. Откройте новость, чтобы прочесть её в источнике.</string>
+    <string name="reader_share_item">Поделиться этим материалом</string>
+    <string name="reader_fetching">Загружается полный текст…</string>
+    <string name="reader_no_text">В ленте этого источника не было текста статьи. Прочтите материал целиком в источнике ниже.</string>
+    <string name="reader_read_at_source">Читать в источнике</string>
+    <string name="reader_no_link">В ленте этого материала не было пригодной ссылки на источник.</string>
+    <string name="loom_subtitle">Что пришло от ваших источников, сотканное вместе с тем, что вы на самом деле прочли.</string>
+    <string name="loom_strip_open">Открыть стан — что пришло, сотканное с тем, что вы прочли</string>
+    <string name="loom_strip_label">Стан</string>
+    <string name="loom_bar_label">День по темам.</string>
+    <string name="loom_streams">Нити</string>
+    <string name="loom_where_reading">Откуда пришло ваше чтение</string>
+    <string name="loom_nothing_read_yet">Вы ещё ничего не прочли — полоса заполняется по мере того, как вы открываете новости.</string>
+    <string name="loom_nothing_to_weave">Пока нечего ткать</string>
+    <string name="clippings_empty">Вырезок пока нет</string>
+    <string name="clippings_empty_body">Коснитесь значка вырезки у любого материала, чтобы сохранить его здесь: он останется, даже если позже убрать или отключить его источник.</string>
+    <string name="clippings_remove">Убрать вырезку</string>
+    <string name="sources_title">Источники</string>
+    <string name="sources_add">Добавить источник</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">Адрес ленты</string>
+    <string name="sources_add_button">Добавить</string>
+    <string name="sources_your_feeds">Ваши ленты</string>
+    <string name="sources_remove">Убрать</string>
+    <string name="sources_checking">Проверяем…</string>
+    <string name="sources_not_checked">Ещё не проверено</string>
+    <string name="sources_starters">Начальные источники</string>
+    <string name="sources_no_starters">Начальных источников нет.</string>
+    <string name="sources_starters_body">Короткий список заранее проверенных, работающих прямо сейчас лент — включите те, что нравятся.</string>
 </resources>

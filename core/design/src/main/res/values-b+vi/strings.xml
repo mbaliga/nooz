@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Điều gì đã đổi so với kỳ trước</string>
     <string name="cross_no_earlier">Chưa có kỳ trước để so sánh.</string>
     <string name="cross_steady">Cơ cấu chủ đề của bạn giữ nguyên.</string>
+    <string name="stand_title">Sạp báo</string>
+    <string name="stand_subtitle">Lật qua các tờ báo. Chọn một chồng để đọc lát cắt đó.</string>
+    <string name="stand_empty">Sạp báo trống</string>
+    <string name="stand_loom_edition">Ấn bản Khung cửi</string>
+    <string name="stand_woven_from">Dệt từ chính các nguồn của bạn</string>
+    <string name="stand_your_source">Nguồn của bạn, tin của bạn</string>
+    <string name="stand_setting_paper">Đang dàn trang…</string>
+    <string name="stand_turn_back">‹ Trang trước</string>
+    <string name="stand_turn_page">Lật trang ›</string>
+    <string name="stand_continue_reading">Đọc tiếp →</string>
+    <string name="stand_no_full_text">Bản đầy đủ không có trong dòng tin này. Mở bài để đọc tại nguồn.</string>
+    <string name="stand_no_full_text_yet">Bản đầy đủ chưa có trong dòng tin này. Mở bài để đọc tại nguồn.</string>
+    <string name="reader_share_item">Chia sẻ bài này</string>
+    <string name="reader_fetching">Đang lấy bài đầy đủ…</string>
+    <string name="reader_no_text">Dòng tin của nguồn này không kèm phần chữ của bài. Đọc trọn bài tại nguồn, bên dưới.</string>
+    <string name="reader_read_at_source">Đọc tại nguồn</string>
+    <string name="reader_no_link">Dòng tin của bài này không kèm liên kết dùng được trở về nguồn.</string>
+    <string name="loom_subtitle">Những gì chảy từ nguồn của bạn, dệt cùng với những gì bạn thực sự đã đọc.</string>
+    <string name="loom_strip_open">Mở Khung cửi — những gì đã chảy, dệt cùng những gì bạn đã đọc</string>
+    <string name="loom_strip_label">Khung cửi</string>
+    <string name="loom_bar_label">Ngày hôm nay, theo chủ đề.</string>
+    <string name="loom_streams">Các dòng</string>
+    <string name="loom_where_reading">Bài bạn đọc đến từ đâu</string>
+    <string name="loom_nothing_read_yet">Bạn chưa đọc gì — dải này đầy dần khi bạn mở các tin.</string>
+    <string name="loom_nothing_to_weave">Chưa có gì để dệt</string>
+    <string name="clippings_empty">Chưa cắt mẩu nào</string>
+    <string name="clippings_empty_body">Chạm biểu tượng mẩu cắt trên bất kỳ bài nào để giữ nó ở đây: nó vẫn còn kể cả khi sau này bạn bỏ hoặc tắt nguồn của nó.</string>
+    <string name="clippings_remove">Bỏ mẩu cắt</string>
+    <string name="sources_title">Nguồn</string>
+    <string name="sources_add">Thêm nguồn</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">Địa chỉ dòng tin</string>
+    <string name="sources_add_button">Thêm</string>
+    <string name="sources_your_feeds">Dòng tin của bạn</string>
+    <string name="sources_remove">Bỏ</string>
+    <string name="sources_checking">Đang kiểm tra…</string>
+    <string name="sources_not_checked">Chưa kiểm tra</string>
+    <string name="sources_starters">Nguồn khởi đầu</string>
+    <string name="sources_no_starters">Không có nguồn khởi đầu nào.</string>
+    <string name="sources_starters_body">Một danh sách ngắn các dòng tin đã kiểm và đang hoạt động — bật cái nào bạn thích.</string>
 </resources>

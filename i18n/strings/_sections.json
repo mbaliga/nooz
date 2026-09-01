@@ -54,6 +54,18 @@
     {
       "title": "The cross-section.",
       "prefix": "cross_"
+    },
+    {
+      "title": "The web reader's own copy. Where the phrasing matches Android's, the same key is reused rather than duplicated -- one set of words for two clients is the whole point.",
+      "prefix": "stand_"
+    },
+    {
+      "title": "Clippings.",
+      "prefix": "clippings_"
+    },
+    {
+      "title": "Managing sources — the flow by which a reader chooses what this app is even about.",
+      "prefix": "sources_"
     }
   ]
 }

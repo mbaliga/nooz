@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">前の期間からの変化</string>
     <string name="cross_no_earlier">比較できる前の期間がまだありません。</string>
     <string name="cross_steady">話題の構成は変わりませんでした。</string>
+    <string name="stand_title">スタンド</string>
+    <string name="stand_subtitle">紙面をめくってください。ひと山選ぶと、その切り口が読めます。</string>
+    <string name="stand_empty">スタンドは空です</string>
+    <string name="stand_loom_edition">織り機版</string>
+    <string name="stand_woven_from">あなた自身の情報源から織られています</string>
+    <string name="stand_your_source">あなたの情報源、あなたのニュース</string>
+    <string name="stand_setting_paper">紙面を組んでいます…</string>
+    <string name="stand_turn_back">‹ 前の面</string>
+    <string name="stand_turn_page">次の面 ›</string>
+    <string name="stand_continue_reading">続きを読む →</string>
+    <string name="stand_no_full_text">全文はこのフィードに含まれていません。発行元で読むには記事を開いてください。</string>
+    <string name="stand_no_full_text_yet">全文はまだこのフィードに含まれていません。発行元で読むには記事を開いてください。</string>
+    <string name="reader_share_item">この記事を共有</string>
+    <string name="reader_fetching">全文を取得しています…</string>
+    <string name="reader_no_text">この情報源のフィードに本文が含まれていませんでした。下の発行元で全文をお読みください。</string>
+    <string name="reader_read_at_source">発行元で読む</string>
+    <string name="reader_no_link">この記事のフィードには、発行元へ戻れる有効なリンクがありませんでした。</string>
+    <string name="loom_subtitle">情報源が届けたものと、あなたが実際に読んだものを、織り合わせて。</string>
+    <string name="loom_strip_open">織り機を開く — 何が届き、読んだものとどう織り合うか</string>
+    <string name="loom_strip_label">織り機</string>
+    <string name="loom_bar_label">その日を話題別に。</string>
+    <string name="loom_streams">流れ</string>
+    <string name="loom_where_reading">あなたの読書はどこから来たか</string>
+    <string name="loom_nothing_read_yet">まだ何も読んでいません。記事を開くにつれて、この帯が埋まります。</string>
+    <string name="loom_nothing_to_weave">まだ織るものがありません</string>
+    <string name="clippings_empty">まだ切り抜きはありません</string>
+    <string name="clippings_empty_body">どの記事でも切り抜きのアイコンを押せばここに残せます。あとでその情報源を外しても切っても、残ります。</string>
+    <string name="clippings_remove">切り抜きを外す</string>
+    <string name="sources_title">情報源</string>
+    <string name="sources_add">情報源を追加</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">フィードの URL</string>
+    <string name="sources_add_button">追加</string>
+    <string name="sources_your_feeds">あなたのフィード</string>
+    <string name="sources_remove">外す</string>
+    <string name="sources_checking">確認中…</string>
+    <string name="sources_not_checked">未確認</string>
+    <string name="sources_starters">はじめの情報源</string>
+    <string name="sources_no_starters">はじめの情報源はありません。</string>
+    <string name="sources_starters_body">確認済みで今も動いているフィードの短い一覧です。好きなものを入れてください。</string>
 </resources>

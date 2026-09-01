@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Ce qui a changé depuis la période précédente</string>
     <string name="cross_no_earlier">Pas encore de période antérieure à comparer.</string>
     <string name="cross_steady">Votre mélange de thèmes est resté stable.</string>
+    <string name="stand_title">Le Kiosque</string>
+    <string name="stand_subtitle">Feuilletez les journaux. Choisissez une pile pour lire cette tranche.</string>
+    <string name="stand_empty">Le kiosque est vide</string>
+    <string name="stand_loom_edition">Édition Métier</string>
+    <string name="stand_woven_from">Tissé à partir de vos propres sources</string>
+    <string name="stand_your_source">Vos sources, vos nouvelles</string>
+    <string name="stand_setting_paper">Composition de la page…</string>
+    <string name="stand_turn_back">‹ Page précédente</string>
+    <string name="stand_turn_page">Tourner la page ›</string>
+    <string name="stand_continue_reading">Continuer la lecture →</string>
+    <string name="stand_no_full_text">Le texte intégral n\'est pas dans ce flux. Ouvrez l\'article pour le lire à la source.</string>
+    <string name="stand_no_full_text_yet">Le texte intégral n\'est pas encore dans ce flux. Ouvrez l\'article pour le lire à la source.</string>
+    <string name="reader_share_item">Partager cet article</string>
+    <string name="reader_fetching">Récupération de l\'article complet…</string>
+    <string name="reader_no_text">Le flux de cette source ne contenait pas le texte de l\'article. Lisez-le en entier à la source, ci-dessous.</string>
+    <string name="reader_read_at_source">Lire à la source</string>
+    <string name="reader_no_link">Le flux de cet article ne contenait aucun lien exploitable vers sa source.</string>
+    <string name="loom_subtitle">Ce qui est arrivé de vos sources, tissé face à ce que vous avez réellement lu.</string>
+    <string name="loom_strip_open">Ouvrir le Métier — ce qui est arrivé, tissé face à ce que vous avez lu</string>
+    <string name="loom_strip_label">Métier</string>
+    <string name="loom_bar_label">La journée, par thème.</string>
+    <string name="loom_streams">Fils</string>
+    <string name="loom_where_reading">D\'où venait votre lecture</string>
+    <string name="loom_nothing_read_yet">Vous n\'avez encore rien lu — la bande se remplit à mesure que vous ouvrez des articles.</string>
+    <string name="loom_nothing_to_weave">Rien à tisser pour l\'instant</string>
+    <string name="clippings_empty">Aucune coupure pour l\'instant</string>
+    <string name="clippings_empty_body">Touchez l\'icône de coupure sur n\'importe quel article pour le garder ici : il reste même si vous retirez ou désactivez sa source ensuite.</string>
+    <string name="clippings_remove">Retirer la coupure</string>
+    <string name="sources_title">Sources</string>
+    <string name="sources_add">Ajouter une source</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">URL du flux</string>
+    <string name="sources_add_button">Ajouter</string>
+    <string name="sources_your_feeds">Vos flux</string>
+    <string name="sources_remove">Retirer</string>
+    <string name="sources_checking">Vérification…</string>
+    <string name="sources_not_checked">Pas encore vérifié</string>
+    <string name="sources_starters">Sources de départ</string>
+    <string name="sources_no_starters">Aucune source de départ disponible.</string>
+    <string name="sources_starters_body">Une courte liste de flux déjà vérifiés et actifs en ce moment — activez ceux qui vous plaisent.</string>
 </resources>

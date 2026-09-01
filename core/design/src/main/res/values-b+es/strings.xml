@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Qué cambió desde el periodo anterior</string>
     <string name="cross_no_earlier">Todavía no hay un periodo anterior con el que comparar.</string>
     <string name="cross_steady">Tu mezcla de temas se mantuvo estable.</string>
+    <string name="stand_title">El Quiosco</string>
+    <string name="stand_subtitle">Hojea los periódicos. Elige un montón para leer esa parte.</string>
+    <string name="stand_empty">El quiosco está vacío</string>
+    <string name="stand_loom_edition">Edición Telar</string>
+    <string name="stand_woven_from">Tejido con tus propias fuentes</string>
+    <string name="stand_your_source">Tu fuente, tus noticias</string>
+    <string name="stand_setting_paper">Componiendo la página…</string>
+    <string name="stand_turn_back">‹ Página anterior</string>
+    <string name="stand_turn_page">Pasar página ›</string>
+    <string name="stand_continue_reading">Seguir leyendo →</string>
+    <string name="stand_no_full_text">El texto completo no está en este canal. Abre la historia para leerla en la fuente.</string>
+    <string name="stand_no_full_text_yet">El texto completo aún no está en este canal. Abre la historia para leerla en la fuente.</string>
+    <string name="reader_share_item">Compartir esta pieza</string>
+    <string name="reader_fetching">Trayendo el artículo completo…</string>
+    <string name="reader_no_text">El canal de esta fuente no incluía el texto del artículo. Lee la pieza completa en la fuente, abajo.</string>
+    <string name="reader_read_at_source">Leer en la fuente</string>
+    <string name="reader_no_link">El canal de esta pieza no incluía un enlace utilizable a su fuente.</string>
+    <string name="loom_subtitle">Lo que llegó de tus fuentes, tejido contra lo que de verdad leíste.</string>
+    <string name="loom_strip_open">Abrir el Telar — lo que llegó, tejido contra lo que leíste</string>
+    <string name="loom_strip_label">Telar</string>
+    <string name="loom_bar_label">El día, por tema.</string>
+    <string name="loom_streams">Hilos</string>
+    <string name="loom_where_reading">De dónde vino tu lectura</string>
+    <string name="loom_nothing_read_yet">Todavía no has leído nada: la banda se llena a medida que abres historias.</string>
+    <string name="loom_nothing_to_weave">Nada que tejer todavía</string>
+    <string name="clippings_empty">Aún no hay recortes</string>
+    <string name="clippings_empty_body">Toca el icono del recorte en cualquier pieza para guardarla aquí: se queda aunque después quites o desactives su fuente.</string>
+    <string name="clippings_remove">Quitar el recorte</string>
+    <string name="sources_title">Fuentes</string>
+    <string name="sources_add">Añadir una fuente</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">URL del canal</string>
+    <string name="sources_add_button">Añadir</string>
+    <string name="sources_your_feeds">Tus canales</string>
+    <string name="sources_remove">Quitar</string>
+    <string name="sources_checking">Comprobando…</string>
+    <string name="sources_not_checked">Sin comprobar todavía</string>
+    <string name="sources_starters">Fuentes de inicio</string>
+    <string name="sources_no_starters">No hay fuentes de inicio disponibles.</string>
+    <string name="sources_starters_body">Una lista breve de canales ya comprobados y activos ahora mismo: enciende los que quieras.</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">पहिलुका अवधि सँ की बदलल</string>
     <string name="cross_no_earlier">तुलना लेल आब धरि कोनो पहिलुका अवधि नहि अछि।</string>
     <string name="cross_steady">अहाँक विषय-मिश्रण स्थिर रहल।</string>
+    <string name="stand_title">स्टैंड</string>
+    <string name="stand_subtitle">अखबार सभ उनटाउ। कोनो ढेर चुनि ओ भाग पढ़ू।</string>
+    <string name="stand_empty">स्टैंड खाली अछि</string>
+    <string name="stand_loom_edition">लूम संस्करण</string>
+    <string name="stand_woven_from">अहाँक अपन स्रोत सँ बुनल</string>
+    <string name="stand_your_source">अहाँक स्रोत, अहाँक खबरि</string>
+    <string name="stand_setting_paper">पन्ना सजाओल जा रहल अछि…</string>
+    <string name="stand_turn_back">‹ पहिलुका पन्ना</string>
+    <string name="stand_turn_page">अगिला पन्ना ›</string>
+    <string name="stand_continue_reading">पढ़ैत रहू →</string>
+    <string name="stand_no_full_text">एहि फीड मे पूरा पाठ नहि अछि। स्रोत पर पढ़बा लेल खबरि खोलू।</string>
+    <string name="stand_no_full_text_yet">एहि फीड मे आब धरि पूरा पाठ नहि अछि। स्रोत पर पढ़बा लेल खबरि खोलू।</string>
+    <string name="reader_share_item">ई खबरि साझा करू</string>
+    <string name="reader_fetching">पूरा लेख आनल जा रहल अछि…</string>
+    <string name="reader_no_text">एहि स्रोतक फीड मे लेखक पाठ नहि छल। नीचाँ स्रोत पर पूरा लेख पढ़ू।</string>
+    <string name="reader_read_at_source">स्रोत पर पढ़ू</string>
+    <string name="reader_no_link">एहि खबरिक फीड मे स्रोत धरि घुरबाक कोनो काजक लिंक नहि छल।</string>
+    <string name="loom_subtitle">अहाँक स्रोत सँ की बहल, आ अहाँ वास्तव मे की पढ़लहुँ — दुनू संगे बुनल।</string>
+    <string name="loom_strip_open">लूम खोलू — की बहल, अहाँक पढ़लक संग बुनल</string>
+    <string name="loom_strip_label">लूम</string>
+    <string name="loom_bar_label">दिन, विषय अनुसार।</string>
+    <string name="loom_streams">धारा सभ</string>
+    <string name="loom_where_reading">अहाँक पढ़नाइ कतय सँ आयल</string>
+    <string name="loom_nothing_read_yet">अहाँ आब धरि किछु नहि पढ़लहुँ — जेना-जेना खबरि खोलब, ई पट्टी भरैत जाएत।</string>
+    <string name="loom_nothing_to_weave">आब धरि बुनबा लेल किछु नहि</string>
+    <string name="clippings_empty">आब धरि किछु नहि काटल गेल</string>
+    <string name="clippings_empty_body">कोनो खबरि पर कतरनिक चिन्ह छुबि कऽ ओकरा एतय राखि लिअ — बाद मे ओकर स्रोत हटा दी वा बन्द कऽ दी, तखनहु ओ रहत।</string>
+    <string name="clippings_remove">कतरनि हटाउ</string>
+    <string name="sources_title">स्रोत</string>
+    <string name="sources_add">स्रोत जोड़ू</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">फीड URL</string>
+    <string name="sources_add_button">जोड़ू</string>
+    <string name="sources_your_feeds">अहाँक फीड</string>
+    <string name="sources_remove">हटाउ</string>
+    <string name="sources_checking">जाँचल जा रहल अछि…</string>
+    <string name="sources_not_checked">आब धरि नहि जाँचल गेल</string>
+    <string name="sources_starters">शुरुआती स्रोत</string>
+    <string name="sources_no_starters">कोनो शुरुआती स्रोत उपलब्ध नहि।</string>
+    <string name="sources_starters_body">पहिने सँ जाँचल, आब सक्रिय फीडक एक छोट सूची — जे नीक लागय से चालू करू।</string>
 </resources>

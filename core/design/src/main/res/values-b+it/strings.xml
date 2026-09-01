@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Cosa è cambiato dal periodo precedente</string>
     <string name="cross_no_earlier">Non c\'è ancora un periodo precedente da confrontare.</string>
     <string name="cross_steady">Il tuo mix di argomenti è rimasto stabile.</string>
+    <string name="stand_title">L\'Edicola</string>
+    <string name="stand_subtitle">Sfoglia i giornali. Scegli una pila per leggere quella fetta.</string>
+    <string name="stand_empty">L\'edicola è vuota</string>
+    <string name="stand_loom_edition">Edizione Telaio</string>
+    <string name="stand_woven_from">Tessuto dalle tue stesse fonti</string>
+    <string name="stand_your_source">Le tue fonti, le tue notizie</string>
+    <string name="stand_setting_paper">Sto impaginando…</string>
+    <string name="stand_turn_back">‹ Pagina precedente</string>
+    <string name="stand_turn_page">Gira pagina ›</string>
+    <string name="stand_continue_reading">Continua a leggere →</string>
+    <string name="stand_no_full_text">Il testo completo non è in questo feed. Apri la notizia per leggerla alla fonte.</string>
+    <string name="stand_no_full_text_yet">Il testo completo non è ancora in questo feed. Apri la notizia per leggerla alla fonte.</string>
+    <string name="reader_share_item">Condividi questo pezzo</string>
+    <string name="reader_fetching">Sto recuperando l\'articolo intero…</string>
+    <string name="reader_no_text">Il feed di questa fonte non conteneva il testo dell\'articolo. Leggi il pezzo intero alla fonte, qui sotto.</string>
+    <string name="reader_read_at_source">Leggi alla fonte</string>
+    <string name="reader_no_link">Il feed di questo pezzo non conteneva un collegamento utilizzabile alla sua fonte.</string>
+    <string name="loom_subtitle">Ciò che è arrivato dalle tue fonti, intrecciato con ciò che hai davvero letto.</string>
+    <string name="loom_strip_open">Apri il Telaio — ciò che è arrivato, intrecciato con ciò che hai letto</string>
+    <string name="loom_strip_label">Telaio</string>
+    <string name="loom_bar_label">La giornata, per argomento.</string>
+    <string name="loom_streams">Fili</string>
+    <string name="loom_where_reading">Da dove è venuta la tua lettura</string>
+    <string name="loom_nothing_read_yet">Non hai ancora letto nulla: la striscia si riempie man mano che apri le notizie.</string>
+    <string name="loom_nothing_to_weave">Ancora niente da tessere</string>
+    <string name="clippings_empty">Ancora nessun ritaglio</string>
+    <string name="clippings_empty_body">Tocca l\'icona del ritaglio su un pezzo qualsiasi per tenerlo qui: resta anche se poi togli o disattivi la sua fonte.</string>
+    <string name="clippings_remove">Togli il ritaglio</string>
+    <string name="sources_title">Fonti</string>
+    <string name="sources_add">Aggiungi una fonte</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">URL del feed</string>
+    <string name="sources_add_button">Aggiungi</string>
+    <string name="sources_your_feeds">I tuoi feed</string>
+    <string name="sources_remove">Togli</string>
+    <string name="sources_checking">Sto controllando…</string>
+    <string name="sources_not_checked">Non ancora controllato</string>
+    <string name="sources_starters">Fonti iniziali</string>
+    <string name="sources_no_starters">Nessuna fonte iniziale disponibile.</string>
+    <string name="sources_starters_body">Un breve elenco di feed già controllati e attivi in questo momento: accendi quelli che vuoi.</string>
 </resources>

@@ -18,6 +18,8 @@
 // only ever assigned via .textContent, never innerHTML, so nothing a source
 // or a reader types can inject markup into the page.
 
+import { t } from '../i18n.js';
+
 /**
  * @param {HTMLElement} container
  * @param {object} state
@@ -30,7 +32,7 @@ export function render(container, state, actions) {
   root.className = 'nooz-layout nooz-stack nooz-stack--lg';
 
   const heading = document.createElement('h1');
-  heading.textContent = 'Sources';
+  heading.textContent = t('sources_title', 'Sources');
   root.appendChild(heading);
 
   root.appendChild(buildAddSourceSection(actions));
@@ -57,7 +59,7 @@ function buildAddSourceSection(actions) {
 
   const label = document.createElement('p');
   label.className = 'nooz-section-title';
-  label.textContent = 'Add a source';
+  label.textContent = t('sources_add', 'Add a source');
   section.appendChild(label);
 
   const form = document.createElement('form');
@@ -67,8 +69,8 @@ function buildAddSourceSection(actions) {
   const input = document.createElement('input');
   input.type = 'url';
   input.className = 'nooz-input';
-  input.placeholder = 'https://example.com/feed.xml';
-  input.setAttribute('aria-label', 'Feed URL');
+  input.placeholder = t('sources_url_placeholder', 'https://example.com/feed.xml');
+  input.setAttribute('aria-label', t('sources_url_label', 'Feed URL'));
   input.autocomplete = 'off';
   input.value = addUrlDraft;
   form.appendChild(input);
@@ -76,7 +78,7 @@ function buildAddSourceSection(actions) {
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
   submitBtn.className = 'nooz-button nooz-button--primary';
-  submitBtn.textContent = 'Add';
+  submitBtn.textContent = t('sources_add_button', 'Add');
   form.appendChild(submitBtn);
 
   section.appendChild(form);
@@ -150,7 +152,7 @@ function buildYourFeedsSection(state, actions) {
 
   const label = document.createElement('p');
   label.className = 'nooz-section-title';
-  label.textContent = 'Your feeds';
+  label.textContent = t('sources_your_feeds', 'Your feeds');
   section.appendChild(label);
 
   const list = document.createElement('div');
@@ -201,7 +203,7 @@ function buildSourceRow(source, state, actions) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.className = 'nooz-button';
-  removeBtn.textContent = 'Remove';
+  removeBtn.textContent = t('sources_remove', 'Remove');
   removeBtn.setAttribute('aria-label', `Remove ${displayTitle}`);
   removeBtn.addEventListener('click', () => actions.removeSource(source.id));
   actionsWrap.appendChild(removeBtn);
@@ -236,7 +238,7 @@ function buildStatusIndicator(source, state) {
     label.textContent = 'OK';
   } else if (status === 'loading') {
     dot.classList.add('nooz-status-dot--loading');
-    label.textContent = 'Checking…';
+    label.textContent = t('sources_checking', 'Checking…');
   } else if (status === 'error') {
     dot.classList.add('nooz-status-dot--error');
     const reason = errorMessage || 'Unknown error';
@@ -245,7 +247,7 @@ function buildStatusIndicator(source, state) {
     label.title = reason;
     wrap.title = reason;
   } else {
-    label.textContent = 'Not checked yet';
+    label.textContent = t('sources_not_checked', 'Not checked yet');
   }
 
   wrap.appendChild(dot);
@@ -265,7 +267,7 @@ function buildStarterSourcesSection(state, actions) {
 
   const label = document.createElement('p');
   label.className = 'nooz-section-title';
-  label.textContent = 'Starter sources';
+  label.textContent = t('sources_starters', 'Starter sources');
   section.appendChild(label);
 
   const starters = state.starters || [];
@@ -275,7 +277,7 @@ function buildStarterSourcesSection(state, actions) {
     empty.className = 'nooz-empty-state-text';
     empty.style.textAlign = 'left';
     empty.style.maxWidth = 'none';
-    empty.textContent = 'No starter sources available.';
+    empty.textContent = t('sources_no_starters', 'No starter sources available.');
     section.appendChild(empty);
     return section;
   }
@@ -284,7 +286,7 @@ function buildStarterSourcesSection(state, actions) {
   description.className = 'nooz-empty-state-text';
   description.style.textAlign = 'left';
   description.style.maxWidth = 'none';
-  description.textContent = 'A short list of pre-checked, currently-live feeds -- switch on any you like.';
+  description.textContent = t('sources_starters_body', 'A short list of pre-checked, currently-live feeds — switch on any you like.');
   section.appendChild(description);
 
   const byUrl = new Map(state.sources.map((source) => [source.url, source]));
@@ -357,8 +359,8 @@ function buildStarterRow(starter, subscribed, state, actions) {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'nooz-button' + (on ? '' : ' nooz-button--primary');
-  btn.textContent = on ? 'Remove' : 'Add';
-  btn.setAttribute('aria-label', `${on ? 'Remove' : 'Add'} ${starter.title}`);
+  btn.textContent = on ? t('sources_remove', 'Remove') : t('sources_add_button', 'Add');
+  btn.setAttribute('aria-label', `${on ? t('sources_remove', 'Remove') : t('sources_add_button', 'Add')} ${starter.title}`);
   btn.addEventListener('click', () => {
     if (subscribed) actions.removeSource(subscribed.id);
     else actions.addStarter(starter);

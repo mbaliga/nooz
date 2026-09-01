@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">از دورهٔ پیش چه تغییر کرد</string>
     <string name="cross_no_earlier">هنوز دورهٔ پیشینی برای مقایسه نیست.</string>
     <string name="cross_steady">ترکیب موضوعی شما ثابت ماند.</string>
+    <string name="stand_title">دکه</string>
+    <string name="stand_subtitle">روزنامه‌ها را ورق بزنید. یک دسته را برگزینید تا آن برش را بخوانید.</string>
+    <string name="stand_empty">دکه خالی است</string>
+    <string name="stand_loom_edition">چاپ دار قالی</string>
+    <string name="stand_woven_from">بافته از منبع‌های خودتان</string>
+    <string name="stand_your_source">منبع شما، خبر شما</string>
+    <string name="stand_setting_paper">در حال صفحه‌بندی…</string>
+    <string name="stand_turn_back">‹ صفحهٔ پیش</string>
+    <string name="stand_turn_page">صفحهٔ بعد ›</string>
+    <string name="stand_continue_reading">خواندن را ادامه دهید →</string>
+    <string name="stand_no_full_text">متن کامل در این خوراک نیست. برای خواندن در منبع، خبر را باز کنید.</string>
+    <string name="stand_no_full_text_yet">متن کامل هنوز در این خوراک نیست. برای خواندن در منبع، خبر را باز کنید.</string>
+    <string name="reader_share_item">هم‌رسانی این مطلب</string>
+    <string name="reader_fetching">در حال گرفتن متن کامل…</string>
+    <string name="reader_no_text">خوراک این منبع متن مطلب را نداشت. متن کامل را در منبع، پایین‌تر، بخوانید.</string>
+    <string name="reader_read_at_source">خواندن در منبع</string>
+    <string name="reader_no_link">خوراک این مطلب پیوند به‌دردبخوری به منبعش نداشت.</string>
+    <string name="loom_subtitle">آنچه از منبع‌هایتان جاری شد، بافته در برابر آنچه واقعاً خواندید.</string>
+    <string name="loom_strip_open">گشودن دار قالی — چه جاری شد، بافته در برابر آنچه خواندید</string>
+    <string name="loom_strip_label">دار قالی</string>
+    <string name="loom_bar_label">روز، بر پایهٔ موضوع.</string>
+    <string name="loom_streams">رشته‌ها</string>
+    <string name="loom_where_reading">خواندن شما از کجا آمد</string>
+    <string name="loom_nothing_read_yet">هنوز چیزی نخوانده‌اید — هرچه خبری باز کنید، این نوار پر می‌شود.</string>
+    <string name="loom_nothing_to_weave">هنوز چیزی برای بافتن نیست</string>
+    <string name="clippings_empty">هنوز بریده‌ای نیست</string>
+    <string name="clippings_empty_body">روی هر مطلبی نشان بریده را لمس کنید تا اینجا بماند: حتی اگر بعداً منبعش را بردارید یا خاموش کنید، می‌ماند.</string>
+    <string name="clippings_remove">برداشتن بریده</string>
+    <string name="sources_title">منبع‌ها</string>
+    <string name="sources_add">افزودن منبع</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">نشانی خوراک</string>
+    <string name="sources_add_button">افزودن</string>
+    <string name="sources_your_feeds">خوراک‌های شما</string>
+    <string name="sources_remove">برداشتن</string>
+    <string name="sources_checking">در حال بررسی…</string>
+    <string name="sources_not_checked">هنوز بررسی نشده</string>
+    <string name="sources_starters">منبع‌های آغازین</string>
+    <string name="sources_no_starters">منبع آغازینی در دسترس نیست.</string>
+    <string name="sources_starters_body">فهرستی کوتاه از خوراک‌های از پیش بررسی‌شده و هم‌اکنون زنده — هرکدام را خواستید روشن کنید.</string>
 </resources>

@@ -1922,6 +1922,33 @@ respect as the CI-caught log above.
   catches the thing it exists for: a lost `%1$s` leaves a silent gap in a
   sentence on a screen nobody testing in English will ever look at.
 
+- **D55 — The web reader was 13% translated, and nothing said so
+  (2026-09-01).** D48 built the web i18n layer and this entry is about what that
+  did *not* accomplish. The layer being in place is not the same as the reader
+  being translated, and the gap was invisible from the inside: `web/i18n/*.json`
+  reported **100% for twenty-nine locales**, every one of those numbers being
+  about the *catalogue* rather than about how much of the app reads from it.
+  Exactly **one view called `t()`**. A reader who chose Tamil got a Tamil
+  settings heading and an English everything-else, and the picker showed no
+  shortfall at all.
+  The measurement came first, deliberately — `web/tests/i18n-coverage.test.mjs`,
+  the same ratchet shape as Gradle's `verifyI18n`, printing the honest number on
+  every run. It started at **7 wired, 48 hardcoded**. It is now **60 and 3**,
+  with the Paper, the reader, the Loom, Clippings, the Stand and Sources all
+  going through `t()`. The catalogue grew 117 → 157; 29 locales complete;
+  Kashmiri 24%.
+  **A second guard, added because the first one could not have caught this:**
+  every `t('key', …)` must name a key that exists in `en.json`. A typo'd key
+  shows its English fallback silently — the catalogue still says 100%, the
+  coverage ratchet counts the call as *translated*, and the string is English
+  forever. It found `loom_strip_label` on its first run: a key the wiring
+  referenced and nobody had added. Two guards that each look correct in
+  isolation can still leave a hole exactly where they meet.
+  One deliberate exemption, written down rather than assumed: `Nooz`, `Nooz
+  Flash`, `Nooz Cast`, `GDELT` and `Wikipedia` are brand names. A translated
+  masthead is a bug, and routing them through keys would mean thirty identical
+  copies of one word and thirty chances for one to drift.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

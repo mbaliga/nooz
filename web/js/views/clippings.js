@@ -8,6 +8,8 @@
 // All feed-derived text is only ever assigned via .textContent, matching
 // the same "never innerHTML on untrusted content" rule the other views follow.
 
+import { t } from '../i18n.js';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /**
@@ -22,7 +24,7 @@ export function render(container, state, actions) {
   layout.className = 'nooz-layout nooz-stack';
 
   const heading = document.createElement('h1');
-  heading.textContent = 'Clippings';
+  heading.textContent = t('screen_clippings', 'Clippings');
   layout.appendChild(heading);
 
   const clippings = state.clippings || [];
@@ -42,13 +44,13 @@ function buildEmptyState() {
 
   const title = document.createElement('p');
   title.className = 'nooz-empty-state-title';
-  title.textContent = 'Nothing clipped yet';
+  title.textContent = t('clippings_empty', 'Nothing clipped yet');
   wrap.appendChild(title);
 
   const text = document.createElement('p');
   text.className = 'nooz-empty-state-text';
   text.textContent =
-    'Tap the clip icon on any item to save it here -- it stays even if you later remove or disable its source.';
+    t('clippings_empty_body', 'Tap the clip icon on any item to save it here — it stays even if you later remove or disable its source.');
   wrap.appendChild(text);
 
   return wrap;
@@ -86,7 +88,7 @@ function buildListItem(item, state, actions) {
   if (isRead) {
     const mark = document.createElement('span');
     mark.className = 'nooz-visually-hidden';
-    mark.textContent = 'Read. ';
+    mark.textContent = t('list_read', 'Read') + '. ';
     title.appendChild(mark);
   }
   const link = document.createElement('a');
@@ -109,7 +111,7 @@ function buildListItem(item, state, actions) {
   unclipBtn.type = 'button';
   unclipBtn.className = 'nooz-button-icon';
   unclipBtn.setAttribute('aria-pressed', 'true');
-  unclipBtn.setAttribute('aria-label', 'Remove clipping');
+  unclipBtn.setAttribute('aria-label', t('clippings_remove', 'Remove clipping'));
   unclipBtn.appendChild(createClipIcon());
   unclipBtn.addEventListener('click', (event) => {
     event.stopPropagation();

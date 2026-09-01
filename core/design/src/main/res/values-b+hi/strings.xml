@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">पिछली अवधि से क्या बदला</string>
     <string name="cross_no_earlier">तुलना के लिए अभी कोई पुरानी अवधि नहीं है।</string>
     <string name="cross_steady">आपका विषय-मिश्रण स्थिर रहा।</string>
+    <string name="stand_title">स्टैंड</string>
+    <string name="stand_subtitle">अख़बारों को टटोलें। कोई ढेर चुनकर वह हिस्सा पढ़ें।</string>
+    <string name="stand_empty">स्टैंड ख़ाली है</string>
+    <string name="stand_loom_edition">लूम संस्करण</string>
+    <string name="stand_woven_from">आपके अपने स्रोतों से बुना हुआ</string>
+    <string name="stand_your_source">आपके स्रोत, आपकी ख़बर</string>
+    <string name="stand_setting_paper">पन्ना जमाया जा रहा है…</string>
+    <string name="stand_turn_back">‹ पिछला पन्ना</string>
+    <string name="stand_turn_page">अगला पन्ना ›</string>
+    <string name="stand_continue_reading">पढ़ना जारी रखें →</string>
+    <string name="stand_no_full_text">इस फ़ीड में पूरा पाठ नहीं है। पूरी ख़बर स्रोत पर पढ़ने के लिए इसे खोलें।</string>
+    <string name="stand_no_full_text_yet">इस फ़ीड में अभी पूरा पाठ नहीं है। पूरी ख़बर स्रोत पर पढ़ने के लिए इसे खोलें।</string>
+    <string name="reader_share_item">यह ख़बर साझा करें</string>
+    <string name="reader_fetching">पूरा लेख लाया जा रहा है…</string>
+    <string name="reader_no_text">इस स्रोत की फ़ीड में लेख का पाठ नहीं था। पूरी ख़बर नीचे स्रोत पर पढ़ें।</string>
+    <string name="reader_read_at_source">स्रोत पर पढ़ें</string>
+    <string name="reader_no_link">इस ख़बर की फ़ीड में स्रोत तक लौटने का कोई काम का लिंक नहीं था।</string>
+    <string name="loom_subtitle">आपके स्रोतों से क्या बहा, और आपने वास्तव में क्या पढ़ा — दोनों साथ बुने हुए।</string>
+    <string name="loom_strip_open">लूम खोलें — क्या बहा, आपके पढ़े हुए के साथ बुना हुआ</string>
+    <string name="loom_strip_label">लूम</string>
+    <string name="loom_bar_label">दिन, विषय के अनुसार।</string>
+    <string name="loom_streams">धाराएँ</string>
+    <string name="loom_where_reading">आपका पठन कहाँ से आया</string>
+    <string name="loom_nothing_read_yet">आपने अभी कुछ नहीं पढ़ा — जैसे-जैसे आप ख़बरें खोलेंगे, यह पट्टी भरती जाएगी।</string>
+    <string name="loom_nothing_to_weave">अभी बुनने को कुछ नहीं</string>
+    <string name="clippings_empty">अभी कोई कतरन नहीं</string>
+    <string name="clippings_empty_body">किसी भी ख़बर पर कतरन का चिह्न छूकर उसे यहाँ सहेज लें — बाद में उसका स्रोत हटा दें या बंद कर दें, तब भी वह बनी रहेगी।</string>
+    <string name="clippings_remove">कतरन हटाएँ</string>
+    <string name="sources_title">स्रोत</string>
+    <string name="sources_add">स्रोत जोड़ें</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">फ़ीड यूआरएल</string>
+    <string name="sources_add_button">जोड़ें</string>
+    <string name="sources_your_feeds">आपकी फ़ीड</string>
+    <string name="sources_remove">हटाएँ</string>
+    <string name="sources_checking">जाँचा जा रहा है…</string>
+    <string name="sources_not_checked">अभी जाँचा नहीं गया</string>
+    <string name="sources_starters">शुरुआती स्रोत</string>
+    <string name="sources_no_starters">कोई शुरुआती स्रोत उपलब्ध नहीं।</string>
+    <string name="sources_starters_body">पहले से जाँची हुई, अभी सजीव फ़ीड की एक छोटी सूची — जो चाहें उसे चालू कर लें।</string>
 </resources>

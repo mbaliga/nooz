@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">O que mudou desde o período anterior</string>
     <string name="cross_no_earlier">Ainda não há um período anterior para comparar.</string>
     <string name="cross_steady">A sua mistura de temas manteve-se estável.</string>
+    <string name="stand_title">A Banca</string>
+    <string name="stand_subtitle">Folheie os jornais. Escolha uma pilha para ler essa fatia.</string>
+    <string name="stand_empty">A banca está vazia</string>
+    <string name="stand_loom_edition">Edição Tear</string>
+    <string name="stand_woven_from">Tecido a partir das suas próprias fontes</string>
+    <string name="stand_your_source">As suas fontes, as suas notícias</string>
+    <string name="stand_setting_paper">A compor a página…</string>
+    <string name="stand_turn_back">‹ Página anterior</string>
+    <string name="stand_turn_page">Virar página ›</string>
+    <string name="stand_continue_reading">Continuar a ler →</string>
+    <string name="stand_no_full_text">O texto completo não está neste feed. Abra a notícia para a ler na fonte.</string>
+    <string name="stand_no_full_text_yet">O texto completo ainda não está neste feed. Abra a notícia para a ler na fonte.</string>
+    <string name="reader_share_item">Partilhar esta peça</string>
+    <string name="reader_fetching">A obter o artigo completo…</string>
+    <string name="reader_no_text">O feed desta fonte não incluía o texto do artigo. Leia a peça completa na fonte, abaixo.</string>
+    <string name="reader_read_at_source">Ler na fonte</string>
+    <string name="reader_no_link">O feed desta peça não incluía uma ligação utilizável para a sua fonte.</string>
+    <string name="loom_subtitle">O que chegou das suas fontes, tecido contra o que leu de facto.</string>
+    <string name="loom_strip_open">Abrir o Tear — o que chegou, tecido contra o que leu</string>
+    <string name="loom_strip_label">Tear</string>
+    <string name="loom_bar_label">O dia, por tema.</string>
+    <string name="loom_streams">Fios</string>
+    <string name="loom_where_reading">De onde veio a sua leitura</string>
+    <string name="loom_nothing_read_yet">Ainda não leu nada — a faixa preenche-se à medida que abre notícias.</string>
+    <string name="loom_nothing_to_weave">Ainda não há nada para tecer</string>
+    <string name="clippings_empty">Ainda não há recortes</string>
+    <string name="clippings_empty_body">Toque no ícone de recorte em qualquer peça para a guardar aqui: fica mesmo que remova ou desative a fonte mais tarde.</string>
+    <string name="clippings_remove">Remover o recorte</string>
+    <string name="sources_title">Fontes</string>
+    <string name="sources_add">Adicionar uma fonte</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">URL do feed</string>
+    <string name="sources_add_button">Adicionar</string>
+    <string name="sources_your_feeds">Os seus feeds</string>
+    <string name="sources_remove">Remover</string>
+    <string name="sources_checking">A verificar…</string>
+    <string name="sources_not_checked">Ainda por verificar</string>
+    <string name="sources_starters">Fontes iniciais</string>
+    <string name="sources_no_starters">Não há fontes iniciais disponíveis.</string>
+    <string name="sources_starters_body">Uma lista curta de feeds já verificados e ativos neste momento — ligue os que quiser.</string>
 </resources>

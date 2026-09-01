@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">ما تغيّر منذ الفترة السابقة</string>
     <string name="cross_no_earlier">لا فترة سابقة للمقارنة بعد.</string>
     <string name="cross_steady">بقي مزيج مواضيعك ثابتًا.</string>
+    <string name="stand_title">الكشك</string>
+    <string name="stand_subtitle">تصفَّح الجرائد. اختر كومة لتقرأ تلك الشريحة.</string>
+    <string name="stand_empty">الكشك فارغ</string>
+    <string name="stand_loom_edition">طبعة النَّوْل</string>
+    <string name="stand_woven_from">منسوج من مصادرك أنت</string>
+    <string name="stand_your_source">مصدرك، خبرك</string>
+    <string name="stand_setting_paper">يجري إخراج الصفحة…</string>
+    <string name="stand_turn_back">‹ الصفحة السابقة</string>
+    <string name="stand_turn_page">اقلب الصفحة ›</string>
+    <string name="stand_continue_reading">تابع القراءة →</string>
+    <string name="stand_no_full_text">النص الكامل ليس في هذا التدفّق. افتح الخبر لتقرأه عند المصدر.</string>
+    <string name="stand_no_full_text_yet">النص الكامل ليس في هذا التدفّق بعد. افتح الخبر لتقرأه عند المصدر.</string>
+    <string name="reader_share_item">شارِك هذا الخبر</string>
+    <string name="reader_fetching">يجري جلب المقال كاملًا…</string>
+    <string name="reader_no_text">تدفّق هذا المصدر لم يتضمّن نص المقال. اقرأه كاملًا عند المصدر، بالأسفل.</string>
+    <string name="reader_read_at_source">اقرأ عند المصدر</string>
+    <string name="reader_no_link">تدفّق هذا الخبر لم يتضمّن رابطًا صالحًا يعود إلى مصدره.</string>
+    <string name="loom_subtitle">ما وصلك من مصادرك، منسوجًا في مقابل ما قرأته فعلًا.</string>
+    <string name="loom_strip_open">افتح النَّوْل — ما وصل، منسوجًا في مقابل ما قرأت</string>
+    <string name="loom_strip_label">النَّوْل</string>
+    <string name="loom_bar_label">اليوم، حسب الموضوع.</string>
+    <string name="loom_streams">الخيوط</string>
+    <string name="loom_where_reading">من أين جاءت قراءتك</string>
+    <string name="loom_nothing_read_yet">لم تقرأ شيئًا بعد — يمتلئ الشريط كلما فتحت خبرًا.</string>
+    <string name="loom_nothing_to_weave">لا شيء لنسجه بعد</string>
+    <string name="clippings_empty">لا قصاصات بعد</string>
+    <string name="clippings_empty_body">المس أيقونة القصاصة على أي خبر لتحتفظ به هنا: يبقى حتى لو أزلت مصدره أو أوقفته لاحقًا.</string>
+    <string name="clippings_remove">أزل القصاصة</string>
+    <string name="sources_title">المصادر</string>
+    <string name="sources_add">أضِف مصدرًا</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">عنوان التدفّق</string>
+    <string name="sources_add_button">أضِف</string>
+    <string name="sources_your_feeds">تدفّقاتك</string>
+    <string name="sources_remove">أزِل</string>
+    <string name="sources_checking">يجري الفحص…</string>
+    <string name="sources_not_checked">لم يُفحص بعد</string>
+    <string name="sources_starters">مصادر البداية</string>
+    <string name="sources_no_starters">لا مصادر بداية متاحة.</string>
+    <string name="sources_starters_body">قائمة قصيرة من تدفّقات مفحوصة مسبقًا وحيّة الآن — شغِّل ما يعجبك.</string>
 </resources>

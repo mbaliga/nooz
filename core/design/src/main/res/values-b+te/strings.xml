@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">గత కాలంతో పోలిస్తే ఏం మారింది</string>
     <string name="cross_no_earlier">పోల్చడానికి ఇంకా పాత కాలం లేదు.</string>
     <string name="cross_steady">మీ అంశాల మిశ్రమం స్థిరంగా ఉంది.</string>
+    <string name="stand_title">స్టాండ్</string>
+    <string name="stand_subtitle">పత్రికలను తిరగేయండి. ఒక కట్టను ఎంచుకుని ఆ భాగాన్ని చదవండి.</string>
+    <string name="stand_empty">స్టాండ్ ఖాళీగా ఉంది</string>
+    <string name="stand_loom_edition">లూమ్ సంచిక</string>
+    <string name="stand_woven_from">మీ సొంత మూలాల నుంచి నేసినది</string>
+    <string name="stand_your_source">మీ మూలం, మీ వార్త</string>
+    <string name="stand_setting_paper">పేజీ కూర్చుతోంది…</string>
+    <string name="stand_turn_back">‹ వెనుక పేజీ</string>
+    <string name="stand_turn_page">తర్వాతి పేజీ ›</string>
+    <string name="stand_continue_reading">చదవడం కొనసాగించండి →</string>
+    <string name="stand_no_full_text">ఈ ఫీడ్‌లో పూర్తి పాఠ్యం లేదు. మూలంలో చదవడానికి కథనాన్ని తెరవండి.</string>
+    <string name="stand_no_full_text_yet">ఈ ఫీడ్‌లో ఇంకా పూర్తి పాఠ్యం లేదు. మూలంలో చదవడానికి కథనాన్ని తెరవండి.</string>
+    <string name="reader_share_item">ఈ కథనాన్ని పంచుకోండి</string>
+    <string name="reader_fetching">పూర్తి కథనం తెస్తోంది…</string>
+    <string name="reader_no_text">ఈ మూలం ఫీడ్‌లో కథనం పాఠ్యం లేదు. కింద మూలంలో పూర్తి కథనాన్ని చదవండి.</string>
+    <string name="reader_read_at_source">మూలంలో చదవండి</string>
+    <string name="reader_no_link">ఈ కథనం ఫీడ్‌లో మూలానికి తిరిగి వెళ్ళే పనికొచ్చే లింక్ లేదు.</string>
+    <string name="loom_subtitle">మీ మూలాల నుంచి ఏమి ప్రవహించింది, మీరు నిజంగా ఏమి చదివారు — రెండూ కలిపి నేసినట్లు.</string>
+    <string name="loom_strip_open">లూమ్ తెరవండి — ఏమి ప్రవహించింది, మీరు చదివినదానితో నేసినట్లు</string>
+    <string name="loom_strip_label">లూమ్</string>
+    <string name="loom_bar_label">రోజు, అంశాల వారీగా.</string>
+    <string name="loom_streams">ప్రవాహాలు</string>
+    <string name="loom_where_reading">మీ పఠనం ఎక్కడి నుంచి వచ్చింది</string>
+    <string name="loom_nothing_read_yet">మీరు ఇంకా ఏదీ చదవలేదు — కథనాలు తెరుస్తున్న కొద్దీ ఈ పట్టీ నిండుతుంది.</string>
+    <string name="loom_nothing_to_weave">ఇంకా నేయడానికి ఏదీ లేదు</string>
+    <string name="clippings_empty">ఇంకా ఏదీ కత్తిరించలేదు</string>
+    <string name="clippings_empty_body">ఏ కథనంపైనైనా కత్తిరింపు గుర్తును తాకి దాన్ని ఇక్కడ దాచుకోండి — తర్వాత దాని మూలాన్ని తీసేసినా, ఆపేసినా అది ఉంటుంది.</string>
+    <string name="clippings_remove">కత్తిరింపును తీసేయి</string>
+    <string name="sources_title">మూలాలు</string>
+    <string name="sources_add">మూలాన్ని చేర్చండి</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">ఫీడ్ URL</string>
+    <string name="sources_add_button">చేర్చు</string>
+    <string name="sources_your_feeds">మీ ఫీడ్‌లు</string>
+    <string name="sources_remove">తీసేయి</string>
+    <string name="sources_checking">తనిఖీ చేస్తోంది…</string>
+    <string name="sources_not_checked">ఇంకా తనిఖీ చేయలేదు</string>
+    <string name="sources_starters">ప్రారంభ మూలాలు</string>
+    <string name="sources_no_starters">ప్రారంభ మూలాలేవీ అందుబాటులో లేవు.</string>
+    <string name="sources_starters_body">ముందే తనిఖీ చేసిన, ప్రస్తుతం పనిచేస్తున్న ఫీడ్‌ల చిన్న జాబితా — నచ్చినవి చాలూ చేసుకోండి.</string>
 </resources>

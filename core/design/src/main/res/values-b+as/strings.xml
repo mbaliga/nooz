@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">যোৱা সময়ৰ পৰা কি সলনি হ’ল</string>
     <string name="cross_no_earlier">তুলনাৰ বাবে এতিয়ালৈকে আগৰ কোনো সময় নাই।</string>
     <string name="cross_steady">আপোনাৰ বিষয়ৰ মিশ্ৰণ স্থিৰ আছিল।</string>
+    <string name="stand_title">ষ্টেণ্ড</string>
+    <string name="stand_subtitle">কাকতবোৰ লুটিয়াই চাওক। এটা দ’ম বাছি সেই অংশ পঢ়ক।</string>
+    <string name="stand_empty">ষ্টেণ্ড খালী</string>
+    <string name="stand_loom_edition">লুম সংস্কৰণ</string>
+    <string name="stand_woven_from">আপোনাৰ নিজৰ উৎসৰ পৰা বোৱা</string>
+    <string name="stand_your_source">আপোনাৰ উৎস, আপোনাৰ বাতৰি</string>
+    <string name="stand_setting_paper">পৃষ্ঠা সজোৱা হৈছে…</string>
+    <string name="stand_turn_back">‹ আগৰ পৃষ্ঠা</string>
+    <string name="stand_turn_page">পিছৰ পৃষ্ঠা ›</string>
+    <string name="stand_continue_reading">পঢ়ি থাকক →</string>
+    <string name="stand_no_full_text">এই ফীডত সম্পূৰ্ণ লেখা নাই। উৎসত পঢ়িবলৈ বাতৰিটো খোলক।</string>
+    <string name="stand_no_full_text_yet">এই ফীডত এতিয়াও সম্পূৰ্ণ লেখা নাই। উৎসত পঢ়িবলৈ বাতৰিটো খোলক।</string>
+    <string name="reader_share_item">এই বাতৰিটো ভাগ কৰক</string>
+    <string name="reader_fetching">সম্পূৰ্ণ লেখা অনা হৈছে…</string>
+    <string name="reader_no_text">এই উৎসৰ ফীডত লেখাৰ পাঠ নাছিল। তলত উৎসত সম্পূৰ্ণ লেখাটো পঢ়ক।</string>
+    <string name="reader_read_at_source">উৎসত পঢ়ক</string>
+    <string name="reader_no_link">এই বাতৰিৰ ফীডত উৎসলৈ উভতি যোৱাৰ কোনো কামৰ লিংক নাছিল।</string>
+    <string name="loom_subtitle">আপোনাৰ উৎসৰ পৰা কি বৈ গ’ল, আৰু আপুনি সঁচাকৈয়ে কি পঢ়িলে — দুয়োটা একেলগে বোৱা।</string>
+    <string name="loom_strip_open">লুম খোলক — কি বৈ গ’ল, আপুনি পঢ়াৰ সৈতে বোৱা</string>
+    <string name="loom_strip_label">লুম</string>
+    <string name="loom_bar_label">দিনটো, বিষয় অনুসৰি।</string>
+    <string name="loom_streams">ধাৰা</string>
+    <string name="loom_where_reading">আপোনাৰ পঢ়া ক’ৰ পৰা আহিল</string>
+    <string name="loom_nothing_read_yet">আপুনি এতিয়াও একো পঢ়া নাই — বাতৰি খুলি থাকিলে এই পটিটো ভৰি উঠিব।</string>
+    <string name="loom_nothing_to_weave">এতিয়াও বুনিবলৈ একো নাই</string>
+    <string name="clippings_empty">এতিয়ালৈকে একো কটা হোৱা নাই</string>
+    <string name="clippings_empty_body">যিকোনো বাতৰিৰ কটা চিহ্নত স্পৰ্শ কৰি সেইটো ইয়াত ৰাখি থওক — পিছত তাৰ উৎস আঁতৰালেও বা বন্ধ কৰিলেও সেয়া থাকিব।</string>
+    <string name="clippings_remove">কটা টুকুৰা আঁতৰাওক</string>
+    <string name="sources_title">উৎস</string>
+    <string name="sources_add">উৎস যোগ কৰক</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">ফীড URL</string>
+    <string name="sources_add_button">যোগ কৰক</string>
+    <string name="sources_your_feeds">আপোনাৰ ফীড</string>
+    <string name="sources_remove">আঁতৰাওক</string>
+    <string name="sources_checking">পৰীক্ষা কৰা হৈছে…</string>
+    <string name="sources_not_checked">এতিয়ালৈকে পৰীক্ষা কৰা হোৱা নাই</string>
+    <string name="sources_starters">আৰম্ভণিৰ উৎস</string>
+    <string name="sources_no_starters">কোনো আৰম্ভণিৰ উৎস উপলব্ধ নাই।</string>
+    <string name="sources_starters_body">আগতেই পৰীক্ষা কৰা, এতিয়াও সক্ৰিয় ফীডৰ এখন সৰু তালিকা — যিটো ভাল লাগে চলু কৰক।</string>
 </resources>

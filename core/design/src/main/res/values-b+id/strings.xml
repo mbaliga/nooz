@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  117 of 117 strings translated.
+  157 of 157 strings translated.
 -->
 <resources>
 
@@ -128,4 +128,44 @@
     <string name="cross_what_changed">Apa yang berubah sejak periode sebelumnya</string>
     <string name="cross_no_earlier">Belum ada periode sebelumnya untuk dibandingkan.</string>
     <string name="cross_steady">Campuran topik Anda tetap stabil.</string>
+    <string name="stand_title">Lapak</string>
+    <string name="stand_subtitle">Bolak-balik korannya. Pilih satu tumpukan untuk membaca bagian itu.</string>
+    <string name="stand_empty">Lapak kosong</string>
+    <string name="stand_loom_edition">Edisi Alat Tenun</string>
+    <string name="stand_woven_from">Ditenun dari sumber Anda sendiri</string>
+    <string name="stand_your_source">Sumber Anda, berita Anda</string>
+    <string name="stand_setting_paper">Menyusun halaman…</string>
+    <string name="stand_turn_back">‹ Halaman sebelumnya</string>
+    <string name="stand_turn_page">Balik halaman ›</string>
+    <string name="stand_continue_reading">Lanjut membaca →</string>
+    <string name="stand_no_full_text">Teks utuhnya tidak ada di umpan ini. Buka beritanya untuk membaca di sumbernya.</string>
+    <string name="stand_no_full_text_yet">Teks utuhnya belum ada di umpan ini. Buka beritanya untuk membaca di sumbernya.</string>
+    <string name="reader_share_item">Bagikan tulisan ini</string>
+    <string name="reader_fetching">Mengambil artikel utuh…</string>
+    <string name="reader_no_text">Umpan sumber ini tidak menyertakan teks artikelnya. Baca tulisan utuhnya di sumbernya, di bawah.</string>
+    <string name="reader_read_at_source">Baca di sumbernya</string>
+    <string name="reader_no_link">Umpan tulisan ini tidak menyertakan tautan yang bisa dipakai kembali ke sumbernya.</string>
+    <string name="loom_subtitle">Apa yang mengalir dari sumber Anda, ditenun berdampingan dengan apa yang benar-benar Anda baca.</string>
+    <string name="loom_strip_open">Buka Alat Tenun — apa yang mengalir, ditenun dengan apa yang Anda baca</string>
+    <string name="loom_strip_label">Tenun</string>
+    <string name="loom_bar_label">Hari ini, menurut topik.</string>
+    <string name="loom_streams">Aliran</string>
+    <string name="loom_where_reading">Dari mana bacaan Anda datang</string>
+    <string name="loom_nothing_read_yet">Anda belum membaca apa pun — bilah ini terisi seiring Anda membuka berita.</string>
+    <string name="loom_nothing_to_weave">Belum ada yang bisa ditenun</string>
+    <string name="clippings_empty">Belum ada guntingan</string>
+    <string name="clippings_empty_body">Ketuk ikon guntingan pada tulisan mana pun untuk menyimpannya di sini: ia tetap ada meski nanti sumbernya Anda hapus atau matikan.</string>
+    <string name="clippings_remove">Hapus guntingan</string>
+    <string name="sources_title">Sumber</string>
+    <string name="sources_add">Tambah sumber</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">URL umpan</string>
+    <string name="sources_add_button">Tambah</string>
+    <string name="sources_your_feeds">Umpan Anda</string>
+    <string name="sources_remove">Hapus</string>
+    <string name="sources_checking">Memeriksa…</string>
+    <string name="sources_not_checked">Belum diperiksa</string>
+    <string name="sources_starters">Sumber awal</string>
+    <string name="sources_no_starters">Tidak ada sumber awal.</string>
+    <string name="sources_starters_body">Daftar singkat umpan yang sudah diperiksa dan aktif sekarang — nyalakan yang Anda suka.</string>
 </resources>

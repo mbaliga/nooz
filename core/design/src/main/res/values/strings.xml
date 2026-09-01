@@ -98,6 +98,11 @@
     <string name="reader_reading_time">Estimated reading time %1$d minutes</string>
     <!-- %1$d is 0-100. Spoken, never drawn. -->
     <string name="reader_progress">About %1$d percent through the article</string>
+    <string name="reader_share_item">Share this item</string>
+    <string name="reader_fetching">Fetching the full article…</string>
+    <string name="reader_no_text">This source’s feed didn’t include the article text. Read the full piece at the source below.</string>
+    <string name="reader_read_at_source">Read at the source</string>
+    <string name="reader_no_link">This item’s feed didn’t include a usable link back to its source.</string>
 
     <!-- The language picker. -->
     <string name="language_title">Language</string>
@@ -128,6 +133,14 @@
     <string name="loom_no_archive">Most sources are live RSS/Atom feeds with no way to ask for a past date; this shows what they’re serving right now, not an archive.</string>
     <string name="loom_asking_gdelt">Asking GDELT…</string>
     <string name="loom_ask_gdelt">Ask GDELT for this day</string>
+    <string name="loom_subtitle">What flowed from your sources, woven against what you actually read.</string>
+    <string name="loom_strip_open">Open the Loom — what flowed, woven against what you read</string>
+    <string name="loom_strip_label">Loom</string>
+    <string name="loom_bar_label">The day, by topic.</string>
+    <string name="loom_streams">Streams</string>
+    <string name="loom_where_reading">Where your reading came from</string>
+    <string name="loom_nothing_read_yet">You haven’t read anything yet — the strip fills in as you open stories.</string>
+    <string name="loom_nothing_to_weave">Nothing to weave yet</string>
 
     <!-- The region globe, including the actions that replace its drag and pinch. -->
     <string name="globe_aimed">Region globe, aimed at %1$s, covering %2$s.</string>
@@ -165,5 +178,38 @@
     <string name="cross_what_changed">What changed since the previous period</string>
     <string name="cross_no_earlier">No earlier period yet to compare against.</string>
     <string name="cross_steady">Your topic mix held steady.</string>
+
+    <!-- The web reader's own copy. Where the phrasing matches Android's, the same key is reused rather than duplicated — one set of words for two clients is the whole point. -->
+    <string name="stand_title">The Stand</string>
+    <string name="stand_subtitle">Browse the papers. Pick a pile to read that slice.</string>
+    <string name="stand_empty">The stand is empty</string>
+    <string name="stand_loom_edition">The Loom Edition</string>
+    <string name="stand_woven_from">Woven from your own sources</string>
+    <string name="stand_your_source">Your Source, Your News</string>
+    <string name="stand_setting_paper">Setting the paper…</string>
+    <string name="stand_turn_back">‹ Turn back</string>
+    <string name="stand_turn_page">Turn page ›</string>
+    <string name="stand_continue_reading">Continue reading →</string>
+    <string name="stand_no_full_text">The full text is not in this feed. Open the story to read it at the source.</string>
+    <string name="stand_no_full_text_yet">The full text is not in this feed yet. Open the story to read it at the source.</string>
+
+    <!-- Clippings. -->
+    <string name="clippings_empty">Nothing clipped yet</string>
+    <string name="clippings_empty_body">Tap the clip icon on any item to save it here — it stays even if you later remove or disable its source.</string>
+    <string name="clippings_remove">Remove clipping</string>
+
+    <!-- Managing sources — the flow by which a reader chooses what this app is even about. -->
+    <string name="sources_title">Sources</string>
+    <string name="sources_add">Add a source</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">Feed URL</string>
+    <string name="sources_add_button">Add</string>
+    <string name="sources_your_feeds">Your feeds</string>
+    <string name="sources_remove">Remove</string>
+    <string name="sources_checking">Checking…</string>
+    <string name="sources_not_checked">Not checked yet</string>
+    <string name="sources_starters">Starter sources</string>
+    <string name="sources_no_starters">No starter sources available.</string>
+    <string name="sources_starters_body">A short list of pre-checked, currently-live feeds — switch on any you like.</string>
 
 </resources>
