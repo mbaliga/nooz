@@ -1972,6 +1972,19 @@ respect as the CI-caught log above.
   it" and "the artefact uses it" are different claims,** and the first is much
   easier to check, which is exactly why it is the one that gets checked.
 
+- **D57 — Choosing your sources now works in every shipped language
+  (2026-09-01).** Third migration tranche: `EditScreen` and `SourcesUtilities`,
+  both to zero. Catalogue 157 → 185 strings; ratchet 170 → 140.
+  Picked over the larger `SettingsScreen` because this is the flow the app's own
+  premise rests on — *"you decide your news sources"*. A reader who cannot read
+  "Paste a feed or a site URL", "This page declares more than one feed, pick
+  one" or "Couldn't add this URL" cannot use the app for the thing it is for,
+  however much is translated around them.
+  Several keys are shared with the web's `sources_*` set rather than duplicated,
+  which is the payoff of one catalogue for two clients: the wording that already
+  existed in twenty-nine languages did not need translating twice.
+  29 locales complete at 185 strings; Kashmiri 22%.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
