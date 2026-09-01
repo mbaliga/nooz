@@ -70,12 +70,46 @@ const CATEGORY_MAP = {
   sport: 'sport', sports: 'sport',
 };
 
-// Precompiled word-boundary matchers, per topic.
+/**
+ * Characters that count as *inside* a word, for boundary purposes.
+ *
+ * JavaScript's own `\b` is defined against `[A-Za-z0-9_]` and nothing else, so
+ * it can never fire next to a Devanagari, Arabic, Thai or CJK character. That
+ * made every keyword matcher below structurally incapable of matching
+ * non-English text: `new RegExp('\\bराजनीति\\b','i').test('आज की राजनीति खबर')`
+ * is `false`. Every item from a non-English feed therefore classified as
+ * 'general', which silently collapsed the Loom to a single band and emptied the
+ * Contrast dumbbells — with the catalogue now carrying feeds in eleven Indian
+ * languages, that is most of them.
+ */
+const WORD_CHAR = '[\\p{L}\\p{N}\\p{M}]';
+
+/**
+ * Scripts written without spaces between words. A "word boundary" is not a
+ * meaningful idea inside a run of Han or Thai, so a term in one of these is
+ * matched by plain containment instead — the boundary form would demand a
+ * non-letter on each side and could never match mid-sentence.
+ */
+const UNSPACED_SCRIPT = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Khmer}\p{Script=Lao}]/u;
+
+/**
+ * A matcher for one keyword that respects word boundaries in every script.
+ *
+ * Deliberately uses a leading character class rather than a lookbehind: Safari
+ * only gained lookbehind in 16.4, and an unsupported construct throws at regex
+ * *construction*, which would take this whole module — and with it the app —
+ * down on older browsers. Only `.test()` is ever called on these, so the extra
+ * capture group costs nothing.
+ */
+function termMatcher(term) {
+  const escaped = escapeRegExp(term);
+  if (UNSPACED_SCRIPT.test(term)) return new RegExp(escaped, 'iu');
+  return new RegExp('(^|(?!' + WORD_CHAR + ').)' + escaped + '(?!' + WORD_CHAR + ')', 'iu');
+}
+
+// Precompiled boundary matchers, per topic.
 const MATCHERS = Object.fromEntries(
-  Object.entries(TERMS).map(([topic, list]) => [
-    topic,
-    list.map((term) => new RegExp('\\b' + escapeRegExp(term) + '\\b', 'i')),
-  ])
+  Object.entries(TERMS).map(([topic, list]) => [topic, list.map(termMatcher)])
 );
 
 function escapeRegExp(s) {

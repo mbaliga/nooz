@@ -38,7 +38,13 @@ object Dedup {
             var matched = -1
             if (item.simhash != 0L) {
                 for (i in reps.indices) {
-                    if (Simhash.isNearDuplicate(item.simhash, reps[i].simhash, threshold)) {
+                    // Threshold scaled to how much evidence these two titles
+                    // actually carry (Simhash.thresholdFor). A short headline
+                    // gives simhash little to work with, and a fixed 8 bits was
+                    // collapsing genuinely different short stories — measurably
+                    // so in scripts that pack more meaning into fewer characters.
+                    val budget = Simhash.thresholdFor(item.title, reps[i].title, threshold)
+                    if (Simhash.isNearDuplicate(item.simhash, reps[i].simhash, budget)) {
                         matched = i
                         break
                     }

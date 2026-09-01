@@ -26,6 +26,24 @@ jobs:
       - name: Pure-JVM core unit tests
         run: ./gradlew :core:model:test --stacktrace
 
+  # The web reader had no CI at all until now — its 6,300 lines of JS shipped
+  # unexercised, which is how a topic classifier that could not match any
+  # non-Latin script survived unnoticed.
+  #
+  # Deliberately no install step: these tests use node's built-in test runner
+  # and import only local modules, so there is nothing to install. `npm ci`
+  # would in fact fail here — web/package.json has no package-lock.json.
+  web-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Web reader unit tests
+        run: npm test
+        working-directory: web
+
   # Full Android build: assemble both flavors, unit tests, lint.
   android:
     runs-on: ubuntu-latest

@@ -107,7 +107,12 @@ object NewspaperShare {
         val bylineLines = listOfNotNull(source, author)
             .map { it.trim() }
             .filter { it.isNotBlank() }
-            .map { TextUtils.ellipsize(it.uppercase(Locale.getDefault()), bylinePaint, contentW.toFloat(), TextUtils.TruncateAt.END) }
+            // Locale.ROOT, not getDefault(): this uppercases a *publisher's own
+            // name*, which does not belong to the reader's locale. Under a
+            // Turkish locale getDefault() maps i → İ, so a shared clipping from
+            // Livemint went out reading "LİVEMİNT" — someone else's masthead,
+            // misspelled, on an image the reader is publishing.
+            .map { TextUtils.ellipsize(it.uppercase(Locale.ROOT), bylinePaint, contentW.toFloat(), TextUtils.TruncateAt.END) }
 
         val footer = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = MUTED; typeface = sans; textSize = 28f; textAlign = Paint.Align.CENTER; letterSpacing = 0.08f

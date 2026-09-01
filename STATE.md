@@ -1412,11 +1412,16 @@ respect as the CI-caught log above.
   positions is unusable. Deduplicated and capped at six, because that menu is a
   listening budget rather than a rendering one. Still gated on a downloaded
   dictionary, so a translation-only reader does not get it — logged, not fixed.
-  **Audited and found clean.** `android:supportsRtl` is already on; there are no
-  Java `toLowerCase`/`toUpperCase` calls (Kotlin's are `Locale.ROOT`-based, so
-  the Turkish dotless-i class of bug cannot occur); `String.format` is never
-  called without a locale; the one `SimpleDateFormat` is correctly pinned to
-  `Locale.US` for a crash log. A suspected bug — `DateTimeFormatter.ofPattern`
+  **Audited — and one claim here was wrong, corrected in D41.**
+  `android:supportsRtl` is already on; there are no Java
+  `toLowerCase`/`toUpperCase` calls; `String.format` is never called without a
+  locale; the one `SimpleDateFormat` is correctly pinned to `Locale.US` for a
+  crash log. **But the conclusion drawn from that — that the Turkish dotless-i
+  class of bug "cannot occur" — was false**, and this entry asserted it. Kotlin's
+  no-arg `lowercase()`/`uppercase()` are indeed `Locale.ROOT`-based, but
+  `NewspaperShare.kt:110` passes `Locale.getDefault()` explicitly. The grep that
+  produced this paragraph searched for the Java method names and never looked
+  for the Kotlin ones with an argument. See D41. A suspected bug — `DateTimeFormatter.ofPattern`
   emitting non-Latin digits into GDELT feed URLs under locales like `ar-EG` —
   **was tested and is not real**: `ofPattern` uses `DecimalStyle.STANDARD`
   regardless of locale, unlike `SimpleDateFormat`. Recorded because it is the
@@ -1437,6 +1442,62 @@ respect as the CI-caught log above.
   prose last since it is the most likely to still be edited, and add
   `android:localeConfig` at the end so the Android 13+ per-app language picker
   appears only once there is more than one language to pick.
+
+- **D41 — Dedup was silently deleting Indic and Urdu news; the topic classifier
+  could not see them at all (2026-09-01).** A 23-agent audit of accessibility
+  and localization across both platforms turned up two defects that are not
+  accessibility problems at all — they are **silent data loss in exactly the
+  languages D35 had just added feeds for**, and both were reproduced before
+  being fixed.
+  **(a) `Simhash.normalize` stripped every combining mark.**
+  `NON_ALNUM = Regex("[^\\p{L}\\p{N}]+")` — `\p{M}` is in neither class, and
+  that is how Devanagari, Bengali, Telugu, Tamil, Gujarati, Kannada, Malayalam,
+  Odia and Gurmukhi write their vowels and virama. Measured, not inferred:
+  "मुंबई में भारी बारिश" normalised to the consonant skeleton **"म बई म भ र ब र श"**,
+  and against "मुंबई में भारी बेरोजगारी" (unemployment, not rain) landed at
+  Hamming distance **6** — inside `NEAR_DUP_THRESHOLD` of 8, so `Dedup` kept one
+  and discarded the other. An Urdu pair landed at exactly 8. There was no
+  symptom: `Dedup.deduplicate` keeps a cluster's representative and drops the
+  rest with no log, error or counter, so a Hindi build merely showed fewer
+  stories than its sources sent — indistinguishable from a quiet feed, in an app
+  whose entire claim is measuring what flowed. Adding `\p{M}` takes that pair to
+  16. An NFC pass was added alongside, because feeds are inconsistent about
+  composed vs decomposed nukta forms and the same headline in two encodings
+  would otherwise fail to dedup.
+  **(b) The fixed threshold was itself biased against dense scripts.** With
+  marks preserved, the short Urdu pair still sat at exactly 8 — while the
+  *identical one-word change in Latin* ("Heavy rain in Karachi" / "Heavy heat in
+  Karachi") sits at 19. A four-word headline yields ~16 shingles, and simhash
+  over that little evidence is noisy; scripts that pack more meaning into fewer
+  characters are systematically more exposed. `Simhash.thresholdFor` now scales
+  the budget with the evidence available (`min(8, max(2, shingles/6))`), so a
+  56-character syndication pair keeps the full 8 bits and still collapses, while
+  a four-word headline gets 2 — still collapsing identical and punctuation-only
+  variants, no longer collapsing different stories.
+  **(c) The web topic classifier could never fire on non-Latin text.**
+  `web/js/topics.js` built every matcher as `new RegExp('\\b' + term + '\\b')`.
+  JavaScript defines `\b` against `[A-Za-z0-9_]`, so it cannot fire adjacent to
+  a Devanagari, Arabic, Thai or CJK character: verified,
+  `new RegExp('\\bराजनीति\\b','i').test('आज की राजनीति खबर')` is `false`. Every
+  item from a non-English feed classified as `general` — the Loom collapsing to
+  one band and the Contrast dumbbells emptying, silently. Replaced with a
+  Unicode-aware boundary built from a leading character class rather than a
+  lookbehind (Safari only gained lookbehind in 16.4, and an unsupported
+  construct throws at regex *construction*, taking the module and the app with
+  it), plus containment matching for scripts written without spaces. Note this
+  was a **prerequisite**, not the whole fix: translating the keyword lexicon
+  first would have shipped terms that could never match.
+  **Also corrected: D40's own claim that the Turkish dotless-i bug "cannot
+  occur" was false.** `NewspaperShare.kt:110` passed `Locale.getDefault()` to
+  `uppercase()`, so a Turkish reader sharing a Livemint clipping published an
+  image reading "LİVEMİNT" — someone else's masthead, misspelled. Now
+  `Locale.ROOT`. The original grep searched for the Java method names and never
+  the Kotlin ones with an argument.
+  **And the web reader now has CI at all.** Its 6,300 lines of JS shipped
+  entirely unexercised, which is how (c) survived. `web/tests/` runs on node's
+  built-in test runner with no install step — deliberately, since
+  `web/package.json` has no lockfile for `npm ci` to use. `"type": "module"` was
+  **not** added: `web/api/*.js` are CommonJS Vercel functions and would break.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
