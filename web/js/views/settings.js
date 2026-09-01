@@ -3,6 +3,7 @@
 // shown. Each control writes straight through actions.updateSetting, which
 // persists to localStorage and re-applies the look immediately.
 
+import { t, currentLanguage, setLanguage, availableLocales } from '../i18n.js';
 import { FONT_OPTIONS, PAPER_OPTIONS } from '../settings.js';
 
 export function render(container, state, actions) {
@@ -12,11 +13,12 @@ export function render(container, state, actions) {
   root.className = 'nooz-layout nooz-stack nooz-stack--lg';
 
   const heading = document.createElement('h1');
-  heading.textContent = 'Settings';
+  heading.textContent = t('screen_settings', 'Settings');
   root.appendChild(heading);
 
   const s = state.settings || {};
 
+  root.appendChild(buildLanguageSection());
   root.appendChild(buildReadingModeSection(s, actions));
   root.appendChild(buildArticleDisplaySection(s, actions));
   root.appendChild(buildFoundQuoteSection(s, actions));
@@ -170,6 +172,67 @@ function buildImageStyleSection(s, actions) {
     row.appendChild(btn);
   }
   section.appendChild(row);
+  return section;
+}
+
+/**
+ * The interface language.
+ *
+ * Every entry is labelled with the language's own name for itself. A picker
+ * written entirely in English is a picker for people who already have English,
+ * which is exactly the reader this list exists for.
+ *
+ * Partial locales say how partial they are, from a count measured off the
+ * catalogues at build time. Someone switching to a language that is a third
+ * done deserves to know before the page changes under them, not after.
+ */
+function buildLanguageSection() {
+  const section = document.createElement('div');
+  section.className = 'nooz-stack nooz-stack--xs';
+  section.appendChild(sectionTitle(t('language_title', 'Language')));
+
+  const note = document.createElement('p');
+  note.className = 'nooz-settings-note';
+  note.textContent = t(
+    'language_explainer',
+    "Nooz's own text. Stories always stay in the language their publisher wrote them in.",
+  );
+  section.appendChild(note);
+
+  const list = document.createElement('div');
+  list.className = 'nooz-language-list';
+  list.setAttribute('role', 'radiogroup');
+  list.setAttribute('aria-label', t('language_title', 'Language'));
+
+  const locales = availableLocales();
+  const active = currentLanguage();
+
+  const makeRow = (tag, label, lang) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'nooz-language';
+    button.setAttribute('role', 'radio');
+    button.setAttribute('aria-checked', tag === active ? 'true' : 'false');
+    if (tag === active) button.classList.add('is-active');
+    // Each option is written in its own language, so it needs its own `lang`:
+    // without it a screen reader pronounces every entry with the surrounding
+    // page's phonetics, which makes the list unreadable by ear -- the exact
+    // audience a native-name picker is for.
+    if (lang) button.setAttribute('lang', lang);
+    button.textContent = label;
+    button.addEventListener('click', () => { setLanguage(tag); });
+    return button;
+  };
+
+  list.appendChild(makeRow('', t('language_system_default', 'Match my browser'), null));
+  for (const locale of locales) {
+    const label = locale.coverage >= 100
+      ? t('language_complete', '%1$s', [locale.endonym])
+      : t('language_partial', '%1$s · %2$d%% translated', [locale.endonym, locale.coverage]);
+    list.appendChild(makeRow(locale.tag, label, locale.tag));
+  }
+
+  section.appendChild(list);
   return section;
 }
 

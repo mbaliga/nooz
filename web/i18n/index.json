@@ -1,0 +1,215 @@
+{
+  "total": 37,
+  "locales": [
+    {
+      "tag": "ar",
+      "endonym": "العربية",
+      "english": "Arabic",
+      "dir": "rtl",
+      "coverage": 100
+    },
+    {
+      "tag": "as",
+      "endonym": "অসমীয়া",
+      "english": "Assamese",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "bn",
+      "endonym": "বাংলা",
+      "english": "Bengali",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "de",
+      "endonym": "Deutsch",
+      "english": "German",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "en",
+      "endonym": "English",
+      "english": "English",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "es",
+      "endonym": "Español",
+      "english": "Spanish",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "fa",
+      "endonym": "فارسی",
+      "english": "Persian",
+      "dir": "rtl",
+      "coverage": 100
+    },
+    {
+      "tag": "fr",
+      "endonym": "Français",
+      "english": "French",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "gu",
+      "endonym": "ગુજરાતી",
+      "english": "Gujarati",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "hi",
+      "endonym": "हिन्दी",
+      "english": "Hindi",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "id",
+      "endonym": "Bahasa Indonesia",
+      "english": "Indonesian",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "it",
+      "endonym": "Italiano",
+      "english": "Italian",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "ja",
+      "endonym": "日本語",
+      "english": "Japanese",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "kn",
+      "endonym": "ಕನ್ನಡ",
+      "english": "Kannada",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "ko",
+      "endonym": "한국어",
+      "english": "Korean",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "ks",
+      "endonym": "کٲشُر",
+      "english": "Kashmiri",
+      "dir": "rtl",
+      "coverage": 41
+    },
+    {
+      "tag": "mai",
+      "endonym": "मैथिली",
+      "english": "Maithili",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "ml",
+      "endonym": "മലയാളം",
+      "english": "Malayalam",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "mr",
+      "endonym": "मराठी",
+      "english": "Marathi",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "or",
+      "endonym": "ଓଡ଼ିଆ",
+      "english": "Odia",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "pa",
+      "endonym": "ਪੰਜਾਬੀ",
+      "english": "Punjabi",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "pt",
+      "endonym": "Português",
+      "english": "Portuguese",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "ru",
+      "endonym": "Русский",
+      "english": "Russian",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "sw",
+      "endonym": "Kiswahili",
+      "english": "Swahili",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "ta",
+      "endonym": "தமிழ்",
+      "english": "Tamil",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "te",
+      "endonym": "తెలుగు",
+      "english": "Telugu",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "tr",
+      "endonym": "Türkçe",
+      "english": "Turkish",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "ur",
+      "endonym": "اردو",
+      "english": "Urdu",
+      "dir": "rtl",
+      "coverage": 100
+    },
+    {
+      "tag": "vi",
+      "endonym": "Tiếng Việt",
+      "english": "Vietnamese",
+      "dir": "ltr",
+      "coverage": 100
+    },
+    {
+      "tag": "zh-Hans",
+      "endonym": "简体中文",
+      "english": "Chinese (Simplified)",
+      "dir": "ltr",
+      "coverage": 100
+    }
+  ]
+}

@@ -38,6 +38,7 @@ import { render as renderNewsstand } from './views/newsstand.js';
 import { classifyItem } from './topics.js';
 import { parseRoute, navigate, onRoute } from './router.js';
 import { createFocusManager } from './focus.js';
+import { init as initI18n, onLanguageChange } from './i18n.js';
 
 const VIEW_RENDERERS = {
   stand: renderStand,
@@ -147,6 +148,11 @@ let focusManager = null;
 
 async function boot() {
   currentState.settings = loadSettings();
+  // Before the shell is built, so the first paint is already in the reader's
+  // language and <html lang>/<html dir> are right for the first thing a screen
+  // reader announces. A failed fetch here leaves the interface in English
+  // rather than stopping the app.
+  await initI18n();
   await dbInit();
   const [sources, items, readIds, clippedIds, clippings] = await Promise.all([
     dbGetSources(),
@@ -163,6 +169,9 @@ async function boot() {
   rebuildItemsById();
 
   buildShell();
+  // A language change rebuilds the chrome as well as the view: the footer nav
+  // labels and the drawer's own name live outside the rendered view.
+  onLanguageChange(() => { buildShell(); scheduleRender(); });
   installSelectionSearch();
   onRoute(handleRoute);
   installResizeReflow();
@@ -349,7 +358,16 @@ function buildShell() {
 
   app.appendChild(shell);
 
-  // Escape closes an open drawer or the search bar.
+  // Escape closes an open drawer or the search bar. Registered once for the
+  // life of the page: buildShell runs again when the language changes, and a
+  // second copy of this would close the search bar twice per keypress.
+  if (!escapeHandlerInstalled) installEscapeHandler();
+}
+
+let escapeHandlerInstalled = false;
+
+function installEscapeHandler() {
+  escapeHandlerInstalled = true;
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (shellEl.classList.contains('has-search')) closeSearch();

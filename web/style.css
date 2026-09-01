@@ -1585,6 +1585,41 @@ h1, h2, h3, h4 {
 }
 .nooz-loom-tube { transition: opacity 0.25s ease; }
 
+/* ---- The language picker -----------------------------------------------
+   Every entry is set in its own language, so the list has to survive scripts
+   with taller line boxes than Latin (Devanagari, Thai) and right-to-left runs
+   (Arabic, Urdu) without the rows jumping. `text-align: start` rather than
+   `left` is what lets an RTL entry align to its own reading edge. */
+.nooz-language-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--paper-hairline);
+}
+.nooz-language {
+  text-align: start;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--paper-hairline);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--paper-ink);
+}
+.nooz-language.is-active { font-weight: 600; }
+.nooz-language.is-active::after {
+  content: '✓';
+  margin-inline-start: var(--space-xs);
+}
+.nooz-language:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: -2px;
+}
+.nooz-settings-note {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--paper-ink-dim);
+}
+
 /* ---- Loom: the stream keys ---------------------------------------------
    One button per tube, carrying that tube's counts. The <svg> is role="img",
    which makes its whole subtree a single leaf in the accessibility tree, so the

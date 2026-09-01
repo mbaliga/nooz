@@ -42,6 +42,7 @@ COVERAGE_KT = (
     / "xyz" / "mdhv" / "riverwip" / "model" / "LocaleCoverage.kt"
 )
 WEB_OUT = REPO / "web" / "i18n"
+WEB_INDEX = WEB_OUT / "index.json"
 
 BASE_TAG = "en"
 
@@ -224,6 +225,63 @@ object LocaleCoverage {{
 '''
 
 
+def render_web_index(locales: list, coverage: dict, total: int) -> str:
+    """
+    One file the web reader fetches to know what it can offer: tag, the
+    language's own name for itself, and how much of the interface it carries.
+
+    The endonyms come from Locales.kt, parsed rather than duplicated -- a
+    second list of thirty language names is a second list to get out of step.
+    """
+    rows = [
+        {
+            "tag": tag,
+            "endonym": locales[tag]["endonym"],
+            "english": locales[tag]["english"],
+            "dir": locales[tag]["dir"],
+            "coverage": round(100 * coverage[tag] / total) if total else 0,
+        }
+        for tag in sorted(coverage)
+        if coverage[tag] > 0 and tag in locales
+    ]
+    return json.dumps({"total": total, "locales": rows}, ensure_ascii=False, indent=2) + "\n"
+
+
+def parse_locales_kt() -> dict:
+    """
+    Read the endonyms out of Locales.kt.
+
+    Deliberately a parse of the real declaration rather than a copy: the list of
+    languages Nooz offers is a decision, and it should be written down exactly
+    once. A regex over Kotlin is a little crude, and it fails loudly (an empty
+    result fails the generator) rather than silently drifting.
+    """
+    import re
+
+    source = (
+        REPO / "core" / "model" / "src" / "main" / "kotlin"
+        / "xyz" / "mdhv" / "riverwip" / "model" / "Locales.kt"
+    ).read_text(encoding="utf-8")
+    # The base entry is written `Locale(BASE_TAG, …)` so the constant stays the
+    # single spelling of "en"; substitute it in before matching.
+    base_tag = re.search(r'const val BASE_TAG = "([\w-]+)"', source)
+    if base_tag:
+        source = source.replace("Locale(BASE_TAG,", f'Locale("{base_tag.group(1)}",')
+
+    out = {}
+    pattern = re.compile(
+        r'Locale\(\s*"(?P<tag>[\w-]+)"\s*,\s*"(?P<endonym>[^"]+)"\s*,\s*"(?P<english>[^"]+)"'
+        r'(?:\s*,\s*Direction\.(?P<dir>LTR|RTL))?',
+    )
+    for match in pattern.finditer(source):
+        out[match.group("tag")] = {
+            "endonym": match.group("endonym"),
+            "english": match.group("english"),
+            "dir": (match.group("dir") or "LTR").lower(),
+        }
+    return out
+
+
 def main() -> int:
     check = "--check" in sys.argv
     base = load(BASE_TAG)
@@ -252,6 +310,18 @@ def main() -> int:
     shipped = [t for t in tags if coverage[t] > 0]
     wanted[LOCALE_CONFIG] = render_locale_config(shipped)
     wanted[COVERAGE_KT] = render_coverage(coverage, len(base))
+
+    locales = parse_locales_kt()
+    if not locales:
+        print("could not read any locale out of Locales.kt", file=sys.stderr)
+        return 2
+    missing = [t for t in shipped if t not in locales]
+    if missing:
+        # A catalogue for a language the app does not list is a locale nobody
+        # can choose. Silently generating it would hide the mistake.
+        print(f"catalogue(s) with no entry in Locales.kt: {', '.join(missing)}", file=sys.stderr)
+        return 2
+    wanted[WEB_INDEX] = render_web_index(locales, coverage, len(base))
 
     stale = []
     for path, content in wanted.items():

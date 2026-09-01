@@ -1705,6 +1705,40 @@ respect as the CI-caught log above.
   `verifyI18n`. Each future tranche is appended to `en.json` and every locale
   file, so the cost of language number thirty-one is unchanged by any of it.
 
+- **D48 — The web reader speaks the same thirty languages, from the same files
+  (2026-09-01).** *"The web reader must also do the same, okay?"* — it does, and
+  structurally rather than by promise. `web/js/i18n.js` reads the catalogues
+  `tools/i18n/generate.py` writes from the very same `i18n/strings/*.json` the
+  Android app is built from. There is no second list to keep in step.
+  Per-key fallback matches Android's resource resolution exactly, so Kashmiri
+  renders its 41% in Kashmiri and the rest in English on both clients, and `t()`
+  takes a mandatory English fallback argument so a failed fetch shows words
+  rather than `tour_loom_body`.
+  **`lang` and `dir` are the accessibility half of this**, and they are easy to
+  forget because nothing looks wrong without them. `<html lang>` is what picks a
+  screen reader's voice and pronunciation rules — an Urdu interface still
+  labelled `lang="en"` gets read aloud with English phonetics, which is
+  unusable. Each row of the language picker also carries its **own** `lang`,
+  since every entry is written in a different language; without that the list is
+  read in one accent, and a list of native names is precisely the thing a
+  reader without English navigates by ear. `dir` flips the whole document for
+  Arabic, Persian, Urdu and Kashmiri, and the picker's CSS uses `text-align:
+  start` and `margin-inline-start` so rows align to their own reading edge.
+  **Resolution is the part with judgement in it, so it is the part under test.**
+  Browsers send what the OS gives them — `pt-BR`, `zh-Hans-CN`, `zh-hans` — and
+  almost none of it is the name of a catalogue. `resolveTag` walks the browser's
+  preference order, matches case-insensitively, then shortens progressively
+  (`zh-Hans-CN` → `zh-Hans` → `zh`). `web/tests/i18n.test.mjs` pins all of it.
+  **Three of those tests are really about the generator**, and they are the ones
+  worth keeping: no translation may lose or invent a `%1$s` its English carries,
+  none may hold a key the base does not (which is how an unpropagated rename
+  shows up), and the index the picker reads must agree with the catalogues that
+  exist, coverage figures included. A dropped placeholder leaves a silent gap in
+  a sentence on a screen nobody testing in English will ever look at.
+  Verified end to end: booting with `ur` stored yields `lang="ur"`, `dir="rtl"`,
+  a heading reading ترتیبات, thirty-one picker rows each in its own script, and
+  Kashmiri labelled کٲشُر · 41% ترجمہ شدہ.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
