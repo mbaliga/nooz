@@ -18,7 +18,6 @@ app/src/main/kotlin/xyz/mdhv/riverwip/ModelChoicePanel.kt 9
 app/src/main/kotlin/xyz/mdhv/riverwip/SettingsScreen.kt 69
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/Bars.kt 3
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/EmptyState.kt 1
-core/design/src/main/kotlin/xyz/mdhv/riverwip/design/GlobeCanvas.kt 1
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/NoResultsState.kt 1
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SearchBar.kt 1
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SectionHeading.kt 1

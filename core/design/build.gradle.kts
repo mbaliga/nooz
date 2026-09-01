@@ -18,6 +18,11 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        // Robolectric needs the merged resources to inflate a Compose host.
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -33,4 +38,12 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
 
     testImplementation(libs.junit)
+    // Accessibility assertions on real composables, on the JVM. GlobeCanvas is
+    // an interactive control that lives here rather than in a feature module,
+    // so the evidence for it has to live here too (D42's standard).
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

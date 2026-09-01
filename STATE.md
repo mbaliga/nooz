@@ -1739,6 +1739,39 @@ respect as the CI-caught log above.
   a heading reading ترتیبات, thirty-one picker rows each in its own script, and
   Kashmiri labelled کٲشُر · 41% ترجمہ شدہ.
 
+- **D49 — The last two silent visualizations now speak, and are tested
+  (2026-09-01).** Closes the audit's Canvas list, which D42 opened with the
+  Loom.
+  **The region globe told a screen-reader user to "Drag to spin, pinch to widen
+  the band"** — two gestures neither of which a screen reader can make — and
+  offered no action in their place. The sector chips beneath it cover picking a
+  region, so that half had a door; **the band width had none at all**, and the
+  topic-mix ring, the only place the aimed region's real counts are drawn,
+  existed nowhere in speech. Now four custom actions (spin east/west, widen/
+  narrow) sized so a few invocations visibly move the selection — an action menu
+  is read one item at a time, so a step needing twenty repeats is no step — and
+  a description that names the region, the band, the total and the top topics.
+  **`RegionHeatStrip` was a bare `Canvas`,** which publishes nothing at all. The
+  entire answer to "where in the world have I been reading?" — the question the
+  Contrast ledger exists to ask — was carried by the relative darkness of eight
+  rectangles: silent to a screen reader, and unreadable to anyone who cannot
+  separate two close greys. It now names every sector that has a read, with its
+  number, densest first, and says the current selection out loud instead of
+  leaving it to a highlight. Sectors with nothing read are omitted: reading
+  eight zeroes aloud before the one number that matters buries the answer.
+  **Evidence.** `:core:design` had no test dependency at all, so `GlobeCanvas` —
+  an interactive control living outside any feature module — had nowhere for its
+  proof to go; it now carries the same Robolectric + `compose.ui.test` setup as
+  `:feature:river`. `GlobeAccessibilityTest` (5) **invokes** the custom actions
+  rather than trusting their labels, since an action that fires nothing is
+  precisely the defect being fixed. `ContrastAccessibilityTest` (4) is
+  mutation-verified: deleting the `semantics` block fails all four.
+  **The remaining honest gap**, which `verifyI18n` cannot see: these spoken
+  descriptions are still assembled from English literals inside functions, not
+  from `strings.xml`. The scanner matches text call sites, and a string built in
+  a `buildString` is invisible to it. So the Loom, the globe and the heat strip
+  currently speak English in every locale.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

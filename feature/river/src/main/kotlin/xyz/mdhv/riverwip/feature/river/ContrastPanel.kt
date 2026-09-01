@@ -35,6 +35,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.design.EmptyState
@@ -285,14 +287,23 @@ private fun RegionsSection(
  * real control, not a rendering glitch (an earlier version's near-zero-alpha
  * fill at zero reads looked like nothing was there).
  */
+// internal rather than private so ContrastAccessibilityTest can compose it on
+// its own: the assertion is about what this one node publishes, and hoisting
+// the whole panel to reach it would test the panel instead.
 @Composable
-private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Color) {
+internal fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Color) {
     val maxV = reads.entries.filter { it.key != Region.GLOBAL }.maxOfOrNull { it.value }?.takeIf { it > 0 } ?: 1
+    // A bare Canvas publishes nothing, so this map — which is the entire answer
+    // to "where in the world have I been reading?" — was silent. Shade alone
+    // carried the whole comparison, which is also unreadable for anyone who
+    // cannot separate two close greys.
+    val spoken = describeHeatStrip(reads, selected)
     Canvas(
         Modifier
             .fillMaxWidth()
             .aspectRatio(360f / 168f)
-            .clip(RoundedCornerShape(Tokens.Radius.sm)),
+            .clip(RoundedCornerShape(Tokens.Radius.sm))
+            .semantics { contentDescription = spoken },
     ) {
         val w = size.width
         val h = size.height
@@ -339,6 +350,23 @@ private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Colo
             else -> outline(selected.fromLon, selected.toLon)
         }
     }
+}
+
+/**
+ * The heat strip in words: every sector with a read, named with its number,
+ * densest first, and the current selection said out loud rather than left to
+ * a highlight. Sectors with nothing read are omitted — naming eight zeroes
+ * before the two that matter buries the answer.
+ */
+private fun describeHeatStrip(reads: Map<Region, Int>, selected: Region): String {
+    val withReads = reads.entries
+        .filter { it.key != Region.GLOBAL && it.value > 0 }
+        .sortedByDescending { it.value }
+    val head = "Reading by region. Showing ${selected.label}."
+    if (withReads.isEmpty()) return "$head Nothing read yet today."
+    val total = withReads.sumOf { it.value }
+    val named = withReads.joinToString(", ") { "${it.key.label} ${it.value}" }
+    return "$head $total ${plural(total, "story", "stories")} read: $named."
 }
 
 @OptIn(ExperimentalLayoutApi::class)
