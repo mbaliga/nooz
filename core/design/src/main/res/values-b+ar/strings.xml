@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d د</string>
     <string name="reader_reading_time">زمن القراءة التقريبي %1$d دقيقة</string>
     <string name="reader_progress">نحو %1$d بالمئة من المقال</string>
+    <string name="loom_title">نَوْل اليوم.</string>
+    <string name="loom_flowed">وصلك %1$d خبرًا من %2$s</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">، و%1$d مواضيع أخرى</string>
+    <string name="loom_read_none">لم تقرأ منها شيئًا</string>
+    <string name="loom_read_some">قرأت %1$d: %2$s</string>
+    <string name="loom_use_actions">استخدم الإجراءات لأرقام خيط واحد.</string>
+    <string name="loom_nothing_flowed">لم يصلك شيء من %1$s في ذلك اليوم.</string>
+    <string name="loom_source_one">مصدر واحد</string>
+    <string name="loom_source_many">%1$d مصادر</string>
+    <string name="loom_stream_action">%1$s: وصل %2$d، قُرئ %3$d</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s محدَّد</string>
+    <string name="loom_nothing_selected">لا خيط محدَّد</string>
+    <string name="globe_aimed">كرة المناطق، موجَّهة إلى %1$s، تغطي %2$s.</string>
+    <string name="globe_band_world">العالم كله</string>
+    <string name="globe_band_degrees">شريطًا عرضه %1$d درجة</string>
+    <string name="globe_nothing_flowed">لم يصل شيء من هنا بعد.</string>
+    <string name="globe_mix">%1$d خبرًا: %2$s. استخدم الإجراءات للتدوير أو لتغيير الشريط.</string>
+    <string name="globe_spin_west">أدِر غربًا</string>
+    <string name="globe_spin_east">أدِر شرقًا</string>
+    <string name="globe_widen">وسِّع الشريط</string>
+    <string name="globe_narrow">ضيِّق الشريط</string>
+    <string name="heatstrip_title">القراءة حسب المنطقة. المعروض: %1$s.</string>
+    <string name="heatstrip_empty">لم تقرأ شيئًا اليوم بعد.</string>
+    <string name="heatstrip_read">قُرئ %1$d %2$s: %3$s</string>
+    <string name="heatstrip_story_one">خبر</string>
+    <string name="heatstrip_story_many">أخبار</string>
+    <string name="loom_previous_day">اليوم السابق</string>
+    <string name="loom_next_day">اليوم التالي</string>
+    <string name="loom_empty">لم يصل شيء في ذلك اليوم. يحيك النَّوْل ما إن تحيك مصادرك.</string>
+    <string name="loom_no_archive">معظم المصادر تدفّقات RSS/Atom حيّة، لا سبيل لسؤالها عن تاريخ مضى؛ هذا ما تقدّمه الآن، لا أرشيف.</string>
+    <string name="loom_asking_gdelt">يجري سؤال GDELT…</string>
+    <string name="loom_ask_gdelt">اسأل GDELT عن هذا اليوم</string>
+    <string name="contrast_nothing_flowed">لم يصل شيء في ذلك اليوم</string>
+    <string name="contrast_reach">المدى</string>
+    <string name="contrast_by_topic">حسب الموضوع</string>
+    <string name="contrast_widest_gap">أوسع فجوة في %1$s: وصل %2$d%%، وقُرئ %3$d%%.</string>
+    <string name="contrast_flowed">وصل</string>
+    <string name="contrast_read">قُرئ</string>
+    <string name="contrast_regions">المناطق</string>
+    <string name="contrast_no_reads">لا قراءات اليوم بعد. تمتلئ الخريطة كلما قرأت.</string>
+    <string name="cross_coverage">التغطية</string>
+    <string name="cross_breadth_stream">الاتساع: التدفّق</string>
+    <string name="cross_breadth_you">الاتساع: أنت</string>
+    <string name="cross_over_under">الزيادة والنقص حسب الموضوع</string>
+    <string name="cross_what_changed">ما تغيّر منذ الفترة السابقة</string>
+    <string name="cross_no_earlier">لا فترة سابقة للمقارنة بعد.</string>
+    <string name="cross_steady">بقي مزيج مواضيعك ثابتًا.</string>
 </resources>

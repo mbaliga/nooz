@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">dak %1$d</string>
     <string name="reader_reading_time">Muda wa kusoma unaokadiriwa dakika %1$d</string>
     <string name="reader_progress">Takriban asilimia %1$d ya makala</string>
+    <string name="loom_title">Mtande wa siku.</string>
+    <string name="loom_flowed">Habari %1$d zilitiririka kutoka %2$s vyako</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, na mada %1$d zaidi</string>
+    <string name="loom_read_none">Hukusoma hata moja</string>
+    <string name="loom_read_some">Ulisoma %1$d: %2$s</string>
+    <string name="loom_use_actions">Tumia vitendo kupata idadi ya mkondo mmoja.</string>
+    <string name="loom_nothing_flowed">Siku hiyo hakuna kilichotiririka kutoka %1$s vyako.</string>
+    <string name="loom_source_one">chanzo %1$d</string>
+    <string name="loom_source_many">vyanzo %1$d</string>
+    <string name="loom_stream_action">%1$s: %2$d zilitiririka, %3$d zilisomwa</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s imechaguliwa</string>
+    <string name="loom_nothing_selected">Hakuna mkondo uliochaguliwa</string>
+    <string name="globe_aimed">Tufe la maeneo, likielekezwa %1$s, likifunika %2$s.</string>
+    <string name="globe_band_world">dunia nzima</string>
+    <string name="globe_band_degrees">ukanda wa upana wa nyuzi %1$d</string>
+    <string name="globe_nothing_flowed">Bado hakuna kilichotiririka kutoka hapa.</string>
+    <string name="globe_mix">Habari %1$d: %2$s. Tumia vitendo kuzungusha au kubadili ukanda.</string>
+    <string name="globe_spin_west">Zungusha magharibi</string>
+    <string name="globe_spin_east">Zungusha mashariki</string>
+    <string name="globe_widen">Panua ukanda</string>
+    <string name="globe_narrow">Punguza ukanda</string>
+    <string name="heatstrip_title">Kusoma kwa eneo. Inaonyesha %1$s.</string>
+    <string name="heatstrip_empty">Leo bado hakuna kilichosomwa.</string>
+    <string name="heatstrip_read">%2$s %1$d zilisomwa: %3$s</string>
+    <string name="heatstrip_story_one">habari</string>
+    <string name="heatstrip_story_many">habari</string>
+    <string name="loom_previous_day">Siku iliyotangulia</string>
+    <string name="loom_next_day">Siku inayofuata</string>
+    <string name="loom_empty">Siku hiyo hakuna kilichotiririka. Mtande hufuma pindi vyanzo vyako vinapofuma.</string>
+    <string name="loom_no_archive">Vyanzo vingi ni mipasho hai ya RSS/Atom, isiyo na njia ya kuombwa tarehe iliyopita; hii inaonyesha wanachotoa sasa hivi, si kumbukumbu.</string>
+    <string name="loom_asking_gdelt">Inauliza GDELT…</string>
+    <string name="loom_ask_gdelt">Uliza GDELT kuhusu siku hii</string>
+    <string name="contrast_nothing_flowed">Siku hiyo hakuna kilichotiririka</string>
+    <string name="contrast_reach">Ufikiaji</string>
+    <string name="contrast_by_topic">Kwa mada</string>
+    <string name="contrast_widest_gap">Pengo kubwa zaidi katika %1$s: asilimia %2$d zilitiririka, asilimia %3$d zilisomwa.</string>
+    <string name="contrast_flowed">zilitiririka</string>
+    <string name="contrast_read">zilisomwa</string>
+    <string name="contrast_regions">Maeneo</string>
+    <string name="contrast_no_reads">Leo bado hakuna kilichosomwa. Ramani hujaa kadri unavyosoma.</string>
+    <string name="cross_coverage">Ufikiaji</string>
+    <string name="cross_breadth_stream">Upana: mkondo</string>
+    <string name="cross_breadth_you">Upana: wewe</string>
+    <string name="cross_over_under">Zaidi/pungufu kwa mada</string>
+    <string name="cross_what_changed">Kilichobadilika tangu kipindi kilichopita</string>
+    <string name="cross_no_earlier">Bado hakuna kipindi cha awali cha kulinganisha.</string>
+    <string name="cross_steady">Mchanganyiko wako wa mada ulibaki thabiti.</string>
 </resources>

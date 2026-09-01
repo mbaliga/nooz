@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d मिनट</string>
     <string name="reader_reading_time">पढ़बा मे अनुमानित %1$d मिनट</string>
     <string name="reader_progress">लेखक लगभग %1$d प्रतिशत भऽ गेल</string>
+    <string name="loom_title">दिनक लूम।</string>
+    <string name="loom_flowed">अहाँक %2$s सँ %1$d खबरि बहल</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, आ %1$d आर विषय</string>
+    <string name="loom_read_none">एहि मे सँ किछु अहाँ नहि पढ़लहुँ</string>
+    <string name="loom_read_some">अहाँ %1$d पढ़लहुँ: %2$s</string>
+    <string name="loom_use_actions">कोनो एक धाराक अंक लेल क्रिया सभक उपयोग करू।</string>
+    <string name="loom_nothing_flowed">एहि दिन अहाँक %1$s सँ किछु नहि बहल।</string>
+    <string name="loom_source_one">%1$d स्रोत</string>
+    <string name="loom_source_many">%1$d स्रोत</string>
+    <string name="loom_stream_action">%1$s: %2$d बहल, %3$d पढ़ल</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s चुनल गेल</string>
+    <string name="loom_nothing_selected">कोनो धारा नहि चुनल गेल</string>
+    <string name="globe_aimed">क्षेत्र गोला, %1$s दिस ताकल, %2$s केँ समेटैत।</string>
+    <string name="globe_band_world">पूरा दुनिया</string>
+    <string name="globe_band_degrees">%1$d डिग्री चाकर पट्टी</string>
+    <string name="globe_nothing_flowed">एतय सँ आब धरि किछु नहि बहल।</string>
+    <string name="globe_mix">%1$d खबरि: %2$s। घुमयबा वा पट्टी बदलबा लेल क्रिया सभक उपयोग करू।</string>
+    <string name="globe_spin_west">पच्छिम दिस घुमाउ</string>
+    <string name="globe_spin_east">पूब दिस घुमाउ</string>
+    <string name="globe_widen">पट्टी चाकर करू</string>
+    <string name="globe_narrow">पट्टी सकड़ करू</string>
+    <string name="heatstrip_title">क्षेत्र अनुसार पढ़नाइ। %1$s देखाओल जा रहल अछि।</string>
+    <string name="heatstrip_empty">आइ आब धरि किछु नहि पढ़ल गेल।</string>
+    <string name="heatstrip_read">%1$d %2$s पढ़ल गेल: %3$s</string>
+    <string name="heatstrip_story_one">खबरि</string>
+    <string name="heatstrip_story_many">खबरि</string>
+    <string name="loom_previous_day">पहिलुका दिन</string>
+    <string name="loom_next_day">अगिला दिन</string>
+    <string name="loom_empty">एहि दिन किछु नहि बहल। अहाँक स्रोत बुनत तखने लूमो बुनत।</string>
+    <string name="loom_no_archive">अधिकांश स्रोत जीवंत RSS/Atom फीड अछि, जिनका सँ बीतल तारीख नहि मांगल जा सकैत अछि; ई ओ सभ आब जे परोसि रहल अछि से देखबैत अछि, कोनो पुरालेख नहि।</string>
+    <string name="loom_asking_gdelt">GDELT सँ पुछल जा रहल अछि…</string>
+    <string name="loom_ask_gdelt">एहि दिन लेल GDELT सँ पुछू</string>
+    <string name="contrast_nothing_flowed">एहि दिन किछु नहि बहल</string>
+    <string name="contrast_reach">पहुँच</string>
+    <string name="contrast_by_topic">विषय अनुसार</string>
+    <string name="contrast_widest_gap">सभ सँ पैघ अंतर %1$s मे: %2$d%% बहल, %3$d%% पढ़ल।</string>
+    <string name="contrast_flowed">बहल</string>
+    <string name="contrast_read">पढ़ल</string>
+    <string name="contrast_regions">क्षेत्र</string>
+    <string name="contrast_no_reads">आइ आब धरि किछु नहि पढ़ल गेल। जेना-जेना अहाँ पढ़ब, नक्शा भरैत जाएत।</string>
+    <string name="cross_coverage">दायरा</string>
+    <string name="cross_breadth_stream">चाकरि: धारा</string>
+    <string name="cross_breadth_you">चाकरि: अहाँ</string>
+    <string name="cross_over_under">विषयवार बेसी/कम</string>
+    <string name="cross_what_changed">पहिलुका अवधि सँ की बदलल</string>
+    <string name="cross_no_earlier">तुलना लेल आब धरि कोनो पहिलुका अवधि नहि अछि।</string>
+    <string name="cross_steady">अहाँक विषय-मिश्रण स्थिर रहल।</string>
 </resources>

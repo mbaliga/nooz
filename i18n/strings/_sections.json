@@ -34,6 +34,26 @@
       "notes": {
         "language_partial": "%1$s is a language's own name for itself; %2$d is how much of the app is translated into it, 0–100. Shown so nobody is surprised by a screen that is half in English."
       }
+    },
+    {
+      "title": "The Loom — the app's centrepiece, and the descriptions a screen reader speaks for it. These are assembled inside functions, where verifyI18n's call-site scanner cannot see them, so they stayed English in every locale until this tranche.",
+      "prefix": "loom_"
+    },
+    {
+      "title": "The region globe, including the actions that replace its drag and pinch.",
+      "prefix": "globe_"
+    },
+    {
+      "title": "The read-by-region map, which was a silent Canvas until D49.",
+      "prefix": "heatstrip_"
+    },
+    {
+      "title": "The Contrast ledger.",
+      "prefix": "contrast_"
+    },
+    {
+      "title": "The cross-section.",
+      "prefix": "cross_"
     }
   ]
 }

@@ -99,9 +99,20 @@ test('no translation loses a placeholder its English carries', () => {
     for (const [key, value] of Object.entries(strings)) {
       const expected = (base[key].match(/%\d+\$[sd]/g) || []).sort();
       const actual = (value.match(/%\d+\$[sd]/g) || []).sort();
-      if (expected.join() !== actual.join()) {
-        problems.push(`${tag}.${key}: expected ${expected.join(' ') || '(none)'}, found ${actual.join(' ') || '(none)'}`);
-      }
+      if (expected.join() === actual.join()) continue;
+
+      // A `_one` key is the singular of a count, and several languages express
+      // "1 source" as just "source" -- Arabic's مصدر واحد carries the "one" in
+      // the word, not a digit. Dropping the number there is a translation
+      // decision, not a slip, and Android's formatter ignores an unused
+      // argument. Everything else, and inventing a placeholder anywhere, is a
+      // mistake: a lost %1$s leaves a silent gap in a sentence on a screen
+      // nobody testing in English will ever look at.
+      const dropped = expected.filter((p) => !actual.includes(p));
+      const invented = actual.filter((p) => !expected.includes(p));
+      if (invented.length === 0 && dropped.length > 0 && key.endsWith('_one')) continue;
+
+      problems.push(`${tag}.${key}: expected ${expected.join(' ') || '(none)'}, found ${actual.join(' ') || '(none)'}`);
     }
   }
   assert.deepEqual(problems, [], 'a translation dropped or invented a placeholder');

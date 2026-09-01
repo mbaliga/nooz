@@ -31,11 +31,11 @@ feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FoundQuote.kt 1
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/NewspaperReaderPane.kt 2
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ReaderScreenTwoPane.kt 1
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/TodayInHistoryCard.kt 3
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/ContrastPanel.kt 9
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/CrossSectionPanel.kt 9
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/DayLoomCanvas.kt 6
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/ContrastPanel.kt 1
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/CrossSectionPanel.kt 2
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/DayLoomCanvas.kt 4
 feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/FramingsPanel.kt 1
 feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomDatePicker.kt 2
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomScreen.kt 7
+feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomScreen.kt 1
 feature/sources/src/main/kotlin/xyz/mdhv/riverwip/feature/sources/EditScreen.kt 20
 feature/sources/src/main/kotlin/xyz/mdhv/riverwip/feature/sources/SourcesUtilities.kt 10

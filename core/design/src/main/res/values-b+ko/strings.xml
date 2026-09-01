@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d분</string>
     <string name="reader_reading_time">예상 읽기 시간 %1$d분</string>
     <string name="reader_progress">기사의 약 %1$d 퍼센트</string>
+    <string name="loom_title">그날의 베틀.</string>
+    <string name="loom_flowed">%2$s에서 %1$d건이 흘러왔습니다</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, 그리고 %1$d개 주제 더</string>
+    <string name="loom_read_none">그중 하나도 읽지 않았습니다</string>
+    <string name="loom_read_some">%1$d건 읽었습니다: %2$s</string>
+    <string name="loom_use_actions">한 줄기의 수치는 동작으로 확인하세요.</string>
+    <string name="loom_nothing_flowed">그날은 %1$s에서 아무것도 흘러오지 않았습니다.</string>
+    <string name="loom_source_one">출처 %1$d곳</string>
+    <string name="loom_source_many">출처 %1$d곳</string>
+    <string name="loom_stream_action">%1$s: %2$d건 흘러옴, %3$d건 읽음</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s 선택됨</string>
+    <string name="loom_nothing_selected">선택된 줄기 없음</string>
+    <string name="globe_aimed">지역 지구본. %1$s을(를) 향하고 %2$s을(를) 아우릅니다.</string>
+    <string name="globe_band_world">온 세계</string>
+    <string name="globe_band_degrees">너비 %1$d도의 띠</string>
+    <string name="globe_nothing_flowed">여기에서는 아직 아무것도 흘러오지 않았습니다.</string>
+    <string name="globe_mix">%1$d건: %2$s. 돌리거나 띠를 바꾸려면 동작을 쓰세요.</string>
+    <string name="globe_spin_west">서쪽으로 돌리기</string>
+    <string name="globe_spin_east">동쪽으로 돌리기</string>
+    <string name="globe_widen">띠 넓히기</string>
+    <string name="globe_narrow">띠 좁히기</string>
+    <string name="heatstrip_title">지역별 읽기. %1$s 표시 중.</string>
+    <string name="heatstrip_empty">오늘은 아직 읽은 것이 없습니다.</string>
+    <string name="heatstrip_read">%1$d%2$s 읽음: %3$s</string>
+    <string name="heatstrip_story_one">건</string>
+    <string name="heatstrip_story_many">건</string>
+    <string name="loom_previous_day">이전 날</string>
+    <string name="loom_next_day">다음 날</string>
+    <string name="loom_empty">그날은 아무것도 흘러오지 않았습니다. 출처가 짜기 시작하면 베틀도 짭니다.</string>
+    <string name="loom_no_archive">대부분의 출처는 실시간 RSS/Atom 피드라 지난 날짜를 요청할 방법이 없습니다. 여기 보이는 것은 지금 이 순간 내주고 있는 것이지 보관함이 아닙니다.</string>
+    <string name="loom_asking_gdelt">GDELT에 묻는 중…</string>
+    <string name="loom_ask_gdelt">이 날짜를 GDELT에 묻기</string>
+    <string name="contrast_nothing_flowed">그날은 아무것도 흘러오지 않았습니다</string>
+    <string name="contrast_reach">도달</string>
+    <string name="contrast_by_topic">주제별</string>
+    <string name="contrast_widest_gap">격차가 가장 큰 곳은 %1$s: %2$d%% 흘러옴, %3$d%% 읽음.</string>
+    <string name="contrast_flowed">흘러옴</string>
+    <string name="contrast_read">읽음</string>
+    <string name="contrast_regions">지역</string>
+    <string name="contrast_no_reads">오늘은 아직 읽은 것이 없습니다. 읽을수록 지도가 채워집니다.</string>
+    <string name="cross_coverage">포괄 범위</string>
+    <string name="cross_breadth_stream">폭: 흐름</string>
+    <string name="cross_breadth_you">폭: 당신</string>
+    <string name="cross_over_under">주제별 과다/과소</string>
+    <string name="cross_what_changed">지난 기간에 견주어 달라진 것</string>
+    <string name="cross_no_earlier">견줄 지난 기간이 아직 없습니다.</string>
+    <string name="cross_steady">주제 구성이 그대로였습니다.</string>
 </resources>

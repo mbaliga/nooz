@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d 分钟</string>
     <string name="reader_reading_time">预计阅读 %1$d 分钟</string>
     <string name="reader_progress">全文约 %1$d%% 处</string>
+    <string name="loom_title">当天的织机。</string>
+    <string name="loom_flowed">你的%2$s共送来 %1$d 条</string>
+    <string name="loom_flowed_named">%1$s：%2$s</string>
+    <string name="loom_and_more_topics">，另有 %1$d 个主题</string>
+    <string name="loom_read_none">你一条也没读</string>
+    <string name="loom_read_some">你读了 %1$d 条：%2$s</string>
+    <string name="loom_use_actions">用操作查看单条流的数字。</string>
+    <string name="loom_nothing_flowed">这一天你的%1$s什么也没送来。</string>
+    <string name="loom_source_one">%1$d 个信源</string>
+    <string name="loom_source_many">%1$d 个信源</string>
+    <string name="loom_stream_action">%1$s：送来 %2$d 条，读了 %3$d 条</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">已选中%1$s</string>
+    <string name="loom_nothing_selected">未选中任何流</string>
+    <string name="globe_aimed">地区地球仪，对准%1$s，覆盖%2$s。</string>
+    <string name="globe_band_world">整个世界</string>
+    <string name="globe_band_degrees">%1$d 度宽的一条带</string>
+    <string name="globe_nothing_flowed">这里还没有送来过任何东西。</string>
+    <string name="globe_mix">%1$d 条：%2$s。用操作旋转或改变这条带。</string>
+    <string name="globe_spin_west">向西旋转</string>
+    <string name="globe_spin_east">向东旋转</string>
+    <string name="globe_widen">加宽这条带</string>
+    <string name="globe_narrow">收窄这条带</string>
+    <string name="heatstrip_title">按地区的阅读。正在显示%1$s。</string>
+    <string name="heatstrip_empty">今天还没读过。</string>
+    <string name="heatstrip_read">读了 %1$d %2$s：%3$s</string>
+    <string name="heatstrip_story_one">条</string>
+    <string name="heatstrip_story_many">条</string>
+    <string name="loom_previous_day">前一天</string>
+    <string name="loom_next_day">后一天</string>
+    <string name="loom_empty">这一天什么也没送来。你的信源一织，织机就织。</string>
+    <string name="loom_no_archive">多数信源是实时 RSS/Atom 源，没法向它们要过去某一天；这里显示的是它们此刻正在提供的内容，不是存档。</string>
+    <string name="loom_asking_gdelt">正在询问 GDELT…</string>
+    <string name="loom_ask_gdelt">就这一天询问 GDELT</string>
+    <string name="contrast_nothing_flowed">这一天什么也没送来</string>
+    <string name="contrast_reach">触及</string>
+    <string name="contrast_by_topic">按主题</string>
+    <string name="contrast_widest_gap">差距最大的是%1$s：送来 %2$d%%，读了 %3$d%%。</string>
+    <string name="contrast_flowed">送来</string>
+    <string name="contrast_read">读了</string>
+    <string name="contrast_regions">地区</string>
+    <string name="contrast_no_reads">今天还没有阅读。你读得越多，这张图就填得越满。</string>
+    <string name="cross_coverage">覆盖</string>
+    <string name="cross_breadth_stream">广度：来源</string>
+    <string name="cross_breadth_you">广度：你</string>
+    <string name="cross_over_under">各主题的多与少</string>
+    <string name="cross_what_changed">与上一时段相比有什么变化</string>
+    <string name="cross_no_earlier">还没有可比较的上一时段。</string>
+    <string name="cross_steady">你的主题构成没有变化。</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d دق</string>
     <string name="reader_reading_time">زمان تقریبی خواندن %1$d دقیقه</string>
     <string name="reader_progress">حدود %1$d درصد مطلب</string>
+    <string name="loom_title">دار قالیِ روز.</string>
+    <string name="loom_flowed">%1$d خبر از %2$s شما جاری شد</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">، و %1$d موضوع دیگر</string>
+    <string name="loom_read_none">هیچ‌کدام را نخواندید</string>
+    <string name="loom_read_some">%1$d تا خواندید: %2$s</string>
+    <string name="loom_use_actions">برای شمار یک رشته از کنش‌ها استفاده کنید.</string>
+    <string name="loom_nothing_flowed">آن روز از %1$s شما چیزی جاری نشد.</string>
+    <string name="loom_source_one">%1$d منبع</string>
+    <string name="loom_source_many">%1$d منبع</string>
+    <string name="loom_stream_action">%1$s: %2$d جاری شد، %3$d خوانده شد</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s برگزیده شد</string>
+    <string name="loom_nothing_selected">هیچ رشته‌ای برگزیده نشده</string>
+    <string name="globe_aimed">کرهٔ منطقه‌ها، نشانه‌رفته به %1$s، در بر گیرندهٔ %2$s.</string>
+    <string name="globe_band_world">همهٔ جهان</string>
+    <string name="globe_band_degrees">نواری به پهنای %1$d درجه</string>
+    <string name="globe_nothing_flowed">هنوز چیزی از اینجا جاری نشده است.</string>
+    <string name="globe_mix">%1$d خبر: %2$s. برای چرخاندن یا تغییر نوار از کنش‌ها استفاده کنید.</string>
+    <string name="globe_spin_west">چرخاندن به باختر</string>
+    <string name="globe_spin_east">چرخاندن به خاور</string>
+    <string name="globe_widen">پهن‌تر کردن نوار</string>
+    <string name="globe_narrow">باریک‌تر کردن نوار</string>
+    <string name="heatstrip_title">خواندن بر پایهٔ منطقه. نمایش %1$s.</string>
+    <string name="heatstrip_empty">امروز هنوز چیزی خوانده نشده.</string>
+    <string name="heatstrip_read">%1$d %2$s خوانده شد: %3$s</string>
+    <string name="heatstrip_story_one">خبر</string>
+    <string name="heatstrip_story_many">خبر</string>
+    <string name="loom_previous_day">روز پیش</string>
+    <string name="loom_next_day">روز بعد</string>
+    <string name="loom_empty">آن روز چیزی جاری نشد. دار قالی همین که منبع‌هایتان ببافند، می‌بافد.</string>
+    <string name="loom_no_archive">بیشتر منبع‌ها خوراک زندهٔ RSS/Atom هستند و راهی برای خواستن تاریخی گذشته از آن‌ها نیست؛ اینجا آنچه هم‌اکنون می‌دهند دیده می‌شود، نه بایگانی.</string>
+    <string name="loom_asking_gdelt">در حال پرسیدن از GDELT…</string>
+    <string name="loom_ask_gdelt">دربارهٔ این روز از GDELT بپرس</string>
+    <string name="contrast_nothing_flowed">آن روز چیزی جاری نشد</string>
+    <string name="contrast_reach">گستره</string>
+    <string name="contrast_by_topic">بر پایهٔ موضوع</string>
+    <string name="contrast_widest_gap">بزرگ‌ترین شکاف در %1$s: %2$d%% جاری شد، %3$d%% خوانده شد.</string>
+    <string name="contrast_flowed">جاری شد</string>
+    <string name="contrast_read">خوانده شد</string>
+    <string name="contrast_regions">منطقه‌ها</string>
+    <string name="contrast_no_reads">امروز هنوز خواندنی ثبت نشده. هرچه بخوانید نقشه پر می‌شود.</string>
+    <string name="cross_coverage">پوشش</string>
+    <string name="cross_breadth_stream">پهنا: جریان</string>
+    <string name="cross_breadth_you">پهنا: شما</string>
+    <string name="cross_over_under">بیش/کم به تفکیک موضوع</string>
+    <string name="cross_what_changed">از دورهٔ پیش چه تغییر کرد</string>
+    <string name="cross_no_earlier">هنوز دورهٔ پیشینی برای مقایسه نیست.</string>
+    <string name="cross_steady">ترکیب موضوعی شما ثابت ماند.</string>
 </resources>

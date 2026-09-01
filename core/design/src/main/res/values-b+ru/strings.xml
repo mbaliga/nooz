@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d мин</string>
     <string name="reader_reading_time">Примерное время чтения: %1$d минут</string>
     <string name="reader_progress">Около %1$d процентов статьи</string>
+    <string name="loom_title">Ткацкий стан дня.</string>
+    <string name="loom_flowed">%1$d новостей пришло от ваших %2$s</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics"> и ещё %1$d тем</string>
+    <string name="loom_read_none">Вы не прочли ничего из этого</string>
+    <string name="loom_read_some">Вы прочли %1$d: %2$s</string>
+    <string name="loom_use_actions">Чтобы узнать числа одной нити, используйте действия.</string>
+    <string name="loom_nothing_flowed">В этот день от ваших %1$s ничего не пришло.</string>
+    <string name="loom_source_one">%1$d источника</string>
+    <string name="loom_source_many">%1$d источников</string>
+    <string name="loom_stream_action">%1$s: пришло %2$d, прочитано %3$d</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">выбрано: %1$s</string>
+    <string name="loom_nothing_selected">Нить не выбрана</string>
+    <string name="globe_aimed">Глобус регионов, наведён на %1$s, охватывает %2$s.</string>
+    <string name="globe_band_world">весь мир</string>
+    <string name="globe_band_degrees">полосу шириной %1$d градусов</string>
+    <string name="globe_nothing_flowed">Отсюда пока ничего не приходило.</string>
+    <string name="globe_mix">%1$d новостей: %2$s. Используйте действия, чтобы повернуть или изменить полосу.</string>
+    <string name="globe_spin_west">Повернуть на запад</string>
+    <string name="globe_spin_east">Повернуть на восток</string>
+    <string name="globe_widen">Расширить полосу</string>
+    <string name="globe_narrow">Сузить полосу</string>
+    <string name="heatstrip_title">Чтение по регионам. Показан %1$s.</string>
+    <string name="heatstrip_empty">Сегодня пока ничего не прочитано.</string>
+    <string name="heatstrip_read">прочитано %1$d %2$s: %3$s</string>
+    <string name="heatstrip_story_one">новость</string>
+    <string name="heatstrip_story_many">новостей</string>
+    <string name="loom_previous_day">Предыдущий день</string>
+    <string name="loom_next_day">Следующий день</string>
+    <string name="loom_empty">В этот день ничего не пришло. Стан начинает ткать, как только начинают ваши источники.</string>
+    <string name="loom_no_archive">Большинство источников — живые ленты RSS/Atom, у которых нельзя запросить прошедшую дату; здесь то, что они отдают прямо сейчас, а не архив.</string>
+    <string name="loom_asking_gdelt">Запрос к GDELT…</string>
+    <string name="loom_ask_gdelt">Запросить у GDELT этот день</string>
+    <string name="contrast_nothing_flowed">В этот день ничего не пришло</string>
+    <string name="contrast_reach">Охват</string>
+    <string name="contrast_by_topic">По темам</string>
+    <string name="contrast_widest_gap">Наибольший разрыв в теме «%1$s»: пришло %2$d%%, прочитано %3$d%%.</string>
+    <string name="contrast_flowed">пришло</string>
+    <string name="contrast_read">прочитано</string>
+    <string name="contrast_regions">Регионы</string>
+    <string name="contrast_no_reads">Сегодня прочитанного пока нет. Карта заполняется по мере чтения.</string>
+    <string name="cross_coverage">Охват</string>
+    <string name="cross_breadth_stream">Широта: поток</string>
+    <string name="cross_breadth_you">Широта: вы</string>
+    <string name="cross_over_under">Перебор/недобор по темам</string>
+    <string name="cross_what_changed">Что изменилось с прошлого периода</string>
+    <string name="cross_no_earlier">Прошлого периода для сравнения пока нет.</string>
+    <string name="cross_steady">Ваш набор тем не изменился.</string>
 </resources>

@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +44,7 @@ import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.GlobeModel
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
@@ -156,7 +158,7 @@ fun ContrastPanel(
 
         if (totalFlowed == 0) {
             EmptyState(
-                title = "Nothing flowed this day",
+                title = stringResource(DesignR.string.contrast_nothing_flowed),
                 body = "The contrast, what your sources ran against what you read, appears once anything comes in.",
                 fill = false,
                 modifier = Modifier.fillMaxWidth(),
@@ -166,7 +168,7 @@ fun ContrastPanel(
 
         // ---- Reach: one nested funnel bar + a spare legend ----
         Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
-            SectionHeading("Reach")
+            SectionHeading(stringResource(DesignR.string.contrast_reach))
             NestedFunnel(
                 filterFraction = admitted.toFloat() / totalFlowed,
                 readFraction = totalRead.toFloat() / totalFlowed,
@@ -195,7 +197,7 @@ fun ContrastPanel(
         // ---- By topic: dumbbells + a spare sort lever ----
         Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionHeading("By topic", modifier = Modifier.weight(1f))
+                SectionHeading(stringResource(DesignR.string.contrast_by_topic), modifier = Modifier.weight(1f))
                 Row(
                     Modifier.selectableGroup(),
                     horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
@@ -217,7 +219,7 @@ fun ContrastPanel(
             val blindSpot = ordered.maxByOrNull { it.gap }
             if (totalRead > 0 && blindSpot != null && blindSpot.gap > 0.08f) {
                 Text(
-                    "Widest gap in ${blindSpot.topic.placeholderLabel}: ${(blindSpot.flowedShare * 100).roundToInt()}% flowed, ${(blindSpot.readShare * 100).roundToInt()}% read.",
+                    stringResource(DesignR.string.contrast_widest_gap, blindSpot.topic.placeholderLabel, (blindSpot.flowedShare * 100).roundToInt(), (blindSpot.readShare * 100).roundToInt()),
                     style = MaterialTheme.typography.bodyMedium,
                     color = muted,
                 )
@@ -231,8 +233,8 @@ fun ContrastPanel(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(top = Tokens.Spacing.xs),
             ) {
-                DotKey(filled = false, label = "flowed", ink = ink, muted = muted)
-                DotKey(filled = true, label = "read", ink = ink, muted = muted)
+                DotKey(filled = false, label = stringResource(DesignR.string.contrast_flowed), ink = ink, muted = muted)
+                DotKey(filled = true, label = stringResource(DesignR.string.contrast_read), ink = ink, muted = muted)
             }
         }
     }
@@ -260,11 +262,11 @@ private fun RegionsSection(
     muted: Color,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
-        SectionHeading("Regions")
+        SectionHeading(stringResource(DesignR.string.contrast_regions))
         RegionHeatStrip(reads = reads, selected = filter.region, ink = ink)
         if (reads.values.sum() == 0) {
             Text(
-                "No reads yet today. The map fills in as you read.",
+                stringResource(DesignR.string.contrast_no_reads),
                 style = MaterialTheme.typography.bodySmall,
                 color = muted,
             )
@@ -357,16 +359,27 @@ internal fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Col
  * densest first, and the current selection said out loud rather than left to
  * a highlight. Sectors with nothing read are omitted — naming eight zeroes
  * before the two that matter buries the answer.
+ *
+ * `@Composable` so it can reach `stringResource`; assembled from literals it
+ * was English in every locale.
  */
+@Composable
 private fun describeHeatStrip(reads: Map<Region, Int>, selected: Region): String {
     val withReads = reads.entries
         .filter { it.key != Region.GLOBAL && it.value > 0 }
         .sortedByDescending { it.value }
-    val head = "Reading by region. Showing ${selected.label}."
-    if (withReads.isEmpty()) return "$head Nothing read yet today."
+    val head = stringResource(DesignR.string.heatstrip_title, selected.label)
+    if (withReads.isEmpty()) return head + " " + stringResource(DesignR.string.heatstrip_empty)
     val total = withReads.sumOf { it.value }
-    val named = withReads.joinToString(", ") { "${it.key.label} ${it.value}" }
-    return "$head $total ${plural(total, "story", "stories")} read: $named."
+    // `map` is inline and so is a composable scope; `joinToString`'s transform
+    // is not, which is why the pieces are resolved before being joined.
+    val named = withReads
+        .map { stringResource(DesignR.string.loom_topic_count, it.key.label, it.value) }
+        .joinToString(", ")
+    val stories = stringResource(
+        if (total == 1) DesignR.string.heatstrip_story_one else DesignR.string.heatstrip_story_many,
+    )
+    return head + " " + stringResource(DesignR.string.heatstrip_read, total, stories, named)
 }
 
 @OptIn(ExperimentalLayoutApi::class)

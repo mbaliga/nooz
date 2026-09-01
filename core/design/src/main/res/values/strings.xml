@@ -107,4 +107,63 @@
     <string name="language_partial">%1$s · %2$d%% translated</string>
     <string name="language_complete">%1$s</string>
 
+    <!-- The Loom — the app's centrepiece, and the descriptions a screen reader speaks for it. These are assembled inside functions, where verifyI18n's call-site scanner cannot see them, so they stayed English in every locale until this tranche. -->
+    <string name="loom_title">Day loom.</string>
+    <string name="loom_flowed">%1$d stories flowed from your %2$s</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, and %1$d more topics</string>
+    <string name="loom_read_none">You read none of it</string>
+    <string name="loom_read_some">You read %1$d: %2$s</string>
+    <string name="loom_use_actions">Use actions for a single stream\'s counts.</string>
+    <string name="loom_nothing_flowed">Nothing flowed from your %1$s this day.</string>
+    <string name="loom_source_one">%1$d source</string>
+    <string name="loom_source_many">%1$d sources</string>
+    <string name="loom_stream_action">%1$s: %2$d flowed, %3$d read</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s selected</string>
+    <string name="loom_nothing_selected">No stream selected</string>
+    <string name="loom_previous_day">Previous day</string>
+    <string name="loom_next_day">Next day</string>
+    <string name="loom_empty">Nothing flowed this day. The loom weaves once your sources do.</string>
+    <string name="loom_no_archive">Most sources are live RSS/Atom feeds with no way to ask for a past date; this shows what they’re serving right now, not an archive.</string>
+    <string name="loom_asking_gdelt">Asking GDELT…</string>
+    <string name="loom_ask_gdelt">Ask GDELT for this day</string>
+
+    <!-- The region globe, including the actions that replace its drag and pinch. -->
+    <string name="globe_aimed">Region globe, aimed at %1$s, covering %2$s.</string>
+    <string name="globe_band_world">the whole world</string>
+    <string name="globe_band_degrees">a band %1$d degrees wide</string>
+    <string name="globe_nothing_flowed">Nothing has flowed from here yet.</string>
+    <string name="globe_mix">%1$d stories: %2$s. Use actions to spin or change the band.</string>
+    <string name="globe_spin_west">Spin west</string>
+    <string name="globe_spin_east">Spin east</string>
+    <string name="globe_widen">Widen the band</string>
+    <string name="globe_narrow">Narrow the band</string>
+
+    <!-- The read-by-region map, which was a silent Canvas until D49. -->
+    <string name="heatstrip_title">Reading by region. Showing %1$s.</string>
+    <string name="heatstrip_empty">Nothing read yet today.</string>
+    <string name="heatstrip_read">%1$d %2$s read: %3$s</string>
+    <string name="heatstrip_story_one">story</string>
+    <string name="heatstrip_story_many">stories</string>
+
+    <!-- The Contrast ledger. -->
+    <string name="contrast_nothing_flowed">Nothing flowed this day</string>
+    <string name="contrast_reach">Reach</string>
+    <string name="contrast_by_topic">By topic</string>
+    <string name="contrast_widest_gap">Widest gap in %1$s: %2$d%% flowed, %3$d%% read.</string>
+    <string name="contrast_flowed">flowed</string>
+    <string name="contrast_read">read</string>
+    <string name="contrast_regions">Regions</string>
+    <string name="contrast_no_reads">No reads yet today. The map fills in as you read.</string>
+
+    <!-- The cross-section. -->
+    <string name="cross_coverage">Coverage</string>
+    <string name="cross_breadth_stream">Breadth: the stream</string>
+    <string name="cross_breadth_you">Breadth: you</string>
+    <string name="cross_over_under">Per-topic over/under</string>
+    <string name="cross_what_changed">What changed since the previous period</string>
+    <string name="cross_no_earlier">No earlier period yet to compare against.</string>
+    <string name="cross_steady">Your topic mix held steady.</string>
+
 </resources>

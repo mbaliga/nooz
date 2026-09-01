@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.Region
@@ -167,7 +169,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
             Spacer(Modifier.weight(1f))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { vm.stepDay(-1, days) }) {
-                    Icon(Icons.Filled.ChevronLeft, contentDescription = "Previous day")
+                    Icon(Icons.Filled.ChevronLeft, contentDescription = stringResource(DesignR.string.loom_previous_day))
                 }
                 Text(
                     dateLabel,
@@ -179,7 +181,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                         .padding(horizontal = Tokens.Spacing.xxs, vertical = Tokens.Spacing.xxs),
                 )
                 IconButton(onClick = { vm.stepDay(1, days) }, enabled = vm.canStepForward(days)) {
-                    Icon(Icons.Filled.ChevronRight, contentDescription = "Next day")
+                    Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(DesignR.string.loom_next_day))
                 }
             }
         }
@@ -235,7 +237,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            "Nothing flowed this day. The loom weaves once your sources do.",
+                            stringResource(DesignR.string.loom_empty),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(Tokens.Spacing.xl),
@@ -246,7 +248,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                         // only ever show what a feed is serving right now — never an
                         // archive of some past day.
                         Text(
-                            "Most sources are live RSS/Atom feeds with no way to ask for a past date; this shows what they're serving right now, not an archive.",
+                            stringResource(DesignR.string.loom_no_archive),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             textAlign = TextAlign.Center,
@@ -295,7 +297,7 @@ private fun HistoricalGdeltAffordance(
 ) {
     when (state) {
         is HistoricalFetchState.Loading -> Text(
-            "Asking GDELT…",
+            stringResource(DesignR.string.loom_asking_gdelt),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = modifier.padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
@@ -319,7 +321,7 @@ private fun HistoricalGdeltAffordance(
             )
         }
         else -> Text(
-            "Ask GDELT for this day",
+            stringResource(DesignR.string.loom_ask_gdelt),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier

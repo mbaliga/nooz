@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d min</string>
     <string name="reader_reading_time">Tiempo de lectura estimado: %1$d minutos</string>
     <string name="reader_progress">Alrededor del %1$d por ciento del artículo</string>
+    <string name="loom_title">Telar del día.</string>
+    <string name="loom_flowed">%1$d historias llegaron de tus %2$s</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, y %1$d temas más</string>
+    <string name="loom_read_none">No leíste ninguna</string>
+    <string name="loom_read_some">Leíste %1$d: %2$s</string>
+    <string name="loom_use_actions">Usa las acciones para las cifras de un solo hilo.</string>
+    <string name="loom_nothing_flowed">Ese día no llegó nada de tus %1$s.</string>
+    <string name="loom_source_one">%1$d fuente</string>
+    <string name="loom_source_many">%1$d fuentes</string>
+    <string name="loom_stream_action">%1$s: %2$d llegaron, %3$d leídas</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s seleccionado</string>
+    <string name="loom_nothing_selected">Ningún hilo seleccionado</string>
+    <string name="globe_aimed">Globo de regiones, apuntando a %1$s, abarcando %2$s.</string>
+    <string name="globe_band_world">el mundo entero</string>
+    <string name="globe_band_degrees">una franja de %1$d grados</string>
+    <string name="globe_nothing_flowed">De aquí todavía no ha llegado nada.</string>
+    <string name="globe_mix">%1$d historias: %2$s. Usa las acciones para girar o cambiar la franja.</string>
+    <string name="globe_spin_west">Girar al oeste</string>
+    <string name="globe_spin_east">Girar al este</string>
+    <string name="globe_widen">Ensanchar la franja</string>
+    <string name="globe_narrow">Estrechar la franja</string>
+    <string name="heatstrip_title">Lectura por región. Mostrando %1$s.</string>
+    <string name="heatstrip_empty">Hoy aún no has leído nada.</string>
+    <string name="heatstrip_read">%1$d %2$s leídas: %3$s</string>
+    <string name="heatstrip_story_one">historia</string>
+    <string name="heatstrip_story_many">historias</string>
+    <string name="loom_previous_day">Día anterior</string>
+    <string name="loom_next_day">Día siguiente</string>
+    <string name="loom_empty">Ese día no llegó nada. El telar teje en cuanto lo hacen tus fuentes.</string>
+    <string name="loom_no_archive">Casi todas las fuentes son canales RSS/Atom en vivo, sin forma de pedirles una fecha pasada; esto muestra lo que sirven ahora mismo, no un archivo.</string>
+    <string name="loom_asking_gdelt">Preguntando a GDELT…</string>
+    <string name="loom_ask_gdelt">Preguntar a GDELT por este día</string>
+    <string name="contrast_nothing_flowed">Ese día no llegó nada</string>
+    <string name="contrast_reach">Alcance</string>
+    <string name="contrast_by_topic">Por tema</string>
+    <string name="contrast_widest_gap">La mayor brecha, en %1$s: %2$d%% llegó, %3$d%% leído.</string>
+    <string name="contrast_flowed">llegó</string>
+    <string name="contrast_read">leído</string>
+    <string name="contrast_regions">Regiones</string>
+    <string name="contrast_no_reads">Hoy aún no hay lecturas. El mapa se llena a medida que lees.</string>
+    <string name="cross_coverage">Cobertura</string>
+    <string name="cross_breadth_stream">Amplitud: el flujo</string>
+    <string name="cross_breadth_you">Amplitud: tú</string>
+    <string name="cross_over_under">Exceso/defecto por tema</string>
+    <string name="cross_what_changed">Qué cambió desde el periodo anterior</string>
+    <string name="cross_no_earlier">Todavía no hay un periodo anterior con el que comparar.</string>
+    <string name="cross_steady">Tu mezcla de temas se mantuvo estable.</string>
 </resources>

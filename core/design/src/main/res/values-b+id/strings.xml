@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d mnt</string>
     <string name="reader_reading_time">Perkiraan waktu baca %1$d menit</string>
     <string name="reader_progress">Sekitar %1$d persen dari artikel</string>
+    <string name="loom_title">Alat tenun hari ini.</string>
+    <string name="loom_flowed">%1$d berita mengalir dari %2$s Anda</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, dan %1$d topik lagi</string>
+    <string name="loom_read_none">Anda tidak membaca satu pun</string>
+    <string name="loom_read_some">Anda membaca %1$d: %2$s</string>
+    <string name="loom_use_actions">Gunakan tindakan untuk angka satu aliran.</string>
+    <string name="loom_nothing_flowed">Hari itu tidak ada yang mengalir dari %1$s Anda.</string>
+    <string name="loom_source_one">%1$d sumber</string>
+    <string name="loom_source_many">%1$d sumber</string>
+    <string name="loom_stream_action">%1$s: %2$d mengalir, %3$d dibaca</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s dipilih</string>
+    <string name="loom_nothing_selected">Tidak ada aliran yang dipilih</string>
+    <string name="globe_aimed">Bola wilayah, diarahkan ke %1$s, mencakup %2$s.</string>
+    <string name="globe_band_world">seluruh dunia</string>
+    <string name="globe_band_degrees">pita selebar %1$d derajat</string>
+    <string name="globe_nothing_flowed">Dari sini belum ada yang mengalir.</string>
+    <string name="globe_mix">%1$d berita: %2$s. Gunakan tindakan untuk memutar atau mengubah pita.</string>
+    <string name="globe_spin_west">Putar ke barat</string>
+    <string name="globe_spin_east">Putar ke timur</string>
+    <string name="globe_widen">Lebarkan pita</string>
+    <string name="globe_narrow">Sempitkan pita</string>
+    <string name="heatstrip_title">Bacaan menurut wilayah. Menampilkan %1$s.</string>
+    <string name="heatstrip_empty">Hari ini belum ada yang dibaca.</string>
+    <string name="heatstrip_read">%1$d %2$s dibaca: %3$s</string>
+    <string name="heatstrip_story_one">berita</string>
+    <string name="heatstrip_story_many">berita</string>
+    <string name="loom_previous_day">Hari sebelumnya</string>
+    <string name="loom_next_day">Hari berikutnya</string>
+    <string name="loom_empty">Hari itu tidak ada yang mengalir. Alat tenun menenun begitu sumber Anda melakukannya.</string>
+    <string name="loom_no_archive">Sebagian besar sumber adalah umpan RSS/Atom langsung yang tidak bisa dimintai tanggal lampau; ini menampilkan apa yang mereka sajikan sekarang, bukan arsip.</string>
+    <string name="loom_asking_gdelt">Menanyai GDELT…</string>
+    <string name="loom_ask_gdelt">Tanyakan hari ini ke GDELT</string>
+    <string name="contrast_nothing_flowed">Hari itu tidak ada yang mengalir</string>
+    <string name="contrast_reach">Jangkauan</string>
+    <string name="contrast_by_topic">Menurut topik</string>
+    <string name="contrast_widest_gap">Jurang terlebar pada %1$s: %2$d%% mengalir, %3$d%% dibaca.</string>
+    <string name="contrast_flowed">mengalir</string>
+    <string name="contrast_read">dibaca</string>
+    <string name="contrast_regions">Wilayah</string>
+    <string name="contrast_no_reads">Hari ini belum ada bacaan. Peta terisi seiring Anda membaca.</string>
+    <string name="cross_coverage">Cakupan</string>
+    <string name="cross_breadth_stream">Keluasan: arus</string>
+    <string name="cross_breadth_you">Keluasan: Anda</string>
+    <string name="cross_over_under">Lebih/kurang per topik</string>
+    <string name="cross_what_changed">Apa yang berubah sejak periode sebelumnya</string>
+    <string name="cross_no_earlier">Belum ada periode sebelumnya untuk dibandingkan.</string>
+    <string name="cross_steady">Campuran topik Anda tetap stabil.</string>
 </resources>

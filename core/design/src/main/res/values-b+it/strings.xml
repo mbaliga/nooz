@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d min</string>
     <string name="reader_reading_time">Tempo di lettura stimato: %1$d minuti</string>
     <string name="reader_progress">Circa il %1$d per cento dell\'articolo</string>
+    <string name="loom_title">Telaio del giorno.</string>
+    <string name="loom_flowed">%1$d notizie sono arrivate dalle tue %2$s</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, e altri %1$d argomenti</string>
+    <string name="loom_read_none">Non ne hai letta nessuna</string>
+    <string name="loom_read_some">Ne hai lette %1$d: %2$s</string>
+    <string name="loom_use_actions">Usa le azioni per i numeri di un singolo filo.</string>
+    <string name="loom_nothing_flowed">Quel giorno non è arrivato nulla dalle tue %1$s.</string>
+    <string name="loom_source_one">%1$d fonte</string>
+    <string name="loom_source_many">%1$d fonti</string>
+    <string name="loom_stream_action">%1$s: %2$d arrivate, %3$d lette</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s selezionato</string>
+    <string name="loom_nothing_selected">Nessun filo selezionato</string>
+    <string name="globe_aimed">Globo delle regioni, puntato su %1$s, che copre %2$s.</string>
+    <string name="globe_band_world">il mondo intero</string>
+    <string name="globe_band_degrees">una fascia di %1$d gradi</string>
+    <string name="globe_nothing_flowed">Da qui non è ancora arrivato nulla.</string>
+    <string name="globe_mix">%1$d notizie: %2$s. Usa le azioni per ruotare o cambiare la fascia.</string>
+    <string name="globe_spin_west">Ruota a ovest</string>
+    <string name="globe_spin_east">Ruota a est</string>
+    <string name="globe_widen">Allarga la fascia</string>
+    <string name="globe_narrow">Restringi la fascia</string>
+    <string name="heatstrip_title">Lettura per regione. Mostro %1$s.</string>
+    <string name="heatstrip_empty">Oggi non hai ancora letto nulla.</string>
+    <string name="heatstrip_read">%1$d %2$s lette: %3$s</string>
+    <string name="heatstrip_story_one">notizia</string>
+    <string name="heatstrip_story_many">notizie</string>
+    <string name="loom_previous_day">Giorno precedente</string>
+    <string name="loom_next_day">Giorno successivo</string>
+    <string name="loom_empty">Quel giorno non è arrivato nulla. Il telaio tesse appena lo fanno le tue fonti.</string>
+    <string name="loom_no_archive">Quasi tutte le fonti sono feed RSS/Atom in diretta, a cui non si può chiedere una data passata; qui c\'è ciò che servono in questo momento, non un archivio.</string>
+    <string name="loom_asking_gdelt">Sto chiedendo a GDELT…</string>
+    <string name="loom_ask_gdelt">Chiedi a GDELT per questo giorno</string>
+    <string name="contrast_nothing_flowed">Quel giorno non è arrivato nulla</string>
+    <string name="contrast_reach">Portata</string>
+    <string name="contrast_by_topic">Per argomento</string>
+    <string name="contrast_widest_gap">Scarto più ampio in %1$s: %2$d%% arrivate, %3$d%% lette.</string>
+    <string name="contrast_flowed">arrivate</string>
+    <string name="contrast_read">lette</string>
+    <string name="contrast_regions">Regioni</string>
+    <string name="contrast_no_reads">Oggi ancora nessuna lettura. La mappa si riempie man mano che leggi.</string>
+    <string name="cross_coverage">Copertura</string>
+    <string name="cross_breadth_stream">Ampiezza: il flusso</string>
+    <string name="cross_breadth_you">Ampiezza: tu</string>
+    <string name="cross_over_under">Sopra/sotto per argomento</string>
+    <string name="cross_what_changed">Cosa è cambiato dal periodo precedente</string>
+    <string name="cross_no_earlier">Non c\'è ancora un periodo precedente da confrontare.</string>
+    <string name="cross_steady">Il tuo mix di argomenti è rimasto stabile.</string>
 </resources>

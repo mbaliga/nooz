@@ -1897,6 +1897,31 @@ respect as the CI-caught log above.
   Verified in the artefact again, with a negative control this time: the Telugu,
   Punjabi and Urdu strings are in `resources.arsc`, and a nonsense probe is not.
 
+- **D54 — The Loom speaks the reader's language, closing the gap D49 recorded
+  (2026-09-01).** D49 ended with an admission: the Loom's, the globe's and the
+  heat strip's spoken descriptions were still assembled from English literals
+  inside plain functions, invisible to `verifyI18n` (which matches text call
+  sites, not string construction). So a blind reader who set the app to Tamil
+  got a Tamil interface and then heard **the app's centrepiece described in
+  English**, permanently, with nothing anywhere reporting it.
+  `describeLoom`, `describeGlobe` and `describeHeatStrip` are now `@Composable`
+  so they can reach `stringResource`, along with the Loom's per-stream action
+  labels, its selection state, the globe's four actions, and the Loom, Contrast
+  and CrossSection chrome. The catalogue goes 68 → 117 strings; the ratchet
+  193 → 170. **29 locales complete**, Kashmiri at 27%.
+  A Kotlin note worth keeping: `map` is `inline` and therefore *is* a composable
+  scope, but `joinToString`'s `transform` is not — so every list is resolved
+  first and joined afterwards. The compiler catches it, but only after the work
+  looks done.
+  And the placeholder guard earned its place twice over. It failed on Arabic's
+  `loom_source_one`: مصدر واحد carries "one" in the word rather than a digit.
+  That is a translation decision, not a slip, and several languages make it — so
+  the rule is now "a `_one` key may drop its number; nothing else may, and
+  inventing a placeholder is always an error." Narrowing the rule to fit the
+  language beats bending the language to fit the rule, and the guard still
+  catches the thing it exists for: a lost `%1$s` leaves a silent gap in a
+  sentence on a screen nobody testing in English will ever look at.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

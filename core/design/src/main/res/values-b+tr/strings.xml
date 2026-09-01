@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d dk</string>
     <string name="reader_reading_time">Tahmini okuma süresi %1$d dakika</string>
     <string name="reader_progress">Yazının yaklaşık yüzde %1$d kadarı</string>
+    <string name="loom_title">Günün tezgâhı.</string>
+    <string name="loom_flowed">%2$s kaynağınızdan %1$d haber aktı</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics"> ve %1$d konu daha</string>
+    <string name="loom_read_none">Bunlardan hiçbirini okumadınız</string>
+    <string name="loom_read_some">%1$d tanesini okudunuz: %2$s</string>
+    <string name="loom_use_actions">Tek bir akışın sayıları için eylemleri kullanın.</string>
+    <string name="loom_nothing_flowed">O gün %1$s kaynağınızdan hiçbir şey akmadı.</string>
+    <string name="loom_source_one">%1$d</string>
+    <string name="loom_source_many">%1$d</string>
+    <string name="loom_stream_action">%1$s: %2$d aktı, %3$d okundu</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s seçildi</string>
+    <string name="loom_nothing_selected">Hiçbir akış seçili değil</string>
+    <string name="globe_aimed">Bölge küresi, %1$s bölgesine dönük, %2$s kapsıyor.</string>
+    <string name="globe_band_world">tüm dünyayı</string>
+    <string name="globe_band_degrees">%1$d derecelik bir kuşağı</string>
+    <string name="globe_nothing_flowed">Buradan henüz bir şey akmadı.</string>
+    <string name="globe_mix">%1$d haber: %2$s. Döndürmek ya da kuşağı değiştirmek için eylemleri kullanın.</string>
+    <string name="globe_spin_west">Batıya döndür</string>
+    <string name="globe_spin_east">Doğuya döndür</string>
+    <string name="globe_widen">Kuşağı genişlet</string>
+    <string name="globe_narrow">Kuşağı daralt</string>
+    <string name="heatstrip_title">Bölgeye göre okuma. %1$s gösteriliyor.</string>
+    <string name="heatstrip_empty">Bugün henüz bir şey okunmadı.</string>
+    <string name="heatstrip_read">%1$d %2$s okundu: %3$s</string>
+    <string name="heatstrip_story_one">haber</string>
+    <string name="heatstrip_story_many">haber</string>
+    <string name="loom_previous_day">Önceki gün</string>
+    <string name="loom_next_day">Sonraki gün</string>
+    <string name="loom_empty">O gün hiçbir şey akmadı. Kaynaklarınız dokudukça tezgâh da dokur.</string>
+    <string name="loom_no_archive">Kaynakların çoğu canlı RSS/Atom akışları; onlardan geçmiş bir tarih istenemez. Burada şu anda sundukları var, bir arşiv değil.</string>
+    <string name="loom_asking_gdelt">GDELT\'e soruluyor…</string>
+    <string name="loom_ask_gdelt">Bu gün için GDELT\'e sor</string>
+    <string name="contrast_nothing_flowed">O gün hiçbir şey akmadı</string>
+    <string name="contrast_reach">Erişim</string>
+    <string name="contrast_by_topic">Konuya göre</string>
+    <string name="contrast_widest_gap">En büyük açık %1$s konusunda: %%%2$d aktı, %%%3$d okundu.</string>
+    <string name="contrast_flowed">aktı</string>
+    <string name="contrast_read">okundu</string>
+    <string name="contrast_regions">Bölgeler</string>
+    <string name="contrast_no_reads">Bugün henüz okuma yok. Siz okudukça harita dolar.</string>
+    <string name="cross_coverage">Kapsam</string>
+    <string name="cross_breadth_stream">Genişlik: akış</string>
+    <string name="cross_breadth_you">Genişlik: siz</string>
+    <string name="cross_over_under">Konu başına fazla/eksik</string>
+    <string name="cross_what_changed">Önceki döneme göre ne değişti</string>
+    <string name="cross_no_earlier">Karşılaştıracak önceki bir dönem henüz yok.</string>
+    <string name="cross_steady">Konu karışımınız sabit kaldı.</string>
 </resources>

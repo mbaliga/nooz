@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d മിനി</string>
     <string name="reader_reading_time">വായിക്കാൻ ഏകദേശം %1$d മിനിറ്റ്</string>
     <string name="reader_progress">ലേഖനത്തിന്റെ ഏകദേശം %1$d ശതമാനം കഴിഞ്ഞു</string>
+    <string name="loom_title">ദിവസത്തിന്റെ ലൂം.</string>
+    <string name="loom_flowed">നിങ്ങളുടെ %2$s നിന്ന് %1$d വാർത്തകൾ ഒഴുകി</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, കൂടാതെ %1$d വിഷയങ്ങൾ</string>
+    <string name="loom_read_none">ഇവയിലൊന്നും നിങ്ങൾ വായിച്ചില്ല</string>
+    <string name="loom_read_some">നിങ്ങൾ %1$d വായിച്ചു: %2$s</string>
+    <string name="loom_use_actions">ഒരൊറ്റ ഒഴുക്കിന്റെ എണ്ണത്തിന് പ്രവർത്തനങ്ങൾ ഉപയോഗിക്കുക.</string>
+    <string name="loom_nothing_flowed">ഈ ദിവസം നിങ്ങളുടെ %1$s നിന്ന് ഒന്നും ഒഴുകിയില്ല.</string>
+    <string name="loom_source_one">%1$d ഉറവിടം</string>
+    <string name="loom_source_many">%1$d ഉറവിടങ്ങളിൽ</string>
+    <string name="loom_stream_action">%1$s: %2$d ഒഴുകി, %3$d വായിച്ചു</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s തിരഞ്ഞെടുത്തു</string>
+    <string name="loom_nothing_selected">ഒരു ഒഴുക്കും തിരഞ്ഞെടുത്തിട്ടില്ല</string>
+    <string name="globe_aimed">പ്രദേശ ഗോളം, %1$s ലക്ഷ്യമാക്കി, %2$s ഉൾക്കൊണ്ട്.</string>
+    <string name="globe_band_world">ലോകം മുഴുവൻ</string>
+    <string name="globe_band_degrees">%1$d ഡിഗ്രി വീതിയുള്ള പട്ട</string>
+    <string name="globe_nothing_flowed">ഇവിടെ നിന്ന് ഇതുവരെ ഒന്നും ഒഴുകിയിട്ടില്ല.</string>
+    <string name="globe_mix">%1$d വാർത്തകൾ: %2$s. കറക്കാനോ പട്ട മാറ്റാനോ പ്രവർത്തനങ്ങൾ ഉപയോഗിക്കുക.</string>
+    <string name="globe_spin_west">പടിഞ്ഞാറോട്ട് കറക്കുക</string>
+    <string name="globe_spin_east">കിഴക്കോട്ട് കറക്കുക</string>
+    <string name="globe_widen">പട്ട വീതിയാക്കുക</string>
+    <string name="globe_narrow">പട്ട ഇടുങ്ങിയതാക്കുക</string>
+    <string name="heatstrip_title">പ്രദേശം തിരിച്ചുള്ള വായന. %1$s കാണിക്കുന്നു.</string>
+    <string name="heatstrip_empty">ഇന്ന് ഇതുവരെ ഒന്നും വായിച്ചിട്ടില്ല.</string>
+    <string name="heatstrip_read">%1$d %2$s വായിച്ചു: %3$s</string>
+    <string name="heatstrip_story_one">വാർത്ത</string>
+    <string name="heatstrip_story_many">വാർത്തകൾ</string>
+    <string name="loom_previous_day">മുൻ ദിവസം</string>
+    <string name="loom_next_day">അടുത്ത ദിവസം</string>
+    <string name="loom_empty">ഈ ദിവസം ഒന്നും ഒഴുകിയില്ല. നിങ്ങളുടെ ഉറവിടങ്ങൾ നെയ്താൽ മാത്രമേ ലൂമും നെയ്യൂ.</string>
+    <string name="loom_no_archive">മിക്ക ഉറവിടങ്ങളും തത്സമയ RSS/Atom ഫീഡുകളാണ്; പഴയ തീയതി ചോദിക്കാൻ വഴിയില്ല. അവർ ഇപ്പോൾ നൽകുന്നത് മാത്രമാണ് ഇത് കാണിക്കുന്നത്, ഒരു ശേഖരമല്ല.</string>
+    <string name="loom_asking_gdelt">GDELT-നോട് ചോദിക്കുന്നു…</string>
+    <string name="loom_ask_gdelt">ഈ ദിവസത്തിന് GDELT-നോട് ചോദിക്കുക</string>
+    <string name="contrast_nothing_flowed">ഈ ദിവസം ഒന്നും ഒഴുകിയില്ല</string>
+    <string name="contrast_reach">എത്തിച്ചേരൽ</string>
+    <string name="contrast_by_topic">വിഷയം തിരിച്ച്</string>
+    <string name="contrast_widest_gap">ഏറ്റവും വലിയ വിടവ് %1$s-ൽ: %2$d%% ഒഴുകി, %3$d%% വായിച്ചു.</string>
+    <string name="contrast_flowed">ഒഴുകി</string>
+    <string name="contrast_read">വായിച്ചു</string>
+    <string name="contrast_regions">പ്രദേശങ്ങൾ</string>
+    <string name="contrast_no_reads">ഇന്ന് ഇതുവരെ ഒന്നും വായിച്ചിട്ടില്ല. നിങ്ങൾ വായിക്കുന്തോറും ഭൂപടം നിറയും.</string>
+    <string name="cross_coverage">വ്യാപ്തി</string>
+    <string name="cross_breadth_stream">പരപ്പ്: ഒഴുക്ക്</string>
+    <string name="cross_breadth_you">പരപ്പ്: നിങ്ങൾ</string>
+    <string name="cross_over_under">വിഷയം തിരിച്ച് കൂടുതൽ/കുറവ്</string>
+    <string name="cross_what_changed">കഴിഞ്ഞ കാലയളവിൽ നിന്ന് എന്ത് മാറി</string>
+    <string name="cross_no_earlier">താരതമ്യം ചെയ്യാൻ ഇതുവരെ മുൻ കാലയളവില്ല.</string>
+    <string name="cross_steady">നിങ്ങളുടെ വിഷയമിശ്രിതം സ്ഥിരമായി നിന്നു.</string>
 </resources>

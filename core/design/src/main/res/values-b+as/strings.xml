@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d মিনিট</string>
     <string name="reader_reading_time">পঢ়িবলৈ আনুমানিক %1$d মিনিট</string>
     <string name="reader_progress">লেখাৰ প্ৰায় %1$d শতাংশ হ’ল</string>
+    <string name="loom_title">দিনটোৰ লুম।</string>
+    <string name="loom_flowed">আপোনাৰ %2$sৰ পৰা %1$d বাতৰি বৈ গ’ল</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, আৰু %1$d টা বিষয়</string>
+    <string name="loom_read_none">ইয়াৰ একোৱেই আপুনি পঢ়া নাই</string>
+    <string name="loom_read_some">আপুনি %1$d টা পঢ়িছে: %2$s</string>
+    <string name="loom_use_actions">এটা ধাৰাৰ সংখ্যাৰ বাবে ক্ৰিয়াবোৰ ব্যৱহাৰ কৰক।</string>
+    <string name="loom_nothing_flowed">এই দিনটোত আপোনাৰ %1$sৰ পৰা একোৱেই বৈ যোৱা নাই।</string>
+    <string name="loom_source_one">%1$d টা উৎস</string>
+    <string name="loom_source_many">%1$d টা উৎস</string>
+    <string name="loom_stream_action">%1$s: %2$d বৈ গ’ল, %3$d পঢ়া</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s বাছনি কৰা হ’ল</string>
+    <string name="loom_nothing_selected">কোনো ধাৰা বাছনি কৰা হোৱা নাই</string>
+    <string name="globe_aimed">অঞ্চল গোলক, %1$sলৈ লক্ষ্য কৰি, %2$s সামৰি।</string>
+    <string name="globe_band_world">গোটেই পৃথিৱী</string>
+    <string name="globe_band_degrees">%1$d ডিগ্ৰী বহল পটি</string>
+    <string name="globe_nothing_flowed">ইয়াৰ পৰা এতিয়ালৈকে একো বৈ যোৱা নাই।</string>
+    <string name="globe_mix">%1$d বাতৰি: %2$s। ঘূৰাবলৈ বা পটি সলনি কৰিবলৈ ক্ৰিয়াবোৰ ব্যৱহাৰ কৰক।</string>
+    <string name="globe_spin_west">পশ্চিমলৈ ঘূৰাওক</string>
+    <string name="globe_spin_east">পূবলৈ ঘূৰাওক</string>
+    <string name="globe_widen">পটি বহল কৰক</string>
+    <string name="globe_narrow">পটি ঠেক কৰক</string>
+    <string name="heatstrip_title">অঞ্চল অনুসৰি পঢ়া। %1$s দেখুওৱা হৈছে।</string>
+    <string name="heatstrip_empty">আজি এতিয়ালৈকে একো পঢ়া হোৱা নাই।</string>
+    <string name="heatstrip_read">%1$d %2$s পঢ়া হৈছে: %3$s</string>
+    <string name="heatstrip_story_one">বাতৰি</string>
+    <string name="heatstrip_story_many">বাতৰি</string>
+    <string name="loom_previous_day">আগৰ দিন</string>
+    <string name="loom_next_day">পিছৰ দিন</string>
+    <string name="loom_empty">এই দিনটোত একো বৈ যোৱা নাই। আপোনাৰ উৎসই বুনিলেহে লুমেও বুনে।</string>
+    <string name="loom_no_archive">বেছিভাগ উৎসই প্ৰত্যক্ষ RSS/Atom ফীড, যিবোৰক আগৰ তাৰিখ বিচাৰিব নোৱাৰি; সিহঁতে এতিয়া যি দিছে সেয়াহে ই দেখুৱায়, কোনো সংৰক্ষণাগাৰ নহয়।</string>
+    <string name="loom_asking_gdelt">GDELTক সোধা হৈছে…</string>
+    <string name="loom_ask_gdelt">এই দিনটোৰ বাবে GDELTক সোধক</string>
+    <string name="contrast_nothing_flowed">এই দিনটোত একো বৈ যোৱা নাই</string>
+    <string name="contrast_reach">নাগাল</string>
+    <string name="contrast_by_topic">বিষয় অনুসৰি</string>
+    <string name="contrast_widest_gap">আটাইতকৈ ডাঙৰ ব্যৱধান %1$sত: %2$d%% বৈ গ’ল, %3$d%% পঢ়া।</string>
+    <string name="contrast_flowed">বৈ গ’ল</string>
+    <string name="contrast_read">পঢ়া</string>
+    <string name="contrast_regions">অঞ্চল</string>
+    <string name="contrast_no_reads">আজি এতিয়ালৈকে একো পঢ়া হোৱা নাই। আপুনি পঢ়ি থাকিলে মানচিত্ৰখন ভৰি উঠিব।</string>
+    <string name="cross_coverage">পৰিসৰ</string>
+    <string name="cross_breadth_stream">বহলতা: ধাৰা</string>
+    <string name="cross_breadth_you">বহলতা: আপুনি</string>
+    <string name="cross_over_under">বিষয় অনুসৰি বেছি/কম</string>
+    <string name="cross_what_changed">যোৱা সময়ৰ পৰা কি সলনি হ’ল</string>
+    <string name="cross_no_earlier">তুলনাৰ বাবে এতিয়ালৈকে আগৰ কোনো সময় নাই।</string>
+    <string name="cross_steady">আপোনাৰ বিষয়ৰ মিশ্ৰণ স্থিৰ আছিল।</string>
 </resources>

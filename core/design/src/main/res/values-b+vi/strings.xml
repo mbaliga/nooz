@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d phút</string>
     <string name="reader_reading_time">Ước tính đọc trong %1$d phút</string>
     <string name="reader_progress">Khoảng %1$d phần trăm bài viết</string>
+    <string name="loom_title">Khung cửi của ngày.</string>
+    <string name="loom_flowed">%1$d tin đã chảy từ %2$s của bạn</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, và %1$d chủ đề nữa</string>
+    <string name="loom_read_none">Bạn chưa đọc tin nào trong số đó</string>
+    <string name="loom_read_some">Bạn đã đọc %1$d: %2$s</string>
+    <string name="loom_use_actions">Dùng các thao tác để xem con số của một dòng.</string>
+    <string name="loom_nothing_flowed">Ngày đó không có gì chảy từ %1$s của bạn.</string>
+    <string name="loom_source_one">%1$d nguồn</string>
+    <string name="loom_source_many">%1$d nguồn</string>
+    <string name="loom_stream_action">%1$s: %2$d đã chảy, %3$d đã đọc</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">đã chọn %1$s</string>
+    <string name="loom_nothing_selected">Chưa chọn dòng nào</string>
+    <string name="globe_aimed">Quả cầu vùng, hướng vào %1$s, bao trùm %2$s.</string>
+    <string name="globe_band_world">cả thế giới</string>
+    <string name="globe_band_degrees">một dải rộng %1$d độ</string>
+    <string name="globe_nothing_flowed">Từ đây chưa có gì chảy tới.</string>
+    <string name="globe_mix">%1$d tin: %2$s. Dùng các thao tác để xoay hoặc đổi dải.</string>
+    <string name="globe_spin_west">Xoay về phía tây</string>
+    <string name="globe_spin_east">Xoay về phía đông</string>
+    <string name="globe_widen">Mở rộng dải</string>
+    <string name="globe_narrow">Thu hẹp dải</string>
+    <string name="heatstrip_title">Đọc theo vùng. Đang hiện %1$s.</string>
+    <string name="heatstrip_empty">Hôm nay chưa đọc gì.</string>
+    <string name="heatstrip_read">đã đọc %1$d %2$s: %3$s</string>
+    <string name="heatstrip_story_one">tin</string>
+    <string name="heatstrip_story_many">tin</string>
+    <string name="loom_previous_day">Ngày trước</string>
+    <string name="loom_next_day">Ngày sau</string>
+    <string name="loom_empty">Ngày đó không có gì chảy. Khung cửi dệt khi các nguồn của bạn dệt.</string>
+    <string name="loom_no_archive">Hầu hết nguồn là các dòng RSS/Atom trực tiếp, không có cách nào hỏi chúng một ngày đã qua; đây là những gì họ đang phục vụ lúc này, không phải kho lưu trữ.</string>
+    <string name="loom_asking_gdelt">Đang hỏi GDELT…</string>
+    <string name="loom_ask_gdelt">Hỏi GDELT về ngày này</string>
+    <string name="contrast_nothing_flowed">Ngày đó không có gì chảy</string>
+    <string name="contrast_reach">Tầm với</string>
+    <string name="contrast_by_topic">Theo chủ đề</string>
+    <string name="contrast_widest_gap">Khoảng cách lớn nhất ở %1$s: %2$d%% chảy tới, %3$d%% đã đọc.</string>
+    <string name="contrast_flowed">đã chảy</string>
+    <string name="contrast_read">đã đọc</string>
+    <string name="contrast_regions">Vùng</string>
+    <string name="contrast_no_reads">Hôm nay chưa có gì được đọc. Bản đồ đầy dần khi bạn đọc.</string>
+    <string name="cross_coverage">Độ phủ</string>
+    <string name="cross_breadth_stream">Độ rộng: dòng chảy</string>
+    <string name="cross_breadth_you">Độ rộng: bạn</string>
+    <string name="cross_over_under">Thừa/thiếu theo chủ đề</string>
+    <string name="cross_what_changed">Điều gì đã đổi so với kỳ trước</string>
+    <string name="cross_no_earlier">Chưa có kỳ trước để so sánh.</string>
+    <string name="cross_steady">Cơ cấu chủ đề của bạn giữ nguyên.</string>
 </resources>

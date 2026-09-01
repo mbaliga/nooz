@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  24 of 68 strings translated.
+  32 of 117 strings translated.
 -->
 <resources>
 
@@ -35,4 +35,12 @@
     <string name="reader_previous">‹ پیٚٹھ</string>
     <string name="reader_next">بیٛاکھ ›</string>
     <string name="reader_open_in_browser">براؤزرس منٛز کھۆلیو</string>
+    <string name="globe_spin_west">مغربس کُن گِنٛڈیو</string>
+    <string name="globe_spin_east">مشرقس کُن گِنٛڈیو</string>
+    <string name="loom_previous_day">پؠٹھ کُن دۄہ</string>
+    <string name="loom_next_day">بیٛاکھ دۄہ</string>
+    <string name="contrast_by_topic">موضوعَس مطابق</string>
+    <string name="contrast_flowed">بہیۆو</string>
+    <string name="contrast_read">پأریتھ</string>
+    <string name="contrast_regions">علاقہ</string>
 </resources>

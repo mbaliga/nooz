@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d मिनट</string>
     <string name="reader_reading_time">पढ़ने में अनुमानित %1$d मिनट</string>
     <string name="reader_progress">लेख का लगभग %1$d प्रतिशत पूरा</string>
+    <string name="loom_title">दिन का लूम।</string>
+    <string name="loom_flowed">आपके %2$s से %1$d ख़बरें बहीं</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, और %1$d अन्य विषय</string>
+    <string name="loom_read_none">आपने इनमें से कुछ नहीं पढ़ा</string>
+    <string name="loom_read_some">आपने %1$d पढ़ीं: %2$s</string>
+    <string name="loom_use_actions">किसी एक धारा के आँकड़ों के लिए क्रियाओं का उपयोग करें।</string>
+    <string name="loom_nothing_flowed">इस दिन आपके %1$s से कुछ नहीं बहा।</string>
+    <string name="loom_source_one">%1$d स्रोत</string>
+    <string name="loom_source_many">%1$d स्रोतों</string>
+    <string name="loom_stream_action">%1$s: %2$d बहीं, %3$d पढ़ीं</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s चुना गया</string>
+    <string name="loom_nothing_selected">कोई धारा नहीं चुनी गई</string>
+    <string name="globe_aimed">क्षेत्र ग्लोब, %1$s पर केंद्रित, %2$s को समेटे हुए।</string>
+    <string name="globe_band_world">पूरी दुनिया</string>
+    <string name="globe_band_degrees">%1$d डिग्री चौड़ी पट्टी</string>
+    <string name="globe_nothing_flowed">यहाँ से अभी कुछ नहीं बहा है।</string>
+    <string name="globe_mix">%1$d ख़बरें: %2$s. घुमाने या पट्टी बदलने के लिए क्रियाओं का उपयोग करें।</string>
+    <string name="globe_spin_west">पश्चिम की ओर घुमाएँ</string>
+    <string name="globe_spin_east">पूर्व की ओर घुमाएँ</string>
+    <string name="globe_widen">पट्टी चौड़ी करें</string>
+    <string name="globe_narrow">पट्टी सँकरी करें</string>
+    <string name="heatstrip_title">क्षेत्र के अनुसार पठन। %1$s दिखाया जा रहा है।</string>
+    <string name="heatstrip_empty">आज अभी कुछ नहीं पढ़ा गया।</string>
+    <string name="heatstrip_read">%1$d %2$s पढ़ी गईं: %3$s</string>
+    <string name="heatstrip_story_one">ख़बर</string>
+    <string name="heatstrip_story_many">ख़बरें</string>
+    <string name="loom_previous_day">पिछला दिन</string>
+    <string name="loom_next_day">अगला दिन</string>
+    <string name="loom_empty">इस दिन कुछ नहीं बहा। जब आपके स्रोत बुनेंगे, तभी लूम बुनेगा।</string>
+    <string name="loom_no_archive">अधिकांश स्रोत सजीव RSS/Atom फ़ीड हैं, जिनसे किसी बीती तारीख़ की माँग नहीं की जा सकती; यह वही दिखाता है जो वे अभी परोस रहे हैं, कोई पुरालेख नहीं।</string>
+    <string name="loom_asking_gdelt">GDELT से पूछा जा रहा है…</string>
+    <string name="loom_ask_gdelt">इस दिन के लिए GDELT से पूछें</string>
+    <string name="contrast_nothing_flowed">इस दिन कुछ नहीं बहा</string>
+    <string name="contrast_reach">पहुँच</string>
+    <string name="contrast_by_topic">विषय के अनुसार</string>
+    <string name="contrast_widest_gap">सबसे बड़ा अंतर %1$s में: %2$d%% बहीं, %3$d%% पढ़ीं।</string>
+    <string name="contrast_flowed">बहीं</string>
+    <string name="contrast_read">पढ़ीं</string>
+    <string name="contrast_regions">क्षेत्र</string>
+    <string name="contrast_no_reads">आज अभी कुछ नहीं पढ़ा गया। जैसे-जैसे आप पढ़ेंगे, नक़्शा भरता जाएगा।</string>
+    <string name="cross_coverage">कवरेज</string>
+    <string name="cross_breadth_stream">विस्तार: धारा</string>
+    <string name="cross_breadth_you">विस्तार: आप</string>
+    <string name="cross_over_under">प्रति-विषय अधिक/कम</string>
+    <string name="cross_what_changed">पिछली अवधि से क्या बदला</string>
+    <string name="cross_no_earlier">तुलना के लिए अभी कोई पुरानी अवधि नहीं है।</string>
+    <string name="cross_steady">आपका विषय-मिश्रण स्थिर रहा।</string>
 </resources>

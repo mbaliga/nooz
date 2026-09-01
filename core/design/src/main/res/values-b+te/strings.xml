@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  68 of 68 strings translated.
+  117 of 117 strings translated.
 -->
 <resources>
 
@@ -79,4 +79,53 @@
     <string name="reader_minutes_short">%1$d నిమి</string>
     <string name="reader_reading_time">చదవడానికి సుమారు %1$d నిమిషాలు</string>
     <string name="reader_progress">కథనంలో సుమారు %1$d శాతం పూర్తయింది</string>
+    <string name="loom_title">రోజు లూమ్.</string>
+    <string name="loom_flowed">మీ %2$s నుంచి %1$d కథనాలు ప్రవహించాయి</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, ఇంకా %1$d అంశాలు</string>
+    <string name="loom_read_none">వీటిలో ఏదీ మీరు చదవలేదు</string>
+    <string name="loom_read_some">మీరు %1$d చదివారు: %2$s</string>
+    <string name="loom_use_actions">ఒక్క ప్రవాహపు లెక్కల కోసం చర్యలను వాడండి.</string>
+    <string name="loom_nothing_flowed">ఈ రోజు మీ %1$s నుంచి ఏదీ ప్రవహించలేదు.</string>
+    <string name="loom_source_one">%1$d మూలం</string>
+    <string name="loom_source_many">%1$d మూలాల</string>
+    <string name="loom_stream_action">%1$s: %2$d ప్రవహించాయి, %3$d చదివారు</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s ఎంచుకున్నారు</string>
+    <string name="loom_nothing_selected">ఏ ప్రవాహమూ ఎంచుకోలేదు</string>
+    <string name="globe_aimed">ప్రాంత గ్లోబ్, %1$s వైపు గురిపెట్టి, %2$s కప్పుతూ.</string>
+    <string name="globe_band_world">ప్రపంచమంతా</string>
+    <string name="globe_band_degrees">%1$d డిగ్రీల వెడల్పు పట్టీ</string>
+    <string name="globe_nothing_flowed">ఇక్కడి నుంచి ఇంకా ఏదీ ప్రవహించలేదు.</string>
+    <string name="globe_mix">%1$d కథనాలు: %2$s. తిప్పడానికి లేదా పట్టీ మార్చడానికి చర్యలను వాడండి.</string>
+    <string name="globe_spin_west">పడమరకు తిప్పు</string>
+    <string name="globe_spin_east">తూర్పుకు తిప్పు</string>
+    <string name="globe_widen">పట్టీని వెడల్పు చేయి</string>
+    <string name="globe_narrow">పట్టీని ఇరుకు చేయి</string>
+    <string name="heatstrip_title">ప్రాంతాల వారీగా చదవడం. %1$s చూపుతోంది.</string>
+    <string name="heatstrip_empty">ఈ రోజు ఇంకా ఏదీ చదవలేదు.</string>
+    <string name="heatstrip_read">%1$d %2$s చదివారు: %3$s</string>
+    <string name="heatstrip_story_one">కథనం</string>
+    <string name="heatstrip_story_many">కథనాలు</string>
+    <string name="loom_previous_day">ముందు రోజు</string>
+    <string name="loom_next_day">తరువాతి రోజు</string>
+    <string name="loom_empty">ఈ రోజు ఏదీ ప్రవహించలేదు. మీ మూలాలు నేసినప్పుడే లూమ్ నేస్తుంది.</string>
+    <string name="loom_no_archive">చాలా మూలాలు ప్రత్యక్ష RSS/Atom ఫీడ్‌లు; గత తేదీని అడిగే మార్గం వాటికి లేదు. ఇది వాళ్ళు ఇప్పుడు ఇస్తున్నదాన్నే చూపుతుంది, పాత భాండాగారాన్ని కాదు.</string>
+    <string name="loom_asking_gdelt">GDELTని అడుగుతున్నాం…</string>
+    <string name="loom_ask_gdelt">ఈ రోజు కోసం GDELTని అడగండి</string>
+    <string name="contrast_nothing_flowed">ఈ రోజు ఏదీ ప్రవహించలేదు</string>
+    <string name="contrast_reach">చేరిక</string>
+    <string name="contrast_by_topic">అంశాల వారీగా</string>
+    <string name="contrast_widest_gap">అతి పెద్ద తేడా %1$sలో: %2$d%% ప్రవహించాయి, %3$d%% చదివారు.</string>
+    <string name="contrast_flowed">ప్రవహించాయి</string>
+    <string name="contrast_read">చదివారు</string>
+    <string name="contrast_regions">ప్రాంతాలు</string>
+    <string name="contrast_no_reads">ఈ రోజు ఇంకా ఏదీ చదవలేదు. మీరు చదువుతున్న కొద్దీ పటం నిండుతుంది.</string>
+    <string name="cross_coverage">పరిధి</string>
+    <string name="cross_breadth_stream">వెడల్పు: ప్రవాహం</string>
+    <string name="cross_breadth_you">వెడల్పు: మీరు</string>
+    <string name="cross_over_under">అంశాల వారీగా ఎక్కువ/తక్కువ</string>
+    <string name="cross_what_changed">గత కాలంతో పోలిస్తే ఏం మారింది</string>
+    <string name="cross_no_earlier">పోల్చడానికి ఇంకా పాత కాలం లేదు.</string>
+    <string name="cross_steady">మీ అంశాల మిశ్రమం స్థిరంగా ఉంది.</string>
 </resources>
