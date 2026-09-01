@@ -1380,6 +1380,23 @@ respect as the CI-caught log above.
   says so in as many words rather than presenting a language list that quietly
   omits them.
 
+- **D39 — A sources search that matches the size of the list (2026-09-01).**
+  Owner asked for search "that matches the size of the list of resources we
+  would now have." The picker's filter was
+  `def.title.lowercase().contains(q)` — one substring over one field, which was
+  defensible against twenty starters and is not against a catalogue past its
+  second hundred. Three failures a reader meets immediately: **word order**
+  ("world bbc" found nothing though "BBC World" is right there), **one field**
+  (a domain the reader knows, a region, or a language name searched none of
+  them — which made D35's keep-the-language-in-the-title convention
+  unreachable), and **no ranking** (an incidental URL match could sit above an
+  exact masthead). `SourceSearch` in `:core:model` ANDs independent terms across
+  title, URL, homepage, region and notes, then orders by match strength — exact
+  title, title prefix, title word-prefix, title substring, other field — with
+  ties keeping their incoming order, since the catalogue's own arrangement is
+  deliberate and a search should not reshuffle what it did not rank. Tested
+  against the real shipped catalogue, not only fixtures.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

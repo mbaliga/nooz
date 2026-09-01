@@ -68,6 +68,7 @@ import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.feature.river.CrossSectionPanel
+import xyz.mdhv.riverwip.model.SourceSearch
 import xyz.mdhv.riverwip.model.GlobeModel
 import xyz.mdhv.riverwip.model.HealthStatus
 import xyz.mdhv.riverwip.model.ReaderFilter
@@ -243,15 +244,19 @@ private fun SourcesTab(vm: SourcesViewModel) {
     var regionFilter by rememberSaveable { mutableStateOf<String?>(null) }
 
     val addedIds = remember(sources) { sources.map { it.id }.toSet() }
-    val q = query.trim().lowercase()
     val regions = remember(startersByRegion) { startersByRegion.keys.sorted() }
     val flatStarters = remember(startersByRegion) {
         startersByRegion.entries.sortedBy { it.key }.flatMap { (region, defs) -> defs.map { region to it } }
     }
-    val filteredStarters = flatStarters.filter { (region, def) ->
-        (regionFilter == null || region == regionFilter) && (q.isEmpty() || def.title.lowercase().contains(q))
-    }
-    val filteredBuilders = if (regionFilter != null) emptyList() else builders.filter { q.isEmpty() || it.title.lowercase().contains(q) }
+    // The region chips narrow first, then the query matches and ranks what's
+    // left (D39). This used to be one substring test against `title` alone,
+    // which stopped being adequate somewhere around the catalogue's second
+    // hundred entries: word order mattered, a domain or a language name found
+    // nothing, and every hit was equal so an incidental URL match could outrank
+    // an exact masthead.
+    val regionScoped = flatStarters.filter { (region, _) -> regionFilter == null || region == regionFilter }
+    val filteredStarters = SourceSearch.rank(regionScoped, query) { it.second }
+    val filteredBuilders = if (regionFilter != null) emptyList() else SourceSearch.rank(builders, query) { it }
 
     Column(Modifier.fillMaxSize()) {
         // Region filter chips — narrow the (now large) list by sector.
