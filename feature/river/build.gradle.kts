@@ -15,7 +15,11 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
-    testOptions { unitTests.isReturnDefaultValues = true }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        // Robolectric needs the merged resources to inflate a Compose host.
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -34,4 +38,13 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    // Accessibility assertions on real composables, on the JVM (D42). Until now
+    // no UI module had any test dependency at all, so every a11y claim about
+    // this app was reasoning rather than evidence — and ci.yml's test task list
+    // executed nothing for six of the nine modules.
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

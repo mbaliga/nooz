@@ -1499,6 +1499,42 @@ respect as the CI-caught log above.
   `web/package.json` has no lockfile for `npm ci` to use. `"type": "module"` was
   **not** added: `web/api/*.js` are CommonJS Vercel functions and would break.
 
+- **D42 — The Loom can be operated by a screen reader, and the claim is now
+  machine-checked (2026-09-01).** First tranche of the accessibility audit's P0
+  list. What landed:
+  **Read versus unread is finally in the semantics tree.** `ArticleListScreen`
+  spent that state entirely on `TextDecoration.LineThrough` and a colour;
+  neither reaches the accessibility API, so a read row and an unread row were
+  **byte-identical in speech** — in an app whose stated purpose is showing
+  consumption. One `stateDescription` fixes it.
+  **The unread filter has a control.** It was reachable *only* by a two-finger
+  pinch — no button, no menu, no action (WCAG 2.5.1, Level A). The pinch still
+  works; it is no longer the only door.
+  **The Loom is operable.** Its semantics were one merged node whose entire
+  action list was `[SetTextSubstitution, ShowTextSubstitution,
+  ClearTextSubstitution, GetTextLayoutResult]` — no click, nothing custom —
+  while its own description ended *"Tap a stream for its counts."* The app was
+  instructing a gesture it would not accept, and the per-stream numbers existed
+  nowhere else in speech. Now one `CustomAccessibilityAction` per band, each
+  carrying its own counts in the label (the menu is read aloud in sequence, so
+  "stream three" would be useless), plus a `stateDescription` for the selection.
+  **And `describeLoom` names the supply side.** It enumerated only
+  `bands.filter { it.consumed }` — topics with at least one read — so a topic
+  that flooded the feed and was never opened was **never named**, which is
+  precisely the omission the screen exists to show.
+  **The evidence half matters as much as the fix.** No UI module had a single
+  test dependency, so every accessibility claim about this app was reasoning
+  over source rather than observation. `:feature:river` now carries
+  `compose.ui.test` + Robolectric, and `DayLoomAccessibilityTest` asserts
+  against the real semantics tree on the JVM: that every stream is reachable as
+  a named action, that the summary names an unread flood, that the tap
+  instruction is gone, and that an empty day still says something true. Note the
+  honest limit — this proves the tree carries the data and the actions; it does
+  **not** prove what TalkBack utters, and no device here can.
+  Remaining from the audit's P0: the three web blockers (`role="button"`
+  wrapping whole article bodies), screen-change announcements, and focus
+  restoration on the web's full-stage rebuild.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

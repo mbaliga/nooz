@@ -35,6 +35,8 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -68,6 +70,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -304,6 +307,26 @@ fun ArticleListScreen(
                     Icons.Filled.Shuffle,
                     contentDescription = if (diversified) "Showing the mix for coverage, tap to return to flow order" else "Mix for maximum spread",
                     tint = if (diversified) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            // The unread-only filter used to be reachable *only* by a two-finger
+            // pinch on the list — no button, no menu, no accessibility action.
+            // A function with no non-gesture route is a function a screen-reader
+            // or switch-access user does not have (WCAG 2.5.1, Level A). The
+            // pinch still works; it is no longer the only way in.
+            IconButton(onClick = { showUnreadOnly = !showUnreadOnly }) {
+                Icon(
+                    if (showUnreadOnly) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                    contentDescription = if (showUnreadOnly) {
+                        "Showing unread only, tap to show every story"
+                    } else {
+                        "Showing every story, tap to show unread only"
+                    },
+                    tint = if (showUnreadOnly) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
                 )
             }
             IconButton(onClick = onOpenClippings) {
@@ -733,6 +756,13 @@ private fun ItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
+            // Read/unread is the app's central state, and until now it was
+            // spent entirely on `strike` and `titleColor` above — a text
+            // decoration and a colour. Neither reaches the semantics API, so a
+            // read row and an unread row were byte-identical in speech, in an
+            // app whose stated purpose is showing consumption. stateDescription
+            // is the channel that carries it, and it costs one line.
+            .semantics { stateDescription = if (read) "Read" else "Unread" }
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.md),
         horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
     ) {

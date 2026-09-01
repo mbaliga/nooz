@@ -29,6 +29,9 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -72,7 +75,32 @@ fun DayLoomCanvas(
     ) {
     Box(
         modifier = modifier
-            .semantics(mergeDescendants = true) { contentDescription = description },
+            .semantics(mergeDescendants = true) {
+                contentDescription = description
+                // The Loom is the app's centrepiece and it was, to a screen
+                // reader, a single silent node: a Robolectric semantics dump
+                // showed its whole action list as
+                // [SetTextSubstitution, ShowTextSubstitution,
+                //  ClearTextSubstitution, GetTextLayoutResult] — no click,
+                // nothing custom — while its own description ended "Tap a
+                // stream for its counts." The app was instructing a gesture it
+                // would not accept, and the per-tube counts existed nowhere
+                // else in speech.
+                //
+                // One action per stream, carrying the numbers in the label
+                // itself: the custom-action menu is read aloud in sequence, so
+                // the answer has to be *in* the item rather than behind
+                // selecting it.
+                customActions = loom.bands.map { band ->
+                    CustomAccessibilityAction(
+                        label = "${band.topic.placeholderLabel}: ${band.flowed} flowed, ${band.read} read",
+                        action = { selected = band; true },
+                    )
+                }
+                selected?.let {
+                    stateDescription = "${it.topic.placeholderLabel} selected: ${it.flowed} flowed, ${it.read} read"
+                }
+            },
     ) {
         Canvas(
             Modifier
@@ -258,14 +286,36 @@ private fun hitBand(loom: DayLoomLayout.Loom, x: Float, y: Float): DayLoomLayout
     return null
 }
 
+/** How many supply topics the spoken summary names before summarising the tail. */
+private const val SPOKEN_SUPPLY_TOPICS = 5
+
 private fun describeLoom(loom: DayLoomLayout.Loom, enabledSourceCount: Int): String {
     if (loom.totalFlowed == 0) return "Nothing flowed from your $enabledSourceCount sources this day."
+
+    // The supply side used to be a single grand total, because this only ever
+    // enumerated `bands.filter { it.consumed }` — topics with at least one read.
+    // A topic that flooded the feed and was never opened was therefore never
+    // named, which is precisely the omission this whole screen exists to show.
+    val bySupply = loom.bands.sortedByDescending { it.flowed }
+    val named = bySupply.take(SPOKEN_SUPPLY_TOPICS).filter { it.flowed > 0 }
+    val rest = bySupply.drop(SPOKEN_SUPPLY_TOPICS).count { it.flowed > 0 }
+    val flowedLine = buildString {
+        append("${loom.totalFlowed} stories flowed from your $enabledSourceCount sources")
+        if (named.isNotEmpty()) {
+            append(": ")
+            append(named.joinToString(", ") { "${it.topic.placeholderLabel} ${it.flowed}" })
+            if (rest > 0) append(", and $rest more topics")
+        }
+    }
+
     val read = loom.bands.filter { it.consumed }.sortedByDescending { it.read }
     val readLine = if (read.isEmpty()) {
-        "none of it read"
+        "You read none of it"
     } else {
-        "${loom.totalRead} read: " + read.joinToString(", ") { "${it.topic.placeholderLabel} ${it.read}" }
+        "You read ${loom.totalRead}: " + read.joinToString(", ") { "${it.topic.placeholderLabel} ${it.read}" }
     }
-    return "Day loom. ${loom.totalFlowed} stories flowed from your $enabledSourceCount sources; $readLine. " +
-        "Tap a stream for its counts."
+
+    // No longer "Tap a stream" — a screen reader cannot land a tap on one, and
+    // the custom actions above are the route that actually exists for them.
+    return "Day loom. $flowedLine. $readLine. Use actions for a single stream's counts."
 }
