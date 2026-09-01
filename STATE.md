@@ -1256,6 +1256,34 @@ respect as the CI-caught log above.
   what the sentry is for — but the snapshot still lags `Starters.kt`'s ~141
   feeds. Not silently fixed here; logged.
 
+- **D36 — Onboarding ends on a tour, and Settings keeps it (2026-08-31).**
+  Owner: no idea whether anyone has found Nooz Cast or Nooz Flash, and the same
+  worry about the Loom. Reading the flow back, that is exactly what the app was
+  set up to produce — every individual decision defensible, the sum
+  undiscoverable. Onboarding was two steps (Welcome → Advanced) and named
+  **none** of Cast, Flash, the Loom, Clippings or Today in History; the Loom
+  opens by *pulling down on the stand*, Clippings by a bookmark inside the
+  reader, and Flash/Cast/Today in History all ship deliberately off. Nothing
+  ever said so.
+  Added a third step, `FeatureTourContent` — five lines, each naming a thing
+  and saying where it lives — reached from **both** doors (Quick setup and
+  Advanced's Done), and placed *last* rather than first: the names mean
+  something once there are stories behind them, and a tour up front taxes every
+  reader before they have a reason to care. **Skip still skips everything**,
+  including the tour.
+  Deliberately **not** toggles. Flash and Cast each pull down a model, and "off
+  until the reader decides" is the whole point of how they ship — flipping that
+  during setup, before the words mean anything, trades one bad outcome for a
+  worse one. The tour points at the switch instead of being the switch.
+  The same composable is mounted in Settings as a collapsed "What's inside"
+  disclosure, because onboarding runs **once and has no replay** — without it,
+  every reader who installed before today (i.e. everyone who prompted this)
+  would never see the tour at all. That, not the first-run copy, is what
+  actually reaches the people already asking.
+  Also fixed while here: onboarding's step, model path and immersive choice
+  were `remember`, not `rememberSaveable`, so rotating the phone mid-setup
+  dropped the reader back at Welcome having lost whichever door they picked.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

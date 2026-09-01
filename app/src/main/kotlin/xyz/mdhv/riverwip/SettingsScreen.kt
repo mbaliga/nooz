@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -327,6 +328,9 @@ fun SettingsBody(
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
     ) {
             if (!compact) CrashSection()
+
+            WhatsInsideSection()
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             SectionHeading("Theme")
             Row(
@@ -871,6 +875,44 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
             error = vm.modelCatalogueError,
         ),
     )
+}
+
+/**
+ * The same "what's inside" tour onboarding ends on, kept permanently here
+ * (D36). Onboarding runs exactly once and has no replay, so without this every
+ * reader who installed before the tour existed — or who tapped Skip — would
+ * never learn that the Loom opens by pulling down on the stand, or that Flash
+ * and Cast exist at all. Collapsed by default: it is a reminder, not a wall,
+ * and the settings a returning reader actually came for should stay near the
+ * top.
+ */
+@Composable
+private fun WhatsInsideSection() {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            SectionHeading("What's inside")
+            Text(
+                "The Loom, Flash, Cast, Clippings — and where each one lives.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = if (expanded) "Collapse what's inside" else "Expand what's inside",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (expanded) {
+        FeatureTourContent(modifier = Modifier.padding(bottom = Tokens.Spacing.xs))
+    }
 }
 
 /**
