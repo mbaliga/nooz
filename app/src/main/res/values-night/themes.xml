@@ -9,7 +9,7 @@
       app's own resolved tint (see MainActivity), which is the authority when a
       reader has picked a tint by hand rather than following the phone.
     -->
-    <style name="Theme.River" parent="android:Theme.Material.DayNight.NoActionBar">
+    <style name="Theme.River" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/river_window_background</item>
         <item name="android:statusBarColor">@color/river_window_background</item>
         <item name="android:navigationBarColor">@color/river_window_background</item>

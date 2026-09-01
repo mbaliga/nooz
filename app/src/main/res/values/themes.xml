@@ -5,11 +5,14 @@
       status bar). Only the first frame is drawn from here; every frame after
       it comes from the Compose token contract in :core:design.
 
-      DayNight parent (API 29+, and this app is minSdk 31) so that first frame
-      matches ThemeMode.SYSTEM, which is the default since D34. The night
-      values live in values-night/.
+      Light platform parent by day, with values-night/ swapping in the dark one,
+      so the first frame matches ThemeMode.SYSTEM (the default since D34). There
+      is deliberately no "DayNight" parent here: that exists in AppCompat and
+      Material Components, not in the platform's own android:Theme.Material
+      family, and naming one fails resource linking outright. Two qualified
+      resources do the same job with styles that actually exist.
     -->
-    <style name="Theme.River" parent="android:Theme.Material.DayNight.NoActionBar">
+    <style name="Theme.River" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/river_window_background</item>
         <item name="android:statusBarColor">@color/river_window_background</item>
         <item name="android:navigationBarColor">@color/river_window_background</item>
