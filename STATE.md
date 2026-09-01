@@ -1338,6 +1338,48 @@ respect as the CI-caught log above.
   existed backfills it — there is no batch migration over the existing 200MB
   cache. 180 model + 46 data tests green.
 
+- **D38 — Long-press a word, see it in your own language (2026-09-01).** Owner:
+  "if a user is reading this in a second or third language... they might just
+  want to be able to long press a word and see it in their native language even
+  if we don't translate the entire thing... how Kindle does it."
+  Built as an extension of the dictionary lens rather than a new gesture: the
+  reader already long-presses a word and gets a bottom sheet, so the sheet
+  gained a labelled translation block under the definition. The two are
+  independent downloads and load independently — a reader who installed only
+  one still gets everything that one can answer.
+  **Word-level, never document-level, on purpose.** Translating a whole article
+  would put a machine's paraphrase where a publisher's sentences were, which is
+  the one thing this reader does not do to a story. A glossed word leaves the
+  article intact and answers the question actually being asked.
+  Data is WikDict's Wiktionary-derived SQLite exports (CC BY-SA 3.0): **50 pairs
+  — 25 languages, both directions — every one fetched on 2026-09-01 with the
+  User-Agent `HttpClient` really sends** and confirmed HTTP 200. Both directions
+  ship for each language because a Spanish reader wanting English needs `es-en`
+  while an English reader wanting Spanish needs `en-es`; shipping one would
+  silently serve half the readers it appears to.
+  Stored as **SQLite rather than the flat JSON map** `DictionaryRepository`
+  uses. That is a deliberate departure: the Webster's map is held wholly in
+  memory (its own comment calls that "a considered v1 trade-off") and doing the
+  same to a 26 MB bilingual file would be a much worse one. Two things about the
+  real files, both found by reading one rather than assuming: WikDict ships
+  `simple_translation` **with no index on `written_rep`**, so an index is built
+  once at install rather than scanning per lookup; and headword matching is
+  **case-sensitive**, so "Water" — which is what a reader long-presses at the
+  start of a sentence — needs a lowercase fallback or finds nothing.
+  Downloads stage to a `.part` file and rename on success: a half-written
+  database wearing the real name would fail as a corrupt file on every lookup
+  forever instead of as one failed download. Tests cover install-and-translate,
+  the case fallback, index creation, a failed download leaving nothing behind, a
+  corrupted file yielding "no translation" rather than a crash mid-article,
+  replacement, and removal.
+  **Honest gap, surfaced in the UI and not just here:** WikDict publishes 650
+  pairs and **not one is an Indian language** — no Hindi, Telugu, Tamil,
+  Bengali, Malayalam, Kannada, Marathi, Gujarati, Punjabi, Odia or Urdu. That is
+  awkward directly after D35 added feeds in eleven of them. FreeDict has exactly
+  one (`eng-hin`) in a different format, unshipped for now. The Settings section
+  says so in as many words rather than presenting a language list that quietly
+  omits them.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

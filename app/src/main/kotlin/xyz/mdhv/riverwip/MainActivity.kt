@@ -72,6 +72,7 @@ fun RiverApp() {
         factory = SettingsViewModel.Factory(
             container.settingsRepository,
             container.dictionaryRepository,
+            container.translationRepository,
             container.dataExporter,
             container.byokConfigStore,
             container.modelCatalogueRepository,
@@ -94,7 +95,11 @@ fun RiverApp() {
         ),
     )
     val lensVm: LensViewModel = viewModel(
-        factory = LensViewModel.Factory(container.inferenceRouter, container.dictionaryRepository),
+        factory = LensViewModel.Factory(
+            container.inferenceRouter,
+            container.dictionaryRepository,
+            container.translationRepository,
+        ),
     )
     val sourcesVm: SourcesViewModel = viewModel(
         factory = SourcesViewModel.Factory(

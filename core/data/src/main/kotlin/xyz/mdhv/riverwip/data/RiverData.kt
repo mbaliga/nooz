@@ -17,6 +17,7 @@ import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
 import xyz.mdhv.riverwip.data.repo.TodayInHistoryRepository
+import xyz.mdhv.riverwip.data.repo.TranslationRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
 
@@ -36,6 +37,7 @@ class RiverData private constructor(
     val catalogueRepository: CatalogueRepository,
     val clippingRepository: ClippingRepository,
     val dictionaryRepository: DictionaryRepository,
+    val translationRepository: TranslationRepository,
     val settingsRepository: SettingsRepository,
     val todayInHistoryRepository: TodayInHistoryRepository,
     val dataExporter: DataExporter,
@@ -73,6 +75,7 @@ class RiverData private constructor(
                 catalogueRepository = CatalogueRepository(context = appContext, http = http),
                 clippingRepository = clippingRepository,
                 dictionaryRepository = DictionaryRepository(appContext),
+                translationRepository = TranslationRepository(appContext),
                 settingsRepository = settingsRepository,
                 // Its own HttpClient, not the shared `http` above: Wikimedia's
                 // user-agent policy wants a UA that identifies this app and

@@ -73,6 +73,17 @@ fun DefinitionSheet(
         }
     }
 
+    // The translation, if the reader installed a bilingual dictionary (owner's
+    // ask: reading in a second or third language, long-press a word and see it
+    // in your own). Loaded separately from the definition on purpose — the two
+    // are independent downloads, and a reader who has only one of them should
+    // still get everything that one can answer.
+    val targetName = vm.translationTargetName
+    var translations by remember(word, targetName) { mutableStateOf<List<String>?>(null) }
+    LaunchedEffect(word, targetName) {
+        translations = if (targetName == null) emptyList() else vm.translate(word)
+    }
+
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
         Column(
             modifier = Modifier
@@ -105,6 +116,28 @@ fun DefinitionSheet(
                         SenseRow(sense)
                     }
                 }
+            }
+
+            // Translations sit under the definition, labelled with the language
+            // so the reader knows which of theirs they are looking at. Rendered
+            // only when a bilingual dictionary is installed *and* it had an
+            // entry: an empty "Spanish" heading would read as a failure.
+            val senses = translations
+            if (targetName != null && !senses.isNullOrEmpty()) {
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    modifier = Modifier.padding(top = Tokens.Spacing.sm, bottom = Tokens.Spacing.xs),
+                )
+                Text(
+                    targetName.uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    senses.joinToString(", "),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+                )
             }
         }
     }

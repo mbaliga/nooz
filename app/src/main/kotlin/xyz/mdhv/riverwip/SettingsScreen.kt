@@ -80,6 +80,7 @@ import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.ModelCatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ModelDownloadState
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
+import xyz.mdhv.riverwip.data.repo.TranslationRepository
 import xyz.mdhv.riverwip.crash.CrashRecovery
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
@@ -99,10 +100,12 @@ import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
+import xyz.mdhv.riverwip.model.TranslationOption
 
 class SettingsViewModel(
     private val repo: SettingsRepository,
     private val dictionaryRepo: DictionaryRepository,
+    private val translationRepo: TranslationRepository,
     private val dataExporter: DataExporter,
     private val byokStore: ByokConfigStore,
     private val modelCatalogueRepo: ModelCatalogueRepository,
@@ -233,19 +236,46 @@ class SettingsViewModel(
         }
     }
 
+    // Word-level translation (owner's ask): same one-at-a-time download shape
+    // as the dictionary above, over a bilingual pair instead of a definition set.
+    val translationOptions: List<TranslationOption> = translationRepo.options
+    val installedTranslationId: StateFlow<String?> =
+        translationRepo.observeInstalledId().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), null)
+
+    var downloadingTranslationId: String? by mutableStateOf(null)
+        private set
+    var translationError: String? by mutableStateOf(null)
+        private set
+
+    fun downloadTranslation(option: TranslationOption) {
+        if (downloadingTranslationId != null) return
+        downloadingTranslationId = option.id
+        translationError = null
+        viewModelScope.launch {
+            val result = translationRepo.download(option)
+            downloadingTranslationId = null
+            if (result.isFailure) {
+                translationError = result.exceptionOrNull()?.message ?: "Couldn't download that language."
+            }
+        }
+    }
+
+    fun removeTranslation() = viewModelScope.launch { translationRepo.remove() }
+
     /** Assemble the user's whole profile as JSON, for the export-to-file action (#9). */
     suspend fun exportJson(): String = dataExporter.exportJson(System.currentTimeMillis())
 
     class Factory(
         private val repo: SettingsRepository,
         private val dictionaryRepo: DictionaryRepository,
+        private val translationRepo: TranslationRepository,
         private val dataExporter: DataExporter,
         private val byokStore: ByokConfigStore,
         private val modelCatalogueRepo: ModelCatalogueRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            SettingsViewModel(repo, dictionaryRepo, dataExporter, byokStore, modelCatalogueRepo) as T
+            SettingsViewModel(repo, dictionaryRepo, translationRepo, dataExporter, byokStore, modelCatalogueRepo) as T
     }
 }
 
@@ -686,6 +716,9 @@ fun SettingsBody(
                 vm.dictionaryError?.let { err ->
                     Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                TranslationSection(vm)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 IntelligenceSection(settings, vm)
@@ -1311,6 +1344,121 @@ private fun DictionaryRow(
                 else -> androidx.compose.material3.TextButton(onClick = onDownload) {
                     Text("Download")
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Word-level translation (owner's ask, 2026-08): reading in a second or third
+ * language, long-press a word and see it in your own — the way Kindle does.
+ *
+ * Collapsed by default and deliberately not a language *setting* but a
+ * *download*: these are 1–26 MB bilingual dictionaries, one installed at a
+ * time, and a reader should choose to spend that rather than discover it spent.
+ * Everything after the download is offline; a lookup never leaves the device.
+ */
+@Composable
+private fun TranslationSection(vm: SettingsViewModel) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val installedId by vm.installedTranslationId.collectAsStateWithLifecycle()
+    val installed = vm.translationOptions.firstOrNull { it.id == installedId }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            SectionHeading("Translation")
+            Text(
+                installed?.let { "${it.label} — long-press a word as you read." }
+                    ?: "Long-press a word and see it in another language.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = if (expanded) "Collapse translation" else "Expand translation",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+
+    if (expanded) {
+        Text(
+            "One language pair at a time. Downloaded once, then it works offline — " +
+                "what you look up is never sent anywhere.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (installed != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(installed.label, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                TextButton(onClick = { vm.removeTranslation() }) { Text("Remove") }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        }
+        vm.translationError?.let { err ->
+            Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        }
+        for (option in vm.translationOptions) {
+            TranslationRow(
+                option = option,
+                installed = installedId == option.id,
+                downloading = vm.downloadingTranslationId == option.id,
+                onDownload = { vm.downloadTranslation(option) },
+            )
+        }
+        // Recorded in the open rather than left to be discovered: the source
+        // publishes 650 pairs and none of them is an Indian language, which is
+        // a real gap for a catalogue that just gained feeds in eleven of them.
+        Text(
+            "No Indian-language pair is available from this source yet.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Tokens.Spacing.xs),
+        )
+    }
+}
+
+/** One downloadable language pair. Mirrors [DictionaryRow]'s shape. */
+@Composable
+private fun TranslationRow(
+    option: TranslationOption,
+    installed: Boolean,
+    downloading: Boolean,
+    onDownload: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(option.label, style = MaterialTheme.typography.titleMedium)
+            Text(
+                "${option.approxSizeHuman} · ${option.license}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Box(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }, contentAlignment = Alignment.Center) {
+            when {
+                downloading -> androidx.compose.material3.CircularProgressIndicator(
+                    modifier = Modifier.size(22.dp).semantics { contentDescription = "Downloading ${option.label}" },
+                    strokeWidth = 2.dp,
+                )
+                installed -> Icon(
+                    Icons.Filled.Check,
+                    contentDescription = "Installed",
+                    tint = MaterialTheme.colorScheme.onBackground,
+                )
+                else -> TextButton(onClick = onDownload) { Text("Download") }
             }
         }
     }
