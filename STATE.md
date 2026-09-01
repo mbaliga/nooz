@@ -1817,6 +1817,63 @@ respect as the CI-caught log above.
   classification and see the exact term behind it, which is how a bad term gets
   found.
 
+- **D51 — Accessibility is now checked by a browser, and it immediately found
+  what review had not (2026-09-01).**
+  **The finding first, because it is the argument for the tooling.** The palette's
+  secondary ink — `--paper-ink-dim` / `Tokens.Palette.paperInkDim`, `#8A8A86` —
+  measures **3.21:1** on the paper field, against the 4.5:1 WCAG AA requires for
+  body text. That token carries the masthead edition line, every byline and
+  timestamp, secondary copy throughout both clients, and the dek of a read
+  story. The dark theme's `inkDim` was the same failure by a different route:
+  42% alpha compositing to **3.57:1**. Both are now 4.6:1 or better, still far
+  lighter than the 17:1 primary ink, so dimmed text still reads as dimmed — that
+  distinction never needed to be this faint. **Nobody had noticed in months of
+  work on this app, including a full accessibility audit, because contrast is
+  not something you can eyeball.**
+  Worse, and more pointed: the loom strip — *the Loom's only entry point on the
+  Paper*, the feature the owner specifically flagged as undiscovered — combined
+  `--paper-ink-faint` (1.55:1) with `opacity: 0.82`. It was quiet to the point
+  of invisible. The opacity is gone; restraint survives in size, weight and
+  placement. Opacity is the wrong tool for quiet: it washes out text and bar
+  together, and no colour token can compensate for it downstream.
+  **The suite.** `web/tests/browser/axe.test.mjs` serves the reader, seeds real
+  stories through the app's own IndexedDB layer, and runs axe-core over the
+  Paper, an open article, the Loom, Settings, and the front page in Urdu with
+  `dir="rtl"`. An empty page passes any accessibility check, so the seeding is
+  the point; one test also asserts axe found enough to check. Mutation-verified:
+  restoring `#8A8A86` fails four of the five scans.
+  **What this does and does not claim.** axe catches roughly a third of real
+  barriers and is no substitute for a person with a screen reader. But that
+  third is the third that regresses invisibly — contrast drift, an icon button
+  that loses its name, a skipped heading level, a lost landmark. The parts axe
+  cannot see are covered by the Robolectric semantics tests (D42, D49) and, in
+  the end, by testing with actual users.
+  **A second finding, from writing the harness rather than running it.** The
+  first version dismissed onboarding with the wrong `localStorage` key, so every
+  scan was measuring the onboarding card and passing. A green suite that never
+  reached the app is the same failure as Lint's inert `HardcodedText`, and it is
+  why each test now waits on a selector that only exists once the Paper has
+  rendered.
+
+- **D52 — CI was running 94 of 309 unit tests (2026-09-01).** `ci.yml` asked for
+  `testDebugUnitTest testFossDebugUnitTest testFullDebugUnitTest`, which reads
+  like "all of them" and is not: those are Android variant tasks. **`:core:model`
+  is a plain `kotlin.jvm` module whose task is `test`** — and it is the
+  most-tested module in the repo. Its **215 tests** (Simhash, Dedup,
+  ArticleSearch, the feed parser, OPML, the classifier, and everything added in
+  D50) had never been executed by CI. The build was green the entire time,
+  because every task that was asked for passed.
+  A hand-maintained task list has the same failure mode the moment someone adds
+  a module, so `gradle/verification/unit-tests.gradle.kts` registers a
+  `unitTests` task that **discovers** each module's own test task, and **fails
+  the build** if a module has test sources it cannot find a task for. Exclusions
+  have to be written down in `skippedModules` with a reason, which is precisely
+  what never happened to `:core:model`.
+  Discovery runs in `gradle.projectsEvaluated`, not each project's
+  `afterEvaluate`: AGP registers its variant tasks from inside its own
+  `afterEvaluate`, so a callback added here runs first and sees an Android
+  module as having no test task at all.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

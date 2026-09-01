@@ -30,7 +30,10 @@ object Tokens {
         // Ink — text, warm off-white at descending opacity.
         val inkPure = ComposeColor(0xFFECE8E4)
         val inkFull = ComposeColor(0xEBECE8E4)
-        val inkDim = ComposeColor(0x6BECE8E4)
+        // 4.57:1 over fieldRaised, 4.56:1 over fieldNear. Was 0x6B (42%), which
+        // composites to 3.57:1 and 3.51:1 — the same sub-AA failure as the
+        // light theme's paperInkDim, on the same kind of secondary text.
+        val inkDim = ComposeColor(0x7FECE8E4)
         val inkFaint = ComposeColor(0x2EECE8E4)
 
         // Accent — spend scarce light here.
@@ -53,7 +56,11 @@ object Tokens {
         val paperField = ComposeColor(0xFFF7F6F3)
         val paperRaised = ComposeColor(0xFFFFFFFF)
         val paperInk = ComposeColor(0xFF141414)
-        val paperInkDim = ComposeColor(0xFF8A8A86)
+        // 4.60:1 on paperField, 4.97:1 on paperRaised. Was 0xFF8A8A86 = 3.21:1,
+        // under the 4.5:1 WCAG AA asks for body text, on the token that carries
+        // bylines, timestamps and secondary copy throughout. Still far lighter
+        // than paperInk at 17.05:1, so dimmed text still reads as dimmed.
+        val paperInkDim = ComposeColor(0xFF70706C)
         val paperInkFaint = ComposeColor(0xFFC9C8C4)
         val paperHairline = ComposeColor(0x1F000000)
         val paperHairlineStrong = ComposeColor(0x33000000)

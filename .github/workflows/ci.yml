@@ -50,6 +50,20 @@ jobs:
         run: npm test
         working-directory: web
 
+      # Accessibility checked by a real browser rather than by reading source.
+      # axe-core catches roughly a third of real barriers -- it is not a
+      # substitute for a person with a screen reader, and this repo does not
+      # claim it is. But the third it catches is the third that regresses
+      # silently: contrast that drifts below 4.5:1 after a palette tweak, an
+      # icon button that loses its name, a heading level skipped. Its first run
+      # found the entire palette's secondary ink at 3.21:1.
+      - name: Install Chromium for the accessibility suite
+        run: npx playwright install --with-deps chromium
+        working-directory: web
+      - name: Web reader accessibility (axe-core)
+        run: npm run test:a11y
+        working-directory: web
+
   # Full Android build: assemble both flavors, unit tests, lint.
   android:
     runs-on: ubuntu-latest
@@ -62,11 +76,14 @@ jobs:
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Unit tests (all modules + both flavors)
-        # Non-flavored modules expose `testDebugUnitTest`; flavored modules
-        # (app, :core:inference, :feature:lens) expose the per-flavor tasks.
-        # Requesting all three covers every module's unit tests.
-        run: ./gradlew testDebugUnitTest testFossDebugUnitTest testFullDebugUnitTest --stacktrace
+      # `unitTests` discovers each module's own test task rather than naming
+      # them. The previous list -- testDebugUnitTest testFossDebugUnitTest
+      # testFullDebugUnitTest -- reads like "all of them" and was not: those are
+      # Android variant tasks, and :core:model is a plain kotlin.jvm module
+      # whose task is `test`. Its 215 tests, the largest suite in the repo, had
+      # never run here. The build was green because everything asked for passed.
+      - name: Unit tests (every module)
+        run: ./gradlew unitTests --stacktrace
 
       - name: Lint (foss)
         run: ./gradlew lintFossDebug --stacktrace

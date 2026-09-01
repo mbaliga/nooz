@@ -132,7 +132,14 @@
   --paper-field: #F7F6F3;
   --paper-raised: #FFFFFF;
   --paper-ink: #141414;
-  --paper-ink-dim: #8A8A86;
+  /* 4.60:1 on --paper-field, 4.97:1 on --paper-raised. Was #8A8A86, which is
+     3.21:1 — under the 4.5:1 WCAG AA needs for body text, and this token
+     carries the masthead edition line, every byline, the loom strip's labels
+     and the dek of a read story. Found by the axe-core suite (tests/axe.test.mjs)
+     on its first run, having been invisible to every review before it. Still
+     far lighter than --paper-ink at 17.05:1, so a read headline still reads as
+     dimmed — that distinction never needed to be this faint. */
+  --paper-ink-dim: #70706C;
   --paper-ink-faint: #C9C8C4;
   --paper-hairline: rgba(0, 0, 0, 0.12);
   --paper-hairline-strong: rgba(0, 0, 0, 0.2);
@@ -2130,7 +2137,14 @@ h1, h2, h3, h4 {
   margin: 0 0 var(--space-lg) auto; /* right-aligned: sits where the Loom drawer opens, so it reads as one piece */
   border: none;
   background: none;
-  opacity: 0.82;
+  /* No opacity. It was 0.82, and compounded with --paper-ink-faint text below
+     it put the Loom's only entry point on the Paper at 1.5:1 — quiet to the
+     point of invisible, on the very feature the owner flagged as undiscovered.
+     Even at 0.9 with the corrected ink it composited to 3.8:1, still under AA.
+     Restraint here is a design choice and it survives: the strip is still small,
+     tracked-out and right-aligned. Being unreadable was never the same thing as
+     being quiet, and opacity is the wrong tool for it — it washes out the text
+     and the bar together, and no contrast token can compensate for it. */
   transition: opacity 0.15s ease;
 }
 .nooz-loomstrip:hover,
@@ -2142,7 +2156,9 @@ h1, h2, h3, h4 {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--paper-ink-faint);
+  /* --paper-ink-faint is 1.55:1 and belongs on disabled controls and
+     hairlines, never on words anyone is meant to read. */
+  color: var(--paper-ink-dim);
   flex-shrink: 0;
 }
 .nooz-loomstrip-bar { flex: 1; height: 5px; border-radius: 999px; }
@@ -2151,7 +2167,7 @@ h1, h2, h3, h4 {
 .nooz-loomstrip-hint {
   font-family: var(--font-sans);
   font-size: 0.6875rem;
-  color: var(--paper-ink-faint);
+  color: var(--paper-ink-dim);
   flex-shrink: 0;
 }
 /* The clone that flies from the Paper to the drawer on open (see
