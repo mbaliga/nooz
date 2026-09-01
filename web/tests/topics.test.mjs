@@ -80,3 +80,47 @@ test('no keyword regex throws on construction', () => {
     assert.doesNotThrow(() => termMatcher(term), `constructing matcher for ${term}`);
   }
 });
+
+/**
+ * The localized lexicon, and the fact that both clients read the same one.
+ *
+ * `TopicLexiconL10n.kt` and `topics-l10n.js` are generated from the same
+ * `i18n/lexicon/` files, so they cannot disagree — but only as long as nobody
+ * hand-edits one of the generated files, which is exactly the kind of thing
+ * that works locally and is silently reverted by the next generator run.
+ */
+test('headlines classify in every script the catalogue ships', () => {
+  const cases = [
+    ['लोकसभा चुनाव में मतदान शुरू', 'politics'],
+    ['হাসপাতালে টিকা কর্মসূচি', 'health'],
+    ['స్టాక్ మార్కెట్‌లో ద్రవ్యోల్బణం ఆందోళన', 'business'],
+    ['கிரிக்கெட் போட்டியில் வெற்றி', 'sport'],
+    ['وزیراعظم نے پالیسی کا اعلان کیا', 'politics'],
+    ['ಇಸ್ರೋ ಉಪಗ್ರಹ ಉಡಾವಣೆ', 'science'],
+    ['വെള്ളപ്പൊക്കം: കാലാവസ്ഥ മുന്നറിയിപ്പ്', 'climate'],
+    ['ચૂંટણી પ્રચાર શરૂ', 'politics'],
+    ['ਹਸਪਤਾਲ ਵਿੱਚ ਟੀਕਾ ਮੁਹਿੰਮ', 'health'],
+    ['ବନ୍ୟା ପରିସ୍ଥିତି ଗମ୍ଭୀର', 'climate'],
+    ['क्रिकेट सामन्यात विजय', 'sport'],
+  ];
+  for (const [title, expected] of cases) {
+    assert.equal(classifyItem({ title }), expected, `"${title}"`);
+  }
+});
+
+test('the generated lexicon is the same one the Android app compiles', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const repo = path.resolve(import.meta.dirname, '..', '..');
+  const web = (await import('../js/topics-l10n.js')).default;
+  const kotlin = fs.readFileSync(
+    path.join(repo, 'core/model/src/main/kotlin/xyz/mdhv/riverwip/model/TopicLexiconL10n.kt'),
+    'utf8',
+  );
+  for (const [topic, terms] of Object.entries(web)) {
+    assert.ok(kotlin.includes(`"${topic}" to listOf(`), `${topic} is missing from the Kotlin lexicon`);
+    for (const term of terms) {
+      assert.ok(kotlin.includes(`"${term}"`), `"${term}" (${topic}) is in the web lexicon but not the Kotlin one`);
+    }
+  }
+});

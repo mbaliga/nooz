@@ -43,6 +43,12 @@ COVERAGE_KT = (
 )
 WEB_OUT = REPO / "web" / "i18n"
 WEB_INDEX = WEB_OUT / "index.json"
+LEXICON_IN = REPO / "i18n" / "lexicon"
+LEXICON_KT = (
+    REPO / "core" / "model" / "src" / "main" / "kotlin"
+    / "xyz" / "mdhv" / "riverwip" / "model" / "TopicLexiconL10n.kt"
+)
+LEXICON_WEB = REPO / "web" / "js" / "topics-l10n.js"
 
 BASE_TAG = "en"
 
@@ -282,6 +288,84 @@ def parse_locales_kt() -> dict:
     return out
 
 
+def load_lexicon() -> dict:
+    """
+    Topic keywords in the languages the source catalogue actually publishes in,
+    merged across every language file into one map of topic -> terms.
+
+    Merged rather than kept per-language on purpose: an article is classified by
+    what its words are, not by a language label the feed may not carry. A Tamil
+    headline should match Tamil terms without anyone having had to tag the feed
+    correctly first.
+    """
+    merged: dict[str, list[str]] = {}
+    if not LEXICON_IN.exists():
+        return merged
+    for path in sorted(LEXICON_IN.glob("*.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for topic, terms in data.items():
+            bucket = merged.setdefault(topic, [])
+            for term in terms:
+                if term not in bucket:
+                    bucket.append(term)
+    return merged
+
+
+def render_lexicon_kt(lexicon: dict) -> str:
+    blocks = []
+    for topic in sorted(lexicon):
+        terms = ",\n".join(f'            "{t}"' for t in lexicon[topic])
+        blocks.append(f'        "{topic}" to listOf(\n{terms},\n        ),')
+    body = "\n".join(blocks)
+    return f'''package xyz.mdhv.riverwip.model
+
+/**
+ * GENERATED FILE — do not edit.
+ * Source:    the files in i18n/lexicon/  (a glob here would open a nested
+ *            Kotlin block comment, which does not close)
+ * Generator: tools/i18n/generate.py
+ *
+ * Topic keywords in the languages the source catalogue publishes in, merged
+ * onto [TopicLexicon.terms].
+ *
+ * The gap this closes: the lexicon was English-only while the catalogue ships
+ * 33 India regional feeds across eleven scripts, so every one of those articles
+ * classified as `general`. The Loom collapsed to a single band and the Contrast
+ * dumbbells emptied — for exactly the readers the India expansion was for — and
+ * nothing errored. It simply looked like a quiet news day, every day.
+ *
+ * The same JSON generates the web reader's `topics-l10n.json`. A classifier
+ * that disagrees between two clients showing the same numbers is worse than one
+ * that is merely incomplete.
+ */
+internal object TopicLexiconL10n {{
+    val TERMS: Map<String, List<String>> = mapOf(
+{body}
+    )
+}}
+'''
+
+
+def render_lexicon_web(lexicon: dict) -> str:
+    """
+    A JS module rather than JSON on purpose: `classifyItem` is synchronous and
+    called from every render path, so the terms have to be there at module
+    init. A fetch would make classification async, or -- worse -- make it
+    silently return `general` for everything until the fetch landed, which is
+    the exact bug this whole file exists to fix.
+    """
+    body = json.dumps({k: lexicon[k] for k in sorted(lexicon)}, ensure_ascii=False, indent=2)
+    return (
+        "// GENERATED FILE \u2014 do not edit. Source: i18n/lexicon/*.json\n"
+        "// Generator: tools/i18n/generate.py\n"
+        "//\n"
+        "// Topic keywords in the languages the source catalogue publishes in.\n"
+        "// The same JSON generates the Android app's TopicLexiconL10n.kt, so the\n"
+        "// two clients cannot classify the same story differently.\n"
+        f"export default {body};\n"
+    )
+
+
 def main() -> int:
     check = "--check" in sys.argv
     base = load(BASE_TAG)
@@ -323,6 +407,13 @@ def main() -> int:
         return 2
     wanted[WEB_INDEX] = render_web_index(locales, coverage, len(base))
 
+    lexicon = load_lexicon()
+    wanted[LEXICON_KT] = render_lexicon_kt(lexicon)
+    wanted[LEXICON_WEB] = render_lexicon_web(lexicon)
+    stale_json = REPO / "web" / "js" / "topics-l10n.json"
+    if stale_json.exists() and not check:
+        stale_json.unlink()
+
     stale = []
     for path, content in wanted.items():
         current = path.read_text(encoding="utf-8") if path.exists() else None
@@ -353,7 +444,9 @@ def main() -> int:
         return 1
 
     total = len(base)
-    print(f"{len(tags)} locale(s), {total} strings.")
+    lex_terms = sum(len(v) for v in lexicon.values())
+    print(f"{len(tags)} locale(s), {total} strings; "
+          f"{lex_terms} topic keyword(s) across {len(list(LEXICON_IN.glob('*.json')))} language(s).")
     for tag in tags:
         pct = round(100 * coverage[tag] / total) if total else 0
         print(f"  {tag:<8} {coverage[tag]:>4}/{total}  {pct:>3}%")

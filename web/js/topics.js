@@ -22,6 +22,17 @@ export const TOPICS = [
 
 export const TOPIC_LABEL = Object.fromEntries(TOPICS.map((t) => [t.key, t.label]));
 
+// Keywords in the languages the source catalogue publishes in, generated from
+// i18n/lexicon/*.json -- the same files the Android app's TopicLexiconL10n.kt
+// is built from. Merged into TERMS below.
+//
+// Without these the lexicon was English-only while the catalogue shipped 33
+// India regional feeds across eleven scripts, so every one of those stories
+// classified as `general`: the Loom collapsed to one band and the Contrast
+// dumbbells emptied, silently, for exactly the readers those feeds were added
+// for.
+import LOCALIZED_TERMS from './topics-l10n.js';
+
 const TERMS = {
   politics: ['election', 'parliament', 'congress', 'senate', 'president', 'prime minister',
     'government', 'policy', 'minister', 'lawmaker', 'legislation', 'vote', 'voter',
@@ -107,9 +118,16 @@ function termMatcher(term) {
   return new RegExp('(^|(?!' + WORD_CHAR + ').)' + escaped + '(?!' + WORD_CHAR + ')', 'iu');
 }
 
+// English plus every localized term for the same topic. Merged rather than kept
+// per-language: a story is classified by the words it is written in, not by a
+// language label its feed may never have carried.
+const ALL_TERMS = Object.fromEntries(
+  Object.entries(TERMS).map(([topic, list]) => [topic, list.concat(LOCALIZED_TERMS[topic] || [])])
+);
+
 // Precompiled boundary matchers, per topic.
 const MATCHERS = Object.fromEntries(
-  Object.entries(TERMS).map(([topic, list]) => [topic, list.map(termMatcher)])
+  Object.entries(ALL_TERMS).map(([topic, list]) => [topic, list.map(termMatcher)])
 );
 
 function escapeRegExp(s) {

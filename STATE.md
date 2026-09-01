@@ -1772,6 +1772,51 @@ respect as the CI-caught log above.
   a `buildString` is invisible to it. So the Loom, the globe and the heat strip
   currently speak English in every locale.
 
+- **D50 — The classifier can finally read the languages the catalogue publishes
+  in (2026-09-01).** Two bugs met here, and either alone was enough to hide the
+  other.
+  **The lexicon was English-only** while the catalogue ships 33 India regional
+  feeds across eleven scripts (D35). Every one of those stories classified as
+  `general`. The Loom — this app's whole argument — collapsed to a single
+  undifferentiated band, and the Contrast dumbbells emptied, *for exactly the
+  readers the India expansion was for*. Nothing errored. It looked like a quiet
+  news day, every day.
+  **And the matcher could not have fired even with the terms present.** It was
+  `Regex("\\b" + escape(term) + "\\b")`, and Java defines `\b` against `\w`
+  = `[a-zA-Z_0-9]` unless `UNICODE_CHARACTER_CLASS` is set — so there is no
+  word/non-word transition at the edge of a Devanagari or Arabic character the
+  engine does not treat as a word character at all. **Every non-English term
+  anyone added to this lexicon would have been silently inert**, and the failure
+  would have looked exactly like "that keyword just isn't in this headline".
+  This is the third appearance of the same family of bug in this codebase, after
+  the JS `\b` in `topics.js` (D41) and the missing `\p{M}` in `ArticleSearch`
+  and `Simhash` (D39) — the boundary class is now `[\p{L}\p{N}\p{M}]` in all
+  four places, with containment matching for the unspaced scripts where a word
+  boundary is not a meaningful idea at all.
+  **987 terms across eleven languages**, in `i18n/lexicon/`, in the same shape
+  as the string catalogues: one file per language, generating both
+  `TopicLexiconL10n.kt` and `web/js/topics-l10n.js`. Emitted as a JS *module*
+  rather than JSON on purpose — `classifyItem` is synchronous and on every
+  render path, so a fetch would either make classification async or make it
+  return `general` for everything until the fetch landed, which is precisely the
+  bug being fixed. Terms are merged across languages rather than kept
+  per-language: a story is classified by the words it is written in, not by a
+  language label its feed may never have carried.
+  **Tested on both clients, including that they agree.** Six Kotlin tests and
+  two more JS ones: headlines in eleven scripts, English unchanged (`warden` is
+  still not `war`), the boundary construction tested independently of any
+  particular word, combining marks not splitting an inflected form, unspaced
+  scripts matching by containment, every generated term compiling and matching
+  itself, and finally a test asserting every web term is present in the Kotlin
+  file — because a hand-edit to one generated file works locally and is silently
+  reverted by the next generator run.
+  **Honest limit, recorded in `i18n/lexicon/README.md`:** this is a first pass
+  and has not been reviewed by native speakers. It ships because an incomplete
+  lexicon that fires beats a complete one that cannot, and because
+  `TopicEvidence` keeps every match inspectable — a reader can tap a
+  classification and see the exact term behind it, which is how a bad term gets
+  found.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
