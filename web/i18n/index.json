@@ -1,5 +1,5 @@
 {
-  "total": 185,
+  "total": 249,
   "locales": [
     {
       "tag": "ar",
@@ -111,7 +111,7 @@
       "endonym": "کٲشُر",
       "english": "Kashmiri",
       "dir": "rtl",
-      "coverage": 22
+      "coverage": 31
     },
     {
       "tag": "mai",

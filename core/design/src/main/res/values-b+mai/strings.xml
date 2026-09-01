@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">ताजा नहि कयल जा सकल: %1$s</string>
     <string name="edit_loaded_services">%1$d सेवा परिभाषा लोड भेल।</string>
     <string name="edit_last_refreshed">अंतिम बेर ताजा कयल गेल %1$s।</string>
+    <string name="settings_back">पाछाँ</string>
+    <string name="settings_theme">थीम</string>
+    <string name="settings_theme_follow">फोनक लाइट वा डार्क सेटिंगक अनुसरण करू</string>
+    <string name="settings_theme_white">उज्जर थीम</string>
+    <string name="settings_theme_paper">कागज थीम</string>
+    <string name="settings_theme_dark">करिया थीम</string>
+    <string name="settings_font">फॉन्ट</string>
+    <string name="settings_text_size">अक्षरक आकार</string>
+    <string name="settings_paper_grain">कागजक बुनावट</string>
+    <string name="settings_mark_read_as">पढ़ल लेख सभकेँ एहि तरहेँ चिन्हित करू</string>
+    <string name="settings_while_you_read">जखन अहाँ पढ़ैत छी</string>
+    <string name="settings_while_you_read_body">बीच-बीचमे, अहाँक पहिने पढ़ल कोनो लेखसँ लेल गेल एकटा असली पाँती।</string>
+    <string name="settings_today_in_history">इतिहासमे आइ</string>
+    <string name="settings_show_the_column">ई स्तंभ देखाउ</string>
+    <string name="settings_today_in_history_body">दिनक समाचारक ऊपर किछु तिथियुक्त पाँती, विकिपीडियाक अपन “On this day” चयनसँ। अहाँक जोड़ल स्रोत सभक बाहरसँ Nooz बस यैह एकटा वस्तु अनैत अछि, तेँ जा धरि अहाँ एकरा चालू नहि करब ई बन्न रहत।</string>
+    <string name="settings_show_reading_time">पढ़बाक समय देखाउ</string>
+    <string name="settings_highlight_loaded">पक्षपाती भाषा उजागर करू</string>
+    <string name="settings_highlight_loaded_body">पढ़ैत काल भावभरल शब्द सभक नीचाँ रेखा खींचैत अछि; प्रमाणक लेल ओहि पर टैप करू।</string>
+    <string name="settings_immersive">एकाग्र पठन</string>
+    <string name="settings_immersive_body">सादा पन्नाक लेल पाछाँ बटन आ नियंत्रण नुका दैत अछि। शुरूमे बन्न; घुरबाक लेल दहिना स्वाइप करू वा पाछाँ टैप करू।</string>
+    <string name="settings_more">आओर सेटिंग</string>
+    <string name="settings_more_body">शब्दकोश, पाठक बुद्धिमत्ता आ मॉडल, इशारा, अहाँक डेटा, परिचय।</string>
+    <string name="settings_dictionary">शब्दकोश</string>
+    <string name="settings_dictionary_body">एकटा शब्दकोश डाउनलोड करू, फेर पढ़ैत काल कोनो शब्दकेँ दबा कऽ राखू आ ओकर अर्थ देखू, Kindle जकाँ।</string>
+    <string name="settings_crash_title">पछिला बेर Nooz अचानक बन्न भऽ गेल छल</string>
+    <string name="settings_crash_body">रिपोर्ट अहींक डिवाइस पर रहल; कतहु किछु नहि पठाओल गेल।</string>
+    <string name="settings_copy">कॉपी करू</string>
+    <string name="settings_dismiss">हटाउ</string>
+    <string name="settings_reader_intelligence">पाठक बुद्धिमत्ता</string>
+    <string name="settings_byok_model">अपन कुंजी अनू: %1$s</string>
+    <string name="settings_flash_body">आइक समाचार 10 वा ओहिसँ कम शब्दमे सिमटल। नीचाँसँ एकटा मॉडल डाउनलोड कऽ लेला पर अहींक डिवाइस पर चलैत अछि, वा अहाँक अपन कुंजीसँ।</string>
+    <string name="settings_cast_body">पूरा लेख एकटा स्वाभाविक डिवाइस-भीतरका स्वरमे पढ़ि कऽ सुनाओल जाइत अछि, कहियो यंत्रवत सिस्टम रीडरसँ नहि। एकर अपन मॉडल अछि, जे Flash क मॉडलसँ अलग डाउनलोड होइत अछि।</string>
+    <string name="settings_cast_model">Nooz Cast मॉडल</string>
+    <string name="settings_whats_inside_body">लूम, Flash, Cast, कतरन — आ प्रत्येक कतऽ अछि।</string>
+    <string name="settings_gestures">इशारा</string>
+    <string name="settings_gestures_body">पाठकमे दू आँगुरक इशारा। शुरूएसँ चालू।</string>
+    <string name="settings_gesture_brightness">दू आँगुरसँ खींचू → चमक</string>
+    <string name="settings_gesture_theme">दू आँगुरसँ झटका → थीम</string>
+    <string name="settings_gesture_unread">एकाग्र मोडमे चिकोटी → अपठित</string>
+    <string name="settings_images">चित्र</string>
+    <string name="settings_show_feed_images">फीडक चित्र देखाउ</string>
+    <string name="settings_hide_flagged_images">स्रोत द्वारा चिन्हित चित्र नुकाउ</string>
+    <string name="settings_advanced">उन्नत</string>
+    <string name="settings_advanced_body">पक्षपाती भाषाक शब्द-सूची, प्रतिक्रिया।</string>
+    <string name="settings_word_list">पक्षपाती भाषाक शब्द-सूची</string>
+    <string name="settings_word_list_body">अलग-अलग पूर्वनिर्धारित चिन्ह बन्न करू, वा नजरि राखबाक लेल अपन शब्द जोड़ू।</string>
+    <string name="settings_your_data">अहाँक डेटा</string>
+    <string name="settings_your_data_body">सभ किछु खुजल JSON मे निर्यात करू: वरीयता, अहाँक क्षेत्र आ विषय, अहाँक स्रोत, अहाँक कतरन, आ मोट पठन-लेखा। मात्र स्थानीय; API कुंजी कहियो सम्मिलित नहि होइत अछि।</string>
+    <string name="settings_about">परिचय</string>
+    <string name="settings_about_body">Nooz एकटा समाचार पाठक अछि जकर विषय छैक छुटब: की छूटि गेल। एकरा बनबैत अछि mdhv.xyz, शान्त आ एकाग्र एप सभक एकटा छोट स्टूडियो।</string>
+    <string name="settings_visit_studio">mdhv.xyz देखू</string>
+    <string name="settings_view_source">GitHub पर स्रोत देखू</string>
+    <string name="settings_contact">हमरा सभसँ सम्पर्क करू</string>
+    <string name="settings_more_from_studio">स्टूडियोसँ आओर</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">शब्दकोश डाउनलोड भऽ रहल अछि</string>
+    <string name="settings_downloaded">डाउनलोड भऽ गेल</string>
+    <string name="settings_download">डाउनलोड करू</string>
+    <string name="settings_translation">अनुवाद</string>
+    <string name="settings_translation_body">एक बेरमे एकटा भाषा-युग्म। एक बेर डाउनलोड भेला पर ई ऑफलाइन काज करैत अछि — अहाँ जे देखैत छी से कतहु नहि पठाओल जाइत अछि।</string>
+    <string name="settings_remove">हटाउ</string>
+    <string name="settings_no_indic_pair">एहि स्रोतसँ आब धरि कोनो भारतीय-भाषा युग्म उपलब्ध नहि अछि।</string>
+    <string name="settings_downloading_named">%1$s डाउनलोड भऽ रहल अछि</string>
+    <string name="settings_installed">स्थापित</string>
 </resources>

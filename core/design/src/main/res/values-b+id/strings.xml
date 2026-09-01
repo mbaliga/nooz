@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">Tidak bisa disegarkan: %1$s</string>
     <string name="edit_loaded_services">%1$d definisi layanan dimuat.</string>
     <string name="edit_last_refreshed">Terakhir disegarkan %1$s.</string>
+    <string name="settings_back">Kembali</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_follow">Ikuti setelan terang atau gelap ponsel</string>
+    <string name="settings_theme_white">Tema putih</string>
+    <string name="settings_theme_paper">Tema kertas</string>
+    <string name="settings_theme_dark">Tema gelap</string>
+    <string name="settings_font">Huruf</string>
+    <string name="settings_text_size">Ukuran teks</string>
+    <string name="settings_paper_grain">Serat kertas</string>
+    <string name="settings_mark_read_as">Tandai artikel yang sudah dibaca sebagai</string>
+    <string name="settings_while_you_read">Selagi membaca</string>
+    <string name="settings_while_you_read_body">Sesekali, satu baris sungguhan yang diambil dari sesuatu yang pernah Anda baca.</string>
+    <string name="settings_today_in_history">Hari ini dalam sejarah</string>
+    <string name="settings_show_the_column">Tampilkan kolom ini</string>
+    <string name="settings_today_in_history_body">Beberapa baris bertanggal di atas berita hari itu, dari pilihan “On this day” milik Wikipedia sendiri. Inilah satu-satunya hal yang Nooz ambil dari luar sumber yang Anda tambahkan, jadi ia tetap mati sampai Anda menyalakannya.</string>
+    <string name="settings_show_reading_time">Tampilkan lama baca</string>
+    <string name="settings_highlight_loaded">Tandai bahasa yang berpihak</string>
+    <string name="settings_highlight_loaded_body">Menggarisbawahi kata bermuatan selagi Anda membaca; ketuk untuk melihat buktinya.</string>
+    <string name="settings_immersive">Membaca menyeluruh</string>
+    <string name="settings_immersive_body">Menyembunyikan tombol kembali dan kendali demi halaman yang polos. Mati secara bawaan; geser ke kanan atau ketuk kembali untuk keluar.</string>
+    <string name="settings_more">Setelan lainnya</string>
+    <string name="settings_more_body">Kamus, kecerdasan pembaca dan model, gestur, data Anda, tentang.</string>
+    <string name="settings_dictionary">Kamus</string>
+    <string name="settings_dictionary_body">Unduh sebuah kamus, lalu tekan lama kata apa pun saat membaca untuk melihat artinya, seperti di Kindle.</string>
+    <string name="settings_crash_title">Nooz tertutup tiba-tiba pada kesempatan terakhir</string>
+    <string name="settings_crash_body">Laporannya tetap di perangkat Anda; tidak ada yang dikirim ke mana pun.</string>
+    <string name="settings_copy">Salin</string>
+    <string name="settings_dismiss">Tutup</string>
+    <string name="settings_reader_intelligence">Kecerdasan pembaca</string>
+    <string name="settings_byok_model">Pakai kunci sendiri: %1$s</string>
+    <string name="settings_flash_body">Berita hari ini dipadatkan menjadi 10 kata atau kurang. Berjalan di perangkat Anda setelah Anda mengunduh model di bawah, atau lewat kunci Anda sendiri.</string>
+    <string name="settings_cast_body">Seluruh artikel dibacakan dengan suara alami di perangkat, bukan pembaca sistem yang kaku. Ia punya modelnya sendiri, diunduh terpisah dari model Flash.</string>
+    <string name="settings_cast_model">Model Nooz Cast</string>
+    <string name="settings_whats_inside_body">Alat Tenun, Flash, Cast, Guntingan — dan di mana masing-masing berada.</string>
+    <string name="settings_gestures">Gestur</string>
+    <string name="settings_gestures_body">Gestur dua jari di pembaca. Hidup secara bawaan.</string>
+    <string name="settings_gesture_brightness">Seret dua jari → kecerahan</string>
+    <string name="settings_gesture_theme">Sentak dua jari → tema</string>
+    <string name="settings_gesture_unread">Cubit saat menyeluruh → belum dibaca</string>
+    <string name="settings_images">Gambar</string>
+    <string name="settings_show_feed_images">Tampilkan gambar dari umpan</string>
+    <string name="settings_hide_flagged_images">Sembunyikan gambar yang ditandai sumber</string>
+    <string name="settings_advanced">Lanjutan</string>
+    <string name="settings_advanced_body">Daftar kata bahasa berpihak, masukan.</string>
+    <string name="settings_word_list">Daftar kata bahasa berpihak</string>
+    <string name="settings_word_list_body">Matikan penandaan bawaan satu per satu, atau tambahkan kata Anda sendiri untuk diawasi.</string>
+    <string name="settings_your_data">Data Anda</string>
+    <string name="settings_your_data_body">Ekspor semuanya sebagai JSON terbuka: preferensi, wilayah dan topik Anda, sumber Anda, guntingan Anda, dan catatan baca yang kasar. Hanya di perangkat; kunci API tidak pernah disertakan.</string>
+    <string name="settings_about">Tentang</string>
+    <string name="settings_about_body">Nooz adalah pembaca berita yang bertema kelalaian: apa yang tertinggal. Dibuat oleh mdhv.xyz, studio kecil untuk aplikasi yang tenang dan terpusat.</string>
+    <string name="settings_visit_studio">Kunjungi mdhv.xyz</string>
+    <string name="settings_view_source">Lihat sumbernya di GitHub</string>
+    <string name="settings_contact">Hubungi kami</string>
+    <string name="settings_more_from_studio">Lainnya dari studio</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">Mengunduh kamus</string>
+    <string name="settings_downloaded">Terunduh</string>
+    <string name="settings_download">Unduh</string>
+    <string name="settings_translation">Terjemahan</string>
+    <string name="settings_translation_body">Satu pasangan bahasa dalam satu waktu. Sekali diunduh, ia bekerja luring — apa yang Anda cari tidak pernah dikirim ke mana pun.</string>
+    <string name="settings_remove">Hapus</string>
+    <string name="settings_no_indic_pair">Belum ada pasangan bahasa India dari sumber ini.</string>
+    <string name="settings_downloading_named">Mengunduh %1$s</string>
+    <string name="settings_installed">Terpasang</string>
 </resources>

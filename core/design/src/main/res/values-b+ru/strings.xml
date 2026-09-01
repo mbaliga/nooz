@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">Не удалось обновить: %1$s</string>
     <string name="edit_loaded_services">Загружено определений сервисов: %1$d.</string>
     <string name="edit_last_refreshed">Последнее обновление %1$s.</string>
+    <string name="settings_back">Назад</string>
+    <string name="settings_theme">Оформление</string>
+    <string name="settings_theme_follow">Следовать светлой или тёмной настройке телефона</string>
+    <string name="settings_theme_white">Белое оформление</string>
+    <string name="settings_theme_paper">Бумажное оформление</string>
+    <string name="settings_theme_dark">Тёмное оформление</string>
+    <string name="settings_font">Шрифт</string>
+    <string name="settings_text_size">Размер текста</string>
+    <string name="settings_paper_grain">Зернистость бумаги</string>
+    <string name="settings_mark_read_as">Отмечать прочитанные статьи как</string>
+    <string name="settings_while_you_read">Пока вы читаете</string>
+    <string name="settings_while_you_read_body">Время от времени — настоящая строка из того, что вы уже читали.</string>
+    <string name="settings_today_in_history">Сегодня в истории</string>
+    <string name="settings_show_the_column">Показывать колонку</string>
+    <string name="settings_today_in_history_body">Несколько строк с датами над новостями дня, из собственной подборки Википедии «On this day». Это единственное, что Nooz берёт извне добавленных вами источников, поэтому оно остаётся выключенным, пока вы его не включите.</string>
+    <string name="settings_show_reading_time">Показывать время чтения</string>
+    <string name="settings_highlight_loaded">Подсвечивать оценочные слова</string>
+    <string name="settings_highlight_loaded_body">Подчёркивает нагруженные формулировки по ходу чтения; коснитесь их, чтобы увидеть основание.</string>
+    <string name="settings_immersive">Погружённое чтение</string>
+    <string name="settings_immersive_body">Скрывает кнопку «назад» и элементы управления ради голой страницы. По умолчанию выключено; чтобы вернуться, проведите вправо или нажмите «назад».</string>
+    <string name="settings_more">Другие настройки</string>
+    <string name="settings_more_body">Словарь, интеллект читалки и модели, жесты, ваши данные, о приложении.</string>
+    <string name="settings_dictionary">Словарь</string>
+    <string name="settings_dictionary_body">Скачайте словарь, а затем при чтении удерживайте любое слово, чтобы увидеть его значение — как в Kindle.</string>
+    <string name="settings_crash_title">В прошлый раз Nooz неожиданно закрылся</string>
+    <string name="settings_crash_body">Отчёт остался на вашем устройстве; никуда ничего не отправлялось.</string>
+    <string name="settings_copy">Копировать</string>
+    <string name="settings_dismiss">Закрыть</string>
+    <string name="settings_reader_intelligence">Интеллект читалки</string>
+    <string name="settings_byok_model">Со своим ключом: %1$s</string>
+    <string name="settings_flash_body">Новости дня, сжатые до 10 слов или меньше. Работает на вашем устройстве, как только вы скачаете модель ниже, либо через ваш собственный ключ.</string>
+    <string name="settings_cast_body">Статья целиком, прочитанная вслух естественным голосом на самом устройстве, никогда не механическим системным чтецом. У него своя модель, скачиваемая отдельно от модели Flash.</string>
+    <string name="settings_cast_model">Модель Nooz Cast</string>
+    <string name="settings_whats_inside_body">Ткацкий станок, Flash, Cast, Вырезки — и где найти каждое.</string>
+    <string name="settings_gestures">Жесты</string>
+    <string name="settings_gestures_body">Жесты двумя пальцами в читалке. По умолчанию включены.</string>
+    <string name="settings_gesture_brightness">Двумя пальцами провести → яркость</string>
+    <string name="settings_gesture_theme">Двумя пальцами смахнуть → оформление</string>
+    <string name="settings_gesture_unread">Щипок в погружённом режиме → непрочитанное</string>
+    <string name="settings_images">Изображения</string>
+    <string name="settings_show_feed_images">Показывать изображения из ленты</string>
+    <string name="settings_hide_flagged_images">Скрывать изображения, помеченные источником</string>
+    <string name="settings_advanced">Дополнительно</string>
+    <string name="settings_advanced_body">Список оценочных слов, обратная связь.</string>
+    <string name="settings_word_list">Список оценочных слов</string>
+    <string name="settings_word_list_body">Отключите отдельные стандартные пометки или добавьте собственные слова для наблюдения.</string>
+    <string name="settings_your_data">Ваши данные</string>
+    <string name="settings_your_data_body">Выгрузите всё в открытый JSON: настройки, ваш регион и темы, ваши источники, ваши вырезки и приблизительный журнал чтения. Только локально; ключи API никогда не включаются.</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_about_body">Nooz — читалка новостей, предмет которой умолчание: что осталось за кадром. Её делает mdhv.xyz, маленькая студия тихих, сосредоточенных приложений.</string>
+    <string name="settings_visit_studio">Перейти на mdhv.xyz</string>
+    <string name="settings_view_source">Посмотреть код на GitHub</string>
+    <string name="settings_contact">Связаться с нами</string>
+    <string name="settings_more_from_studio">Ещё от студии</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">Загрузка словаря</string>
+    <string name="settings_downloaded">Загружено</string>
+    <string name="settings_download">Загрузить</string>
+    <string name="settings_translation">Перевод</string>
+    <string name="settings_translation_body">По одной языковой паре за раз. Загружается один раз и дальше работает без сети — то, что вы ищете, никуда не отправляется.</string>
+    <string name="settings_remove">Удалить</string>
+    <string name="settings_no_indic_pair">Из этого источника пока нет ни одной пары с индийским языком.</string>
+    <string name="settings_downloading_named">Загрузка %1$s</string>
+    <string name="settings_installed">Установлено</string>
 </resources>

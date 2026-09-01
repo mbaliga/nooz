@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">Không làm mới được: %1$s</string>
     <string name="edit_loaded_services">Đã nạp %1$d định nghĩa dịch vụ.</string>
     <string name="edit_last_refreshed">Làm mới lần cuối %1$s.</string>
+    <string name="settings_back">Quay lại</string>
+    <string name="settings_theme">Giao diện</string>
+    <string name="settings_theme_follow">Theo cài đặt sáng hoặc tối của điện thoại</string>
+    <string name="settings_theme_white">Giao diện trắng</string>
+    <string name="settings_theme_paper">Giao diện giấy</string>
+    <string name="settings_theme_dark">Giao diện tối</string>
+    <string name="settings_font">Phông chữ</string>
+    <string name="settings_text_size">Cỡ chữ</string>
+    <string name="settings_paper_grain">Thớ giấy</string>
+    <string name="settings_mark_read_as">Đánh dấu bài đã đọc là</string>
+    <string name="settings_while_you_read">Trong lúc bạn đọc</string>
+    <string name="settings_while_you_read_body">Thỉnh thoảng, một câu thật rút ra từ thứ bạn từng đọc.</string>
+    <string name="settings_today_in_history">Hôm nay trong lịch sử</string>
+    <string name="settings_show_the_column">Hiện cột này</string>
+    <string name="settings_today_in_history_body">Vài dòng có ghi ngày ở phía trên tin của ngày, lấy từ tuyển chọn “On this day” của chính Wikipedia. Đây là thứ duy nhất Nooz lấy từ bên ngoài các nguồn bạn đã thêm, nên nó vẫn tắt cho tới khi bạn bật lên.</string>
+    <string name="settings_show_reading_time">Hiện thời gian đọc</string>
+    <string name="settings_highlight_loaded">Làm nổi lối nói thiên lệch</string>
+    <string name="settings_highlight_loaded_body">Gạch chân những từ nặng cảm xúc khi bạn đọc; chạm vào để xem căn cứ.</string>
+    <string name="settings_immersive">Đọc đắm chìm</string>
+    <string name="settings_immersive_body">Ẩn nút quay lại và các nút điều khiển để còn lại trang trần. Mặc định tắt; vuốt sang phải hoặc chạm quay lại để trở ra.</string>
+    <string name="settings_more">Thêm cài đặt</string>
+    <string name="settings_more_body">Từ điển, trí thông minh của trình đọc và các mô hình, cử chỉ, dữ liệu của bạn, giới thiệu.</string>
+    <string name="settings_dictionary">Từ điển</string>
+    <string name="settings_dictionary_body">Tải một cuốn từ điển, rồi nhấn giữ bất kỳ từ nào khi đọc để xem nghĩa, giống như Kindle.</string>
+    <string name="settings_crash_title">Lần trước Nooz đã đóng đột ngột</string>
+    <string name="settings_crash_body">Bản báo cáo nằm lại trên máy bạn; không có gì được gửi đi đâu cả.</string>
+    <string name="settings_copy">Sao chép</string>
+    <string name="settings_dismiss">Bỏ qua</string>
+    <string name="settings_reader_intelligence">Trí thông minh của trình đọc</string>
+    <string name="settings_byok_model">Dùng khóa của bạn: %1$s</string>
+    <string name="settings_flash_body">Tin hôm nay nén lại còn 10 chữ trở xuống. Chạy ngay trên máy bạn sau khi tải một mô hình ở dưới, hoặc qua khóa của chính bạn.</string>
+    <string name="settings_cast_body">Toàn bài được đọc lên bằng giọng tự nhiên ngay trên máy, không bao giờ dùng giọng máy móc của hệ thống. Nó có mô hình riêng, tải tách khỏi mô hình của Flash.</string>
+    <string name="settings_cast_model">Mô hình Nooz Cast</string>
+    <string name="settings_whats_inside_body">Khung cửi, Flash, Cast, Mẩu cắt — và mỗi thứ nằm ở đâu.</string>
+    <string name="settings_gestures">Cử chỉ</string>
+    <string name="settings_gestures_body">Cử chỉ hai ngón trong trình đọc. Mặc định bật.</string>
+    <string name="settings_gesture_brightness">Kéo hai ngón → độ sáng</string>
+    <string name="settings_gesture_theme">Búng hai ngón → giao diện</string>
+    <string name="settings_gesture_unread">Chụm khi đắm chìm → chưa đọc</string>
+    <string name="settings_images">Hình ảnh</string>
+    <string name="settings_show_feed_images">Hiện hình ảnh trong nguồn tin</string>
+    <string name="settings_hide_flagged_images">Ẩn hình ảnh do nguồn đánh dấu</string>
+    <string name="settings_advanced">Nâng cao</string>
+    <string name="settings_advanced_body">Danh sách từ ngữ thiên lệch, góp ý.</string>
+    <string name="settings_word_list">Danh sách từ ngữ thiên lệch</string>
+    <string name="settings_word_list_body">Tắt từng dấu mặc định, hoặc thêm từ của riêng bạn để theo dõi.</string>
+    <string name="settings_your_data">Dữ liệu của bạn</string>
+    <string name="settings_your_data_body">Xuất mọi thứ ra JSON mở: tùy chọn, vùng và chủ đề của bạn, các nguồn, các mẩu cắt, và nhật ký đọc thô. Chỉ nằm trên máy; khóa API không bao giờ được đưa vào.</string>
+    <string name="settings_about">Giới thiệu</string>
+    <string name="settings_about_body">Nooz là một trình đọc tin lấy sự bỏ sót làm chủ đề: cái gì đã bị để ra ngoài. Do mdhv.xyz làm, một xưởng nhỏ chuyên những ứng dụng lặng lẽ và chuyên chú.</string>
+    <string name="settings_visit_studio">Ghé mdhv.xyz</string>
+    <string name="settings_view_source">Xem mã nguồn trên GitHub</string>
+    <string name="settings_contact">Liên hệ với chúng tôi</string>
+    <string name="settings_more_from_studio">Thêm từ xưởng</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">Đang tải từ điển</string>
+    <string name="settings_downloaded">Đã tải</string>
+    <string name="settings_download">Tải xuống</string>
+    <string name="settings_translation">Dịch</string>
+    <string name="settings_translation_body">Mỗi lần một cặp ngôn ngữ. Tải một lần rồi chạy ngoại tuyến — thứ bạn tra không bao giờ được gửi đi đâu.</string>
+    <string name="settings_remove">Gỡ bỏ</string>
+    <string name="settings_no_indic_pair">Nguồn này chưa có cặp nào với một ngôn ngữ Ấn Độ.</string>
+    <string name="settings_downloading_named">Đang tải %1$s</string>
+    <string name="settings_installed">Đã cài</string>
 </resources>

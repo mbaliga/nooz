@@ -88,6 +88,25 @@ class LocaleResolutionTest {
         assertTrue("and it is not the English one: $spoken", !spoken.contains("flowed"))
     }
 
+    @Test @Config(qualifiers = "b+ml") fun theSettingsScreenResolves() {
+        // Settings was the last and largest screen to be migrated, and the one
+        // whose copy carries the app's privacy claims. Checking a body string
+        // rather than a one-word label is deliberate: a long string is where a
+        // half-finished migration shows up, because a screen can be wired for
+        // its headings and still be English underneath.
+        assertEquals("നിഘണ്ടു", context.getString(R.string.settings_dictionary))
+        val yourData = context.getString(R.string.settings_your_data_body)
+        assertTrue("resolution reached Malayalam: $yourData", !yourData.contains("Export everything"))
+        assertTrue("and API is left as-is inside it: $yourData", yourData.contains("API"))
+    }
+
+    @Test @Config(qualifiers = "b+ar") fun aSettingsFormatStringKeepsItsPlaceholder() {
+        // settings_size_license carries two positional arguments; a translation
+        // that dropped one would silently render half the row.
+        val row = context.getString(R.string.settings_size_license, "48 MB", "MIT")
+        assertTrue("both arguments land: $row", row.contains("48 MB") && row.contains("MIT"))
+    }
+
     @Test @Config(qualifiers = "b+bn") fun everyShippedLocaleDiffersFromEnglish() {
         // A weak assertion on purpose: it cannot check the Bengali is *good*,
         // only that resolution reached it at all rather than falling through.

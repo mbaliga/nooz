@@ -70,6 +70,10 @@
     {
       "title": "Adding and managing sources on Android — the flow by which a reader decides what this app is even about. `list_topics` and `sources_*` are reused where the web says the same thing.",
       "prefix": "edit_"
+    },
+    {
+      "title": "Settings. The largest single surface, and the last big one to move.",
+      "prefix": "settings_"
     }
   ]
 }

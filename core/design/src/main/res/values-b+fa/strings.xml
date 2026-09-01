@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">تازه نشد: %1$s</string>
     <string name="edit_loaded_services">%1$d تعریف سرویس بارگیری شد.</string>
     <string name="edit_last_refreshed">آخرین نوسازی %1$s.</string>
+    <string name="settings_back">بازگشت</string>
+    <string name="settings_theme">پوسته</string>
+    <string name="settings_theme_follow">از تنظیم روشن یا تاریک گوشی پیروی کن</string>
+    <string name="settings_theme_white">پوستهٔ سفید</string>
+    <string name="settings_theme_paper">پوستهٔ کاغذی</string>
+    <string name="settings_theme_dark">پوستهٔ تاریک</string>
+    <string name="settings_font">قلم</string>
+    <string name="settings_text_size">اندازهٔ متن</string>
+    <string name="settings_paper_grain">بافت کاغذ</string>
+    <string name="settings_mark_read_as">مقاله‌های خوانده‌شده را چنین نشان بزن</string>
+    <string name="settings_while_you_read">هنگام خواندن</string>
+    <string name="settings_while_you_read_body">هر از گاهی، یک سطر واقعی برگرفته از چیزی که پیش‌تر خوانده‌اید.</string>
+    <string name="settings_today_in_history">امروز در تاریخ</string>
+    <string name="settings_show_the_column">این ستون را نشان بده</string>
+    <string name="settings_today_in_history_body">چند سطر تاریخ‌دار بالای خبرهای روز، از گزینش خودِ ویکی‌پدیا با نام “On this day”. این تنها چیزی است که Nooz از بیرون از منبع‌هایی که افزوده‌اید می‌آورد، پس تا وقتی روشنش نکنید خاموش می‌ماند.</string>
+    <string name="settings_show_reading_time">زمان خواندن را نشان بده</string>
+    <string name="settings_highlight_loaded">زبان جانب‌دارانه را برجسته کن</string>
+    <string name="settings_highlight_loaded_body">هنگام خواندن زیر واژه‌های بارِ عاطفی‌دار خط می‌کشد؛ برای دیدن شاهد رویش بزنید.</string>
+    <string name="settings_immersive">خواندن غرق‌شده</string>
+    <string name="settings_immersive_body">برای صفحه‌ای بی‌پیرایه دکمهٔ بازگشت و کنترل‌ها را پنهان می‌کند. به‌طور پیش‌فرض خاموش؛ برای بازگشت به راست بکشید یا بازگشت را بزنید.</string>
+    <string name="settings_more">تنظیمات بیشتر</string>
+    <string name="settings_more_body">واژه‌نامه، هوش خواننده و مدل‌ها، اشاره‌ها، داده‌های شما، درباره.</string>
+    <string name="settings_dictionary">واژه‌نامه</string>
+    <string name="settings_dictionary_body">یک واژه‌نامه را دانلود کنید، سپس هنگام خواندن روی هر واژه فشار بلند بدهید تا معنایش را ببینید، به شیوهٔ Kindle.</string>
+    <string name="settings_crash_title">بار پیش Nooz ناگهان بسته شد</string>
+    <string name="settings_crash_body">گزارش روی دستگاه خودتان ماند؛ چیزی به جایی فرستاده نشد.</string>
+    <string name="settings_copy">رونوشت</string>
+    <string name="settings_dismiss">رد کردن</string>
+    <string name="settings_reader_intelligence">هوش خواننده</string>
+    <string name="settings_byok_model">با کلید خودتان: %1$s</string>
+    <string name="settings_flash_body">خبرهای امروز فشرده در ده واژه یا کمتر. پس از دانلود یک مدل از پایین روی دستگاه خودتان اجرا می‌شود، یا از راه کلید خودتان.</string>
+    <string name="settings_cast_body">مقالهٔ کامل با صدایی طبیعی روی خودِ دستگاه خوانده می‌شود، هرگز با خوانندهٔ ماشینی سیستم. مدل خودش را دارد که جدا از مدل Flash دانلود می‌شود.</string>
+    <string name="settings_cast_model">مدل Nooz Cast</string>
+    <string name="settings_whats_inside_body">بافه، Flash، Cast، بریده‌ها — و اینکه هر کدام کجاست.</string>
+    <string name="settings_gestures">اشاره‌ها</string>
+    <string name="settings_gestures_body">اشاره‌های دو‌انگشتی در خواننده. به‌طور پیش‌فرض روشن.</string>
+    <string name="settings_gesture_brightness">کشیدن دو‌انگشتی ← روشنایی</string>
+    <string name="settings_gesture_theme">تلنگر دو‌انگشتی ← پوسته</string>
+    <string name="settings_gesture_unread">فشردن در حالت غرق‌شده ← نخوانده‌ها</string>
+    <string name="settings_images">تصویرها</string>
+    <string name="settings_show_feed_images">تصویرهای خوراک را نشان بده</string>
+    <string name="settings_hide_flagged_images">تصویرهای نشان‌دار منبع را پنهان کن</string>
+    <string name="settings_advanced">پیشرفته</string>
+    <string name="settings_advanced_body">فهرست واژه‌های زبان جانب‌دارانه، بازخورد.</string>
+    <string name="settings_word_list">فهرست واژه‌های زبان جانب‌دارانه</string>
+    <string name="settings_word_list_body">نشانه‌های پیش‌فرض را تک‌به‌تک خاموش کنید، یا واژه‌های خودتان را برای پایش بیفزایید.</string>
+    <string name="settings_your_data">داده‌های شما</string>
+    <string name="settings_your_data_body">همه چیز را به‌صورت JSON باز برون‌بری کنید: ترجیح‌ها، منطقه و موضوع‌هایتان، منبع‌هایتان، بریده‌هایتان، و سیاههٔ درشت خواندن. تنها محلی؛ کلیدهای API هرگز گنجانده نمی‌شوند.</string>
+    <string name="settings_about">درباره</string>
+    <string name="settings_about_body">‏Nooz خوانندهٔ خبری است که موضوعش حذف است: چه چیزی جا مانده. آن را mdhv.xyz می‌سازد، استودیویی کوچک از برنامه‌های آرام و متمرکز.</string>
+    <string name="settings_visit_studio">دیدن mdhv.xyz</string>
+    <string name="settings_view_source">دیدن کد در GitHub</string>
+    <string name="settings_contact">تماس با ما</string>
+    <string name="settings_more_from_studio">بیشتر از استودیو</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">در حال دانلود واژه‌نامه</string>
+    <string name="settings_downloaded">دانلود شد</string>
+    <string name="settings_download">دانلود</string>
+    <string name="settings_translation">ترجمه</string>
+    <string name="settings_translation_body">هر بار یک جفت زبانی. یک بار دانلود می‌شود و سپس آفلاین کار می‌کند — آنچه جست‌وجو می‌کنید به هیچ جا فرستاده نمی‌شود.</string>
+    <string name="settings_remove">برداشتن</string>
+    <string name="settings_no_indic_pair">هنوز هیچ جفت زبان هندی از این منبع در دسترس نیست.</string>
+    <string name="settings_downloading_named">در حال دانلود %1$s</string>
+    <string name="settings_installed">نصب‌شده</string>
 </resources>

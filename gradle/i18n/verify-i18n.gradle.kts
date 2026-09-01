@@ -75,6 +75,20 @@ abstract class VerifyI18nTask : DefaultTask() {
     }
 
     companion object {
+        /**
+         * Words that must stay in English wherever they appear.
+         *
+         * "Nooz" is the app's own name (STATE.md §RESERVED, the owner's
+         * decision) and the two feature names are built on it; a translated
+         * masthead is a bug, not a feature. Routing these through resources
+         * would mean twenty-nine identical copies of the same word and
+         * twenty-nine chances for one to drift. The web guard
+         * (web/tests/i18n-coverage.test.mjs) carries the same list for the same
+         * reason — a brand that is exempt on one client and not the other is
+         * how the two ends up disagreeing.
+         */
+        val BRAND = setOf("Nooz", "Nooz Flash", "Nooz Cast", "GDELT", "Wikipedia")
+
         val UI_STRING = Regex(
             """(?x)
             (?:
@@ -109,6 +123,8 @@ abstract class VerifyI18nTask : DefaultTask() {
                 val literal = match.groups["literal"]!!.value
                 // A bare interpolation carries no words of its own.
                 if (literal.startsWith("$") && !literal.contains(' ')) return@match
+                // The masthead and the two feature names stay in English.
+                if (literal.trim() in BRAND) return@match
                 val line = text.substring(0, match.range.first).count { it == '\n' } + 1
                 found.getOrPut(rel) { mutableListOf() }.add(line to literal)
             }

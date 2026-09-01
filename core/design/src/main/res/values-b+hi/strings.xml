@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">ताज़ा नहीं किया जा सका: %1$s</string>
     <string name="edit_loaded_services">%1$d सेवा परिभाषाएँ लोड हुईं।</string>
     <string name="edit_last_refreshed">अंतिम बार ताज़ा किया गया %1$s।</string>
+    <string name="settings_back">वापस</string>
+    <string name="settings_theme">थीम</string>
+    <string name="settings_theme_follow">फ़ोन की लाइट या डार्क सेटिंग का पालन करें</string>
+    <string name="settings_theme_white">सफ़ेद थीम</string>
+    <string name="settings_theme_paper">काग़ज़ थीम</string>
+    <string name="settings_theme_dark">डार्क थीम</string>
+    <string name="settings_font">फ़ॉन्ट</string>
+    <string name="settings_text_size">अक्षरों का आकार</string>
+    <string name="settings_paper_grain">काग़ज़ की बुनावट</string>
+    <string name="settings_mark_read_as">पढ़े गए लेखों को ऐसे चिह्नित करें</string>
+    <string name="settings_while_you_read">पढ़ते समय</string>
+    <string name="settings_while_you_read_body">बीच-बीच में, आपके पहले पढ़े हुए किसी लेख से ली गई एक असली पंक्ति।</string>
+    <string name="settings_today_in_history">आज इतिहास में</string>
+    <string name="settings_show_the_column">यह स्तंभ दिखाएँ</string>
+    <string name="settings_today_in_history_body">दिन की ख़बरों के ऊपर कुछ तिथियुक्त पंक्तियाँ, विकिपीडिया के अपने “On this day” चयन से। आपके जोड़े गए स्रोतों के बाहर से Nooz सिर्फ़ यही एक चीज़ लाता है, इसलिए जब तक आप इसे चालू न करें यह बंद रहता है।</string>
+    <string name="settings_show_reading_time">पढ़ने का समय दिखाएँ</string>
+    <string name="settings_highlight_loaded">पक्षपाती भाषा उजागर करें</string>
+    <string name="settings_highlight_loaded_body">पढ़ते समय भावभरे शब्दों को रेखांकित करता है; प्रमाण देखने के लिए उन पर टैप करें।</string>
+    <string name="settings_immersive">एकाग्र पठन</string>
+    <string name="settings_immersive_body">सादे पन्ने के लिए वापस बटन और नियंत्रण छिपा देता है। डिफ़ॉल्ट रूप से बंद; लौटने के लिए दाएँ स्वाइप करें या वापस टैप करें।</string>
+    <string name="settings_more">और सेटिंग्स</string>
+    <string name="settings_more_body">शब्दकोश, रीडर बुद्धिमत्ता और मॉडल, इशारे, आपका डेटा, परिचय।</string>
+    <string name="settings_dictionary">शब्दकोश</string>
+    <string name="settings_dictionary_body">एक शब्दकोश डाउनलोड करें, फिर पढ़ते समय किसी भी शब्द को देर तक दबाकर उसका अर्थ देखें, Kindle की तरह।</string>
+    <string name="settings_crash_title">पिछली बार Nooz अचानक बंद हो गया था</string>
+    <string name="settings_crash_body">रिपोर्ट आपके डिवाइस पर ही रही; कहीं कुछ नहीं भेजा गया।</string>
+    <string name="settings_copy">कॉपी करें</string>
+    <string name="settings_dismiss">ख़ारिज करें</string>
+    <string name="settings_reader_intelligence">रीडर बुद्धिमत्ता</string>
+    <string name="settings_byok_model">अपनी कुंजी लाएँ: %1$s</string>
+    <string name="settings_flash_body">आज की ख़बरें 10 या उससे कम शब्दों में सिमटी हुई। नीचे से एक मॉडल डाउनलोड करने पर आपके डिवाइस पर ही चलता है, या आपकी अपनी कुंजी से।</string>
+    <string name="settings_cast_body">पूरा लेख एक स्वाभाविक ऑन-डिवाइस आवाज़ में पढ़कर सुनाया जाता है, कभी भी यंत्रवत सिस्टम रीडर से नहीं। इसका अपना मॉडल है, जो Flash के मॉडल से अलग डाउनलोड होता है।</string>
+    <string name="settings_cast_model">Nooz Cast मॉडल</string>
+    <string name="settings_whats_inside_body">लूम, Flash, Cast, कतरनें — और हर एक कहाँ मिलेगा।</string>
+    <string name="settings_gestures">इशारे</string>
+    <string name="settings_gestures_body">रीडर में दो उँगलियों के इशारे। डिफ़ॉल्ट रूप से चालू।</string>
+    <string name="settings_gesture_brightness">दो उँगलियों से खींचें → चमक</string>
+    <string name="settings_gesture_theme">दो उँगलियों से झटका → थीम</string>
+    <string name="settings_gesture_unread">एकाग्र मोड में पिंच → अपठित</string>
+    <string name="settings_images">छवियाँ</string>
+    <string name="settings_show_feed_images">फ़ीड की छवियाँ दिखाएँ</string>
+    <string name="settings_hide_flagged_images">स्रोत द्वारा चिह्नित छवियाँ छिपाएँ</string>
+    <string name="settings_advanced">उन्नत</string>
+    <string name="settings_advanced_body">पक्षपाती भाषा की शब्द-सूची, प्रतिक्रिया।</string>
+    <string name="settings_word_list">पक्षपाती भाषा की शब्द-सूची</string>
+    <string name="settings_word_list_body">अलग-अलग डिफ़ॉल्ट चिह्न बंद करें, या अपने शब्द जोड़ें जिन पर नज़र रखनी है।</string>
+    <string name="settings_your_data">आपका डेटा</string>
+    <string name="settings_your_data_body">सब कुछ खुले JSON में निर्यात करें: वरीयताएँ, आपका क्षेत्र और विषय, आपके स्रोत, आपकी कतरनें, और मोटा पठन-लेखा। सिर्फ़ आपके डिवाइस पर; API कुंजियाँ कभी शामिल नहीं होतीं।</string>
+    <string name="settings_about">परिचय</string>
+    <string name="settings_about_body">Nooz एक समाचार रीडर है जिसका विषय है लोप: क्या छूट गया। इसे mdhv.xyz बनाता है, शांत और एकाग्र ऐप्स का एक छोटा स्टूडियो।</string>
+    <string name="settings_visit_studio">mdhv.xyz देखें</string>
+    <string name="settings_view_source">GitHub पर स्रोत देखें</string>
+    <string name="settings_contact">हमसे संपर्क करें</string>
+    <string name="settings_more_from_studio">स्टूडियो से और</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">शब्दकोश डाउनलोड हो रहा है</string>
+    <string name="settings_downloaded">डाउनलोड हो गया</string>
+    <string name="settings_download">डाउनलोड करें</string>
+    <string name="settings_translation">अनुवाद</string>
+    <string name="settings_translation_body">एक बार में एक भाषा-युग्म। एक बार डाउनलोड होने पर यह ऑफ़लाइन काम करता है — आप जो देखते हैं वह कहीं नहीं भेजा जाता।</string>
+    <string name="settings_remove">हटाएँ</string>
+    <string name="settings_no_indic_pair">इस स्रोत से अभी कोई भारतीय-भाषा युग्म उपलब्ध नहीं है।</string>
+    <string name="settings_downloading_named">%1$s डाउनलोड हो रहा है</string>
+    <string name="settings_installed">स्थापित</string>
 </resources>

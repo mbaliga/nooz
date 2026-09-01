@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">刷新不了：%1$s</string>
     <string name="edit_loaded_services">已载入 %1$d 条服务定义。</string>
     <string name="edit_last_refreshed">上次刷新 %1$s。</string>
+    <string name="settings_back">返回</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_theme_follow">跟随手机的浅色或深色设置</string>
+    <string name="settings_theme_white">白色主题</string>
+    <string name="settings_theme_paper">纸张主题</string>
+    <string name="settings_theme_dark">深色主题</string>
+    <string name="settings_font">字体</string>
+    <string name="settings_text_size">字号</string>
+    <string name="settings_paper_grain">纸张纹理</string>
+    <string name="settings_mark_read_as">已读文章标记为</string>
+    <string name="settings_while_you_read">阅读时</string>
+    <string name="settings_while_you_read_body">时不时地，从你读过的内容里摘出的一句真实的话。</string>
+    <string name="settings_today_in_history">历史上的今天</string>
+    <string name="settings_show_the_column">显示此栏</string>
+    <string name="settings_today_in_history_body">在当天新闻之上放几行带日期的条目，取自维基百科自己的“On this day”选辑。这是 Nooz 唯一从你所添加的来源之外获取的东西，所以在你打开之前它一直是关闭的。</string>
+    <string name="settings_show_reading_time">显示阅读时长</string>
+    <string name="settings_highlight_loaded">标出带倾向的措辞</string>
+    <string name="settings_highlight_loaded_body">阅读时给情绪化的措辞加下划线；点按即可看到依据。</string>
+    <string name="settings_immersive">沉浸阅读</string>
+    <string name="settings_immersive_body">隐藏返回按钮与控件，只留一张干净的页面。默认关闭；向右滑动或点按返回即可退出。</string>
+    <string name="settings_more">更多设置</string>
+    <string name="settings_more_body">词典、阅读智能与模型、手势、你的数据、关于。</string>
+    <string name="settings_dictionary">词典</string>
+    <string name="settings_dictionary_body">下载一部词典，然后在阅读时长按任意词语查看释义，就像 Kindle 那样。</string>
+    <string name="settings_crash_title">上次 Nooz 意外关闭了</string>
+    <string name="settings_crash_body">报告留在你的设备上；没有向任何地方发送任何内容。</string>
+    <string name="settings_copy">复制</string>
+    <string name="settings_dismiss">忽略</string>
+    <string name="settings_reader_intelligence">阅读智能</string>
+    <string name="settings_byok_model">自带密钥：%1$s</string>
+    <string name="settings_flash_body">把今天的新闻压缩到十个字以内。你在下方下载模型后即可在本机运行，也可以通过你自己的密钥。</string>
+    <string name="settings_cast_body">整篇文章由设备上自然的嗓音朗读，绝不用生硬的系统朗读器。它有自己的模型，与 Flash 的模型分开下载。</string>
+    <string name="settings_cast_model">Nooz Cast 模型</string>
+    <string name="settings_whats_inside_body">织机、Flash、Cast、剪报——以及它们各自在哪里。</string>
+    <string name="settings_gestures">手势</string>
+    <string name="settings_gestures_body">阅读器中的双指手势。默认开启。</string>
+    <string name="settings_gesture_brightness">双指拖动 → 亮度</string>
+    <string name="settings_gesture_theme">双指轻扫 → 主题</string>
+    <string name="settings_gesture_unread">沉浸模式下捏合 → 未读</string>
+    <string name="settings_images">图片</string>
+    <string name="settings_show_feed_images">显示订阅源图片</string>
+    <string name="settings_hide_flagged_images">隐藏来源标记的图片</string>
+    <string name="settings_advanced">高级</string>
+    <string name="settings_advanced_body">倾向措辞词表、反馈。</string>
+    <string name="settings_word_list">倾向措辞词表</string>
+    <string name="settings_word_list_body">关掉个别默认标记，或添加你自己想留意的词。</string>
+    <string name="settings_your_data">你的数据</string>
+    <string name="settings_your_data_body">把一切导出为开放的 JSON：偏好设置、你的地区与主题、你的来源、你的剪报，以及粗略的阅读记录。仅存于本机；绝不包含 API 密钥。</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_about_body">Nooz 是一款以“遗漏”为主题的新闻阅读器：什么被略去了。由 mdhv.xyz 制作，一家专做安静、专注应用的小工作室。</string>
+    <string name="settings_visit_studio">访问 mdhv.xyz</string>
+    <string name="settings_view_source">在 GitHub 上查看源码</string>
+    <string name="settings_contact">联系我们</string>
+    <string name="settings_more_from_studio">工作室的更多作品</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">正在下载词典</string>
+    <string name="settings_downloaded">已下载</string>
+    <string name="settings_download">下载</string>
+    <string name="settings_translation">翻译</string>
+    <string name="settings_translation_body">一次一个语言对。下载一次之后便可离线使用——你查过的内容绝不会发往任何地方。</string>
+    <string name="settings_remove">移除</string>
+    <string name="settings_no_indic_pair">此来源尚无任何印度语言的语言对。</string>
+    <string name="settings_downloading_named">正在下载 %1$s</string>
+    <string name="settings_installed">已安装</string>
 </resources>

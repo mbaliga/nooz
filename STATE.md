@@ -1984,6 +1984,35 @@ respect as the CI-caught log above.
   which is the payoff of one catalogue for two clients: the wording that already
   existed in twenty-nine languages did not need translating twice.
   29 locales complete at 185 strings; Kashmiri 22%.
+- **D58 — Settings, the last big screen, and the brand exemption that made it
+  finishable (2026-09-01).** Fourth migration tranche: `SettingsScreen`, 69
+  hardcoded strings to zero, the single largest file in the app. Catalogue
+  185 → 249 strings; ratchet 140 → 68 across 22 files.
+  Settings is where the app makes its promises — *"the report stayed on your
+  device; nothing was sent anywhere"*, *"what you look up is never sent
+  anywhere"*, *"API keys are never included"*. A privacy claim a reader cannot
+  read is not a claim they can rely on, which is why this screen was worth its
+  size.
+  Two files reached zero without a line of migration: `Wordmark` and the last
+  two in Settings were the words **Nooz**, **Nooz Flash** and **Nooz Cast**.
+  Routing a brand through `strings.xml` would mean twenty-nine identical copies
+  of the same word and twenty-nine chances for one to drift into a translated
+  masthead, so `verifyI18n` now carries a `BRAND` exemption mirroring the web
+  guard's. The exemption is what let the ratchet close those files honestly
+  instead of parking them at 1 and 2 forever.
+  A near-miss worth recording: the exemption was declared and then not applied —
+  the `return@match` never made it into the loop — and the build stayed green
+  and said `73 still to move`, exactly as it had before. Nothing failed. The
+  tell was the *other* half of the ratchet staying quiet: if the exemption had
+  worked, SettingsScreen would have dropped under its budget and the build would
+  have demanded the number be lowered. **A guard's silence is only evidence when
+  you know which noise it would have made.**
+  `LocaleResolutionTest` gains two cases for this tranche rather than trusting
+  the catalogue count: `settings_your_data_body` resolving to Malayalam (a long
+  body string, because a screen can be wired for its headings and still be
+  English underneath) and `settings_size_license` keeping both positional
+  arguments in Arabic. 12 tests, all passing.
+  29 locales complete at 249 strings; Kashmiri 76/249 (31%, up from 22%).
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

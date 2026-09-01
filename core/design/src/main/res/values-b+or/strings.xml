@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">ସତେଜ କରାଯାଇ ପାରିଲା ନାହିଁ: %1$s</string>
     <string name="edit_loaded_services">%1$d ସେବା ସଂଜ୍ଞା ଲୋଡ ହେଲା।</string>
     <string name="edit_last_refreshed">ଶେଷ ଥର ସତେଜ କରାଯାଇଥିଲା %1$s।</string>
+    <string name="settings_back">ପଛକୁ</string>
+    <string name="settings_theme">ଥିମ୍</string>
+    <string name="settings_theme_follow">ଫୋନର ଉଜ୍ଜ୍ୱଳ କିମ୍ବା ଅନ୍ଧାର ସେଟିଂ ଅନୁସରଣ କରନ୍ତୁ</string>
+    <string name="settings_theme_white">ଧଳା ଥିମ୍</string>
+    <string name="settings_theme_paper">କାଗଜ ଥିମ୍</string>
+    <string name="settings_theme_dark">ଗାଢ଼ ଥିମ୍</string>
+    <string name="settings_font">ଅକ୍ଷରରୂପ</string>
+    <string name="settings_text_size">ଅକ୍ଷର ଆକାର</string>
+    <string name="settings_paper_grain">କାଗଜର ଗଠନ</string>
+    <string name="settings_mark_read_as">ପଢ଼ାଯାଇଥିବା ଲେଖାକୁ ଏହିପରି ଚିହ୍ନିତ କରନ୍ତୁ</string>
+    <string name="settings_while_you_read">ଆପଣ ପଢ଼ିବା ସମୟରେ</string>
+    <string name="settings_while_you_read_body">ମଝିରେ ମଝିରେ, ଆପଣ ପୂର୍ବରୁ ପଢ଼ିଥିବା କିଛିରୁ ନିଆଯାଇଥିବା ଏକ ପ୍ରକୃତ ଧାଡ଼ି।</string>
+    <string name="settings_today_in_history">ଇତିହାସରେ ଆଜି</string>
+    <string name="settings_show_the_column">ଏହି ସ୍ତମ୍ଭ ଦେଖାନ୍ତୁ</string>
+    <string name="settings_today_in_history_body">ଦିନର ଖବର ଉପରେ କିଛି ତାରିଖଯୁକ୍ତ ଧାଡ଼ି, ଉଇକିପିଡ଼ିଆର ନିଜସ୍ୱ “On this day” ବଛାରୁ। ଆପଣ ଯୋଡ଼ିଥିବା ଉତ୍ସ ବାହାରୁ Nooz ଆଣୁଥିବା ଏକମାତ୍ର ଜିନିଷ ଏହା, ତେଣୁ ଆପଣ ଚାଲୁ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଏହା ବନ୍ଦ ରହେ।</string>
+    <string name="settings_show_reading_time">ପଢ଼ିବା ସମୟ ଦେଖାନ୍ତୁ</string>
+    <string name="settings_highlight_loaded">ପକ୍ଷପାତୀ ଭାଷା ଚିହ୍ନିତ କରନ୍ତୁ</string>
+    <string name="settings_highlight_loaded_body">ପଢ଼ିବା ସମୟରେ ଭାବପ୍ରବଣ ଶବ୍ଦ ତଳେ ରେଖା ଟାଣେ; ପ୍ରମାଣ ପାଇଁ ସେଥିରେ ଟ୍ୟାପ୍ କରନ୍ତୁ।</string>
+    <string name="settings_immersive">ଏକାଗ୍ର ପଠନ</string>
+    <string name="settings_immersive_body">ସାଦା ପୃଷ୍ଠା ପାଇଁ ପଛ ବଟନ ଓ ନିୟନ୍ତ୍ରଣ ଲୁଚାଏ। ଆରମ୍ଭରେ ବନ୍ଦ; ଫେରିବାକୁ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ କିମ୍ବା ପଛ ଟ୍ୟାପ୍ କରନ୍ତୁ।</string>
+    <string name="settings_more">ଅଧିକ ସେଟିଂସ</string>
+    <string name="settings_more_body">ଅଭିଧାନ, ପାଠକ ବୁଦ୍ଧିମତ୍ତା ଓ ମଡେଲ, ଅଙ୍ଗଭଙ୍ଗୀ, ଆପଣଙ୍କ ତଥ୍ୟ, ବିଷୟରେ।</string>
+    <string name="settings_dictionary">ଅଭିଧାନ</string>
+    <string name="settings_dictionary_body">ଗୋଟିଏ ଅଭିଧାନ ଡାଉନଲୋଡ୍ କରନ୍ତୁ, ତା\'ପରେ ପଢ଼ିବା ସମୟରେ ଯେକୌଣସି ଶବ୍ଦକୁ ଚାପି ଧରି ତାର ଅର୍ଥ ଦେଖନ୍ତୁ, Kindle ପରି।</string>
+    <string name="settings_crash_title">ଗତଥର Nooz ଅପ୍ରତ୍ୟାଶିତ ଭାବେ ବନ୍ଦ ହୋଇଯାଇଥିଲା</string>
+    <string name="settings_crash_body">ରିପୋର୍ଟ ଆପଣଙ୍କ ଉପକରଣରେ ହିଁ ରହିଲା; କେଉଁଆଡ଼େ କିଛି ପଠାଯାଇନାହିଁ।</string>
+    <string name="settings_copy">କପି କରନ୍ତୁ</string>
+    <string name="settings_dismiss">ହଟାନ୍ତୁ</string>
+    <string name="settings_reader_intelligence">ପାଠକ ବୁଦ୍ଧିମତ୍ତା</string>
+    <string name="settings_byok_model">ନିଜର ଚାବି: %1$s</string>
+    <string name="settings_flash_body">ଆଜିର ଖବର 10 କିମ୍ବା ତାଠାରୁ କମ୍ ଶବ୍ଦରେ ସଙ୍କୁଚିତ। ତଳୁ ଗୋଟିଏ ମଡେଲ ଡାଉନଲୋଡ୍ କଲେ ଆପଣଙ୍କ ଉପକରଣରେ ହିଁ ଚାଲେ, କିମ୍ବା ଆପଣଙ୍କ ନିଜ ଚାବି ମାଧ୍ୟମରେ।</string>
+    <string name="settings_cast_body">ସମ୍ପୂର୍ଣ୍ଣ ଲେଖା ଏକ ସ୍ୱାଭାବିକ ଉପକରଣ-ଭିତ୍ତିକ ସ୍ୱରରେ ପଢ଼ି ଶୁଣାଯାଏ, କେବେ ବି ଯାନ୍ତ୍ରିକ ସିଷ୍ଟମ ପାଠକରେ ନୁହେଁ। ଏହାର ନିଜସ୍ୱ ମଡେଲ ଅଛି, ଯାହା Flash ର ମଡେଲଠାରୁ ଅଲଗା ଡାଉନଲୋଡ୍ ହୁଏ।</string>
+    <string name="settings_cast_model">Nooz Cast ମଡେଲ</string>
+    <string name="settings_whats_inside_body">ଲୁମ୍, Flash, Cast, କାଟଣା — ଏବଂ ପ୍ରତ୍ୟେକଟି କେଉଁଠି ଅଛି।</string>
+    <string name="settings_gestures">ଅଙ୍ଗଭଙ୍ଗୀ</string>
+    <string name="settings_gestures_body">ପାଠକରେ ଦୁଇ ଆଙ୍ଗୁଠିର ଅଙ୍ଗଭଙ୍ଗୀ। ଆରମ୍ଭରୁ ଚାଲୁ।</string>
+    <string name="settings_gesture_brightness">ଦୁଇ ଆଙ୍ଗୁଠିରେ ଟାଣନ୍ତୁ → ଉଜ୍ଜ୍ୱଳତା</string>
+    <string name="settings_gesture_theme">ଦୁଇ ଆଙ୍ଗୁଠିରେ ଝଟକା → ଥିମ୍</string>
+    <string name="settings_gesture_unread">ଏକାଗ୍ର ମୋଡ଼ରେ ଚିପନ୍ତୁ → ଅପଠିତ</string>
+    <string name="settings_images">ଛବି</string>
+    <string name="settings_show_feed_images">ଫିଡ୍ ଛବି ଦେଖାନ୍ତୁ</string>
+    <string name="settings_hide_flagged_images">ଉତ୍ସ-ଚିହ୍ନିତ ଛବି ଲୁଚାନ୍ତୁ</string>
+    <string name="settings_advanced">ଉନ୍ନତ</string>
+    <string name="settings_advanced_body">ପକ୍ଷପାତୀ ଭାଷାର ଶବ୍ଦତାଲିକା, ମତାମତ।</string>
+    <string name="settings_word_list">ପକ୍ଷପାତୀ ଭାଷାର ଶବ୍ଦତାଲିକା</string>
+    <string name="settings_word_list_body">ଅଲଗା ଅଲଗା ପୂର୍ବନିର୍ଦ୍ଧାରିତ ଚିହ୍ନ ବନ୍ଦ କରନ୍ତୁ, କିମ୍ବା ନଜର ରଖିବାକୁ ନିଜର ଶବ୍ଦ ଯୋଡ଼ନ୍ତୁ।</string>
+    <string name="settings_your_data">ଆପଣଙ୍କ ତଥ୍ୟ</string>
+    <string name="settings_your_data_body">ସବୁକିଛି ଖୋଲା JSON ଭାବେ ରପ୍ତାନି କରନ୍ତୁ: ପସନ୍ଦ, ଆପଣଙ୍କ ଅଞ୍ଚଳ ଓ ବିଷୟ, ଆପଣଙ୍କ ଉତ୍ସ, ଆପଣଙ୍କ କାଟଣା, ଏବଂ ମୋଟାମୋଟି ପଠନ-ନଥି। କେବଳ ସ୍ଥାନୀୟ; API ଚାବି କେବେ ବି ଅନ୍ତର୍ଭୁକ୍ତ ହୁଏ ନାହିଁ।</string>
+    <string name="settings_about">ବିଷୟରେ</string>
+    <string name="settings_about_body">Nooz ଏକ ଖବର ପାଠକ ଯାହାର ବିଷୟ ହେଉଛି ବାଦ ପଡ଼ିବା: କଣ ଛାଡ଼ି ଦିଆଗଲା। ଏହାକୁ ତିଆରି କରେ mdhv.xyz, ଶାନ୍ତ ଓ ଏକାଗ୍ର ଆପ୍‌ର ଏକ ଛୋଟ ଷ୍ଟୁଡିଓ।</string>
+    <string name="settings_visit_studio">mdhv.xyz ଦେଖନ୍ତୁ</string>
+    <string name="settings_view_source">GitHub ରେ ଉତ୍ସ ଦେଖନ୍ତୁ</string>
+    <string name="settings_contact">ଆମ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ</string>
+    <string name="settings_more_from_studio">ଷ୍ଟୁଡିଓରୁ ଆହୁରି</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">ଅଭିଧାନ ଡାଉନଲୋଡ୍ ହେଉଛି</string>
+    <string name="settings_downloaded">ଡାଉନଲୋଡ୍ ହୋଇଛି</string>
+    <string name="settings_download">ଡାଉନଲୋଡ୍</string>
+    <string name="settings_translation">ଅନୁବାଦ</string>
+    <string name="settings_translation_body">ଏକ ସମୟରେ ଗୋଟିଏ ଭାଷା-ଯୁଗଳ। ଥରେ ଡାଉନଲୋଡ୍ ହେଲେ ଏହା ଅଫଲାଇନରେ କାମ କରେ — ଆପଣ ଯାହା ଖୋଜନ୍ତି ତାହା କେଉଁଆଡ଼େ ପଠାଯାଏ ନାହିଁ।</string>
+    <string name="settings_remove">ବାହାର କରନ୍ତୁ</string>
+    <string name="settings_no_indic_pair">ଏହି ଉତ୍ସରୁ ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଭାରତୀୟ-ଭାଷା ଯୁଗଳ ଉପଲବ୍ଧ ନାହିଁ।</string>
+    <string name="settings_downloading_named">%1$s ଡାଉନଲୋଡ୍ ହେଉଛି</string>
+    <string name="settings_installed">ସ୍ଥାପିତ</string>
 </resources>

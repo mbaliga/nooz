@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">Tazelenemedi: %1$s</string>
     <string name="edit_loaded_services">%1$d hizmet tanımı yüklendi.</string>
     <string name="edit_last_refreshed">Son tazeleme %1$s.</string>
+    <string name="settings_back">Geri</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_follow">Telefonun açık ya da koyu ayarını izle</string>
+    <string name="settings_theme_white">Beyaz tema</string>
+    <string name="settings_theme_paper">Kâğıt teması</string>
+    <string name="settings_theme_dark">Koyu tema</string>
+    <string name="settings_font">Yazı tipi</string>
+    <string name="settings_text_size">Yazı boyutu</string>
+    <string name="settings_paper_grain">Kâğıt dokusu</string>
+    <string name="settings_mark_read_as">Okunan yazıları şöyle işaretle</string>
+    <string name="settings_while_you_read">Okurken</string>
+    <string name="settings_while_you_read_body">Arada bir, daha önce okuduğunuz bir şeyden alınmış gerçek bir satır.</string>
+    <string name="settings_today_in_history">Tarihte bugün</string>
+    <string name="settings_show_the_column">Bu sütunu göster</string>
+    <string name="settings_today_in_history_body">Günün haberlerinin üstünde tarihli birkaç satır; Vikipedi\'nin kendi “On this day” seçkisinden. Nooz\'un eklediğiniz kaynakların dışından getirdiği tek şey budur, bu yüzden siz açana kadar kapalı kalır.</string>
+    <string name="settings_show_reading_time">Okuma süresini göster</string>
+    <string name="settings_highlight_loaded">Yanlı dili belirginleştir</string>
+    <string name="settings_highlight_loaded_body">Okurken yüklü sözcüklerin altını çizer; kanıtı için üstüne dokunun.</string>
+    <string name="settings_immersive">Dalarak okuma</string>
+    <string name="settings_immersive_body">Çıplak bir sayfa için geri düğmesini ve denetimleri gizler. Varsayılan olarak kapalı; dönmek için sağa kaydırın ya da geriye dokunun.</string>
+    <string name="settings_more">Diğer ayarlar</string>
+    <string name="settings_more_body">Sözlük, okuyucu zekâsı ve modeller, hareketler, verileriniz, hakkında.</string>
+    <string name="settings_dictionary">Sözlük</string>
+    <string name="settings_dictionary_body">Bir sözlük indirin, sonra okurken herhangi bir sözcüğe uzun basıp anlamını görün — Kindle\'daki gibi.</string>
+    <string name="settings_crash_title">Nooz geçen sefer beklenmedik biçimde kapandı</string>
+    <string name="settings_crash_body">Rapor cihazınızda kaldı; hiçbir yere hiçbir şey gönderilmedi.</string>
+    <string name="settings_copy">Kopyala</string>
+    <string name="settings_dismiss">Kapat</string>
+    <string name="settings_reader_intelligence">Okuyucu zekâsı</string>
+    <string name="settings_byok_model">Kendi anahtarınızla: %1$s</string>
+    <string name="settings_flash_body">Günün haberleri 10 sözcük ya da daha azına sıkıştırılmış. Aşağıdan bir model indirdiğinizde cihazınızda çalışır, ya da kendi anahtarınız üzerinden.</string>
+    <string name="settings_cast_body">Yazının tamamı, cihazın içindeki doğal bir sesle okunur; asla makine gibi konuşan sistem okuyucusuyla değil. Kendi modeli var ve Flash\'ınkinden ayrı indirilir.</string>
+    <string name="settings_cast_model">Nooz Cast modeli</string>
+    <string name="settings_whats_inside_body">Tezgâh, Flash, Cast, Kupürler — ve her birinin nerede olduğu.</string>
+    <string name="settings_gestures">Hareketler</string>
+    <string name="settings_gestures_body">Okuyucudaki iki parmak hareketleri. Varsayılan olarak açık.</string>
+    <string name="settings_gesture_brightness">İki parmakla sürükle → parlaklık</string>
+    <string name="settings_gesture_theme">İki parmakla fiske → tema</string>
+    <string name="settings_gesture_unread">Dalmış haldeyken kıstır → okunmamış</string>
+    <string name="settings_images">Görseller</string>
+    <string name="settings_show_feed_images">Akıştaki görselleri göster</string>
+    <string name="settings_hide_flagged_images">Kaynağın işaretlediği görselleri gizle</string>
+    <string name="settings_advanced">Gelişmiş</string>
+    <string name="settings_advanced_body">Yanlı dil sözcük listesi, geri bildirim.</string>
+    <string name="settings_word_list">Yanlı dil sözcük listesi</string>
+    <string name="settings_word_list_body">Tek tek varsayılan işaretleri kapatın ya da izlemek istediğiniz kendi sözcüklerinizi ekleyin.</string>
+    <string name="settings_your_data">Verileriniz</string>
+    <string name="settings_your_data_body">Her şeyi açık JSON olarak dışa aktarın: tercihler, bölgeniz ve konularınız, kaynaklarınız, kupürleriniz ve kaba okuma kaydı. Yalnızca yerelde; API anahtarları asla dâhil edilmez.</string>
+    <string name="settings_about">Hakkında</string>
+    <string name="settings_about_body">Nooz, konusu atlama olan bir haber okuyucusudur: neyin dışarıda bırakıldığı. Onu mdhv.xyz yapıyor; sakin, tek işe odaklanmış uygulamalardan oluşan küçük bir stüdyo.</string>
+    <string name="settings_visit_studio">mdhv.xyz\'i ziyaret et</string>
+    <string name="settings_view_source">Kaynağı GitHub\'da gör</string>
+    <string name="settings_contact">Bize ulaşın</string>
+    <string name="settings_more_from_studio">Stüdyodan dahası</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">Sözlük indiriliyor</string>
+    <string name="settings_downloaded">İndirildi</string>
+    <string name="settings_download">İndir</string>
+    <string name="settings_translation">Çeviri</string>
+    <string name="settings_translation_body">Bir seferde tek bir dil çifti. Bir kez indirildikten sonra çevrimdışı çalışır — aradığınız şey hiçbir yere gönderilmez.</string>
+    <string name="settings_remove">Kaldır</string>
+    <string name="settings_no_indic_pair">Bu kaynaktan henüz bir Hint dili çifti yok.</string>
+    <string name="settings_downloading_named">%1$s indiriliyor</string>
+    <string name="settings_installed">Kurulu</string>
 </resources>

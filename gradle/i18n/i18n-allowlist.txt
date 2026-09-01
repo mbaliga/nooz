@@ -15,18 +15,16 @@
 #   <path relative to the repo root> <count>
 app/src/main/kotlin/xyz/mdhv/riverwip/LensWordListScreen.kt 9
 app/src/main/kotlin/xyz/mdhv/riverwip/ModelChoicePanel.kt 9
-app/src/main/kotlin/xyz/mdhv/riverwip/SettingsScreen.kt 69
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/Bars.kt 3
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/EmptyState.kt 1
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/NoResultsState.kt 1
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SearchBar.kt 1
 core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SectionHeading.kt 1
-core/design/src/main/kotlin/xyz/mdhv/riverwip/design/Wordmark.kt 1
 feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefinitionSheet.kt 2
 feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefuseBottomSheet.kt 8
 feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/LensAnnotatedParagraph.kt 2
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ClippingsScreen.kt 5
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FlashCard.kt 10
+feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FlashCard.kt 8
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FoundQuote.kt 1
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/NewspaperReaderPane.kt 2
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ReaderScreenTwoPane.kt 1

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">ಹೊಸದಾಗಿಸಲಾಗಲಿಲ್ಲ: %1$s</string>
     <string name="edit_loaded_services">%1$d ಸೇವಾ ವ್ಯಾಖ್ಯಾನಗಳು ಲೋಡ್ ಆದವು.</string>
     <string name="edit_last_refreshed">ಕೊನೆಯ ಬಾರಿ ಹೊಸದಾಗಿಸಿದ್ದು %1$s.</string>
+    <string name="settings_back">ಹಿಂದೆ</string>
+    <string name="settings_theme">ಥೀಮ್</string>
+    <string name="settings_theme_follow">ಫೋನಿನ ಬೆಳಕು ಅಥವಾ ಕತ್ತಲೆ ಸೆಟ್ಟಿಂಗ್ ಅನುಸರಿಸಿ</string>
+    <string name="settings_theme_white">ಬಿಳಿ ಥೀಮ್</string>
+    <string name="settings_theme_paper">ಕಾಗದದ ಥೀಮ್</string>
+    <string name="settings_theme_dark">ಗಾಢ ಥೀಮ್</string>
+    <string name="settings_font">ಅಕ್ಷರಶೈಲಿ</string>
+    <string name="settings_text_size">ಅಕ್ಷರದ ಗಾತ್ರ</string>
+    <string name="settings_paper_grain">ಕಾಗದದ ಹದ</string>
+    <string name="settings_mark_read_as">ಓದಿದ ಲೇಖನಗಳನ್ನು ಹೀಗೆ ಗುರುತಿಸಿ</string>
+    <string name="settings_while_you_read">ನೀವು ಓದುತ್ತಿರುವಾಗ</string>
+    <string name="settings_while_you_read_body">ಆಗಾಗ, ನೀವು ಈಗಾಗಲೇ ಓದಿದ ಯಾವುದರಿಂದಲೋ ತೆಗೆದ ಒಂದು ನಿಜವಾದ ಸಾಲು.</string>
+    <string name="settings_today_in_history">ಇತಿಹಾಸದಲ್ಲಿ ಇಂದು</string>
+    <string name="settings_show_the_column">ಈ ಅಂಕಣವನ್ನು ತೋರಿಸಿ</string>
+    <string name="settings_today_in_history_body">ಆ ದಿನದ ಸುದ್ದಿಗಳ ಮೇಲೆ ಕೆಲವು ದಿನಾಂಕಿತ ಸಾಲುಗಳು, ವಿಕಿಪೀಡಿಯಾದ ಸ್ವಂತ “On this day” ಆಯ್ಕೆಯಿಂದ. ನೀವು ಸೇರಿಸಿದ ಮೂಲಗಳ ಹೊರಗಿನಿಂದ Nooz ತರುವ ಒಂದೇ ಒಂದು ವಿಷಯ ಇದು, ಆದ್ದರಿಂದ ನೀವು ಆನ್ ಮಾಡುವವರೆಗೆ ಇದು ಆಫ್ ಆಗಿಯೇ ಇರುತ್ತದೆ.</string>
+    <string name="settings_show_reading_time">ಓದುವ ಸಮಯ ತೋರಿಸಿ</string>
+    <string name="settings_highlight_loaded">ಪಕ್ಷಪಾತಿ ಭಾಷೆಯನ್ನು ಗುರುತಿಸಿ</string>
+    <string name="settings_highlight_loaded_body">ಓದುವಾಗ ಭಾವಪೂರ್ಣ ಪದಗಳಿಗೆ ಗೆರೆ ಎಳೆಯುತ್ತದೆ; ಸಾಕ್ಷ್ಯಕ್ಕಾಗಿ ಅದನ್ನು ತಟ್ಟಿ.</string>
+    <string name="settings_immersive">ಏಕಾಗ್ರ ಓದು</string>
+    <string name="settings_immersive_body">ಬರಿಯ ಪುಟಕ್ಕಾಗಿ ಹಿಂದಿನ ಗುಂಡಿ ಮತ್ತು ನಿಯಂತ್ರಣಗಳನ್ನು ಮರೆಮಾಡುತ್ತದೆ. ಆರಂಭದಲ್ಲಿ ಆಫ್; ಮರಳಲು ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ ಅಥವಾ ಹಿಂದೆ ತಟ್ಟಿ.</string>
+    <string name="settings_more">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="settings_more_body">ನಿಘಂಟು, ಓದುಗ ಬುದ್ಧಿಮತ್ತೆ ಮತ್ತು ಮಾದರಿಗಳು, ಸನ್ನೆಗಳು, ನಿಮ್ಮ ದತ್ತಾಂಶ, ಕುರಿತು.</string>
+    <string name="settings_dictionary">ನಿಘಂಟು</string>
+    <string name="settings_dictionary_body">ಒಂದು ನಿಘಂಟನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನಂತರ ಓದುವಾಗ ಯಾವುದೇ ಪದವನ್ನು ಒತ್ತಿ ಹಿಡಿದು ಅದರ ಅರ್ಥ ನೋಡಿ, Kindle ಮಾದರಿಯಲ್ಲಿ.</string>
+    <string name="settings_crash_title">ಕಳೆದ ಬಾರಿ Nooz ಅನಿರೀಕ್ಷಿತವಾಗಿ ಮುಚ್ಚಿಕೊಂಡಿತು</string>
+    <string name="settings_crash_body">ವರದಿ ನಿಮ್ಮ ಸಾಧನದಲ್ಲೇ ಉಳಿಯಿತು; ಎಲ್ಲಿಗೂ ಏನೂ ಕಳುಹಿಸಲಾಗಿಲ್ಲ.</string>
+    <string name="settings_copy">ನಕಲಿಸಿ</string>
+    <string name="settings_dismiss">ವಜಾ ಮಾಡಿ</string>
+    <string name="settings_reader_intelligence">ಓದುಗ ಬುದ್ಧಿಮತ್ತೆ</string>
+    <string name="settings_byok_model">ನಿಮ್ಮ ಸ್ವಂತ ಕೀಲಿ: %1$s</string>
+    <string name="settings_flash_body">ಇಂದಿನ ಸುದ್ದಿ 10 ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಪದಗಳಿಗೆ ಸಂಕುಚಿತ. ಕೆಳಗಿನಿಂದ ಒಂದು ಮಾದರಿಯನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದರೆ ನಿಮ್ಮ ಸಾಧನದಲ್ಲೇ ಚಲಿಸುತ್ತದೆ, ಅಥವಾ ನಿಮ್ಮ ಸ್ವಂತ ಕೀಲಿಯ ಮೂಲಕ.</string>
+    <string name="settings_cast_body">ಪೂರ್ಣ ಲೇಖನವನ್ನು ಸಹಜವಾದ ಸಾಧನದೊಳಗಿನ ಧ್ವನಿಯಲ್ಲಿ ಓದಿ ಹೇಳಲಾಗುತ್ತದೆ, ಎಂದಿಗೂ ಯಾಂತ್ರಿಕ ಸಿಸ್ಟಂ ಓದುಗನಿಂದ ಅಲ್ಲ. ಇದಕ್ಕೆ ತನ್ನದೇ ಮಾದರಿ ಇದೆ, ಅದು Flash ಮಾದರಿಯಿಂದ ಪ್ರತ್ಯೇಕವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತದೆ.</string>
+    <string name="settings_cast_model">Nooz Cast ಮಾದರಿ</string>
+    <string name="settings_whats_inside_body">ಮಗ್ಗ, Flash, Cast, ಕತ್ತರಿಸಿದವು — ಮತ್ತು ಪ್ರತಿಯೊಂದೂ ಎಲ್ಲಿದೆ ಎಂಬುದು.</string>
+    <string name="settings_gestures">ಸನ್ನೆಗಳು</string>
+    <string name="settings_gestures_body">ಓದುಗನಲ್ಲಿ ಎರಡು ಬೆರಳಿನ ಸನ್ನೆಗಳು. ಆರಂಭದಿಂದಲೇ ಆನ್.</string>
+    <string name="settings_gesture_brightness">ಎರಡು ಬೆರಳಿನಿಂದ ಎಳೆಯಿರಿ → ಪ್ರಕಾಶ</string>
+    <string name="settings_gesture_theme">ಎರಡು ಬೆರಳಿನಿಂದ ಬೀಸಿ → ಥೀಮ್</string>
+    <string name="settings_gesture_unread">ಏಕಾಗ್ರ ಸ್ಥಿತಿಯಲ್ಲಿ ಚಿವುಟಿ → ಓದದಿರುವವು</string>
+    <string name="settings_images">ಚಿತ್ರಗಳು</string>
+    <string name="settings_show_feed_images">ಫೀಡ್ ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಿ</string>
+    <string name="settings_hide_flagged_images">ಮೂಲ ಗುರುತಿಸಿದ ಚಿತ್ರಗಳನ್ನು ಮರೆಮಾಡಿ</string>
+    <string name="settings_advanced">ಸುಧಾರಿತ</string>
+    <string name="settings_advanced_body">ಪಕ್ಷಪಾತಿ ಭಾಷೆಯ ಪದಪಟ್ಟಿ, ಪ್ರತಿಕ್ರಿಯೆ.</string>
+    <string name="settings_word_list">ಪಕ್ಷಪಾತಿ ಭಾಷೆಯ ಪದಪಟ್ಟಿ</string>
+    <string name="settings_word_list_body">ಪ್ರತ್ಯೇಕ ಪೂರ್ವನಿಗದಿತ ಗುರುತುಗಳನ್ನು ಆಫ್ ಮಾಡಿ, ಅಥವಾ ಗಮನಿಸಬೇಕಾದ ನಿಮ್ಮ ಸ್ವಂತ ಪದಗಳನ್ನು ಸೇರಿಸಿ.</string>
+    <string name="settings_your_data">ನಿಮ್ಮ ದತ್ತಾಂಶ</string>
+    <string name="settings_your_data_body">ಎಲ್ಲವನ್ನೂ ಮುಕ್ತ JSON ಆಗಿ ರಫ್ತು ಮಾಡಿ: ಆದ್ಯತೆಗಳು, ನಿಮ್ಮ ಪ್ರದೇಶ ಮತ್ತು ವಿಷಯಗಳು, ನಿಮ್ಮ ಮೂಲಗಳು, ನಿಮ್ಮ ಕತ್ತರಿಸಿದವು, ಮತ್ತು ಸ್ಥೂಲ ಓದು-ದಾಖಲೆ. ಸ್ಥಳೀಯ ಮಾತ್ರ; API ಕೀಲಿಗಳು ಎಂದಿಗೂ ಸೇರಿರುವುದಿಲ್ಲ.</string>
+    <string name="settings_about">ಕುರಿತು</string>
+    <string name="settings_about_body">Nooz ಎಂಬುದು ಬಿಟ್ಟುಹೋದದ್ದನ್ನೇ ವಿಷಯವಾಗಿಟ್ಟುಕೊಂಡ ಸುದ್ದಿ ಓದುಗ: ಏನು ಬಿಟ್ಟುಹೋಯಿತು ಎಂಬುದು. ಇದನ್ನು ಮಾಡುವುದು mdhv.xyz, ಶಾಂತ ಹಾಗೂ ಏಕಾಗ್ರ ಆಪ್‌ಗಳ ಒಂದು ಸಣ್ಣ ಸ್ಟುಡಿಯೊ.</string>
+    <string name="settings_visit_studio">mdhv.xyz ಗೆ ಭೇಟಿ ನೀಡಿ</string>
+    <string name="settings_view_source">GitHub ನಲ್ಲಿ ಮೂಲ ನೋಡಿ</string>
+    <string name="settings_contact">ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ</string>
+    <string name="settings_more_from_studio">ಸ್ಟುಡಿಯೊದಿಂದ ಇನ್ನಷ್ಟು</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">ನಿಘಂಟು ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ</string>
+    <string name="settings_downloaded">ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ</string>
+    <string name="settings_download">ಡೌನ್‌ಲೋಡ್</string>
+    <string name="settings_translation">ಅನುವಾದ</string>
+    <string name="settings_translation_body">ಒಂದು ಸಮಯಕ್ಕೆ ಒಂದು ಭಾಷಾ ಜೋಡಿ. ಒಮ್ಮೆ ಡೌನ್‌ಲೋಡ್ ಆದ ಮೇಲೆ ಅದು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ — ನೀವು ಹುಡುಕುವುದು ಎಲ್ಲಿಗೂ ಕಳುಹಿಸಲ್ಪಡುವುದಿಲ್ಲ.</string>
+    <string name="settings_remove">ತೆಗೆದುಹಾಕಿ</string>
+    <string name="settings_no_indic_pair">ಈ ಮೂಲದಿಂದ ಇನ್ನೂ ಯಾವುದೇ ಭಾರತೀಯ ಭಾಷಾ ಜೋಡಿ ಲಭ್ಯವಿಲ್ಲ.</string>
+    <string name="settings_downloading_named">%1$s ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ</string>
+    <string name="settings_installed">ಸ್ಥಾಪಿತ</string>
 </resources>

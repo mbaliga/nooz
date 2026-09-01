@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  40 of 185 strings translated.
+  76 of 249 strings translated.
 -->
 <resources>
 
@@ -51,4 +51,40 @@
     <string name="edit_edit">ترمیم</string>
     <string name="edit_done">مکمل</string>
     <string name="edit_all">سٲری</string>
+    <string name="settings_back">واپس</string>
+    <string name="settings_theme">تھیم</string>
+    <string name="settings_theme_follow">فونُک روشن یا کالٕہ ترتیب استعمال کریو</string>
+    <string name="settings_theme_white">سفید تھیم</string>
+    <string name="settings_theme_paper">کاغذی تھیم</string>
+    <string name="settings_theme_dark">کالٕہ تھیم</string>
+    <string name="settings_font">فونٹ</string>
+    <string name="settings_text_size">اَکھرن ہُند سائز</string>
+    <string name="settings_paper_grain">کاغذُک بناوٹ</string>
+    <string name="settings_mark_read_as">پأریمٕتی مضمون یتھ طریقہ نشان کریو</string>
+    <string name="settings_while_you_read">پأرن دوران</string>
+    <string name="settings_today_in_history">تٲریخس منٛز اَز</string>
+    <string name="settings_show_the_column">یہ کالم ہاویو</string>
+    <string name="settings_show_reading_time">پأرنُک وقت ہاویو</string>
+    <string name="settings_immersive">غرق پأرُن</string>
+    <string name="settings_more">مزید ترتیبات</string>
+    <string name="settings_dictionary">لغت</string>
+    <string name="settings_copy">نقل کریو</string>
+    <string name="settings_dismiss">ہٹاویو</string>
+    <string name="settings_gestures">اِشارٕ</string>
+    <string name="settings_images">تصویرٕ</string>
+    <string name="settings_show_feed_images">فیڈٕچ تصویرٕ ہاویو</string>
+    <string name="settings_advanced">اعلیٰ</string>
+    <string name="settings_your_data">توٚہنٛز ڈیٹا</string>
+    <string name="settings_about">تعارف</string>
+    <string name="settings_visit_studio">mdhv.xyz وچھیو</string>
+    <string name="settings_view_source">GitHub پؠٹھ ماخذ وچھیو</string>
+    <string name="settings_contact">اَسہٕ سٟتؠ رابطہ کریو</string>
+    <string name="settings_more_from_studio">سٹوڈیو پؠٹھٕ مزید</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloaded">ڈاؤن لوڈ سپدیو</string>
+    <string name="settings_download">ڈاؤن لوڈ کریو</string>
+    <string name="settings_translation">ترجمہ</string>
+    <string name="settings_remove">ہٹاویو</string>
+    <string name="settings_downloading_named">%1$s ڈاؤن لوڈ گژھان چھُ</string>
+    <string name="settings_installed">نصب</string>
 </resources>

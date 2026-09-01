@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">Impossible de rafraîchir : %1$s</string>
     <string name="edit_loaded_services">%1$d définitions de service chargées.</string>
     <string name="edit_last_refreshed">Dernier rafraîchissement %1$s.</string>
+    <string name="settings_back">Retour</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_theme_follow">Suivre le réglage clair ou sombre du téléphone</string>
+    <string name="settings_theme_white">Thème blanc</string>
+    <string name="settings_theme_paper">Thème papier</string>
+    <string name="settings_theme_dark">Thème sombre</string>
+    <string name="settings_font">Police</string>
+    <string name="settings_text_size">Taille du texte</string>
+    <string name="settings_paper_grain">Grain du papier</string>
+    <string name="settings_mark_read_as">Marquer les articles lus comme</string>
+    <string name="settings_while_you_read">Pendant la lecture</string>
+    <string name="settings_while_you_read_body">De temps à autre, une vraie ligne tirée de quelque chose que vous avez déjà lu.</string>
+    <string name="settings_today_in_history">Aujourd’hui dans l’histoire</string>
+    <string name="settings_show_the_column">Afficher la colonne</string>
+    <string name="settings_today_in_history_body">Quelques lignes datées au-dessus des nouvelles du jour, tirées de la sélection « On this day » de Wikipédia. C’est la seule chose que Nooz va chercher en dehors des sources que vous avez ajoutées, elle reste donc désactivée tant que vous ne l’activez pas.</string>
+    <string name="settings_show_reading_time">Afficher le temps de lecture</string>
+    <string name="settings_highlight_loaded">Souligner le langage orienté</string>
+    <string name="settings_highlight_loaded_body">Souligne les mots chargés pendant la lecture ; touchez-les pour voir la preuve.</string>
+    <string name="settings_immersive">Lecture immersive</string>
+    <string name="settings_immersive_body">Masque le bouton retour et les commandes pour une page nue. Désactivée par défaut ; balayez vers la droite ou touchez retour pour revenir.</string>
+    <string name="settings_more">Plus de réglages</string>
+    <string name="settings_more_body">Dictionnaire, intelligence du lecteur et modèles, gestes, vos données, à propos.</string>
+    <string name="settings_dictionary">Dictionnaire</string>
+    <string name="settings_dictionary_body">Téléchargez un dictionnaire, puis appuyez longuement sur n’importe quel mot pendant la lecture pour en voir le sens, à la manière du Kindle.</string>
+    <string name="settings_crash_title">Nooz s’est fermé de façon inattendue la dernière fois</string>
+    <string name="settings_crash_body">Le rapport est resté sur votre appareil ; rien n’a été envoyé nulle part.</string>
+    <string name="settings_copy">Copier</string>
+    <string name="settings_dismiss">Ignorer</string>
+    <string name="settings_reader_intelligence">Intelligence du lecteur</string>
+    <string name="settings_byok_model">Avec votre propre clé : %1$s</string>
+    <string name="settings_flash_body">L’actualité du jour comprimée en 10 mots ou moins. Fonctionne sur votre appareil une fois un modèle téléchargé ci-dessous, ou via votre propre clé.</string>
+    <string name="settings_cast_body">L’article entier lu à voix haute par une voix naturelle sur l’appareil, jamais par le lecteur robotique du système. Il a son propre modèle, téléchargé séparément de celui de Flash.</string>
+    <string name="settings_cast_model">Modèle Nooz Cast</string>
+    <string name="settings_whats_inside_body">Le Métier, Flash, Cast, les Coupures — et où se trouve chacun.</string>
+    <string name="settings_gestures">Gestes</string>
+    <string name="settings_gestures_body">Gestes du lecteur à deux doigts. Activés par défaut.</string>
+    <string name="settings_gesture_brightness">Glisser à deux doigts → luminosité</string>
+    <string name="settings_gesture_theme">Coup à deux doigts → thème</string>
+    <string name="settings_gesture_unread">Pincer en mode immersif → non lus</string>
+    <string name="settings_images">Images</string>
+    <string name="settings_show_feed_images">Afficher les images du flux</string>
+    <string name="settings_hide_flagged_images">Masquer les images signalées par la source</string>
+    <string name="settings_advanced">Avancé</string>
+    <string name="settings_advanced_body">Liste des mots du langage orienté, retours.</string>
+    <string name="settings_word_list">Liste des mots du langage orienté</string>
+    <string name="settings_word_list_body">Désactivez certains marquages par défaut, ou ajoutez vos propres mots à surveiller.</string>
+    <string name="settings_your_data">Vos données</string>
+    <string name="settings_your_data_body">Exportez tout au format JSON ouvert : préférences, votre région et vos thèmes, vos sources, vos coupures et le journal de lecture approximatif. En local uniquement ; les clés d’API ne sont jamais incluses.</string>
+    <string name="settings_about">À propos</string>
+    <string name="settings_about_body">Nooz est un lecteur d’actualité dont le sujet est l’omission : ce qui a été laissé de côté. Il est fait par mdhv.xyz, un petit studio d’applications calmes et concentrées.</string>
+    <string name="settings_visit_studio">Visiter mdhv.xyz</string>
+    <string name="settings_view_source">Voir le code sur GitHub</string>
+    <string name="settings_contact">Nous contacter</string>
+    <string name="settings_more_from_studio">Plus du studio</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">Téléchargement du dictionnaire</string>
+    <string name="settings_downloaded">Téléchargé</string>
+    <string name="settings_download">Télécharger</string>
+    <string name="settings_translation">Traduction</string>
+    <string name="settings_translation_body">Une paire de langues à la fois. Téléchargée une fois, elle fonctionne hors ligne — ce que vous cherchez n’est jamais envoyé nulle part.</string>
+    <string name="settings_remove">Retirer</string>
+    <string name="settings_no_indic_pair">Aucune paire avec une langue indienne n’est encore disponible depuis cette source.</string>
+    <string name="settings_downloading_named">Téléchargement de %1$s</string>
+    <string name="settings_installed">Installé</string>
 </resources>

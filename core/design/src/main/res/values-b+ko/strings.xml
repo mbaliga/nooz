@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">새로 고치지 못했습니다: %1$s</string>
     <string name="edit_loaded_services">서비스 정의 %1$d개를 불러왔습니다.</string>
     <string name="edit_last_refreshed">마지막 새로 고침 %1$s.</string>
+    <string name="settings_back">뒤로</string>
+    <string name="settings_theme">테마</string>
+    <string name="settings_theme_follow">휴대전화의 밝게/어둡게 설정을 따름</string>
+    <string name="settings_theme_white">흰 테마</string>
+    <string name="settings_theme_paper">종이 테마</string>
+    <string name="settings_theme_dark">어두운 테마</string>
+    <string name="settings_font">글꼴</string>
+    <string name="settings_text_size">글자 크기</string>
+    <string name="settings_paper_grain">종이 결</string>
+    <string name="settings_mark_read_as">읽은 기사 표시 방법</string>
+    <string name="settings_while_you_read">읽는 동안</string>
+    <string name="settings_while_you_read_body">이따금, 이미 읽은 글에서 뽑아낸 진짜 한 줄.</string>
+    <string name="settings_today_in_history">역사 속 오늘</string>
+    <string name="settings_show_the_column">이 칸 보이기</string>
+    <string name="settings_today_in_history_body">그날의 기사 위에 날짜가 붙은 몇 줄. 위키백과가 직접 고른 “On this day”에서 가져옵니다. 여러분이 추가한 출처 바깥에서 Nooz가 가져오는 것은 이것뿐이라, 켜기 전까지는 꺼진 채로 있습니다.</string>
+    <string name="settings_show_reading_time">읽는 데 걸리는 시간 보이기</string>
+    <string name="settings_highlight_loaded">치우친 표현 드러내기</string>
+    <string name="settings_highlight_loaded_body">읽는 동안 감정이 실린 표현에 밑줄을 긋습니다. 근거를 보려면 눌러 보세요.</string>
+    <string name="settings_immersive">몰입해 읽기</string>
+    <string name="settings_immersive_body">뒤로 버튼과 조작부를 감춰 맨 지면만 남깁니다. 기본은 꺼짐. 돌아오려면 오른쪽으로 밀거나 뒤로를 누르세요.</string>
+    <string name="settings_more">설정 더 보기</string>
+    <string name="settings_more_body">사전, 읽기 지능과 모델, 제스처, 내 데이터, 정보.</string>
+    <string name="settings_dictionary">사전</string>
+    <string name="settings_dictionary_body">사전을 내려받은 뒤, 읽다가 어떤 낱말이든 길게 누르면 뜻이 나옵니다. Kindle처럼요.</string>
+    <string name="settings_crash_title">지난번에 Nooz가 갑자기 종료되었습니다</string>
+    <string name="settings_crash_body">보고서는 기기 안에 그대로 남았고, 어디로도 아무것도 보내지 않았습니다.</string>
+    <string name="settings_copy">복사</string>
+    <string name="settings_dismiss">닫기</string>
+    <string name="settings_reader_intelligence">읽기 지능</string>
+    <string name="settings_byok_model">내 키 사용: %1$s</string>
+    <string name="settings_flash_body">오늘의 뉴스를 열 단어 이하로 압축합니다. 아래에서 모델을 내려받으면 기기 안에서 돌아가고, 직접 가진 키로도 쓸 수 있습니다.</string>
+    <string name="settings_cast_body">기사 전체를 기기 안의 자연스러운 목소리로 읽어 줍니다. 기계적인 시스템 음성은 쓰지 않습니다. Flash의 모델과는 따로 내려받는 자체 모델이 있습니다.</string>
+    <string name="settings_cast_model">Nooz Cast 모델</string>
+    <string name="settings_whats_inside_body">베틀, Flash, Cast, 오려 둔 글 — 그리고 각각이 어디에 있는지.</string>
+    <string name="settings_gestures">제스처</string>
+    <string name="settings_gestures_body">읽기 화면의 두 손가락 제스처. 기본은 켜짐.</string>
+    <string name="settings_gesture_brightness">두 손가락으로 끌기 → 밝기</string>
+    <string name="settings_gesture_theme">두 손가락으로 튕기기 → 테마</string>
+    <string name="settings_gesture_unread">몰입 상태에서 오므리기 → 읽지 않음</string>
+    <string name="settings_images">이미지</string>
+    <string name="settings_show_feed_images">피드 이미지 보이기</string>
+    <string name="settings_hide_flagged_images">출처가 표시한 이미지 감추기</string>
+    <string name="settings_advanced">고급</string>
+    <string name="settings_advanced_body">치우친 표현 낱말 목록, 의견 보내기.</string>
+    <string name="settings_word_list">치우친 표현 낱말 목록</string>
+    <string name="settings_word_list_body">기본 표시를 하나씩 끄거나, 눈여겨볼 낱말을 직접 더할 수 있습니다.</string>
+    <string name="settings_your_data">내 데이터</string>
+    <string name="settings_your_data_body">모든 것을 열린 JSON으로 내보냅니다. 환경설정, 지역과 관심 주제, 출처, 오려 둔 글, 그리고 대략의 읽기 기록. 기기 안에만 있으며 API 키는 절대 포함되지 않습니다.</string>
+    <string name="settings_about">정보</string>
+    <string name="settings_about_body">Nooz는 빠진 것을 주제로 삼는 뉴스 리더입니다. 무엇이 빠졌는가. 만드는 곳은 mdhv.xyz, 조용하고 한 가지에 집중한 앱을 만드는 작은 스튜디오입니다.</string>
+    <string name="settings_visit_studio">mdhv.xyz 방문</string>
+    <string name="settings_view_source">GitHub에서 소스 보기</string>
+    <string name="settings_contact">문의하기</string>
+    <string name="settings_more_from_studio">스튜디오의 다른 앱</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">사전 내려받는 중</string>
+    <string name="settings_downloaded">내려받음</string>
+    <string name="settings_download">내려받기</string>
+    <string name="settings_translation">번역</string>
+    <string name="settings_translation_body">한 번에 한 언어 쌍. 한 번 내려받으면 오프라인에서 작동하며, 찾아본 내용은 어디로도 보내지 않습니다.</string>
+    <string name="settings_remove">제거</string>
+    <string name="settings_no_indic_pair">이 제공처에는 아직 인도 언어 쌍이 없습니다.</string>
+    <string name="settings_downloading_named">%1$s 내려받는 중</string>
+    <string name="settings_installed">설치됨</string>
 </resources>

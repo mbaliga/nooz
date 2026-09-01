@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">更新できませんでした：%1$s</string>
     <string name="edit_loaded_services">%1$d 件のサービス定義を読み込みました。</string>
     <string name="edit_last_refreshed">最終更新 %1$s。</string>
+    <string name="settings_back">戻る</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_theme_follow">端末のライト／ダーク設定に合わせる</string>
+    <string name="settings_theme_white">白いテーマ</string>
+    <string name="settings_theme_paper">紙のテーマ</string>
+    <string name="settings_theme_dark">暗いテーマ</string>
+    <string name="settings_font">書体</string>
+    <string name="settings_text_size">文字の大きさ</string>
+    <string name="settings_paper_grain">紙の質感</string>
+    <string name="settings_mark_read_as">読んだ記事の印</string>
+    <string name="settings_while_you_read">読んでいるあいだ</string>
+    <string name="settings_while_you_read_body">ときおり、すでに読んだ記事から引いた実際の一行を。</string>
+    <string name="settings_today_in_history">歴史のなかの今日</string>
+    <string name="settings_show_the_column">この欄を表示</string>
+    <string name="settings_today_in_history_body">その日のニュースの上に、日付のついた数行を。ウィキペディア自身の「On this day」の選から。あなたが追加した情報源の外から Nooz が取ってくるのはこれだけなので、あなたが有効にするまではオフのままです。</string>
+    <string name="settings_show_reading_time">読了時間を表示</string>
+    <string name="settings_highlight_loaded">偏りのある言い回しを示す</string>
+    <string name="settings_highlight_loaded_body">読んでいるあいだ、感情を帯びた語に下線を引きます。根拠を見るにはそこをタップ。</string>
+    <string name="settings_immersive">没入して読む</string>
+    <string name="settings_immersive_body">戻るボタンと操作部を隠し、素の紙面にします。既定ではオフ。戻るには右へスワイプするか戻るをタップ。</string>
+    <string name="settings_more">その他の設定</string>
+    <string name="settings_more_body">辞書、リーダーの知能とモデル、ジェスチャー、あなたのデータ、このアプリについて。</string>
+    <string name="settings_dictionary">辞書</string>
+    <string name="settings_dictionary_body">辞書をダウンロードすれば、読みながら語を長押しして意味を見られます。Kindle のように。</string>
+    <string name="settings_crash_title">前回、Nooz が予期せず終了しました</string>
+    <string name="settings_crash_body">報告は端末内にとどまりました。どこにも何も送られていません。</string>
+    <string name="settings_copy">コピー</string>
+    <string name="settings_dismiss">閉じる</string>
+    <string name="settings_reader_intelligence">リーダーの知能</string>
+    <string name="settings_byok_model">自分の鍵を使う：%1$s</string>
+    <string name="settings_flash_body">今日のニュースを10語以内に圧縮。下でモデルをダウンロードすれば端末上で動きます。自分の鍵を使うこともできます。</string>
+    <string name="settings_cast_body">記事全体を、端末内の自然な声で読み上げます。機械的なシステムの読み上げは使いません。Flash とは別に、独自のモデルをダウンロードします。</string>
+    <string name="settings_cast_model">Nooz Cast のモデル</string>
+    <string name="settings_whats_inside_body">織機、Flash、Cast、切り抜き——そして、それぞれの居場所。</string>
+    <string name="settings_gestures">ジェスチャー</string>
+    <string name="settings_gestures_body">リーダーでの二本指ジェスチャー。既定でオン。</string>
+    <string name="settings_gesture_brightness">二本指でドラッグ → 明るさ</string>
+    <string name="settings_gesture_theme">二本指ではじく → テーマ</string>
+    <string name="settings_gesture_unread">没入中にピンチ → 未読</string>
+    <string name="settings_images">画像</string>
+    <string name="settings_show_feed_images">フィードの画像を表示</string>
+    <string name="settings_hide_flagged_images">情報源が印を付けた画像を隠す</string>
+    <string name="settings_advanced">詳細</string>
+    <string name="settings_advanced_body">偏りのある語のリスト、ご意見。</string>
+    <string name="settings_word_list">偏りのある語のリスト</string>
+    <string name="settings_word_list_body">既定の印を個別にオフにしたり、気をつけたい語を自分で追加したりできます。</string>
+    <string name="settings_your_data">あなたのデータ</string>
+    <string name="settings_your_data_body">すべてを開かれた JSON として書き出します。設定、地域と話題、情報源、切り抜き、そして粗い読書記録。端末内のみで、API の鍵は決して含まれません。</string>
+    <string name="settings_about">このアプリについて</string>
+    <string name="settings_about_body">Nooz は「抜け落ちたもの」を主題とするニュースリーダーです。作っているのは mdhv.xyz。静かで一点に集中したアプリをつくる小さなスタジオです。</string>
+    <string name="settings_visit_studio">mdhv.xyz を見る</string>
+    <string name="settings_view_source">GitHub でソースを見る</string>
+    <string name="settings_contact">お問い合わせ</string>
+    <string name="settings_more_from_studio">スタジオの他の作品</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">辞書をダウンロード中</string>
+    <string name="settings_downloaded">ダウンロード済み</string>
+    <string name="settings_download">ダウンロード</string>
+    <string name="settings_translation">翻訳</string>
+    <string name="settings_translation_body">一度に一つの言語対。一度ダウンロードすればオフラインで動き、調べた内容がどこかへ送られることはありません。</string>
+    <string name="settings_remove">削除</string>
+    <string name="settings_no_indic_pair">この提供元には、まだインドの言語との組み合わせがありません。</string>
+    <string name="settings_downloading_named">%1$s をダウンロード中</string>
+    <string name="settings_installed">インストール済み</string>
 </resources>

@@ -314,7 +314,7 @@ fun SettingsScreen(
                 title = { Text(if (compact) "READING" else "SETTINGS", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(DesignR.string.settings_back))
                     }
                 },
             )
@@ -370,7 +370,7 @@ fun SettingsBody(
             LanguageSection()
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Theme")
+            SectionHeading(stringResource(DesignR.string.settings_theme))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -378,7 +378,7 @@ fun SettingsBody(
                 // Auto comes first: it is the default, and it is the answer for
                 // a reader whose phone is already in dark mode (D34).
                 SwatchCircle(
-                    label = "Follow the phone's light or dark setting",
+                    label = stringResource(DesignR.string.settings_theme_follow),
                     selected = settings.themeMode == ThemeMode.SYSTEM,
                     background = Tokens.Palette.paperField,
                     backgroundBrush = Brush.linearGradient(
@@ -394,21 +394,21 @@ fun SettingsBody(
                     onClick = { vm.setTheme(ThemeMode.SYSTEM) },
                 )
                 SwatchCircle(
-                    label = "White theme",
+                    label = stringResource(DesignR.string.settings_theme_white),
                     selected = settings.themeMode == ThemeMode.WHITE,
                     background = Color(0xFFFFFFFF),
                     letterColor = Tokens.Palette.paperInk,
                     onClick = { vm.setTheme(ThemeMode.WHITE) },
                 )
                 SwatchCircle(
-                    label = "Paper theme",
+                    label = stringResource(DesignR.string.settings_theme_paper),
                     selected = settings.themeMode == ThemeMode.PAPER,
                     background = Tokens.Palette.paperField,
                     letterColor = Tokens.Palette.paperInk,
                     onClick = { vm.setTheme(ThemeMode.PAPER) },
                 )
                 SwatchCircle(
-                    label = "Dark theme",
+                    label = stringResource(DesignR.string.settings_theme_dark),
                     selected = settings.themeMode == ThemeMode.DARK,
                     background = Color(0xFF262624),
                     letterColor = Color(0xFFECEAE6),
@@ -429,7 +429,7 @@ fun SettingsBody(
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Font")
+            SectionHeading(stringResource(DesignR.string.settings_font))
             // The owner's Settings mock: a list of the font names, each set in
             // its own face, a check on the chosen one (not colour swatches).
             Column(modifier = Modifier.selectableGroup()) {
@@ -454,7 +454,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Text Size")
+            SectionHeading(stringResource(DesignR.string.settings_text_size))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -485,7 +485,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Paper Grain")
+            SectionHeading(stringResource(DesignR.string.settings_paper_grain))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -516,7 +516,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Mark Read Articles As")
+            SectionHeading(stringResource(DesignR.string.settings_mark_read_as))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -548,9 +548,9 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("While You Read")
+            SectionHeading(stringResource(DesignR.string.settings_while_you_read))
             Text(
-                "Every so often, a real line pulled from something you've already read.",
+                stringResource(DesignR.string.settings_while_you_read_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -583,7 +583,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Today In History")
+            SectionHeading(stringResource(DesignR.string.settings_today_in_history))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -597,14 +597,14 @@ fun SettingsBody(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Show the column",
+                        stringResource(DesignR.string.settings_show_the_column),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     // Says where it fetches from, because this is the only
                     // request Nooz makes to somewhere the reader didn't add.
                     Text(
-                        "A few dated lines above the day's stories, from Wikipedia's own \"On this day\" selection. This is the one thing Nooz fetches from outside the sources you added, so it stays off until you turn it on.",
+                        stringResource(DesignR.string.settings_today_in_history_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -625,7 +625,7 @@ fun SettingsBody(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "Show Reading Time",
+                    stringResource(DesignR.string.settings_show_reading_time),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f),
@@ -647,12 +647,12 @@ fun SettingsBody(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Highlight loaded language",
+                        stringResource(DesignR.string.settings_highlight_loaded),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
-                        "Underlines charged wording as you read; tap it for the evidence.",
+                        stringResource(DesignR.string.settings_highlight_loaded_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -674,12 +674,12 @@ fun SettingsBody(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Immersive reading",
+                        stringResource(DesignR.string.settings_immersive),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
-                        "Hides the back button and controls for a bare page. Off by default; swipe right or tap back to return.",
+                        stringResource(DesignR.string.settings_immersive_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -693,7 +693,7 @@ fun SettingsBody(
             // single door (owner #2).
             if (compact) {
                 Text(
-                    "More settings",
+                    stringResource(DesignR.string.settings_more),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
@@ -702,14 +702,14 @@ fun SettingsBody(
                         .padding(vertical = Tokens.Spacing.sm),
                 )
                 Text(
-                    "Dictionary, reader intelligence and models, gestures, your data, about.",
+                    stringResource(DesignR.string.settings_more_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else {
-                SectionHeading("Dictionary")
+                SectionHeading(stringResource(DesignR.string.settings_dictionary))
                 Text(
-                    "Download a dictionary, then long-press any word as you read for its meaning, Kindle-style.",
+                    stringResource(DesignR.string.settings_dictionary_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -771,10 +771,10 @@ private fun CrashSection() {
             .padding(Tokens.Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
     ) {
-        Text("Nooz closed unexpectedly last time", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(DesignR.string.settings_crash_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         Text(current.headline, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
         Text(
-            "The report stayed on your device; nothing was sent anywhere.",
+            stringResource(DesignR.string.settings_crash_body),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -792,11 +792,11 @@ private fun CrashSection() {
             TextButton(
                 onClick = { clipboard.setText(AnnotatedString(current.fullReport)) },
                 contentPadding = PaddingValues(0.dp),
-            ) { Text("Copy") }
+            ) { Text(stringResource(DesignR.string.settings_copy)) }
             TextButton(
                 onClick = { CrashRecovery.clear(context); report = null },
                 contentPadding = PaddingValues(0.dp),
-            ) { Text("Dismiss") }
+            ) { Text(stringResource(DesignR.string.settings_dismiss)) }
         }
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -823,10 +823,10 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
     // ever hid the shared model panel beneath them; that partial hide was
     // the confusing part, not a real need to save space on this one tab.
     Column(Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs)) {
-        SectionHeading("Reader intelligence")
+        SectionHeading(stringResource(DesignR.string.settings_reader_intelligence))
         if (config.isComplete) {
             Text(
-                "Bring-your-own-key: ${config.model}",
+                stringResource(DesignR.string.settings_byok_model, config.model),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -850,7 +850,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                "Today's news compressed to 10 words or fewer. Runs on your device once you download a model below, or through your own key.",
+                stringResource(DesignR.string.settings_flash_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -875,7 +875,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                "The full article read aloud in a natural on-device voice, never the robotic system reader. Its own model, downloaded separately from Flash's.",
+                stringResource(DesignR.string.settings_cast_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -903,7 +903,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
     // Cast has no on-device/BYOK trichotomy — a private anchor voice never
     // leaves the device — so its own model gets only the download list,
     // scoped to its own kind rather than Flash's LLM_GGUF default.
-    SectionHeading("Nooz Cast model", modifier = Modifier.padding(top = Tokens.Spacing.md))
+    SectionHeading(stringResource(DesignR.string.settings_cast_model), modifier = Modifier.padding(top = Tokens.Spacing.md))
     ModelDownloadList(
         ModelDownloadUi(
             models = vm.downloadableModels(catalogue, kind = "TTS_ONNX"),
@@ -938,9 +938,9 @@ private fun WhatsInsideSection() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            SectionHeading("What's inside")
+            SectionHeading(stringResource(DesignR.string.tour_title))
             Text(
-                "The Loom, Flash, Cast, Clippings — and where each one lives.",
+                stringResource(DesignR.string.settings_whats_inside_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1086,9 +1086,9 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            SectionHeading("Gestures")
+            SectionHeading(stringResource(DesignR.string.settings_gestures))
             Text(
-                "Two-finger reader gestures. Defaults are on.",
+                stringResource(DesignR.string.settings_gestures_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1101,19 +1101,19 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
     }
     if (expanded) {
         SettingSwitchRow(
-            title = "Two-finger drag → brightness",
+            title = stringResource(DesignR.string.settings_gesture_brightness),
             subtitle = "Slide two fingers up or down to dim or brighten the page.",
             checked = settings.twoFingerBrightness,
             onCheckedChange = { vm.setTwoFingerBrightness(it) },
         )
         SettingSwitchRow(
-            title = "Two-finger flick → theme",
+            title = stringResource(DesignR.string.settings_gesture_theme),
             subtitle = "Flick two fingers sideways to step the paper tint.",
             checked = settings.twoFingerThemeFlick,
             onCheckedChange = { vm.setTwoFingerThemeFlick(it) },
         )
         SettingSwitchRow(
-            title = "Immersive pinch → unread",
+            title = stringResource(DesignR.string.settings_gesture_unread),
             subtitle = "On the Stand's list: pinch in to show only unread, pinch out to show everything again.",
             checked = settings.unreadPinchFilter,
             onCheckedChange = { vm.setUnreadPinchFilter(it) },
@@ -1132,9 +1132,9 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
  */
 @Composable
 private fun ImagesSection(settings: AppSettings, vm: SettingsViewModel) {
-    SectionHeading("Images")
+    SectionHeading(stringResource(DesignR.string.settings_images))
     SettingSwitchRow(
-        title = "Show feed images",
+        title = stringResource(DesignR.string.settings_show_feed_images),
         subtitle = "Article thumbnails and hero images, wherever a source's feed supplies one.",
         checked = settings.showFeedImages,
         onCheckedChange = { vm.setShowFeedImages(it) },
@@ -1169,7 +1169,7 @@ private fun ImagesSection(settings: AppSettings, vm: SettingsViewModel) {
             }
         }
         SettingSwitchRow(
-            title = "Hide source-flagged images",
+            title = stringResource(DesignR.string.settings_hide_flagged_images),
             subtitle = "Hides an item's image only when its own feed declared it adult/explicit; never this app's own judgment, and never touches a source that declares nothing.",
             checked = settings.hideNsfwImages,
             onCheckedChange = { vm.setHideNsfwImages(it) },
@@ -1194,9 +1194,9 @@ private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            SectionHeading("Advanced")
+            SectionHeading(stringResource(DesignR.string.settings_advanced))
             Text(
-                "Loaded-language word list, feedback.",
+                stringResource(DesignR.string.settings_advanced_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1217,12 +1217,12 @@ private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    "Loaded-language word list",
+                    stringResource(DesignR.string.settings_word_list),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Text(
-                    "Turn off individual default flags, or add your own words to watch for.",
+                    stringResource(DesignR.string.settings_word_list_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -1249,7 +1249,7 @@ private const val FEEDBACK_EMAIL = "nooz@asystemofcells.com"
  * caught here so a device with no mail client configured gets an honest
  * fallback (the address copied to the clipboard) instead of a crash.
  *
- * Shared by [AboutSection]'s "Contact us" (Play's News & Magazines policy
+ * Shared by [AboutSection]'s stringResource(DesignR.string.settings_contact) (Play's News & Magazines policy
  * requires a clearly labeled, easy-to-find contact section — the app's one
  * contact address needs to live where that reads, not only buried in
  * Advanced settings) and Advanced settings' own "Send feedback" row.
@@ -1330,9 +1330,9 @@ private fun YourDataSection(vm: SettingsViewModel) {
         }
     }
 
-    SectionHeading("Your data")
+    SectionHeading(stringResource(DesignR.string.settings_your_data))
     Text(
-        "Export everything as open JSON: preferences, your region and topics, your sources, your clippings, and the coarse read log. Local only; API keys are never included.",
+        stringResource(DesignR.string.settings_your_data_body),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -1352,30 +1352,30 @@ private fun YourDataSection(vm: SettingsViewModel) {
 @Composable
 internal fun AboutSection() {
     val uriHandler = LocalUriHandler.current
-    SectionHeading("About")
+    SectionHeading(stringResource(DesignR.string.settings_about))
     Text(
-        "Nooz is a news reader whose subject is omission: what got left out. It's made by mdhv.xyz, a small studio of focused, quiet apps.",
+        stringResource(DesignR.string.settings_about_body),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onBackground,
     )
     TextButton(onClick = { uriHandler.openUri("https://mdhv.xyz") }, contentPadding = PaddingValues(0.dp)) {
-        Text("Visit mdhv.xyz")
+        Text(stringResource(DesignR.string.settings_visit_studio))
     }
     TextButton(
         onClick = { uriHandler.openUri("https://github.com/mbaliga/nooz") },
         contentPadding = PaddingValues(0.dp),
     ) {
-        Text("View source on GitHub")
+        Text(stringResource(DesignR.string.settings_view_source))
     }
 
     // Google Play's News & Magazines policy requires a clearly labeled,
     // easy-to-find in-app contact section -- this needs to be right here on
     // the About tab, not several taps deep in Advanced settings.
-    SectionHeading("Contact us")
+    SectionHeading(stringResource(DesignR.string.settings_contact))
     ContactRow(FEEDBACK_EMAIL, "Questions, feedback, or a correction: email us directly.", "Nooz")
 
     Text(
-        "More from the studio",
+        stringResource(DesignR.string.settings_more_from_studio),
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -1446,25 +1446,27 @@ private fun DictionaryRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(option.name, style = MaterialTheme.typography.titleMedium)
             Text(
-                "${option.sizeHuman} · ${option.license}",
+                stringResource(DesignR.string.settings_size_license, option.sizeHuman, option.license),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         // Live region: the download status change is spoken, not silent.
+        // Resolved before `semantics { }`, which is not a composable scope.
+        val downloadingLabel = stringResource(DesignR.string.settings_downloading_dictionary)
         Box(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }, contentAlignment = Alignment.Center) {
             when {
                 downloading -> androidx.compose.material3.CircularProgressIndicator(
-                    modifier = Modifier.size(22.dp).semantics { contentDescription = "Downloading dictionary" },
+                    modifier = Modifier.size(22.dp).semantics { contentDescription = downloadingLabel },
                     strokeWidth = 2.dp,
                 )
                 downloaded -> Icon(
                     Icons.Filled.Check,
-                    contentDescription = "Downloaded",
+                    contentDescription = stringResource(DesignR.string.settings_downloaded),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
                 else -> androidx.compose.material3.TextButton(onClick = onDownload) {
-                    Text("Download")
+                    Text(stringResource(DesignR.string.settings_download))
                 }
             }
         }
@@ -1494,7 +1496,7 @@ private fun TranslationSection(vm: SettingsViewModel) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            SectionHeading("Translation")
+            SectionHeading(stringResource(DesignR.string.settings_translation))
             Text(
                 installed?.let { "${it.label} — long-press a word as you read." }
                     ?: "Long-press a word and see it in another language.",
@@ -1511,8 +1513,7 @@ private fun TranslationSection(vm: SettingsViewModel) {
 
     if (expanded) {
         Text(
-            "One language pair at a time. Downloaded once, then it works offline — " +
-                "what you look up is never sent anywhere.",
+            stringResource(DesignR.string.settings_translation_body),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -1522,7 +1523,7 @@ private fun TranslationSection(vm: SettingsViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(installed.label, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                TextButton(onClick = { vm.removeTranslation() }) { Text("Remove") }
+                TextButton(onClick = { vm.removeTranslation() }) { Text(stringResource(DesignR.string.settings_remove)) }
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
@@ -1541,7 +1542,7 @@ private fun TranslationSection(vm: SettingsViewModel) {
         // publishes 650 pairs and none of them is an Indian language, which is
         // a real gap for a catalogue that just gained feeds in eleven of them.
         Text(
-            "No Indian-language pair is available from this source yet.",
+            stringResource(DesignR.string.settings_no_indic_pair),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Tokens.Spacing.xs),
@@ -1564,23 +1565,24 @@ private fun TranslationRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(option.label, style = MaterialTheme.typography.titleMedium)
             Text(
-                "${option.approxSizeHuman} · ${option.license}",
+                stringResource(DesignR.string.settings_size_license, option.approxSizeHuman, option.license),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        val downloadingLabel = stringResource(DesignR.string.settings_downloading_named, option.label)
         Box(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }, contentAlignment = Alignment.Center) {
             when {
                 downloading -> androidx.compose.material3.CircularProgressIndicator(
-                    modifier = Modifier.size(22.dp).semantics { contentDescription = "Downloading ${option.label}" },
+                    modifier = Modifier.size(22.dp).semantics { contentDescription = downloadingLabel },
                     strokeWidth = 2.dp,
                 )
                 installed -> Icon(
                     Icons.Filled.Check,
-                    contentDescription = "Installed",
+                    contentDescription = stringResource(DesignR.string.settings_installed),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
-                else -> TextButton(onClick = onDownload) { Text("Download") }
+                else -> TextButton(onClick = onDownload) { Text(stringResource(DesignR.string.settings_download)) }
             }
         }
     }

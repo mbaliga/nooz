@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">ताजे करता आले नाही: %1$s</string>
     <string name="edit_loaded_services">%1$d सेवा व्याख्या लोड झाल्या.</string>
     <string name="edit_last_refreshed">शेवटचे ताजे केले %1$s.</string>
+    <string name="settings_back">मागे</string>
+    <string name="settings_theme">थीम</string>
+    <string name="settings_theme_follow">फोनच्या लाइट किंवा डार्क सेटिंगनुसार</string>
+    <string name="settings_theme_white">पांढरी थीम</string>
+    <string name="settings_theme_paper">कागद थीम</string>
+    <string name="settings_theme_dark">गडद थीम</string>
+    <string name="settings_font">फॉन्ट</string>
+    <string name="settings_text_size">अक्षरांचा आकार</string>
+    <string name="settings_paper_grain">कागदाचा पोत</string>
+    <string name="settings_mark_read_as">वाचलेले लेख असे चिन्हांकित करा</string>
+    <string name="settings_while_you_read">वाचताना</string>
+    <string name="settings_while_you_read_body">अधूनमधून, तुम्ही आधीच वाचलेल्या एखाद्या मजकुरातील एक खरी ओळ.</string>
+    <string name="settings_today_in_history">आज इतिहासात</string>
+    <string name="settings_show_the_column">हा स्तंभ दाखवा</string>
+    <string name="settings_today_in_history_body">दिवसाच्या बातम्यांवर काही दिनांकित ओळी, विकिपीडियाच्या स्वतःच्या “On this day” निवडीतून. तुम्ही जोडलेल्या स्रोतांबाहेरून Nooz फक्त हेच आणतो, म्हणून तुम्ही चालू करेपर्यंत ते बंद राहते.</string>
+    <string name="settings_show_reading_time">वाचनाचा वेळ दाखवा</string>
+    <string name="settings_highlight_loaded">पक्षपाती भाषा ठळक करा</string>
+    <string name="settings_highlight_loaded_body">वाचताना भावनिक शब्दांना अधोरेखित करते; पुरावा पाहण्यासाठी त्यावर टॅप करा.</string>
+    <string name="settings_immersive">एकाग्र वाचन</string>
+    <string name="settings_immersive_body">साध्या पानासाठी मागे बटण आणि नियंत्रणे लपवते. सुरुवातीला बंद; परत येण्यासाठी उजवीकडे स्वाइप करा किंवा मागे टॅप करा.</string>
+    <string name="settings_more">अधिक सेटिंग्ज</string>
+    <string name="settings_more_body">शब्दकोश, रीडर बुद्धिमत्ता आणि मॉडेल्स, हावभाव, तुमचा डेटा, माहिती.</string>
+    <string name="settings_dictionary">शब्दकोश</string>
+    <string name="settings_dictionary_body">एक शब्दकोश डाउनलोड करा, मग वाचताना कोणत्याही शब्दावर दाबून धरा आणि त्याचा अर्थ पाहा, Kindle सारखे.</string>
+    <string name="settings_crash_title">मागच्या वेळी Nooz अचानक बंद झाले</string>
+    <string name="settings_crash_body">अहवाल तुमच्याच उपकरणावर राहिला; कुठेही काही पाठवले गेले नाही.</string>
+    <string name="settings_copy">कॉपी करा</string>
+    <string name="settings_dismiss">बंद करा</string>
+    <string name="settings_reader_intelligence">रीडर बुद्धिमत्ता</string>
+    <string name="settings_byok_model">स्वतःची किल्ली वापरा: %1$s</string>
+    <string name="settings_flash_body">आजच्या बातम्या 10 किंवा त्याहून कमी शब्दांत. खाली एक मॉडेल डाउनलोड केल्यावर तुमच्याच उपकरणावर चालते, किंवा तुमच्या स्वतःच्या किल्लीने.</string>
+    <string name="settings_cast_body">संपूर्ण लेख नैसर्गिक ऑन-डिव्हाइस आवाजात वाचून दाखवला जातो, कधीही यांत्रिक सिस्टम रीडरने नाही. याचे स्वतःचे मॉडेल आहे, जे Flash च्या मॉडेलपेक्षा वेगळे डाउनलोड होते.</string>
+    <string name="settings_cast_model">Nooz Cast मॉडेल</string>
+    <string name="settings_whats_inside_body">लूम, Flash, Cast, कात्रणे — आणि प्रत्येक कुठे आहे.</string>
+    <string name="settings_gestures">हावभाव</string>
+    <string name="settings_gestures_body">रीडरमधील दोन बोटांचे हावभाव. सुरुवातीला चालू.</string>
+    <string name="settings_gesture_brightness">दोन बोटांनी ओढा → उजळपणा</string>
+    <string name="settings_gesture_theme">दोन बोटांनी झटका → थीम</string>
+    <string name="settings_gesture_unread">एकाग्र मोडमध्ये पिंच → न वाचलेले</string>
+    <string name="settings_images">प्रतिमा</string>
+    <string name="settings_show_feed_images">फीडमधील प्रतिमा दाखवा</string>
+    <string name="settings_hide_flagged_images">स्रोताने चिन्हांकित केलेल्या प्रतिमा लपवा</string>
+    <string name="settings_advanced">प्रगत</string>
+    <string name="settings_advanced_body">पक्षपाती भाषेची शब्दयादी, अभिप्राय.</string>
+    <string name="settings_word_list">पक्षपाती भाषेची शब्दयादी</string>
+    <string name="settings_word_list_body">वैयक्तिक पूर्वनिर्धारित खुणा बंद करा, किंवा लक्ष ठेवण्यासाठी स्वतःचे शब्द जोडा.</string>
+    <string name="settings_your_data">तुमचा डेटा</string>
+    <string name="settings_your_data_body">सर्व काही खुल्या JSON मध्ये निर्यात करा: प्राधान्ये, तुमचा प्रदेश आणि विषय, तुमचे स्रोत, तुमची कात्रणे, आणि ढोबळ वाचन-नोंद. फक्त स्थानिक; API किल्ल्या कधीही समाविष्ट नसतात.</string>
+    <string name="settings_about">माहिती</string>
+    <string name="settings_about_body">Nooz हा एक बातम्यांचा रीडर आहे ज्याचा विषय आहे वगळणे: काय सुटले. तो mdhv.xyz बनवते, शांत आणि एकाग्र अ‍ॅप्सचा एक छोटा स्टुडिओ.</string>
+    <string name="settings_visit_studio">mdhv.xyz ला भेट द्या</string>
+    <string name="settings_view_source">GitHub वर स्रोत पाहा</string>
+    <string name="settings_contact">आमच्याशी संपर्क साधा</string>
+    <string name="settings_more_from_studio">स्टुडिओकडून आणखी</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">शब्दकोश डाउनलोड होत आहे</string>
+    <string name="settings_downloaded">डाउनलोड झाले</string>
+    <string name="settings_download">डाउनलोड करा</string>
+    <string name="settings_translation">भाषांतर</string>
+    <string name="settings_translation_body">एका वेळी एक भाषा-जोडी. एकदा डाउनलोड केल्यावर ते ऑफलाइन चालते — तुम्ही जे शोधता ते कुठेही पाठवले जात नाही.</string>
+    <string name="settings_remove">काढून टाका</string>
+    <string name="settings_no_indic_pair">या स्रोताकडून अद्याप कोणतीही भारतीय-भाषा जोडी उपलब्ध नाही.</string>
+    <string name="settings_downloading_named">%1$s डाउनलोड होत आहे</string>
+    <string name="settings_installed">स्थापित</string>
 </resources>

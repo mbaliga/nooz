@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">সতেজ কৰিব পৰা নগ’ল: %1$s</string>
     <string name="edit_loaded_services">%1$d টা সেৱাৰ সংজ্ঞা ল’ড হ’ল।</string>
     <string name="edit_last_refreshed">শেষবাৰ সতেজ কৰা হৈছিল %1$s।</string>
+    <string name="settings_back">পিছলৈ</string>
+    <string name="settings_theme">থীম</string>
+    <string name="settings_theme_follow">ফোনৰ পোহৰ বা আন্ধাৰ ছেটিং অনুসৰণ কৰক</string>
+    <string name="settings_theme_white">বগা থীম</string>
+    <string name="settings_theme_paper">কাগজ থীম</string>
+    <string name="settings_theme_dark">ডাঠ থীম</string>
+    <string name="settings_font">ফণ্ট</string>
+    <string name="settings_text_size">আখৰৰ আকাৰ</string>
+    <string name="settings_paper_grain">কাগজৰ গঠন</string>
+    <string name="settings_mark_read_as">পঢ়া লেখাসমূহ এইদৰে চিহ্নিত কৰক</string>
+    <string name="settings_while_you_read">আপুনি পঢ়ি থাকোঁতে</string>
+    <string name="settings_while_you_read_body">মাজে মাজে, আপুনি আগতে পঢ়া কিবাৰ পৰা লোৱা এটা প্ৰকৃত শাৰী।</string>
+    <string name="settings_today_in_history">ইতিহাসত আজি</string>
+    <string name="settings_show_the_column">এই স্তম্ভটো দেখুৱাওক</string>
+    <string name="settings_today_in_history_body">দিনটোৰ বাতৰিৰ ওপৰত কেইটামান তাৰিখযুক্ত শাৰী, ৱিকিপিডিয়াৰ নিজা “On this day” বাছনিৰ পৰা। আপুনি যোগ কৰা উৎসবোৰৰ বাহিৰৰ পৰা Nooz-এ অনা একমাত্ৰ বস্তু এইটোৱেই, গতিকে আপুনি অন নকৰালৈকে ই বন্ধ হৈয়ে থাকে।</string>
+    <string name="settings_show_reading_time">পঢ়াৰ সময় দেখুৱাওক</string>
+    <string name="settings_highlight_loaded">পক্ষপাতী ভাষা চিহ্নিত কৰক</string>
+    <string name="settings_highlight_loaded_body">পঢ়ি থাকোঁতে আৱেগিক শব্দৰ তলত ৰেখা টানে; প্ৰমাণৰ বাবে তাত টিপক।</string>
+    <string name="settings_immersive">নিমগ্ন পঢ়া</string>
+    <string name="settings_immersive_body">সাধাৰণ পৃষ্ঠাৰ বাবে পিছলৈ যোৱা বুটাম আৰু নিয়ন্ত্ৰণসমূহ লুকুৱাই ৰাখে। আৰম্ভণিতে বন্ধ; ঘূৰি আহিবলৈ সোঁফালে চোৱাইপ কৰক বা পিছলৈ টিপক।</string>
+    <string name="settings_more">অধিক ছেটিং</string>
+    <string name="settings_more_body">অভিধান, পঢ়ুৱৈ বুদ্ধিমত্তা আৰু মডেল, ইংগিত, আপোনাৰ তথ্য, বিষয়ে।</string>
+    <string name="settings_dictionary">অভিধান</string>
+    <string name="settings_dictionary_body">এখন অভিধান ডাউনল’ড কৰক, তাৰ পিছত পঢ়ি থাকোঁতে যিকোনো শব্দ টিপি ধৰি তাৰ অৰ্থ চাওক, Kindle-ৰ দৰে।</string>
+    <string name="settings_crash_title">যোৱাবাৰ Nooz অপ্ৰত্যাশিতভাৱে বন্ধ হৈ গৈছিল</string>
+    <string name="settings_crash_body">প্ৰতিবেদনখন আপোনাৰ ডিভাইচতেই আছিল; ক’লৈকো একো পঠোৱা হোৱা নাই।</string>
+    <string name="settings_copy">কপি কৰক</string>
+    <string name="settings_dismiss">আঁতৰাওক</string>
+    <string name="settings_reader_intelligence">পঢ়ুৱৈ বুদ্ধিমত্তা</string>
+    <string name="settings_byok_model">নিজৰ চাবি: %1$s</string>
+    <string name="settings_flash_body">আজিৰ বাতৰি 10 বা তাতকৈ কম শব্দত সংকুচিত। তলৰ পৰা এটা মডেল ডাউনল’ড কৰিলে আপোনাৰ ডিভাইচতেই চলে, বা আপোনাৰ নিজৰ চাবিৰে।</string>
+    <string name="settings_cast_body">গোটেই লেখাটো এটা স্বাভাৱিক ডিভাইচ-ভিত্তিক মাতেৰে পঢ়ি শুনোৱা হয়, কেতিয়াও যান্ত্ৰিক ছিষ্টেম ৰীডাৰেৰে নহয়। ইয়াৰ নিজা মডেল আছে, যিটো Flash-ৰ মডেলতকৈ পৃথকভাৱে ডাউনল’ড হয়।</string>
+    <string name="settings_cast_model">Nooz Cast মডেল</string>
+    <string name="settings_whats_inside_body">লুম, Flash, Cast, কাটিং — আৰু প্ৰত্যেকটো ক’ত আছে।</string>
+    <string name="settings_gestures">ইংগিত</string>
+    <string name="settings_gestures_body">পঢ়ুৱৈত দুই আঙুলিৰ ইংগিত। আৰম্ভণিৰ পৰাই অন।</string>
+    <string name="settings_gesture_brightness">দুই আঙুলিৰে টানক → উজ্জ্বলতা</string>
+    <string name="settings_gesture_theme">দুই আঙুলিৰে জোকাৰক → থীম</string>
+    <string name="settings_gesture_unread">নিমগ্ন ম’ডত টিপক → নপঢ়া</string>
+    <string name="settings_images">ছবি</string>
+    <string name="settings_show_feed_images">ফীডৰ ছবি দেখুৱাওক</string>
+    <string name="settings_hide_flagged_images">উৎসই চিহ্নিত কৰা ছবি লুকুৱাওক</string>
+    <string name="settings_advanced">উন্নত</string>
+    <string name="settings_advanced_body">পক্ষপাতী ভাষাৰ শব্দতালিকা, মতামত।</string>
+    <string name="settings_word_list">পক্ষপাতী ভাষাৰ শব্দতালিকা</string>
+    <string name="settings_word_list_body">পৃথক পৃথক পূৰ্বনিৰ্ধাৰিত চিহ্ন বন্ধ কৰক, বা লক্ষ্য ৰাখিবলৈ নিজৰ শব্দ যোগ কৰক।</string>
+    <string name="settings_your_data">আপোনাৰ তথ্য</string>
+    <string name="settings_your_data_body">সকলো মুকলি JSON হিচাপে ৰপ্তানি কৰক: পছন্দ, আপোনাৰ অঞ্চল আৰু বিষয়, আপোনাৰ উৎস, আপোনাৰ কাটিং, আৰু মোটামুটি পঢ়া-নথি। কেৱল স্থানীয়; API চাবি কেতিয়াও অন্তৰ্ভুক্ত নহয়।</string>
+    <string name="settings_about">বিষয়ে</string>
+    <string name="settings_about_body">Nooz এনে এখন বাতৰি পঢ়ুৱৈ যাৰ বিষয় হৈছে বাদ পৰা: কি বাদ গ’ল। ইয়াক বনায় mdhv.xyz-এ, শান্ত আৰু একাগ্ৰ এপৰ এটা সৰু ষ্টুডিঅ’।</string>
+    <string name="settings_visit_studio">mdhv.xyz চাওক</string>
+    <string name="settings_view_source">GitHub-ত উৎস চাওক</string>
+    <string name="settings_contact">আমাৰ সৈতে যোগাযোগ কৰক</string>
+    <string name="settings_more_from_studio">ষ্টুডিঅ’ৰ পৰা আৰু</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">অভিধান ডাউনল’ড হৈ আছে</string>
+    <string name="settings_downloaded">ডাউনল’ড হৈছে</string>
+    <string name="settings_download">ডাউনল’ড কৰক</string>
+    <string name="settings_translation">অনুবাদ</string>
+    <string name="settings_translation_body">এবাৰত এটা ভাষা-যোৰা। এবাৰ ডাউনল’ড হ’লে ই অফলাইনত কাম কৰে — আপুনি যি বিচাৰে সেয়া ক’লৈকো পঠোৱা নহয়।</string>
+    <string name="settings_remove">আঁতৰাওক</string>
+    <string name="settings_no_indic_pair">এই উৎসৰ পৰা এতিয়ালৈকে কোনো ভাৰতীয়-ভাষাৰ যোৰা উপলব্ধ নহয়।</string>
+    <string name="settings_downloading_named">%1$s ডাউনল’ড হৈ আছে</string>
+    <string name="settings_installed">স্থাপিত</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  185 of 185 strings translated.
+  249 of 249 strings translated.
 -->
 <resources>
 
@@ -196,4 +196,68 @@
     <string name="edit_could_not_refresh">તાજું કરી શકાયું નહીં: %1$s</string>
     <string name="edit_loaded_services">%1$d સેવા વ્યાખ્યાઓ લોડ થઈ.</string>
     <string name="edit_last_refreshed">છેલ્લે તાજું કરાયું %1$s.</string>
+    <string name="settings_back">પાછળ</string>
+    <string name="settings_theme">થીમ</string>
+    <string name="settings_theme_follow">ફોનની લાઇટ કે ડાર્ક સેટિંગ અનુસરો</string>
+    <string name="settings_theme_white">સફેદ થીમ</string>
+    <string name="settings_theme_paper">કાગળ થીમ</string>
+    <string name="settings_theme_dark">ઘેરી થીમ</string>
+    <string name="settings_font">ફોન્ટ</string>
+    <string name="settings_text_size">અક્ષરનું કદ</string>
+    <string name="settings_paper_grain">કાગળની ભાત</string>
+    <string name="settings_mark_read_as">વાંચેલા લેખોને આ રીતે ચિહ્નિત કરો</string>
+    <string name="settings_while_you_read">તમે વાંચો ત્યારે</string>
+    <string name="settings_while_you_read_body">વચ્ચે વચ્ચે, તમે પહેલાં વાંચેલા કશાકમાંથી લીધેલી એક સાચી પંક્તિ.</string>
+    <string name="settings_today_in_history">ઇતિહાસમાં આજે</string>
+    <string name="settings_show_the_column">આ કૉલમ બતાવો</string>
+    <string name="settings_today_in_history_body">દિવસના સમાચારની ઉપર થોડી તારીખવાળી પંક્તિઓ, વિકિપીડિયાની પોતાની “On this day” પસંદગીમાંથી. તમે ઉમેરેલા સ્રોતોની બહારથી Nooz ફક્ત આ એક જ વસ્તુ લાવે છે, એટલે તમે ચાલુ ન કરો ત્યાં સુધી એ બંધ રહે છે.</string>
+    <string name="settings_show_reading_time">વાંચનનો સમય બતાવો</string>
+    <string name="settings_highlight_loaded">પક્ષપાતી ભાષા ઉજાગર કરો</string>
+    <string name="settings_highlight_loaded_body">વાંચતી વખતે લાગણીભર્યા શબ્દોને રેખાંકિત કરે છે; પુરાવા માટે તેના પર ટૅપ કરો.</string>
+    <string name="settings_immersive">એકાગ્ર વાચન</string>
+    <string name="settings_immersive_body">સાદા પાના માટે પાછળનું બટન અને નિયંત્રણો છુપાવે છે. શરૂઆતમાં બંધ; પાછા ફરવા જમણે સ્વાઇપ કરો કે પાછળ ટૅપ કરો.</string>
+    <string name="settings_more">વધુ સેટિંગ્સ</string>
+    <string name="settings_more_body">શબ્દકોશ, રીડર બુદ્ધિમત્તા અને મૉડલ, હાવભાવ, તમારો ડેટા, પરિચય.</string>
+    <string name="settings_dictionary">શબ્દકોશ</string>
+    <string name="settings_dictionary_body">એક શબ્દકોશ ડાઉનલોડ કરો, પછી વાંચતી વખતે કોઈ પણ શબ્દ પર દબાવી રાખીને તેનો અર્થ જુઓ, Kindle જેવું.</string>
+    <string name="settings_crash_title">ગયા વખતે Nooz અચાનક બંધ થઈ ગયું હતું</string>
+    <string name="settings_crash_body">અહેવાલ તમારા ઉપકરણ પર જ રહ્યો; ક્યાંય કશું મોકલાયું નથી.</string>
+    <string name="settings_copy">કૉપિ કરો</string>
+    <string name="settings_dismiss">રદ કરો</string>
+    <string name="settings_reader_intelligence">રીડર બુદ્ધિમત્તા</string>
+    <string name="settings_byok_model">તમારી પોતાની ચાવી: %1$s</string>
+    <string name="settings_flash_body">આજના સમાચાર 10 કે તેથી ઓછા શબ્દોમાં સંકોચાયેલા. નીચેથી એક મૉડલ ડાઉનલોડ કરો એટલે તમારા ઉપકરણ પર જ ચાલે છે, અથવા તમારી પોતાની ચાવીથી.</string>
+    <string name="settings_cast_body">આખો લેખ કુદરતી ઉપકરણ-આધારિત અવાજમાં વાંચી સંભળાવાય છે, ક્યારેય યાંત્રિક સિસ્ટમ રીડરથી નહીં. તેનું પોતાનું મૉડલ છે, જે Flashના મૉડલથી અલગ ડાઉનલોડ થાય છે.</string>
+    <string name="settings_cast_model">Nooz Cast મૉડલ</string>
+    <string name="settings_whats_inside_body">લૂમ, Flash, Cast, કાપલીઓ — અને દરેક ક્યાં છે.</string>
+    <string name="settings_gestures">હાવભાવ</string>
+    <string name="settings_gestures_body">રીડરમાં બે આંગળીના હાવભાવ. શરૂઆતથી ચાલુ.</string>
+    <string name="settings_gesture_brightness">બે આંગળીથી ખેંચો → તેજ</string>
+    <string name="settings_gesture_theme">બે આંગળીથી ઝટકો → થીમ</string>
+    <string name="settings_gesture_unread">એકાગ્ર મોડમાં ચપટી → વણવાંચેલા</string>
+    <string name="settings_images">છબીઓ</string>
+    <string name="settings_show_feed_images">ફીડની છબીઓ બતાવો</string>
+    <string name="settings_hide_flagged_images">સ્રોતે ચિહ્નિત કરેલી છબીઓ છુપાવો</string>
+    <string name="settings_advanced">અદ્યતન</string>
+    <string name="settings_advanced_body">પક્ષપાતી ભાષાની શબ્દયાદી, પ્રતિભાવ.</string>
+    <string name="settings_word_list">પક્ષપાતી ભાષાની શબ્દયાદી</string>
+    <string name="settings_word_list_body">અલગ અલગ મૂળભૂત નિશાનો બંધ કરો, અથવા ધ્યાન રાખવા તમારા પોતાના શબ્દો ઉમેરો.</string>
+    <string name="settings_your_data">તમારો ડેટા</string>
+    <string name="settings_your_data_body">બધું ખુલ્લા JSON તરીકે નિકાસ કરો: પસંદગીઓ, તમારો પ્રદેશ અને વિષયો, તમારા સ્રોતો, તમારી કાપલીઓ, અને સ્થૂળ વાચન-નોંધ. ફક્ત સ્થાનિક; API ચાવીઓ ક્યારેય સામેલ થતી નથી.</string>
+    <string name="settings_about">પરિચય</string>
+    <string name="settings_about_body">Nooz એ સમાચાર વાચક છે જેનો વિષય છે લોપ: શું છૂટી ગયું. તેને બનાવે છે mdhv.xyz, શાંત અને એકાગ્ર ઍપ્સનો એક નાનો સ્ટુડિયો.</string>
+    <string name="settings_visit_studio">mdhv.xyz જુઓ</string>
+    <string name="settings_view_source">GitHub પર સ્રોત જુઓ</string>
+    <string name="settings_contact">અમારો સંપર્ક કરો</string>
+    <string name="settings_more_from_studio">સ્ટુડિયોમાંથી વધુ</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">શબ્દકોશ ડાઉનલોડ થઈ રહ્યો છે</string>
+    <string name="settings_downloaded">ડાઉનલોડ થયું</string>
+    <string name="settings_download">ડાઉનલોડ કરો</string>
+    <string name="settings_translation">અનુવાદ</string>
+    <string name="settings_translation_body">એક સમયે એક ભાષા-જોડી. એક વાર ડાઉનલોડ થયા પછી એ ઑફલાઇન કામ કરે છે — તમે જે જુઓ છો તે ક્યાંય મોકલાતું નથી.</string>
+    <string name="settings_remove">દૂર કરો</string>
+    <string name="settings_no_indic_pair">આ સ્રોતમાંથી હજી કોઈ ભારતીય-ભાષા જોડી ઉપલબ્ધ નથી.</string>
+    <string name="settings_downloading_named">%1$s ડાઉનલોડ થઈ રહ્યું છે</string>
+    <string name="settings_installed">સ્થાપિત</string>
 </resources>
