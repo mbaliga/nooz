@@ -37,6 +37,7 @@ import { render as renderSettings } from './views/settings.js';
 import { render as renderNewsstand } from './views/newsstand.js';
 import { classifyItem } from './topics.js';
 import { parseRoute, navigate, onRoute } from './router.js';
+import { createFocusManager } from './focus.js';
 
 const VIEW_RENDERERS = {
   stand: renderStand,
@@ -140,6 +141,9 @@ let toastTimer = null;
 let searchToggleEl = null;
 let searchBarEl = null;
 let searchInputEl = null;
+// Decides where the keyboard cursor goes after each rebuild -- see focus.js.
+// Built once the shell exists, since it holds on to the two rebuilt regions.
+let focusManager = null;
 
 async function boot() {
   currentState.settings = loadSettings();
@@ -257,6 +261,8 @@ function buildShell() {
   viewEl.appendChild(drawerEl);
 
   shell.appendChild(viewEl);
+
+  focusManager = createFocusManager({ stage: stageEl, drawer: drawerEl });
 
   const footer = document.createElement('footer');
   footer.className = 'nooz-footerbar';
@@ -382,9 +388,13 @@ function openSearch() {
 }
 
 function closeSearch() {
+  const hadFocus = !!searchBarEl && searchBarEl.contains(document.activeElement);
   shellEl.classList.remove('has-search');
   searchToggleEl.classList.toggle('is-active', !!currentState.searchQuery);
   searchToggleEl.setAttribute('aria-expanded', 'false');
+  // The search bar is hidden by a class, so a focused input inside it stays
+  // focused while being invisible -- keystrokes going somewhere nobody can see.
+  if (hadFocus) searchToggleEl.focus();
 }
 
 function buildDrawerClose() {
@@ -526,11 +536,13 @@ function renderNow() {
     delete drawerEl.dataset.view;
   }
 
+  let restoredAnInput = false;
   if (restore && restore.index >= 0) {
     const candidates = Array.prototype.filter.call(viewEl.querySelectorAll(restore.tag), (el) => el.type === restore.type);
     const el = candidates[restore.index];
     if (el) {
       el.focus();
+      restoredAnInput = true;
       if (typeof el.setSelectionRange === 'function' && restore.selectionStart != null) {
         try {
           el.setSelectionRange(restore.selectionStart, restore.selectionEnd);
@@ -540,7 +552,9 @@ function renderNow() {
       }
     }
   }
+  if (focusManager) focusManager.settle(route, drawerView, active, restoredAnInput);
 }
+
 
 /** Stand's items: enabled sources only (the honest denominator), then region, then search. */
 function computeVisibleItems() {

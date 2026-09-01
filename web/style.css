@@ -209,6 +209,11 @@ a {
 
 /* Text for screen readers only: read aloud, never drawn. Used for facts the
    page otherwise conveys with colour alone -- "Read." on a dimmed headline. */
+/* A heading (or region) focused programmatically after a route change, so the
+   change is announced. Nobody reached it by pressing Tab, so it does not get a
+   focus ring -- every element you can actually Tab to still does. */
+.nooz-focus-target:focus { outline: none; }
+
 .nooz-visually-hidden {
   position: absolute;
   width: 1px;

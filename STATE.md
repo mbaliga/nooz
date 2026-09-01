@@ -1578,6 +1578,39 @@ respect as the CI-caught log above.
   opened. Verified by mutation: reintroducing `role="button"` on a column story
   fails the suite.
 
+- **D44 — Navigating the web reader now puts the cursor somewhere, and says so
+  (2026-09-01).** The last of the audit's P0 list. `renderNow` rebuilds the
+  stage and the drawer on every route change, so whatever had focus — the
+  headline link you just activated, the nav button you just pressed — ceased to
+  exist and focus fell to `<body>`. The only thing restored was a live `INPUT`
+  or `TEXTAREA`. For a keyboard or screen-reader user that **is** the
+  navigation: activate a story, land silently at the top of the document, walk
+  the entire page again to get anywhere. Nothing announced the new view either,
+  because from the accessibility tree's point of view nothing happened — the
+  document simply changed underneath.
+  Focus now lands on the new view's own `<h1>` (`tabindex="-1"`, ring
+  suppressed — nobody arrived by pressing Tab), which is also what makes the
+  change *audible*: a screen reader announces the newly focused heading. A
+  drawer takes focus on open and hands it back to the control that opened it on
+  close, even across drawer-to-drawer moves, and falls back to the stage heading
+  if that control is gone. `closeSearch` returns focus to the search toggle,
+  which it never did — the bar is hidden by a class, so a focused input inside
+  it stayed focused while invisible, taking keystrokes nobody could see.
+  **The two negative rules matter as much as the positive one**, and are the
+  easy ones to lose: focus must not move on an ordinary re-render (a fetch
+  landing, a story marked read, a setting toggling), and must not move on the
+  first paint. Getting either wrong is worse than the original bug, because it
+  takes the cursor from someone mid-sentence.
+  The logic lives in `web/js/focus.js` rather than inside `app.js` specifically
+  so it can be tested — `app.js` opens IndexedDB and starts fetching on import,
+  and a rule this consequential should not be verified by reading it.
+  `web/tests/focus.test.mjs` covers all four rules plus the fallbacks. Verified
+  by mutation: dropping the route-change guard fails two tests.
+  One test-craft note worth keeping: assertions here compare printable names,
+  never DOM nodes. `assert.deepEqual` on two linkedom elements walks a circular
+  object graph, and the run stops producing output instead of a failure
+  message — a suite that hangs on the bug it catches is not a suite.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

@@ -79,13 +79,13 @@ for (const readingMode of ['continuous', 'newspaper']) {
       'a story card is pretending to be a button again',
     );
     // The corollary: nothing nests a real control inside a fake one.
-    for (const control of controls(el)) {
-      assert.equal(
-        control.parentElement?.closest('[role="button"]'),
-        null,
-        `${control.tagName} is nested inside a role="button"`,
-      );
-    }
+    // Asserted on class names rather than the elements themselves — a failed
+    // comparison of two DOM nodes sends node's formatter into a circular object
+    // graph, and the run stops producing output instead of a failure message.
+    const nested = controls(el)
+      .filter((control) => control.parentElement?.closest('[role="button"]'))
+      .map((control) => control.tagName);
+    assert.deepEqual(nested, [], 'a real control is nested inside a fake button');
   });
 
   test(`${readingMode} mode: every headline is a heading containing a link`, async () => {
@@ -151,7 +151,11 @@ test('clippings rows are headings and links, not buttons wrapping buttons', asyn
     readIds: new Set(['i1']),
   }));
 
-  assert.deepEqual([...el.querySelectorAll('[role="button"]')], [], 'no fake buttons remain');
+  assert.deepEqual(
+    [...el.querySelectorAll('[role="button"]')].map((n) => n.className),
+    [],
+    'no fake buttons remain',
+  );
 
   const links = [...el.querySelectorAll('a.nooz-headline-link')];
   assert.equal(links.length, 2);
@@ -162,7 +166,7 @@ test('clippings rows are headings and links, not buttons wrapping buttons', asyn
   // The real control that used to be buried inside the fake one.
   const unclip = el.querySelector('button[aria-label="Remove clipping"]');
   assert.ok(unclip, 'the unclip button is still there');
-  assert.equal(unclip.closest('[role="button"]'), null, 'and is no longer inside a fake button');
+  assert.ok(!unclip.closest('[role="button"]'), 'and is no longer inside a fake button');
 });
 
 test('the card is still clickable, and defers to the controls inside it', async () => {
