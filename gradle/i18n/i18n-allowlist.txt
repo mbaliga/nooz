@@ -37,5 +37,3 @@ feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/DayLoomCanvas.kt 4
 feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/FramingsPanel.kt 1
 feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomDatePicker.kt 2
 feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomScreen.kt 1
-feature/sources/src/main/kotlin/xyz/mdhv/riverwip/feature/sources/EditScreen.kt 20
-feature/sources/src/main/kotlin/xyz/mdhv/riverwip/feature/sources/SourcesUtilities.kt 10

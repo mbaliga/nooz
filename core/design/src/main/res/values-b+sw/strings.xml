@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">Vyanzo vya kuanzia</string>
     <string name="sources_no_starters">Hakuna vyanzo vya kuanzia.</string>
     <string name="sources_starters_body">Orodha fupi ya mipasho iliyokaguliwa na inayofanya kazi sasa — washa unayoipenda.</string>
+    <string name="edit_edit">HARIRI</string>
+    <string name="edit_done">IMEKAMILIKA</string>
+    <string name="edit_all">Zote</string>
+    <string name="edit_news_apis">API za habari na wajenzi</string>
+    <string name="edit_search_sources">Tafuta vyanzo</string>
+    <string name="edit_get_free_key">Pata ufunguo bila malipo kwa %1$s</string>
+    <string name="edit_add_named">Ongeza %1$s</string>
+    <string name="edit_source_failing">Chanzo hiki kinashindwa kuletwa</string>
+    <string name="edit_add_by_url">Ongeza kwa URL</string>
+    <string name="edit_feed_or_site_url">URL ya mpasho au tovuti</string>
+    <string name="edit_could_not_add_url">URL hii haikuweza kuongezwa</string>
+    <string name="edit_add_this_url">Ongeza URL hii</string>
+    <string name="edit_could_not_add">Haikuweza kuongezwa: %1$s</string>
+    <string name="edit_added_named">“%1$s” imeongezwa.</string>
+    <string name="edit_pick_a_feed">Ukurasa huu unataja mipasho zaidi ya mmoja, chagua mmoja:</string>
+    <string name="edit_paste_hint">Bandika URL ya mpasho au tovuti — programu hupata mpasho; huleta tu unachoongeza.</string>
+    <string name="edit_globe_hint">Buruta kuzungusha · finya kupanua · pete inaonyesha mchanganyiko wa mada wa ukanda</string>
+    <string name="edit_reset_to_global">Rudisha kwa Dunia nzima</string>
+    <string name="edit_import_opml">Leta OPML</string>
+    <string name="edit_export_opml">Peleka OPML</string>
+    <string name="edit_catalogue">Katalogi</string>
+    <string name="edit_catalogue_hint">Ukipenda, elekeza hii kwenye catalogue.json ili kuhuisha vyanzo vya kuanzia na mipaka ya kiwango cha bure bila kusasisha programu. Hakuna kinacholetwa hadi ubonyeze huisha; hakuna URL chaguo-msingi, kwa kuwa toleo hili haliwezi kuthibitisha kuwa yoyote inafanya kazi.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">URL ya katalogi</string>
+    <string name="edit_built_in_starters">Tumia vyanzo vya kuanzia vilivyojengwa ndani</string>
+    <string name="edit_could_not_refresh">Haikuweza kuhuishwa: %1$s</string>
+    <string name="edit_loaded_services">Zimepakiwa fasili %1$d za huduma.</string>
+    <string name="edit_last_refreshed">Ilihuishwa mara ya mwisho %1$s.</string>
 </resources>

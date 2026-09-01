@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 157 strings translated.
+  40 of 185 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,7 @@
     <string name="loom_strip_label">لُوم</string>
     <string name="sources_title">ذریٖعہٕ</string>
     <string name="sources_remove">ہٹاو</string>
+    <string name="edit_edit">ترمیم</string>
+    <string name="edit_done">مکمل</string>
+    <string name="edit_all">سٲری</string>
 </resources>

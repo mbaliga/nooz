@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">शुरुआती स्रोत</string>
     <string name="sources_no_starters">कोई शुरुआती स्रोत उपलब्ध नहीं।</string>
     <string name="sources_starters_body">पहले से जाँची हुई, अभी सजीव फ़ीड की एक छोटी सूची — जो चाहें उसे चालू कर लें।</string>
+    <string name="edit_edit">संपादन</string>
+    <string name="edit_done">हो गया</string>
+    <string name="edit_all">सभी</string>
+    <string name="edit_news_apis">समाचार API और बिल्डर</string>
+    <string name="edit_search_sources">स्रोत खोजें</string>
+    <string name="edit_get_free_key">%1$s के लिए मुफ़्त कुंजी लें</string>
+    <string name="edit_add_named">%1$s जोड़ें</string>
+    <string name="edit_source_failing">यह स्रोत लाने में विफल हो रहा है</string>
+    <string name="edit_add_by_url">यूआरएल से जोड़ें</string>
+    <string name="edit_feed_or_site_url">फ़ीड या साइट का यूआरएल</string>
+    <string name="edit_could_not_add_url">यह यूआरएल जोड़ा नहीं जा सका</string>
+    <string name="edit_add_this_url">यह यूआरएल जोड़ें</string>
+    <string name="edit_could_not_add">जोड़ा नहीं जा सका: %1$s</string>
+    <string name="edit_added_named">“%1$s” जोड़ा गया।</string>
+    <string name="edit_pick_a_feed">यह पृष्ठ एक से अधिक फ़ीड बताता है, कोई एक चुनें:</string>
+    <string name="edit_paste_hint">कोई फ़ीड या साइट का यूआरएल चिपकाएँ — ऐप फ़ीड ढूँढ़ लेता है; केवल वही लाता है जो आप जोड़ते हैं।</string>
+    <string name="edit_globe_hint">घुमाने के लिए खींचें · चौड़ा करने के लिए चुटकी लें · छल्ला उस पट्टी का विषय-मिश्रण दिखाता है</string>
+    <string name="edit_reset_to_global">वैश्विक पर लौटाएँ</string>
+    <string name="edit_import_opml">OPML आयात करें</string>
+    <string name="edit_export_opml">OPML निर्यात करें</string>
+    <string name="edit_catalogue">सूची</string>
+    <string name="edit_catalogue_hint">चाहें तो इसे किसी catalogue.json पर लगा दें, ताकि ऐप अपडेट किए बिना शुरुआती स्रोत और मुफ़्त-श्रेणी की सीमाएँ ताज़ा हो सकें। जब तक आप ताज़ा करें न दबाएँ, कुछ नहीं लाया जाता; कोई पूर्वनिर्धारित यूआरएल नहीं है, क्योंकि यह बिल्ड यह जाँच नहीं सकता कि कोई सजीव है।</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">सूची का यूआरएल</string>
+    <string name="edit_built_in_starters">अंतर्निहित शुरुआती स्रोत उपयोग करें</string>
+    <string name="edit_could_not_refresh">ताज़ा नहीं किया जा सका: %1$s</string>
+    <string name="edit_loaded_services">%1$d सेवा परिभाषाएँ लोड हुईं।</string>
+    <string name="edit_last_refreshed">अंतिम बार ताज़ा किया गया %1$s।</string>
 </resources>

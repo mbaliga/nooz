@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">தொடக்க ஆதாரங்கள்</string>
     <string name="sources_no_starters">தொடக்க ஆதாரங்கள் எதுவும் இல்லை.</string>
     <string name="sources_starters_body">முன்கூட்டியே சரிபார்க்கப்பட்ட, தற்போது இயங்கும் ஊட்டங்களின் ஒரு சிறு பட்டியல் — விரும்பியதை இயக்கிக் கொள்ளுங்கள்.</string>
+    <string name="edit_edit">தொகுப்பு</string>
+    <string name="edit_done">முடிந்தது</string>
+    <string name="edit_all">அனைத்தும்</string>
+    <string name="edit_news_apis">செய்தி API-களும் கட்டமைப்பாளர்களும்</string>
+    <string name="edit_search_sources">ஆதாரங்களைத் தேடு</string>
+    <string name="edit_get_free_key">%1$s-க்கு இலவசச் சாவி பெறுங்கள்</string>
+    <string name="edit_add_named">%1$s ஐச் சேர்</string>
+    <string name="edit_source_failing">இந்த ஆதாரத்திலிருந்து பெற முடியவில்லை</string>
+    <string name="edit_add_by_url">URL மூலம் சேர்</string>
+    <string name="edit_feed_or_site_url">ஊட்டம் அல்லது தள URL</string>
+    <string name="edit_could_not_add_url">இந்த URL-ஐச் சேர்க்க முடியவில்லை</string>
+    <string name="edit_add_this_url">இந்த URL-ஐச் சேர்</string>
+    <string name="edit_could_not_add">சேர்க்க முடியவில்லை: %1$s</string>
+    <string name="edit_added_named">“%1$s” சேர்க்கப்பட்டது.</string>
+    <string name="edit_pick_a_feed">இந்தப் பக்கம் ஒன்றுக்கு மேற்பட்ட ஊட்டங்களைக் குறிப்பிடுகிறது, ஒன்றைத் தேர்ந்தெடுங்கள்:</string>
+    <string name="edit_paste_hint">ஒரு ஊட்டம் அல்லது தள URL-ஐ ஒட்டுங்கள் — செயலி ஊட்டத்தைக் கண்டுபிடிக்கும்; நீங்கள் சேர்ப்பதை மட்டுமே பெறும்.</string>
+    <string name="edit_globe_hint">சுழற்ற இழுங்கள் · அகலமாக்கக் கிள்ளுங்கள் · வளையம் அந்தப் பட்டையின் தலைப்புக் கலவையைக் காட்டுகிறது</string>
+    <string name="edit_reset_to_global">உலகளாவியதற்கு மீட்டமை</string>
+    <string name="edit_import_opml">OPML இறக்குமதி</string>
+    <string name="edit_export_opml">OPML ஏற்றுமதி</string>
+    <string name="edit_catalogue">பட்டியல்</string>
+    <string name="edit_catalogue_hint">விரும்பினால் இதை ஒரு catalogue.json-ஐ நோக்கி அமையுங்கள்; அப்போது செயலியைப் புதுப்பிக்காமலேயே தொடக்க ஆதாரங்களும் இலவசக் கட்ட வரம்புகளும் புதுப்பிக்கப்படும். நீங்கள் புதுப்பிப்பைத் தொடாத வரை எதுவும் பெறப்படுவதில்லை; முன்னிருப்பு URL இல்லை, ஏனெனில் எது இயங்குகிறது என்பதை இந்தப் பதிப்பு உறுதிப்படுத்த முடியாது.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">பட்டியல் URL</string>
+    <string name="edit_built_in_starters">உள்ளமைந்த தொடக்க ஆதாரங்களைப் பயன்படுத்து</string>
+    <string name="edit_could_not_refresh">புதுப்பிக்க முடியவில்லை: %1$s</string>
+    <string name="edit_loaded_services">%1$d சேவை வரையறைகள் ஏற்றப்பட்டன.</string>
+    <string name="edit_last_refreshed">கடைசியாகப் புதுப்பிக்கப்பட்டது %1$s.</string>
 </resources>

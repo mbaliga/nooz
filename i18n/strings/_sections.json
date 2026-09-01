@@ -66,6 +66,10 @@
     {
       "title": "Managing sources — the flow by which a reader chooses what this app is even about.",
       "prefix": "sources_"
+    },
+    {
+      "title": "Adding and managing sources on Android — the flow by which a reader decides what this app is even about. `list_topics` and `sources_*` are reused where the web says the same thing.",
+      "prefix": "edit_"
     }
   ]
 }

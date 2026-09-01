@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">ప్రారంభ మూలాలు</string>
     <string name="sources_no_starters">ప్రారంభ మూలాలేవీ అందుబాటులో లేవు.</string>
     <string name="sources_starters_body">ముందే తనిఖీ చేసిన, ప్రస్తుతం పనిచేస్తున్న ఫీడ్‌ల చిన్న జాబితా — నచ్చినవి చాలూ చేసుకోండి.</string>
+    <string name="edit_edit">సవరణ</string>
+    <string name="edit_done">అయ్యింది</string>
+    <string name="edit_all">అన్నీ</string>
+    <string name="edit_news_apis">వార్తా API లు, బిల్డర్లు</string>
+    <string name="edit_search_sources">మూలాలను వెతకండి</string>
+    <string name="edit_get_free_key">%1$s కోసం ఉచిత కీ పొందండి</string>
+    <string name="edit_add_named">%1$s చేర్చండి</string>
+    <string name="edit_source_failing">ఈ మూలం నుంచి తేవడం విఫలమవుతోంది</string>
+    <string name="edit_add_by_url">URL తో చేర్చండి</string>
+    <string name="edit_feed_or_site_url">ఫీడ్ లేదా సైట్ URL</string>
+    <string name="edit_could_not_add_url">ఈ URL చేర్చలేకపోయాం</string>
+    <string name="edit_add_this_url">ఈ URL చేర్చండి</string>
+    <string name="edit_could_not_add">చేర్చలేకపోయాం: %1$s</string>
+    <string name="edit_added_named">“%1$s” చేర్చాం.</string>
+    <string name="edit_pick_a_feed">ఈ పేజీ ఒకటికి మించిన ఫీడ్‌లను చెబుతోంది, ఒకటి ఎంచుకోండి:</string>
+    <string name="edit_paste_hint">ఫీడ్ లేదా సైట్ URL అతికించండి — యాప్ ఫీడ్‌ను కనిపెడుతుంది; మీరు చేర్చినదాన్నే తెస్తుంది.</string>
+    <string name="edit_globe_hint">తిప్పడానికి లాగండి · వెడల్పు చేయడానికి పించ్ చేయండి · వలయం ఆ పట్టీ అంశ మిశ్రమాన్ని చూపుతుంది</string>
+    <string name="edit_reset_to_global">ప్రపంచవ్యాప్తానికి మార్చు</string>
+    <string name="edit_import_opml">OPML దిగుమతి</string>
+    <string name="edit_export_opml">OPML ఎగుమతి</string>
+    <string name="edit_catalogue">జాబితా</string>
+    <string name="edit_catalogue_hint">కావాలంటే దీన్ని ఏదైనా catalogue.json వైపు చూపండి, అప్పుడు యాప్ నవీకరణ లేకుండానే ప్రారంభ మూలాలు, ఉచిత-శ్రేణి పరిమితులు తాజా అవుతాయి. మీరు రిఫ్రెష్ నొక్కేవరకు ఏదీ తీసుకురాదు; ముందే నిర్ణయించిన URL లేదు, ఎందుకంటే ఏది సజీవంగా ఉందో ఈ బిల్డ్ నిర్ధారించలేదు.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">జాబితా URL</string>
+    <string name="edit_built_in_starters">అంతర్నిర్మిత ప్రారంభ మూలాలను వాడు</string>
+    <string name="edit_could_not_refresh">తాజా చేయలేకపోయాం: %1$s</string>
+    <string name="edit_loaded_services">%1$d సేవా నిర్వచనాలు లోడ్ అయ్యాయి.</string>
+    <string name="edit_last_refreshed">చివరిసారి తాజా చేసింది %1$s.</string>
 </resources>

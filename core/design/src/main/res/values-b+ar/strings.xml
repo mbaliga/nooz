@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">مصادر البداية</string>
     <string name="sources_no_starters">لا مصادر بداية متاحة.</string>
     <string name="sources_starters_body">قائمة قصيرة من تدفّقات مفحوصة مسبقًا وحيّة الآن — شغِّل ما يعجبك.</string>
+    <string name="edit_edit">تحرير</string>
+    <string name="edit_done">تمّ</string>
+    <string name="edit_all">الكل</string>
+    <string name="edit_news_apis">واجهات الأخبار والمُنشئات</string>
+    <string name="edit_search_sources">ابحث في المصادر</string>
+    <string name="edit_get_free_key">احصل على مفتاح مجاني لـ %1$s</string>
+    <string name="edit_add_named">أضِف %1$s</string>
+    <string name="edit_source_failing">هذا المصدر يتعذّر جلبه</string>
+    <string name="edit_add_by_url">أضِف بعنوان</string>
+    <string name="edit_feed_or_site_url">عنوان التدفّق أو الموقع</string>
+    <string name="edit_could_not_add_url">تعذّرت إضافة هذا العنوان</string>
+    <string name="edit_add_this_url">أضِف هذا العنوان</string>
+    <string name="edit_could_not_add">تعذّرت الإضافة: %1$s</string>
+    <string name="edit_added_named">أُضيف «%1$s».</string>
+    <string name="edit_pick_a_feed">تُعلن هذه الصفحة أكثر من تدفّق، اختر واحدًا:</string>
+    <string name="edit_paste_hint">الصق عنوان تدفّق أو موقع — التطبيق يجد التدفّق، ولا يجلب إلا ما تضيفه أنت.</string>
+    <string name="edit_globe_hint">اسحب للتدوير · باعِد للتوسيع · الحلقة تُظهر مزيج مواضيع الشريط</string>
+    <string name="edit_reset_to_global">العودة إلى العالمي</string>
+    <string name="edit_import_opml">استيراد OPML</string>
+    <string name="edit_export_opml">تصدير OPML</string>
+    <string name="edit_catalogue">الفهرس</string>
+    <string name="edit_catalogue_hint">يمكنك توجيه هذا إلى ملف catalogue.json لتحديث مصادر البداية وحدود المستوى المجاني دون تحديث التطبيق. لا يُجلب شيء حتى تلمس تحديث؛ ولا يوجد عنوان افتراضي، لأن هذه النسخة لا تستطيع التحقّق من أن أحدها حيّ.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">عنوان الفهرس</string>
+    <string name="edit_built_in_starters">استخدم مصادر البداية المضمّنة</string>
+    <string name="edit_could_not_refresh">تعذّر التحديث: %1$s</string>
+    <string name="edit_loaded_services">حُمِّل %1$d تعريف خدمة.</string>
+    <string name="edit_last_refreshed">آخر تحديث %1$s.</string>
 </resources>

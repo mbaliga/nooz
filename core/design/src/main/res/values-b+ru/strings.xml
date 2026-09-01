@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">Начальные источники</string>
     <string name="sources_no_starters">Начальных источников нет.</string>
     <string name="sources_starters_body">Короткий список заранее проверенных, работающих прямо сейчас лент — включите те, что нравятся.</string>
+    <string name="edit_edit">ПРАВКА</string>
+    <string name="edit_done">ГОТОВО</string>
+    <string name="edit_all">Все</string>
+    <string name="edit_news_apis">Новостные API и конструкторы</string>
+    <string name="edit_search_sources">Искать источники</string>
+    <string name="edit_get_free_key">Получить бесплатный ключ для %1$s</string>
+    <string name="edit_add_named">Добавить %1$s</string>
+    <string name="edit_source_failing">Этот источник не отвечает</string>
+    <string name="edit_add_by_url">Добавить по адресу</string>
+    <string name="edit_feed_or_site_url">Адрес ленты или сайта</string>
+    <string name="edit_could_not_add_url">Не удалось добавить этот адрес</string>
+    <string name="edit_add_this_url">Добавить этот адрес</string>
+    <string name="edit_could_not_add">Не удалось добавить: %1$s</string>
+    <string name="edit_added_named">«%1$s» добавлен.</string>
+    <string name="edit_pick_a_feed">На этой странице объявлено несколько лент, выберите одну:</string>
+    <string name="edit_paste_hint">Вставьте адрес ленты или сайта — приложение само найдёт ленту и загрузит только то, что вы добавите.</string>
+    <string name="edit_globe_hint">Тяните, чтобы вращать · разводите пальцы, чтобы расширить · кольцо показывает набор тем полосы</string>
+    <string name="edit_reset_to_global">Вернуть «Весь мир»</string>
+    <string name="edit_import_opml">Импорт OPML</string>
+    <string name="edit_export_opml">Экспорт OPML</string>
+    <string name="edit_catalogue">Каталог</string>
+    <string name="edit_catalogue_hint">При желании укажите здесь catalogue.json, чтобы обновлять начальные источники и бесплатные лимиты без обновления приложения. Ничего не загружается, пока вы не нажмёте «обновить»; адреса по умолчанию нет, поскольку эта сборка не может проверить, что какой-то из них работает.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">Адрес каталога</string>
+    <string name="edit_built_in_starters">Использовать встроенные начальные источники</string>
+    <string name="edit_could_not_refresh">Не удалось обновить: %1$s</string>
+    <string name="edit_loaded_services">Загружено определений сервисов: %1$d.</string>
+    <string name="edit_last_refreshed">Последнее обновление %1$s.</string>
 </resources>

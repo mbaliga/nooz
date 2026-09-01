@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">തുടക്ക ഉറവിടങ്ങൾ</string>
     <string name="sources_no_starters">തുടക്ക ഉറവിടങ്ങളൊന്നും ലഭ്യമല്ല.</string>
     <string name="sources_starters_body">മുൻകൂട്ടി പരിശോധിച്ച, ഇപ്പോൾ പ്രവർത്തിക്കുന്ന ഫീഡുകളുടെ ഒരു ചെറിയ പട്ടിക — ഇഷ്ടമുള്ളവ ഓണാക്കുക.</string>
+    <string name="edit_edit">തിരുത്തൽ</string>
+    <string name="edit_done">കഴിഞ്ഞു</string>
+    <string name="edit_all">എല്ലാം</string>
+    <string name="edit_news_apis">വാർത്താ API-കളും ബിൽഡറുകളും</string>
+    <string name="edit_search_sources">ഉറവിടങ്ങൾ തിരയുക</string>
+    <string name="edit_get_free_key">%1$s-നായി സൗജന്യ കീ നേടുക</string>
+    <string name="edit_add_named">%1$s ചേർക്കുക</string>
+    <string name="edit_source_failing">ഈ ഉറവിടത്തിൽ നിന്ന് എടുക്കാൻ കഴിയുന്നില്ല</string>
+    <string name="edit_add_by_url">URL വഴി ചേർക്കുക</string>
+    <string name="edit_feed_or_site_url">ഫീഡിന്റെയോ സൈറ്റിന്റെയോ URL</string>
+    <string name="edit_could_not_add_url">ഈ URL ചേർക്കാനായില്ല</string>
+    <string name="edit_add_this_url">ഈ URL ചേർക്കുക</string>
+    <string name="edit_could_not_add">ചേർക്കാനായില്ല: %1$s</string>
+    <string name="edit_added_named">“%1$s” ചേർത്തു.</string>
+    <string name="edit_pick_a_feed">ഈ താൾ ഒന്നിലധികം ഫീഡുകൾ പറയുന്നു, ഒന്നു തിരഞ്ഞെടുക്കുക:</string>
+    <string name="edit_paste_hint">ഒരു ഫീഡിന്റെയോ സൈറ്റിന്റെയോ URL ഒട്ടിക്കുക — ആപ്പ് ഫീഡ് കണ്ടെത്തും; നിങ്ങൾ ചേർക്കുന്നത് മാത്രമേ എടുക്കൂ.</string>
+    <string name="edit_globe_hint">കറക്കാൻ വലിക്കുക · വീതിയാക്കാൻ പിഞ്ച് ചെയ്യുക · വളയം ആ പട്ടയുടെ വിഷയമിശ്രിതം കാണിക്കുന്നു</string>
+    <string name="edit_reset_to_global">ആഗോളത്തിലേക്കു മടക്കുക</string>
+    <string name="edit_import_opml">OPML ഇറക്കുമതി</string>
+    <string name="edit_export_opml">OPML കയറ്റുമതി</string>
+    <string name="edit_catalogue">പട്ടിക</string>
+    <string name="edit_catalogue_hint">വേണമെങ്കിൽ ഇത് ഏതെങ്കിലും catalogue.json-ലേക്കു ചൂണ്ടുക; അപ്പോൾ ആപ്പ് പുതുക്കാതെ തന്നെ തുടക്ക ഉറവിടങ്ങളും സൗജന്യ പരിധികളും പുതുക്കപ്പെടും. നിങ്ങൾ പുതുക്കുക അമർത്തുന്നതുവരെ ഒന്നും എടുക്കില്ല; സ്ഥിരസ്ഥിതി URL ഇല്ല, ഏതാണു സജീവമെന്ന് ഈ ബിൽഡിന് ഉറപ്പിക്കാനാവില്ല.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">പട്ടികയുടെ URL</string>
+    <string name="edit_built_in_starters">അന്തർനിർമിത തുടക്ക ഉറവിടങ്ങൾ ഉപയോഗിക്കുക</string>
+    <string name="edit_could_not_refresh">പുതുക്കാനായില്ല: %1$s</string>
+    <string name="edit_loaded_services">%1$d സേവന നിർവചനങ്ങൾ ലോഡ് ചെയ്തു.</string>
+    <string name="edit_last_refreshed">അവസാനം പുതുക്കിയത് %1$s.</string>
 </resources>

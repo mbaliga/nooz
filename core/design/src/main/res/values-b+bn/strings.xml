@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">শুরুর উৎস</string>
     <string name="sources_no_starters">কোনো শুরুর উৎস নেই।</string>
     <string name="sources_starters_body">আগে থেকে যাচাই করা, এখনও সচল ফিডের একটি ছোট তালিকা — যেটি চান চালু করে নিন।</string>
+    <string name="edit_edit">সম্পাদনা</string>
+    <string name="edit_done">হয়ে গেছে</string>
+    <string name="edit_all">সব</string>
+    <string name="edit_news_apis">সংবাদ API ও বিল্ডার</string>
+    <string name="edit_search_sources">উৎস খুঁজুন</string>
+    <string name="edit_get_free_key">%1$s-এর জন্য বিনামূল্যে কী নিন</string>
+    <string name="edit_add_named">%1$s যোগ করুন</string>
+    <string name="edit_source_failing">এই উৎস থেকে আনা যাচ্ছে না</string>
+    <string name="edit_add_by_url">ইউআরএল দিয়ে যোগ করুন</string>
+    <string name="edit_feed_or_site_url">ফিড বা সাইটের ইউআরএল</string>
+    <string name="edit_could_not_add_url">এই ইউআরএল যোগ করা গেল না</string>
+    <string name="edit_add_this_url">এই ইউআরএল যোগ করুন</string>
+    <string name="edit_could_not_add">যোগ করা গেল না: %1$s</string>
+    <string name="edit_added_named">“%1$s” যোগ হয়েছে।</string>
+    <string name="edit_pick_a_feed">এই পাতাটি একাধিক ফিডের কথা বলছে, একটি বেছে নিন:</string>
+    <string name="edit_paste_hint">একটি ফিড বা সাইটের ইউআরএল সাঁটুন — অ্যাপ ফিডটি খুঁজে নেয়; আপনি যা যোগ করেন কেবল তা-ই আনে।</string>
+    <string name="edit_globe_hint">ঘোরাতে টানুন · চওড়া করতে চিমটি কাটুন · বলয়টি সেই পট্টির বিষয়-মিশ্রণ দেখায়</string>
+    <string name="edit_reset_to_global">বিশ্বজনীনে ফেরান</string>
+    <string name="edit_import_opml">OPML আমদানি</string>
+    <string name="edit_export_opml">OPML রপ্তানি</string>
+    <string name="edit_catalogue">তালিকা</string>
+    <string name="edit_catalogue_hint">চাইলে এটি কোনো catalogue.json-এ নির্দেশ করুন, যাতে অ্যাপ হালনাগাদ ছাড়াই শুরুর উৎস আর বিনামূল্যের সীমা নতুন হয়। আপনি রিফ্রেশ না চাপলে কিছুই আনা হয় না; কোনো পূর্বনির্ধারিত ইউআরএল নেই, কারণ এই বিল্ড যাচাই করতে পারে না কোনটি সচল।</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">তালিকার ইউআরএল</string>
+    <string name="edit_built_in_starters">অন্তর্নির্মিত শুরুর উৎস ব্যবহার করুন</string>
+    <string name="edit_could_not_refresh">হালনাগাদ করা গেল না: %1$s</string>
+    <string name="edit_loaded_services">%1$d টি পরিষেবার সংজ্ঞা লোড হয়েছে।</string>
+    <string name="edit_last_refreshed">শেষ হালনাগাদ %1$s।</string>
 </resources>

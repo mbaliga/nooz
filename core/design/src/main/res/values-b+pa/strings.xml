@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">ਸ਼ੁਰੂਆਤੀ ਸਰੋਤ</string>
     <string name="sources_no_starters">ਕੋਈ ਸ਼ੁਰੂਆਤੀ ਸਰੋਤ ਉਪਲਬਧ ਨਹੀਂ।</string>
     <string name="sources_starters_body">ਪਹਿਲਾਂ ਤੋਂ ਪਰਖੀਆਂ, ਹੁਣ ਚੱਲ ਰਹੀਆਂ ਫੀਡਾਂ ਦੀ ਇੱਕ ਛੋਟੀ ਸੂਚੀ — ਜੋ ਪਸੰਦ ਹੋਵੇ ਚਾਲੂ ਕਰ ਲਵੋ।</string>
+    <string name="edit_edit">ਸੋਧ</string>
+    <string name="edit_done">ਹੋ ਗਿਆ</string>
+    <string name="edit_all">ਸਾਰੇ</string>
+    <string name="edit_news_apis">ਖ਼ਬਰ API ਅਤੇ ਬਿਲਡਰ</string>
+    <string name="edit_search_sources">ਸਰੋਤ ਲੱਭੋ</string>
+    <string name="edit_get_free_key">%1$s ਲਈ ਮੁਫ਼ਤ ਕੁੰਜੀ ਲਵੋ</string>
+    <string name="edit_add_named">%1$s ਜੋੜੋ</string>
+    <string name="edit_source_failing">ਇਹ ਸਰੋਤ ਲਿਆਉਣ ਵਿੱਚ ਅਸਫਲ ਹੋ ਰਿਹਾ ਹੈ</string>
+    <string name="edit_add_by_url">URL ਨਾਲ ਜੋੜੋ</string>
+    <string name="edit_feed_or_site_url">ਫੀਡ ਜਾਂ ਸਾਈਟ ਦਾ URL</string>
+    <string name="edit_could_not_add_url">ਇਹ URL ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</string>
+    <string name="edit_add_this_url">ਇਹ URL ਜੋੜੋ</string>
+    <string name="edit_could_not_add">ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: %1$s</string>
+    <string name="edit_added_named">“%1$s” ਜੋੜਿਆ ਗਿਆ।</string>
+    <string name="edit_pick_a_feed">ਇਹ ਸਫ਼ਾ ਇੱਕ ਤੋਂ ਵੱਧ ਫੀਡਾਂ ਦੱਸਦਾ ਹੈ, ਇੱਕ ਚੁਣੋ:</string>
+    <string name="edit_paste_hint">ਕੋਈ ਫੀਡ ਜਾਂ ਸਾਈਟ ਦਾ URL ਚਿਪਕਾਓ — ਐਪ ਫੀਡ ਲੱਭ ਲੈਂਦੀ ਹੈ; ਜੋ ਤੁਸੀਂ ਜੋੜਦੇ ਹੋ ਸਿਰਫ਼ ਉਹੀ ਲਿਆਉਂਦੀ ਹੈ।</string>
+    <string name="edit_globe_hint">ਘੁਮਾਉਣ ਲਈ ਖਿੱਚੋ · ਚੌੜਾ ਕਰਨ ਲਈ ਚੂੰਢੀ ਭਰੋ · ਛੱਲਾ ਉਸ ਪੱਟੀ ਦਾ ਵਿਸ਼ਾ-ਮਿਸ਼ਰਣ ਵਿਖਾਉਂਦਾ ਹੈ</string>
+    <string name="edit_reset_to_global">ਵਿਸ਼ਵ-ਪੱਧਰੀ ਉੱਤੇ ਮੋੜੋ</string>
+    <string name="edit_import_opml">OPML ਦਰਾਮਦ</string>
+    <string name="edit_export_opml">OPML ਬਰਾਮਦ</string>
+    <string name="edit_catalogue">ਸੂਚੀ</string>
+    <string name="edit_catalogue_hint">ਚਾਹੋ ਤਾਂ ਇਸਨੂੰ ਕਿਸੇ catalogue.json ਵੱਲ ਸੇਧੋ, ਤਾਂ ਜੋ ਐਪ ਅੱਪਡੇਟ ਕੀਤੇ ਬਿਨਾਂ ਹੀ ਸ਼ੁਰੂਆਤੀ ਸਰੋਤ ਅਤੇ ਮੁਫ਼ਤ-ਦਰਜੇ ਦੀਆਂ ਹੱਦਾਂ ਤਾਜ਼ੀਆਂ ਹੋ ਜਾਣ। ਜਦ ਤੱਕ ਤੁਸੀਂ ਤਾਜ਼ਾ ਕਰੋ ਨਾ ਦੱਬੋ, ਕੁਝ ਨਹੀਂ ਲਿਆਂਦਾ ਜਾਂਦਾ; ਕੋਈ ਮੂਲ URL ਨਹੀਂ, ਕਿਉਂਕਿ ਇਹ ਬਿਲਡ ਇਹ ਪਰਖ ਨਹੀਂ ਸਕਦਾ ਕਿ ਕਿਹੜਾ ਚੱਲ ਰਿਹਾ ਹੈ।</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">ਸੂਚੀ ਦਾ URL</string>
+    <string name="edit_built_in_starters">ਅੰਦਰੂਨੀ ਸ਼ੁਰੂਆਤੀ ਸਰੋਤ ਵਰਤੋ</string>
+    <string name="edit_could_not_refresh">ਤਾਜ਼ਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ: %1$s</string>
+    <string name="edit_loaded_services">%1$d ਸੇਵਾ ਪਰਿਭਾਸ਼ਾਵਾਂ ਲੋਡ ਹੋਈਆਂ।</string>
+    <string name="edit_last_refreshed">ਆਖ਼ਰੀ ਵਾਰ ਤਾਜ਼ਾ ਕੀਤਾ %1$s।</string>
 </resources>

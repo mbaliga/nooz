@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">Fontes iniciais</string>
     <string name="sources_no_starters">Não há fontes iniciais disponíveis.</string>
     <string name="sources_starters_body">Uma lista curta de feeds já verificados e ativos neste momento — ligue os que quiser.</string>
+    <string name="edit_edit">EDITAR</string>
+    <string name="edit_done">CONCLUÍDO</string>
+    <string name="edit_all">Todas</string>
+    <string name="edit_news_apis">APIs de notícias e construtores</string>
+    <string name="edit_search_sources">Procurar fontes</string>
+    <string name="edit_get_free_key">Obter uma chave gratuita para %1$s</string>
+    <string name="edit_add_named">Adicionar %1$s</string>
+    <string name="edit_source_failing">Esta fonte está a falhar</string>
+    <string name="edit_add_by_url">Adicionar por URL</string>
+    <string name="edit_feed_or_site_url">URL do feed ou do site</string>
+    <string name="edit_could_not_add_url">Não foi possível adicionar este URL</string>
+    <string name="edit_add_this_url">Adicionar este URL</string>
+    <string name="edit_could_not_add">Não foi possível adicionar: %1$s</string>
+    <string name="edit_added_named">«%1$s» adicionado.</string>
+    <string name="edit_pick_a_feed">Esta página declara mais do que um feed, escolha um:</string>
+    <string name="edit_paste_hint">Cole o URL de um feed ou de um site — a app encontra o feed; só vai buscar o que adicionar.</string>
+    <string name="edit_globe_hint">Arraste para rodar · junte os dedos para alargar · o anel mostra a mistura de temas da faixa</string>
+    <string name="edit_reset_to_global">Voltar a Global</string>
+    <string name="edit_import_opml">Importar OPML</string>
+    <string name="edit_export_opml">Exportar OPML</string>
+    <string name="edit_catalogue">Catálogo</string>
+    <string name="edit_catalogue_hint">Se quiser, aponte isto para um catalogue.json para refrescar as fontes iniciais e os limites gratuitos sem atualizar a app. Nada é obtido enquanto não tocar em refrescar; não há URL predefinido, já que esta compilação não consegue verificar que algum esteja ativo.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">URL do catálogo</string>
+    <string name="edit_built_in_starters">Usar as fontes iniciais incluídas</string>
+    <string name="edit_could_not_refresh">Não foi possível refrescar: %1$s</string>
+    <string name="edit_loaded_services">Carregadas %1$d definições de serviço.</string>
+    <string name="edit_last_refreshed">Refrescado pela última vez %1$s.</string>
 </resources>

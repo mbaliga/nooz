@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">ଆରମ୍ଭିକ ଉତ୍ସ</string>
     <string name="sources_no_starters">କୌଣସି ଆରମ୍ଭିକ ଉତ୍ସ ଉପଲବ୍ଧ ନାହିଁ।</string>
     <string name="sources_starters_body">ଆଗରୁ ଯାଞ୍ଚ ହୋଇଥିବା, ବର୍ତ୍ତମାନ ସଚଳ ଫିଡ୍‌ର ଏକ ଛୋଟ ତାଲିକା — ଯାହା ଭଲ ଲାଗେ ଚାଲୁ କରନ୍ତୁ।</string>
+    <string name="edit_edit">ସମ୍ପାଦନା</string>
+    <string name="edit_done">ହୋଇଗଲା</string>
+    <string name="edit_all">ସବୁ</string>
+    <string name="edit_news_apis">ଖବର API ଓ ବିଲ୍ଡର</string>
+    <string name="edit_search_sources">ଉତ୍ସ ଖୋଜନ୍ତୁ</string>
+    <string name="edit_get_free_key">%1$s ପାଇଁ ମାଗଣା କି ନିଅନ୍ତୁ</string>
+    <string name="edit_add_named">%1$s ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="edit_source_failing">ଏହି ଉତ୍ସରୁ ଆଣିବାରେ ବିଫଳ ହେଉଛି</string>
+    <string name="edit_add_by_url">URL ଦ୍ୱାରା ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="edit_feed_or_site_url">ଫିଡ୍ କିମ୍ବା ସାଇଟର URL</string>
+    <string name="edit_could_not_add_url">ଏହି URL ଯୋଡ଼ାଯାଇ ପାରିଲା ନାହିଁ</string>
+    <string name="edit_add_this_url">ଏହି URL ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="edit_could_not_add">ଯୋଡ଼ାଯାଇ ପାରିଲା ନାହିଁ: %1$s</string>
+    <string name="edit_added_named">“%1$s” ଯୋଡ଼ାଗଲା।</string>
+    <string name="edit_pick_a_feed">ଏହି ପୃଷ୍ଠା ଏକାଧିକ ଫିଡ୍ ଘୋଷଣା କରୁଛି, ଗୋଟିଏ ବାଛନ୍ତୁ:</string>
+    <string name="edit_paste_hint">ଏକ ଫିଡ୍ କିମ୍ବା ସାଇଟର URL ଲଗାନ୍ତୁ — ଆପ ଫିଡ୍ ଖୋଜି ନିଏ; ଆପଣ ଯାହା ଯୋଡ଼ନ୍ତି କେବଳ ତାହା ଆଣେ।</string>
+    <string name="edit_globe_hint">ଘୂରାଇବାକୁ ଟାଣନ୍ତୁ · ଓସାର କରିବାକୁ ଚିମୁଟନ୍ତୁ · ବଳୟ ସେହି ପଟିର ବିଷୟ ମିଶ୍ରଣ ଦେଖାଏ</string>
+    <string name="edit_reset_to_global">ବିଶ୍ୱବ୍ୟାପୀକୁ ଫେରାନ୍ତୁ</string>
+    <string name="edit_import_opml">OPML ଆମଦାନୀ</string>
+    <string name="edit_export_opml">OPML ରପ୍ତାନୀ</string>
+    <string name="edit_catalogue">ତାଲିକା</string>
+    <string name="edit_catalogue_hint">ଚାହିଁଲେ ଏହାକୁ କୌଣସି catalogue.json ଆଡ଼କୁ ଦେଖାନ୍ତୁ, ଯାହା ଫଳରେ ଆପ ଅପଡେଟ ନକରି ମଧ୍ୟ ଆରମ୍ଭିକ ଉତ୍ସ ଓ ମାଗଣା ସ୍ତରର ସୀମା ନୂଆ ହୋଇଯିବ। ଆପଣ ରିଫ୍ରେସ ନଦବାଇବା ଯାଏଁ କିଛି ଅଣାଯାଏ ନାହିଁ; କୌଣସି ପୂର୍ବନିର୍ଦ୍ଧାରିତ URL ନାହିଁ, କାରଣ କେଉଁଟି ସଚଳ ତାହା ଏହି ବିଲ୍ଡ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ।</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">ତାଲିକାର URL</string>
+    <string name="edit_built_in_starters">ଅନ୍ତର୍ନିହିତ ଆରମ୍ଭିକ ଉତ୍ସ ବ୍ୟବହାର କରନ୍ତୁ</string>
+    <string name="edit_could_not_refresh">ସତେଜ କରାଯାଇ ପାରିଲା ନାହିଁ: %1$s</string>
+    <string name="edit_loaded_services">%1$d ସେବା ସଂଜ୍ଞା ଲୋଡ ହେଲା।</string>
+    <string name="edit_last_refreshed">ଶେଷ ଥର ସତେଜ କରାଯାଇଥିଲା %1$s।</string>
 </resources>

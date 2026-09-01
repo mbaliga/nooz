@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,6 +68,7 @@ import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.feature.river.CrossSectionPanel
 import xyz.mdhv.riverwip.model.SourceSearch
 import xyz.mdhv.riverwip.model.GlobeModel
@@ -122,7 +124,7 @@ fun EditScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // The masthead is its own baseline-aligned unit (matching the Stand
-            // and the loom): "Nooz" and "EDIT" share a baseline *inside* this
+            // and the loom): "Nooz" and stringResource(DesignR.string.edit_edit) share a baseline *inside* this
             // inner Row, and the inner Row is then centred whole in the header.
             // Putting alignByBaseline directly on the outer row's children — the
             // way this used to — made the pair share a baseline with nothing,
@@ -132,7 +134,7 @@ fun EditScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 NoozWordmark(fontSize = 30.sp, modifier = Modifier.alignByBaseline())
                 Text(
-                    "EDIT",
+                    stringResource(DesignR.string.edit_edit),
                     style = MaterialTheme.typography.labelLarge,
                     fontSize = 18.sp,
                     letterSpacing = 2.sp,
@@ -147,7 +149,7 @@ fun EditScreen(
                 vm.saveFilter(ReaderFilter(Region.fromKey(draftRegionKey), draftTopics))
                 onDone()
             }) {
-                Text("DONE", style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(DesignR.string.edit_done), style = MaterialTheme.typography.labelLarge)
             }
         }
 
@@ -266,7 +268,7 @@ private fun SourcesTab(vm: SourcesViewModel) {
                 .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
             horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
         ) {
-            FilterChip(selected = regionFilter == null, onClick = { regionFilter = null }, label = { Text("All") })
+            FilterChip(selected = regionFilter == null, onClick = { regionFilter = null }, label = { Text(stringResource(DesignR.string.edit_all)) })
             for (r in regions) {
                 FilterChip(
                     selected = regionFilter == r,
@@ -288,7 +290,7 @@ private fun SourcesTab(vm: SourcesViewModel) {
             if (filteredStarters.isEmpty() && filteredBuilders.isEmpty()) {
                 // A literal no-results case (a search/region filter that came up
                 // empty) — the owner's illustration + quote treatment, not the
-                // "why is this empty" EmptyState. "Add by URL" is still right
+                // "why is this empty" EmptyState. stringResource(DesignR.string.edit_add_by_url) is still right
                 // below, so the way out stays visible either way.
                 NoResultsState(fill = false, modifier = Modifier.fillMaxWidth())
             }
@@ -305,7 +307,7 @@ private fun SourcesTab(vm: SourcesViewModel) {
 
             if (filteredBuilders.isNotEmpty()) {
                 SectionHeading(
-                    "News APIs & builders",
+                    stringResource(DesignR.string.edit_news_apis),
                     modifier = Modifier.padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
                 )
                 for (b in filteredBuilders) {
@@ -330,7 +332,7 @@ private fun SourcesTab(vm: SourcesViewModel) {
 
         // The search bar, docked to the bottom (owner's spec) — the shared bar
         // (core/design), now also reused by the Stand's article list.
-        AppSearchBar(query = query, onQueryChange = { query = it }, placeholder = "Search sources")
+        AppSearchBar(query = query, onQueryChange = { query = it }, placeholder = stringResource(DesignR.string.edit_search_sources))
     }
 }
 
@@ -361,10 +363,10 @@ private fun BuilderRow(def: ServiceDef, onAdd: (String) -> Unit) {
             def.requiresKey && def.keySignupUrl != null -> IconButton(onClick = {
                 context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(def.keySignupUrl)))
             }) {
-                Icon(Icons.Filled.Key, contentDescription = "Get a free key for ${def.title}", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(Icons.Filled.Key, contentDescription = stringResource(DesignR.string.edit_get_free_key, def.title), tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             oneTap -> IconButton(onClick = { onAdd(example!!) }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add ${def.title}")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(DesignR.string.edit_add_named, def.title))
             }
             else -> {}
         }
@@ -405,7 +407,7 @@ private fun StarterRow(def: ServiceDef, region: String?, added: Boolean, unhealt
         modifier = Modifier
             .fillMaxWidth()
             .bleedHorizontal(Tokens.Spacing.md)
-            .clickable(onClickLabel = if (added) "Remove ${def.title}" else "Add ${def.title}", onClick = onToggle)
+            .clickable(onClickLabel = if (added) "Remove ${def.title}" else stringResource(DesignR.string.edit_add_named, def.title), onClick = onToggle)
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -426,7 +428,7 @@ private fun StarterRow(def: ServiceDef, region: String?, added: Boolean, unhealt
         if (unhealthy) {
             Icon(
                 Icons.Filled.Warning,
-                contentDescription = "This source is failing to fetch",
+                contentDescription = stringResource(DesignR.string.edit_source_failing),
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(end = Tokens.Spacing.xs).size(18.dp),
             )
@@ -454,11 +456,13 @@ private fun StarterRow(def: ServiceDef, region: String?, added: Boolean, unhealt
 
 @Composable
 private fun AddByUrlSection(vm: SourcesViewModel) {
+    // Resolved outside `semantics { }`, which is not a composable scope.
+    val feedUrlLabel = stringResource(DesignR.string.edit_feed_or_site_url)
     var url by rememberSaveable { mutableStateOf("") }
     val state = vm.addState
 
     SectionHeading(
-        "Add by URL",
+        stringResource(DesignR.string.edit_add_by_url),
         modifier = Modifier.padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
     )
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -469,18 +473,18 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
             singleLine = true,
             modifier = Modifier
                 .weight(1f)
-                .semantics { contentDescription = "Feed or site URL" },
+                .semantics { contentDescription = feedUrlLabel },
         )
         if (state is AddUiState.Error) {
             Icon(
                 Icons.Filled.Warning,
-                contentDescription = "Couldn't add this URL",
+                contentDescription = stringResource(DesignR.string.edit_could_not_add_url),
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(18.dp),
             )
         } else {
             IconButton(onClick = { if (url.isNotBlank()) vm.addByUrl(url) }, enabled = state !is AddUiState.Loading) {
-                Icon(Icons.Filled.Add, contentDescription = "Add this URL")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(DesignR.string.edit_add_this_url))
             }
         }
     }
@@ -489,7 +493,7 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
     )
     when (state) {
         is AddUiState.Error -> Text(
-            "Couldn't add: ${state.message}",
+            stringResource(DesignR.string.edit_could_not_add, state.message),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier
@@ -497,7 +501,7 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
                 .padding(top = Tokens.Spacing.xxs),
         )
         is AddUiState.Added -> Text(
-            "Added “${state.title}”.",
+            stringResource(DesignR.string.edit_added_named, state.title),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
@@ -505,7 +509,7 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
                 .padding(top = Tokens.Spacing.xxs),
         )
         is AddUiState.Choices -> Column {
-            Text("This page declares more than one feed, pick one:", style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(DesignR.string.edit_pick_a_feed), style = MaterialTheme.typography.bodySmall)
             state.candidates.forEach { feed ->
                 TextButton(onClick = { vm.addCandidate(feed) }) {
                     Text((feed.title ?: feed.url) + "  ·  ${feed.type.name.lowercase()}")
@@ -515,7 +519,7 @@ private fun AddByUrlSection(vm: SourcesViewModel) {
         else -> {}
     }
     Text(
-        "Paste a feed or a site URL - The app finds the feed; fetches only what you add.",
+        stringResource(DesignR.string.edit_paste_hint),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = Tokens.Spacing.xs),
@@ -584,7 +588,7 @@ private fun RegionTopicsTab(
             .padding(horizontal = Tokens.Spacing.md),
     ) {
         Text(
-            "Drag to spin · pinch to widen · ring shows the band's topic mix",
+            stringResource(DesignR.string.edit_globe_hint),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -631,19 +635,19 @@ private fun RegionTopicsTab(
                 pitch = -10.0
                 bandHalf = 180.0
                 onRegion(Region.GLOBAL)
-            }) { Text("Reset to Global") }
+            }) { Text(stringResource(DesignR.string.edit_reset_to_global)) }
         }
 
         // Topics: the filter's other half. Chips, not gestures — no hidden doors.
         SectionHeading(
-            "Topics",
+            stringResource(DesignR.string.list_topics),
             modifier = Modifier.padding(top = Tokens.Spacing.sm, bottom = Tokens.Spacing.xxs),
         )
         Row(
             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
         ) {
-            FilterChip(selected = topics.isEmpty(), onClick = { onTopics(emptySet()) }, label = { Text("All") })
+            FilterChip(selected = topics.isEmpty(), onClick = { onTopics(emptySet()) }, label = { Text(stringResource(DesignR.string.edit_all)) })
             for (topic in Topic.entries) {
                 FilterChip(
                     selected = topic.key in topics,

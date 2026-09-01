@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">Başlangıç kaynakları</string>
     <string name="sources_no_starters">Başlangıç kaynağı yok.</string>
     <string name="sources_starters_body">Önceden denetlenmiş, şu anda çalışan akışlardan kısa bir liste — beğendiğinizi açın.</string>
+    <string name="edit_edit">DÜZENLE</string>
+    <string name="edit_done">BİTTİ</string>
+    <string name="edit_all">Tümü</string>
+    <string name="edit_news_apis">Haber API\'leri ve kurucular</string>
+    <string name="edit_search_sources">Kaynak ara</string>
+    <string name="edit_get_free_key">%1$s için ücretsiz anahtar alın</string>
+    <string name="edit_add_named">%1$s ekle</string>
+    <string name="edit_source_failing">Bu kaynak getirilemiyor</string>
+    <string name="edit_add_by_url">Adresle ekle</string>
+    <string name="edit_feed_or_site_url">Akış ya da site adresi</string>
+    <string name="edit_could_not_add_url">Bu adres eklenemedi</string>
+    <string name="edit_add_this_url">Bu adresi ekle</string>
+    <string name="edit_could_not_add">Eklenemedi: %1$s</string>
+    <string name="edit_added_named">“%1$s” eklendi.</string>
+    <string name="edit_pick_a_feed">Bu sayfa birden fazla akış bildiriyor, birini seçin:</string>
+    <string name="edit_paste_hint">Bir akış ya da site adresi yapıştırın — uygulama akışı bulur; yalnızca eklediğinizi getirir.</string>
+    <string name="edit_globe_hint">Döndürmek için sürükleyin · genişletmek için sıkıştırın · halka o kuşağın konu karışımını gösterir</string>
+    <string name="edit_reset_to_global">Küresel\'e döndür</string>
+    <string name="edit_import_opml">OPML içe aktar</string>
+    <string name="edit_export_opml">OPML dışa aktar</string>
+    <string name="edit_catalogue">Katalog</string>
+    <string name="edit_catalogue_hint">İsterseniz bunu bir catalogue.json\'a yöneltin; böylece başlangıç kaynakları ve ücretsiz kademe sınırları uygulama güncellenmeden tazelenir. Siz tazele\'ye dokunmadıkça hiçbir şey getirilmez; varsayılan bir adres yok, çünkü bu sürüm hangisinin çalıştığını doğrulayamaz.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">Katalog adresi</string>
+    <string name="edit_built_in_starters">Yerleşik başlangıç kaynaklarını kullan</string>
+    <string name="edit_could_not_refresh">Tazelenemedi: %1$s</string>
+    <string name="edit_loaded_services">%1$d hizmet tanımı yüklendi.</string>
+    <string name="edit_last_refreshed">Son tazeleme %1$s.</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">Sources de départ</string>
     <string name="sources_no_starters">Aucune source de départ disponible.</string>
     <string name="sources_starters_body">Une courte liste de flux déjà vérifiés et actifs en ce moment — activez ceux qui vous plaisent.</string>
+    <string name="edit_edit">MODIFIER</string>
+    <string name="edit_done">TERMINÉ</string>
+    <string name="edit_all">Toutes</string>
+    <string name="edit_news_apis">API d\'actualités et constructeurs</string>
+    <string name="edit_search_sources">Rechercher des sources</string>
+    <string name="edit_get_free_key">Obtenir une clé gratuite pour %1$s</string>
+    <string name="edit_add_named">Ajouter %1$s</string>
+    <string name="edit_source_failing">Cette source ne répond pas</string>
+    <string name="edit_add_by_url">Ajouter par URL</string>
+    <string name="edit_feed_or_site_url">URL du flux ou du site</string>
+    <string name="edit_could_not_add_url">Impossible d\'ajouter cette URL</string>
+    <string name="edit_add_this_url">Ajouter cette URL</string>
+    <string name="edit_could_not_add">Impossible d\'ajouter : %1$s</string>
+    <string name="edit_added_named">« %1$s » ajouté.</string>
+    <string name="edit_pick_a_feed">Cette page déclare plusieurs flux, choisissez-en un :</string>
+    <string name="edit_paste_hint">Collez l\'URL d\'un flux ou d\'un site — l\'app trouve le flux ; elle ne récupère que ce que vous ajoutez.</string>
+    <string name="edit_globe_hint">Glissez pour faire tourner · pincez pour élargir · l\'anneau montre le mélange de thèmes de la bande</string>
+    <string name="edit_reset_to_global">Revenir à Mondial</string>
+    <string name="edit_import_opml">Importer OPML</string>
+    <string name="edit_export_opml">Exporter OPML</string>
+    <string name="edit_catalogue">Catalogue</string>
+    <string name="edit_catalogue_hint">Vous pouvez pointer ceci vers un catalogue.json pour rafraîchir les sources de départ et les limites gratuites sans mise à jour de l\'app. Rien n\'est récupéré tant que vous ne touchez pas rafraîchir ; il n\'y a pas d\'URL par défaut, cette version ne pouvant vérifier qu\'une seule soit active.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">URL du catalogue</string>
+    <string name="edit_built_in_starters">Utiliser les sources de départ intégrées</string>
+    <string name="edit_could_not_refresh">Impossible de rafraîchir : %1$s</string>
+    <string name="edit_loaded_services">%1$d définitions de service chargées.</string>
+    <string name="edit_last_refreshed">Dernier rafraîchissement %1$s.</string>
 </resources>

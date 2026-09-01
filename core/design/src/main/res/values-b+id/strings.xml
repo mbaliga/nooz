@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">Sumber awal</string>
     <string name="sources_no_starters">Tidak ada sumber awal.</string>
     <string name="sources_starters_body">Daftar singkat umpan yang sudah diperiksa dan aktif sekarang — nyalakan yang Anda suka.</string>
+    <string name="edit_edit">UBAH</string>
+    <string name="edit_done">SELESAI</string>
+    <string name="edit_all">Semua</string>
+    <string name="edit_news_apis">API berita &amp; pembangun</string>
+    <string name="edit_search_sources">Cari sumber</string>
+    <string name="edit_get_free_key">Dapatkan kunci gratis untuk %1$s</string>
+    <string name="edit_add_named">Tambah %1$s</string>
+    <string name="edit_source_failing">Sumber ini gagal diambil</string>
+    <string name="edit_add_by_url">Tambah lewat URL</string>
+    <string name="edit_feed_or_site_url">URL umpan atau situs</string>
+    <string name="edit_could_not_add_url">URL ini tidak bisa ditambahkan</string>
+    <string name="edit_add_this_url">Tambahkan URL ini</string>
+    <string name="edit_could_not_add">Tidak bisa ditambahkan: %1$s</string>
+    <string name="edit_added_named">“%1$s” ditambahkan.</string>
+    <string name="edit_pick_a_feed">Halaman ini menyatakan lebih dari satu umpan, pilih satu:</string>
+    <string name="edit_paste_hint">Tempel URL umpan atau situs — aplikasi menemukan umpannya; hanya mengambil yang Anda tambahkan.</string>
+    <string name="edit_globe_hint">Seret untuk memutar · cubit untuk melebarkan · cincin menunjukkan campuran topik pita itu</string>
+    <string name="edit_reset_to_global">Kembali ke Global</string>
+    <string name="edit_import_opml">Impor OPML</string>
+    <string name="edit_export_opml">Ekspor OPML</string>
+    <string name="edit_catalogue">Katalog</string>
+    <string name="edit_catalogue_hint">Kalau mau, arahkan ini ke sebuah catalogue.json agar sumber awal dan batas tingkat gratis diperbarui tanpa memperbarui aplikasi. Tidak ada yang diambil sampai Anda menekan segarkan; tidak ada URL bawaan, karena versi ini tidak bisa memastikan ada yang aktif.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">URL katalog</string>
+    <string name="edit_built_in_starters">Pakai sumber awal bawaan</string>
+    <string name="edit_could_not_refresh">Tidak bisa disegarkan: %1$s</string>
+    <string name="edit_loaded_services">%1$d definisi layanan dimuat.</string>
+    <string name="edit_last_refreshed">Terakhir disegarkan %1$s.</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">ಆರಂಭಿಕ ಮೂಲಗಳು</string>
     <string name="sources_no_starters">ಆರಂಭಿಕ ಮೂಲಗಳು ಲಭ್ಯವಿಲ್ಲ.</string>
     <string name="sources_starters_body">ಮೊದಲೇ ಪರಿಶೀಲಿಸಿದ, ಈಗ ಚಾಲ್ತಿಯಲ್ಲಿರುವ ಫೀಡ್‌ಗಳ ಚಿಕ್ಕ ಪಟ್ಟಿ — ಇಷ್ಟವಾದದ್ದನ್ನು ಚಾಲೂ ಮಾಡಿ.</string>
+    <string name="edit_edit">ಸಂಪಾದನೆ</string>
+    <string name="edit_done">ಆಯಿತು</string>
+    <string name="edit_all">ಎಲ್ಲಾ</string>
+    <string name="edit_news_apis">ಸುದ್ದಿ API ಮತ್ತು ಬಿಲ್ಡರ್‌ಗಳು</string>
+    <string name="edit_search_sources">ಮೂಲಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="edit_get_free_key">%1$s ಗಾಗಿ ಉಚಿತ ಕೀ ಪಡೆಯಿರಿ</string>
+    <string name="edit_add_named">%1$s ಸೇರಿಸಿ</string>
+    <string name="edit_source_failing">ಈ ಮೂಲದಿಂದ ತರಲಾಗುತ್ತಿಲ್ಲ</string>
+    <string name="edit_add_by_url">URL ಮೂಲಕ ಸೇರಿಸಿ</string>
+    <string name="edit_feed_or_site_url">ಫೀಡ್ ಅಥವಾ ತಾಣದ URL</string>
+    <string name="edit_could_not_add_url">ಈ URL ಸೇರಿಸಲಾಗಲಿಲ್ಲ</string>
+    <string name="edit_add_this_url">ಈ URL ಸೇರಿಸಿ</string>
+    <string name="edit_could_not_add">ಸೇರಿಸಲಾಗಲಿಲ್ಲ: %1$s</string>
+    <string name="edit_added_named">“%1$s” ಸೇರಿಸಲಾಗಿದೆ.</string>
+    <string name="edit_pick_a_feed">ಈ ಪುಟ ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಫೀಡ್‌ಗಳನ್ನು ಹೇಳುತ್ತದೆ, ಒಂದನ್ನು ಆರಿಸಿ:</string>
+    <string name="edit_paste_hint">ಫೀಡ್ ಅಥವಾ ತಾಣದ URL ಅಂಟಿಸಿ — ಆ್ಯಪ್ ಫೀಡ್ ಹುಡುಕುತ್ತದೆ; ನೀವು ಸೇರಿಸಿದ್ದನ್ನಷ್ಟೇ ತರುತ್ತದೆ.</string>
+    <string name="edit_globe_hint">ತಿರುಗಿಸಲು ಎಳೆಯಿರಿ · ಅಗಲ ಮಾಡಲು ಪಿಂಚ್ ಮಾಡಿ · ಉಂಗುರ ಆ ಪಟ್ಟಿಯ ವಿಷಯ ಮಿಶ್ರಣ ತೋರಿಸುತ್ತದೆ</string>
+    <string name="edit_reset_to_global">ಜಾಗತಿಕಕ್ಕೆ ಮರುಹೊಂದಿಸಿ</string>
+    <string name="edit_import_opml">OPML ಆಮದು</string>
+    <string name="edit_export_opml">OPML ರಫ್ತು</string>
+    <string name="edit_catalogue">ಪಟ್ಟಿ</string>
+    <string name="edit_catalogue_hint">ಬೇಕಿದ್ದರೆ ಇದನ್ನು ಯಾವುದಾದರೂ catalogue.json ಕಡೆ ತೋರಿಸಿ; ಆಗ ಆ್ಯಪ್ ನವೀಕರಣವಿಲ್ಲದೆಯೇ ಆರಂಭಿಕ ಮೂಲಗಳು ಮತ್ತು ಉಚಿತ ಶ್ರೇಣಿಯ ಮಿತಿಗಳು ಹೊಸದಾಗುತ್ತವೆ. ನೀವು ರಿಫ್ರೆಶ್ ಒತ್ತುವವರೆಗೆ ಏನೂ ತರುವುದಿಲ್ಲ; ಪೂರ್ವನಿಗದಿತ URL ಇಲ್ಲ, ಏಕೆಂದರೆ ಯಾವುದು ಚಾಲ್ತಿಯಲ್ಲಿದೆ ಎಂದು ಈ ಬಿಲ್ಡ್ ಪರಿಶೀಲಿಸಲಾಗದು.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">ಪಟ್ಟಿಯ URL</string>
+    <string name="edit_built_in_starters">ಅಂತರ್ಗತ ಆರಂಭಿಕ ಮೂಲಗಳನ್ನು ಬಳಸಿ</string>
+    <string name="edit_could_not_refresh">ಹೊಸದಾಗಿಸಲಾಗಲಿಲ್ಲ: %1$s</string>
+    <string name="edit_loaded_services">%1$d ಸೇವಾ ವ್ಯಾಖ್ಯಾನಗಳು ಲೋಡ್ ಆದವು.</string>
+    <string name="edit_last_refreshed">ಕೊನೆಯ ಬಾರಿ ಹೊಸದಾಗಿಸಿದ್ದು %1$s.</string>
 </resources>

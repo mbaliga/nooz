@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">ابتدائی ذرائع</string>
     <string name="sources_no_starters">کوئی ابتدائی ذریعہ دستیاب نہیں۔</string>
     <string name="sources_starters_body">پہلے سے جانچی ہوئی، ابھی زندہ فیڈز کی ایک مختصر فہرست — جو پسند ہو چالو کر لیں۔</string>
+    <string name="edit_edit">ترمیم</string>
+    <string name="edit_done">ہو گیا</string>
+    <string name="edit_all">سب</string>
+    <string name="edit_news_apis">خبروں کے API اور بلڈر</string>
+    <string name="edit_search_sources">ذرائع تلاش کریں</string>
+    <string name="edit_get_free_key">%1$s کے لیے مفت کلید حاصل کریں</string>
+    <string name="edit_add_named">%1$s شامل کریں</string>
+    <string name="edit_source_failing">یہ ذریعہ لانے میں ناکام ہو رہا ہے</string>
+    <string name="edit_add_by_url">URL سے شامل کریں</string>
+    <string name="edit_feed_or_site_url">فیڈ یا سائٹ کا URL</string>
+    <string name="edit_could_not_add_url">یہ URL شامل نہ ہو سکا</string>
+    <string name="edit_add_this_url">یہ URL شامل کریں</string>
+    <string name="edit_could_not_add">شامل نہ ہو سکا: %1$s</string>
+    <string name="edit_added_named">”%1$s“ شامل ہو گیا۔</string>
+    <string name="edit_pick_a_feed">یہ صفحہ ایک سے زیادہ فیڈ بتاتا ہے، کوئی ایک چنیں:</string>
+    <string name="edit_paste_hint">کوئی فیڈ یا سائٹ کا URL چسپاں کریں — ایپ فیڈ ڈھونڈ لیتی ہے؛ جو آپ شامل کریں بس وہی لاتی ہے۔</string>
+    <string name="edit_globe_hint">گھمانے کے لیے کھینچیں · چوڑا کرنے کے لیے چٹکی بھریں · حلقہ اُس پٹی کا موضوعاتی امتزاج دکھاتا ہے</string>
+    <string name="edit_reset_to_global">عالمی پر واپس</string>
+    <string name="edit_import_opml">OPML درآمد</string>
+    <string name="edit_export_opml">OPML برآمد</string>
+    <string name="edit_catalogue">فہرست</string>
+    <string name="edit_catalogue_hint">چاہیں تو اِسے کسی catalogue.json کی طرف رکھ دیں، تاکہ ایپ اپ ڈیٹ کیے بغیر ابتدائی ذرائع اور مفت درجے کی حدیں تازہ ہو سکیں۔ جب تک آپ تازہ کریں نہ دبائیں، کچھ نہیں لایا جاتا؛ کوئی طے شدہ URL نہیں، کیونکہ یہ بِلڈ جانچ نہیں سکتا کہ کون سا زندہ ہے۔</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">فہرست کا URL</string>
+    <string name="edit_built_in_starters">اندرونی ابتدائی ذرائع استعمال کریں</string>
+    <string name="edit_could_not_refresh">تازہ نہ ہو سکا: %1$s</string>
+    <string name="edit_loaded_services">%1$d خدمات کی تعریفیں لوڈ ہوئیں۔</string>
+    <string name="edit_last_refreshed">آخری بار تازہ کیا گیا %1$s۔</string>
 </resources>

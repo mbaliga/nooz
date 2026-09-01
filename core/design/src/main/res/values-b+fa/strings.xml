@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">منبع‌های آغازین</string>
     <string name="sources_no_starters">منبع آغازینی در دسترس نیست.</string>
     <string name="sources_starters_body">فهرستی کوتاه از خوراک‌های از پیش بررسی‌شده و هم‌اکنون زنده — هرکدام را خواستید روشن کنید.</string>
+    <string name="edit_edit">ویرایش</string>
+    <string name="edit_done">انجام شد</string>
+    <string name="edit_all">همه</string>
+    <string name="edit_news_apis">رابط‌های خبری و سازنده‌ها</string>
+    <string name="edit_search_sources">جست‌وجوی منبع‌ها</string>
+    <string name="edit_get_free_key">کلید رایگان برای %1$s بگیرید</string>
+    <string name="edit_add_named">افزودن %1$s</string>
+    <string name="edit_source_failing">گرفتن از این منبع ناکام می‌ماند</string>
+    <string name="edit_add_by_url">افزودن با نشانی</string>
+    <string name="edit_feed_or_site_url">نشانی خوراک یا سایت</string>
+    <string name="edit_could_not_add_url">این نشانی افزوده نشد</string>
+    <string name="edit_add_this_url">این نشانی را بیفزا</string>
+    <string name="edit_could_not_add">افزوده نشد: %1$s</string>
+    <string name="edit_added_named">«%1$s» افزوده شد.</string>
+    <string name="edit_pick_a_feed">این صفحه بیش از یک خوراک را اعلام می‌کند، یکی را برگزینید:</string>
+    <string name="edit_paste_hint">نشانی یک خوراک یا سایت را بچسبانید — برنامه خوراک را می‌یابد و تنها آنچه را می‌افزایید می‌گیرد.</string>
+    <string name="edit_globe_hint">برای چرخاندن بکشید · برای پهن کردن دو انگشت را باز کنید · حلقه ترکیب موضوعی نوار را نشان می‌دهد</string>
+    <string name="edit_reset_to_global">بازگشت به جهانی</string>
+    <string name="edit_import_opml">درون‌ریزی OPML</string>
+    <string name="edit_export_opml">برون‌ریزی OPML</string>
+    <string name="edit_catalogue">فهرست</string>
+    <string name="edit_catalogue_hint">اگر خواستید این را به یک catalogue.json نشانه بروید تا منبع‌های آغازین و سقف‌های رایگان بدون به‌روزرسانی برنامه تازه شوند. تا نوسازی را نزنید چیزی گرفته نمی‌شود؛ نشانی پیش‌فرضی نیست، چون این ساخت نمی‌تواند بررسی کند کدام‌یک زنده است.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">نشانی فهرست</string>
+    <string name="edit_built_in_starters">از منبع‌های آغازین درون‌ساخت استفاده کن</string>
+    <string name="edit_could_not_refresh">تازه نشد: %1$s</string>
+    <string name="edit_loaded_services">%1$d تعریف سرویس بارگیری شد.</string>
+    <string name="edit_last_refreshed">آخرین نوسازی %1$s.</string>
 </resources>

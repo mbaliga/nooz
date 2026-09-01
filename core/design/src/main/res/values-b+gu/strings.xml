@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">શરૂઆતના સ્રોત</string>
     <string name="sources_no_starters">કોઈ શરૂઆતના સ્રોત ઉપલબ્ધ નથી.</string>
     <string name="sources_starters_body">પહેલેથી ચકાસાયેલી, અત્યારે ચાલુ ફીડની ટૂંકી યાદી — જે ગમે તે ચાલુ કરો.</string>
+    <string name="edit_edit">સંપાદન</string>
+    <string name="edit_done">થઈ ગયું</string>
+    <string name="edit_all">બધા</string>
+    <string name="edit_news_apis">સમાચાર API અને બિલ્ડર</string>
+    <string name="edit_search_sources">સ્રોત શોધો</string>
+    <string name="edit_get_free_key">%1$s માટે મફત કી મેળવો</string>
+    <string name="edit_add_named">%1$s ઉમેરો</string>
+    <string name="edit_source_failing">આ સ્રોતમાંથી લાવવામાં નિષ્ફળ જાય છે</string>
+    <string name="edit_add_by_url">URL થી ઉમેરો</string>
+    <string name="edit_feed_or_site_url">ફીડ કે સાઇટનું URL</string>
+    <string name="edit_could_not_add_url">આ URL ઉમેરી શકાયું નહીં</string>
+    <string name="edit_add_this_url">આ URL ઉમેરો</string>
+    <string name="edit_could_not_add">ઉમેરી શકાયું નહીં: %1$s</string>
+    <string name="edit_added_named">“%1$s” ઉમેરાયું.</string>
+    <string name="edit_pick_a_feed">આ પાનું એકથી વધુ ફીડ જણાવે છે, એક પસંદ કરો:</string>
+    <string name="edit_paste_hint">કોઈ ફીડ કે સાઇટનું URL ચોંટાડો — ઍપ ફીડ શોધી કાઢે છે; તમે ઉમેરો એટલું જ લાવે છે.</string>
+    <string name="edit_globe_hint">ફેરવવા ખેંચો · પહોળું કરવા ચપટી ભરો · વલય એ પટ્ટીનું વિષય-મિશ્રણ બતાવે છે</string>
+    <string name="edit_reset_to_global">વૈશ્વિક પર પાછા</string>
+    <string name="edit_import_opml">OPML આયાત</string>
+    <string name="edit_export_opml">OPML નિકાસ</string>
+    <string name="edit_catalogue">સૂચિ</string>
+    <string name="edit_catalogue_hint">ઇચ્છો તો આને કોઈ catalogue.json તરફ દર્શાવો, જેથી ઍપ અપડેટ કર્યા વગર જ શરૂઆતના સ્રોત અને મફત-શ્રેણીની મર્યાદા તાજી થાય. તમે રિફ્રેશ દબાવો નહીં ત્યાં સુધી કશું લવાતું નથી; કોઈ પૂર્વનિર્ધારિત URL નથી, કેમ કે આ બિલ્ડ ચકાસી શકતું નથી કે કયું ચાલુ છે.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">સૂચિનું URL</string>
+    <string name="edit_built_in_starters">અંતર્નિહિત શરૂઆતના સ્રોત વાપરો</string>
+    <string name="edit_could_not_refresh">તાજું કરી શકાયું નહીં: %1$s</string>
+    <string name="edit_loaded_services">%1$d સેવા વ્યાખ્યાઓ લોડ થઈ.</string>
+    <string name="edit_last_refreshed">છેલ્લે તાજું કરાયું %1$s.</string>
 </resources>

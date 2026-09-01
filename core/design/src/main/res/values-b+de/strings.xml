@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  157 of 157 strings translated.
+  185 of 185 strings translated.
 -->
 <resources>
 
@@ -168,4 +168,32 @@
     <string name="sources_starters">Startquellen</string>
     <string name="sources_no_starters">Keine Startquellen verfügbar.</string>
     <string name="sources_starters_body">Eine kurze Liste geprüfter, aktuell laufender Feeds — schalte ein, was dir gefällt.</string>
+    <string name="edit_edit">BEARBEITEN</string>
+    <string name="edit_done">FERTIG</string>
+    <string name="edit_all">Alle</string>
+    <string name="edit_news_apis">Nachrichten-APIs und Baukästen</string>
+    <string name="edit_search_sources">Quellen suchen</string>
+    <string name="edit_get_free_key">Kostenlosen Schlüssel für %1$s holen</string>
+    <string name="edit_add_named">%1$s hinzufügen</string>
+    <string name="edit_source_failing">Diese Quelle lässt sich nicht abrufen</string>
+    <string name="edit_add_by_url">Per URL hinzufügen</string>
+    <string name="edit_feed_or_site_url">URL des Feeds oder der Seite</string>
+    <string name="edit_could_not_add_url">Diese URL ließ sich nicht hinzufügen</string>
+    <string name="edit_add_this_url">Diese URL hinzufügen</string>
+    <string name="edit_could_not_add">Konnte nicht hinzugefügt werden: %1$s</string>
+    <string name="edit_added_named">„%1$s“ hinzugefügt.</string>
+    <string name="edit_pick_a_feed">Diese Seite nennt mehr als einen Feed, wähle einen:</string>
+    <string name="edit_paste_hint">Füge die URL eines Feeds oder einer Seite ein — die App findet den Feed und holt nur, was du hinzufügst.</string>
+    <string name="edit_globe_hint">Ziehen zum Drehen · aufziehen zum Verbreitern · der Ring zeigt die Themenmischung des Bands</string>
+    <string name="edit_reset_to_global">Auf Global zurücksetzen</string>
+    <string name="edit_import_opml">OPML importieren</string>
+    <string name="edit_export_opml">OPML exportieren</string>
+    <string name="edit_catalogue">Katalog</string>
+    <string name="edit_catalogue_hint">Du kannst dies auf eine catalogue.json richten, um Startquellen und Freikontingente ohne App-Update zu erneuern. Es wird nichts geholt, solange du nicht auf Aktualisieren tippst; eine Standard-URL gibt es nicht, weil dieser Build nicht prüfen kann, dass eine davon läuft.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">Katalog-URL</string>
+    <string name="edit_built_in_starters">Eingebaute Startquellen verwenden</string>
+    <string name="edit_could_not_refresh">Konnte nicht aktualisiert werden: %1$s</string>
+    <string name="edit_loaded_services">%1$d Dienstdefinitionen geladen.</string>
+    <string name="edit_last_refreshed">Zuletzt aktualisiert %1$s.</string>
 </resources>

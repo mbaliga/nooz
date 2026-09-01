@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.R as DesignR
 
 /** OPML import/export — the user's data is the user's file. */
 @Composable
@@ -66,9 +68,9 @@ fun OpmlButtons(vm: SourcesViewModel) {
 
     OutlinedButton(onClick = {
         importLauncher.launch(arrayOf("text/xml", "application/xml", "text/x-opml", "*/*"))
-    }) { Text("Import OPML") }
+    }) { Text(stringResource(DesignR.string.edit_import_opml)) }
     OutlinedButton(onClick = { exportLauncher.launch("nooz-sources.opml") }) {
-        Text("Export OPML")
+        Text(stringResource(DesignR.string.edit_export_opml))
     }
 }
 
@@ -92,6 +94,8 @@ private fun relativeTime(epochMillis: Long?): String {
  */
 @Composable
 fun CatalogueCard(vm: SourcesViewModel) {
+    // Resolved outside `semantics { }`, which is not a composable scope.
+    val catalogueUrlLabel = stringResource(DesignR.string.edit_catalogue_url)
     val savedUrl by vm.catalogueUrl.collectAsStateWithLifecycle()
     val lastRefreshedAt by vm.catalogueLastRefreshedAt.collectAsStateWithLifecycle()
     var urlInput by remember(savedUrl) { mutableStateOf(savedUrl.orEmpty()) }
@@ -101,11 +105,9 @@ fun CatalogueCard(vm: SourcesViewModel) {
         modifier = Modifier.fillMaxWidth().padding(top = Tokens.Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
     ) {
-        SectionHeading("Catalogue")
+        SectionHeading(stringResource(DesignR.string.edit_catalogue))
         Text(
-            "Optionally point this at a catalogue.json to refresh starters and free-tier " +
-                "limits without an app update. Nothing is fetched unless you tap refresh; " +
-                "there is no default URL, since this build can't verify one is live.",
+            stringResource(DesignR.string.edit_catalogue_hint),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -121,7 +123,7 @@ fun CatalogueCard(vm: SourcesViewModel) {
                 decorationBox = { inner ->
                     if (urlInput.isEmpty()) {
                         Text(
-                            "https://…/catalogue.json",
+                            stringResource(DesignR.string.edit_catalogue_placeholder),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         )
@@ -130,7 +132,7 @@ fun CatalogueCard(vm: SourcesViewModel) {
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .semantics { contentDescription = "Catalogue URL" },
+                    .semantics { contentDescription = catalogueUrlLabel },
             )
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -150,23 +152,23 @@ fun CatalogueCard(vm: SourcesViewModel) {
                         vm.clearCatalogue()
                     },
                     contentPadding = PaddingValues(0.dp),
-                ) { Text("Use built-in starters") }
+                ) { Text(stringResource(DesignR.string.edit_built_in_starters)) }
             }
         }
         when (refreshState) {
             is CatalogueRefreshUiState.Error -> Text(
-                "Couldn't refresh: ${refreshState.message}",
+                stringResource(DesignR.string.edit_could_not_refresh, refreshState.message),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
             )
             is CatalogueRefreshUiState.Refreshed -> Text(
-                "Loaded ${refreshState.serviceCount} service definitions.",
+                stringResource(DesignR.string.edit_loaded_services, refreshState.serviceCount),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             else -> lastRefreshedAt?.let {
                 Text(
-                    "Last refreshed ${relativeTime(it)}.",
+                    stringResource(DesignR.string.edit_last_refreshed, relativeTime(it)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
