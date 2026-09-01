@@ -1397,6 +1397,47 @@ respect as the CI-caught log above.
   deliberate and a search should not reshuffle what it did not rank. Tested
   against the real shipped catalogue, not only fixtures.
 
+- **D40 — Accessibility: a screen reader can reach the dictionary; and an
+  honest scoping of localization (2026-09-01).**
+  **Shipped (a11y).** Sighted readers reach a definition — and now a
+  translation, since D38 put both in the same sheet — by long-pressing *any*
+  word. TalkBack cannot land a press on a particular word inside a paragraph, so
+  that entire feature was unreachable with a screen reader on;
+  `LensAnnotatedParagraph`'s own doc comment had already flagged it. Paragraphs
+  now expose "Define <word>" custom actions alongside the existing per-mark
+  ones, built from `ObscureWords` — the detector for "which words here would
+  someone want defined", which had been left unused when pre-marking was
+  dropped. Actions are **named, not positional** ("Define quotidian", not
+  "Define word three"): the menu is read aloud in sequence, where a list of
+  positions is unusable. Deduplicated and capped at six, because that menu is a
+  listening budget rather than a rendering one. Still gated on a downloaded
+  dictionary, so a translation-only reader does not get it — logged, not fixed.
+  **Audited and found clean.** `android:supportsRtl` is already on; there are no
+  Java `toLowerCase`/`toUpperCase` calls (Kotlin's are `Locale.ROOT`-based, so
+  the Turkish dotless-i class of bug cannot occur); `String.format` is never
+  called without a locale; the one `SimpleDateFormat` is correctly pinned to
+  `Locale.US` for a crash log. A suspected bug — `DateTimeFormatter.ofPattern`
+  emitting non-Latin digits into GDELT feed URLs under locales like `ar-EG` —
+  **was tested and is not real**: `ofPattern` uses `DecimalStyle.STANDARD`
+  regardless of locale, unlike `SimpleDateFormat`. Recorded because it is the
+  kind of thing that looks like a bug on inspection and would have produced a
+  confident, wrong commit.
+  **Not done, and it is a decision rather than an oversight (i18n).** The app
+  cannot presently be translated at all: `strings.xml` holds exactly one entry
+  (`app_name`) and every other user-facing string is a Kotlin literal —
+  **~146 of them across 25 files**, concentrated in `SettingsScreen` (43),
+  `EditScreen` (15) and `ArticleListScreen` (14). Externalizing them is
+  mechanical and compiler-checked, so it is tractable; what it is not is free.
+  It changes no behaviour, produces a large diff across every UI file, and
+  starts charging a tax on every future copy change — in exchange for a benefit
+  that only exists once somebody actually translates the result. Which
+  languages, and whether now, is the owner's call to make, not one to slip in
+  underneath a feature branch. **Recommended order when it happens:** externalize
+  in one pass per module (compiler catches every miss), keep the reader's own
+  prose last since it is the most likely to still be edited, and add
+  `android:localeConfig` at the end so the Android 13+ per-app language picker
+  appears only once there is more than one language to pick.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

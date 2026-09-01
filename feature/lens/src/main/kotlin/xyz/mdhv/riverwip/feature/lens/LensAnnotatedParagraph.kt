@@ -32,6 +32,13 @@ import xyz.mdhv.riverwip.model.AffectSpanDetector
 // pre-marked at all; any word is long-pressed for its meaning, Kindle-style.
 private val LoadedUnderline = Color(0xFFC0442F).copy(alpha = 0.6f)
 
+/**
+ * Cap on "Define X" accessibility actions offered per paragraph. TalkBack
+ * reads the custom-action menu aloud in order, so this is a listening budget,
+ * not a rendering one.
+ */
+private const val MAX_DEFINE_ACTIONS = 6
+
 private data class RenderedMark(
     val span: AffectSpanDetector.Span,
     val renderedStart: Int,
@@ -65,6 +72,19 @@ fun LensAnnotatedParagraph(
         emptyList()
     }
     val defineEnabled = vm.dictionaryReady
+
+    // Words worth defining, for the accessibility path below. Sighted readers
+    // reach a definition by long-pressing *any* word; TalkBack cannot land a
+    // press on a particular word inside a paragraph, so without this the
+    // dictionary — and now the translation that shares its sheet — is simply
+    // unreachable with a screen reader on. ObscureWords is the existing
+    // detector for "which words in this paragraph would someone want defined",
+    // and it had been left unused when pre-marking was dropped.
+    val obscure = if (vm.obscureActive) {
+        remember(text, vm.obscureActive) { vm.detectObscure(text) }
+    } else {
+        emptyList()
+    }
 
     if (affect.isEmpty() && !defineEnabled) {
         Text(text = text, style = style, modifier = modifier)
@@ -160,7 +180,7 @@ fun LensAnnotatedParagraph(
             // per mark is the actual way in (brief §P7). Indexed so repeats stay
             // distinguishable.
             .semantics {
-                customActions = rendered.mapIndexed { index, r ->
+                val spanActions = rendered.mapIndexed { index, r ->
                     val verb = when (vm.stateFor(itemId, r.span)) {
                         is AffectSpanUiState.Accepted -> "Revert suggestion"
                         is AffectSpanUiState.Rejected -> "Rewrite unavailable"
@@ -172,6 +192,23 @@ fun LensAnnotatedParagraph(
                         action = { selectedSpan = r.span; true },
                     )
                 }
+                // The screen-reader equivalent of long-pressing a word. Named
+                // rather than positional ("Define quotidian", not "Define word
+                // three"), because a custom-action menu is read aloud in
+                // sequence and a list of positions is unusable. Deduplicated
+                // and capped: the menu is linear, and a paragraph with thirty
+                // entries in it is worse than one with the first several.
+                val defineActions = obscure
+                    .map { it.word }
+                    .distinct()
+                    .take(MAX_DEFINE_ACTIONS)
+                    .map { word ->
+                        CustomAccessibilityAction(
+                            label = "Define $word",
+                            action = { selectedWord = word; true },
+                        )
+                    }
+                customActions = spanActions + defineActions
             },
         onTextLayout = { layoutResult = it },
     )
