@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Это собственный текст Nooz. Новости всегда остаются на том языке, на котором их написал издатель.</string>
     <string name="language_partial">%1$s · переведено %2$d%%</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">Фильтр по региону и теме</string>
+    <string name="list_open_clippings">Открыть ваши вырезки</string>
+    <string name="list_fetching">Загрузка из ваших источников</string>
+    <string name="list_fetch_now">Загрузить из источников сейчас</string>
+    <string name="list_settings">Настройки</string>
+    <string name="list_nothing_unread">Непрочитанного не осталось</string>
+    <string name="list_nothing_unread_body">Каждая новость в этом списке уже открыта. Разведите пальцы или коснитесь здесь, чтобы снова увидеть весь список.</string>
+    <string name="list_search">Искать статьи</string>
+    <string name="list_filter">Фильтр</string>
+    <string name="list_clear">Сбросить</string>
+    <string name="list_region">Регион</string>
+    <string name="list_topics">Темы</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Прочитано</string>
+    <string name="list_unread">Не прочитано</string>
+    <string name="list_showing_unread_only">Показаны только непрочитанные; коснитесь, чтобы увидеть все</string>
+    <string name="list_showing_all">Показаны все новости; коснитесь, чтобы увидеть только непрочитанные</string>
+    <string name="list_show_all_click">Показать все статьи</string>
+    <string name="reader_previous">‹ Назад</string>
+    <string name="reader_end_of_article">Конец статьи</string>
+    <string name="reader_next">Дальше ›</string>
+    <string name="reader_loading">Статья загружается</string>
+    <string name="reader_full_story">Читать полностью в источнике ↗</string>
+    <string name="reader_back_to_stand">Назад к витрине</string>
+    <string name="reader_open_settings">Открыть настройки чтения</string>
+    <string name="reader_lens_toggle">Линза: подсветка предвзятых формулировок</string>
+    <string name="reader_open_in_browser">Открыть в браузере</string>
+    <string name="reader_share_clipping">Поделиться как газетной вырезкой</string>
+    <string name="reader_minutes_short">%1$d мин</string>
+    <string name="reader_reading_time">Примерное время чтения: %1$d минут</string>
+    <string name="reader_progress">Около %1$d процентов статьи</string>
 </resources>

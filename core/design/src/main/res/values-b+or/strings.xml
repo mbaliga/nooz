@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">ଏହା ନୁଜର ନିଜସ୍ୱ ଲେଖା। ଖବର ସବୁବେଳେ ପ୍ରକାଶକ ଯେଉଁ ଭାଷାରେ ଲେଖିଛନ୍ତି ସେହି ଭାଷାରେ ହିଁ ରହେ।</string>
     <string name="language_partial">%1$s · %2$d%% ଅନୂଦିତ</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">ଅଞ୍ଚଳ ଓ ବିଷୟ ଅନୁସାରେ ଛାଣନ୍ତୁ</string>
+    <string name="list_open_clippings">ଆପଣଙ୍କ କାଟଣା ଖୋଲନ୍ତୁ</string>
+    <string name="list_fetching">ଆପଣଙ୍କ ଉତ୍ସରୁ ଅଣାଯାଉଛି</string>
+    <string name="list_fetch_now">ବର୍ତ୍ତମାନ ଉତ୍ସରୁ ଆଣନ୍ତୁ</string>
+    <string name="list_settings">ସେଟିଂସ</string>
+    <string name="list_nothing_unread">ଆଉ କିଛି ଅପଠିତ ନାହିଁ</string>
+    <string name="list_nothing_unread_body">ଏହି ତାଲିକାର ପ୍ରତ୍ୟେକ ଖବର ଖୋଲାଯାଇଛି। ପୂରା ତାଲିକା ପୁଣି ଦେଖିବାକୁ ବାହାରକୁ ଚିମୁଟନ୍ତୁ, କିମ୍ବା ଏଠାରେ ଛୁଅଁନ୍ତୁ।</string>
+    <string name="list_search">ଖବର ଖୋଜନ୍ତୁ</string>
+    <string name="list_filter">ଛାଣନୀ</string>
+    <string name="list_clear">ସଫା କରନ୍ତୁ</string>
+    <string name="list_region">ଅଞ୍ଚଳ</string>
+    <string name="list_topics">ବିଷୟ</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">ପଠିତ</string>
+    <string name="list_unread">ଅପଠିତ</string>
+    <string name="list_showing_unread_only">କେବଳ ଅପଠିତ ଦେଖାଯାଉଛି; ସବୁ ଦେଖିବାକୁ ଛୁଅଁନ୍ତୁ</string>
+    <string name="list_showing_all">ସବୁ ଖବର ଦେଖାଯାଉଛି; କେବଳ ଅପଠିତ ଦେଖିବାକୁ ଛୁଅଁନ୍ତୁ</string>
+    <string name="list_show_all_click">ସବୁ ଖବର ଦେଖାନ୍ତୁ</string>
+    <string name="reader_previous">‹ ପୂର୍ବବର୍ତ୍ତୀ</string>
+    <string name="reader_end_of_article">ଲେଖା ଶେଷ</string>
+    <string name="reader_next">ପରବର୍ତ୍ତୀ ›</string>
+    <string name="reader_loading">ଲେଖା ଆସୁଛି</string>
+    <string name="reader_full_story">ପୂରା ଖବର ଉତ୍ସରେ ପଢ଼ନ୍ତୁ ↗</string>
+    <string name="reader_back_to_stand">ଷ୍ଟାଣ୍ଡକୁ ଫେରନ୍ତୁ</string>
+    <string name="reader_open_settings">ପଢ଼ିବାର ସେଟିଂସ ଖୋଲନ୍ତୁ</string>
+    <string name="reader_lens_toggle">ଲେନ୍ସ: ପକ୍ଷପାତୀ ଭାଷାର ଚିହ୍ନଟ</string>
+    <string name="reader_open_in_browser">ବ୍ରାଉଜରରେ ଖୋଲନ୍ତୁ</string>
+    <string name="reader_share_clipping">ଖବରକାଗଜ କାଟଣା ଭାବେ ସେୟାର କରନ୍ତୁ</string>
+    <string name="reader_minutes_short">%1$d ମିନିଟ</string>
+    <string name="reader_reading_time">ପଢ଼ିବାକୁ ପ୍ରାୟ %1$d ମିନିଟ</string>
+    <string name="reader_progress">ଲେଖାର ପ୍ରାୟ %1$d ପ୍ରତିଶତ ହୋଇଛି</string>
 </resources>

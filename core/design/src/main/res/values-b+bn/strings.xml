@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">এটি নূজ়-এর নিজস্ব লেখা। খবর সবসময় সেই ভাষাতেই থাকে যে ভাষায় প্রকাশক লিখেছেন।</string>
     <string name="language_partial">%1$s · %2$d%% অনূদিত</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">অঞ্চল ও বিষয় অনুযায়ী ছাঁকুন</string>
+    <string name="list_open_clippings">আপনার কাটিং খুলুন</string>
+    <string name="list_fetching">আপনার উৎস থেকে আনা হচ্ছে</string>
+    <string name="list_fetch_now">এখনই উৎস থেকে আনুন</string>
+    <string name="list_settings">সেটিংস</string>
+    <string name="list_nothing_unread">আর কিছু অপঠিত নেই</string>
+    <string name="list_nothing_unread_body">এই তালিকার প্রতিটি খবরই খোলা হয়েছে। পুরো তালিকা আবার দেখতে বাইরের দিকে চিমটি কাটুন, বা এখানে চাপ দিন।</string>
+    <string name="list_search">খবর খুঁজুন</string>
+    <string name="list_filter">ছাঁকনি</string>
+    <string name="list_clear">মুছুন</string>
+    <string name="list_region">অঞ্চল</string>
+    <string name="list_topics">বিষয়</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">পঠিত</string>
+    <string name="list_unread">অপঠিত</string>
+    <string name="list_showing_unread_only">শুধু অপঠিত দেখানো হচ্ছে; সব খবর দেখতে চাপ দিন</string>
+    <string name="list_showing_all">সব খবর দেখানো হচ্ছে; শুধু অপঠিত দেখতে চাপ দিন</string>
+    <string name="list_show_all_click">সব খবর দেখান</string>
+    <string name="reader_previous">‹ আগের</string>
+    <string name="reader_end_of_article">লেখা শেষ</string>
+    <string name="reader_next">পরের ›</string>
+    <string name="reader_loading">লেখা আসছে</string>
+    <string name="reader_full_story">পুরো খবর উৎসে পড়ুন ↗</string>
+    <string name="reader_back_to_stand">স্ট্যান্ডে ফিরুন</string>
+    <string name="reader_open_settings">পড়ার সেটিংস খুলুন</string>
+    <string name="reader_lens_toggle">লেন্স: পক্ষপাতদুষ্ট ভাষা চিহ্নিতকরণ</string>
+    <string name="reader_open_in_browser">ব্রাউজারে খুলুন</string>
+    <string name="reader_share_clipping">খবরের কাগজের কাটিং হিসেবে শেয়ার করুন</string>
+    <string name="reader_minutes_short">%1$d মিনিট</string>
+    <string name="reader_reading_time">পড়তে আনুমানিক %1$d মিনিট</string>
+    <string name="reader_progress">লেখার প্রায় %1$d শতাংশ হয়েছে</string>
 </resources>

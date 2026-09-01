@@ -13,5 +13,14 @@
   "language_title": "زبان",
   "language_system_default": "فونس مطابق",
   "language_partial": "%1$s · %2$d%% ترجمہ کرنہٕ آمُت",
-  "language_complete": "%1$s"
+  "language_complete": "%1$s",
+  "list_settings": "ترتیبات",
+  "list_clear": "صاف کریو",
+  "list_region": "علاقہ",
+  "list_topics": "موضوع",
+  "list_read": "پأریتھ",
+  "list_unread": "نہٕ پأریتھ",
+  "reader_previous": "‹ پیٚٹھ",
+  "reader_next": "بیٛاکھ ›",
+  "reader_open_in_browser": "براؤزرس منٛز کھۆلیو"
 }

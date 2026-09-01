@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">இது நூஸின் சொந்த உரை. செய்திகள் எப்போதும் அவற்றை வெளியிட்டவர் எழுதிய மொழியிலேயே இருக்கும்.</string>
     <string name="language_partial">%1$s · %2$d%% மொழிபெயர்க்கப்பட்டது</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">பகுதி, தலைப்பு வாரியாக வடிகட்டு</string>
+    <string name="list_open_clippings">உங்கள் வெட்டுகளைத் திறக்கவும்</string>
+    <string name="list_fetching">உங்கள் ஆதாரங்களிலிருந்து பெறப்படுகிறது</string>
+    <string name="list_fetch_now">இப்போதே ஆதாரங்களிலிருந்து பெறு</string>
+    <string name="list_settings">அமைப்புகள்</string>
+    <string name="list_nothing_unread">படிக்காதது எதுவும் இல்லை</string>
+    <string name="list_nothing_unread_body">இந்தப் பட்டியலின் ஒவ்வொரு செய்தியும் திறக்கப்பட்டுவிட்டது. முழுப் பட்டியலையும் மீண்டும் காண வெளிநோக்கிக் கிள்ளுங்கள், அல்லது இங்கே தொடுங்கள்.</string>
+    <string name="list_search">செய்திகளைத் தேடு</string>
+    <string name="list_filter">வடிகட்டி</string>
+    <string name="list_clear">அழி</string>
+    <string name="list_region">பகுதி</string>
+    <string name="list_topics">தலைப்புகள்</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">படித்தது</string>
+    <string name="list_unread">படிக்காதது</string>
+    <string name="list_showing_unread_only">படிக்காதவை மட்டும் காட்டப்படுகின்றன; அனைத்தையும் காணத் தொடுங்கள்</string>
+    <string name="list_showing_all">அனைத்துச் செய்திகளும் காட்டப்படுகின்றன; படிக்காதவை மட்டும் காணத் தொடுங்கள்</string>
+    <string name="list_show_all_click">அனைத்துச் செய்திகளையும் காட்டு</string>
+    <string name="reader_previous">‹ முந்தையது</string>
+    <string name="reader_end_of_article">கட்டுரை முடிந்தது</string>
+    <string name="reader_next">அடுத்தது ›</string>
+    <string name="reader_loading">கட்டுரை வருகிறது</string>
+    <string name="reader_full_story">முழுச் செய்தியை மூலத்தில் படியுங்கள் ↗</string>
+    <string name="reader_back_to_stand">ஸ்டாண்டுக்குத் திரும்பு</string>
+    <string name="reader_open_settings">வாசிப்பு அமைப்புகளைத் திற</string>
+    <string name="reader_lens_toggle">லென்ஸ்: சாய்வான மொழியைக் குறித்தல்</string>
+    <string name="reader_open_in_browser">உலாவியில் திற</string>
+    <string name="reader_share_clipping">பத்திரிகை வெட்டாகப் பகிர்</string>
+    <string name="reader_minutes_short">%1$d நிமி</string>
+    <string name="reader_reading_time">படிக்க தோராயமாக %1$d நிமிடங்கள்</string>
+    <string name="reader_progress">கட்டுரையில் ஏறக்குறைய %1$d சதவீதம் முடிந்தது</string>
 </resources>

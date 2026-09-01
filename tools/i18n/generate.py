@@ -141,6 +141,18 @@ def render_web(tag: str, strings: dict, base: dict) -> str:
     return json.dumps(ordered, ensure_ascii=False, indent=2) + "\n"
 
 
+def xml_comment(text: str) -> str:
+    """
+    A comment aapt will accept.
+
+    `--` is illegal inside an XML comment and aapt refuses the whole resource
+    file over it, with an error that names a line number and nothing else. Prose
+    written for humans reaches for a double dash constantly, so this converts it
+    rather than leaving a trap for whoever writes the next section note.
+    """
+    return "<!-- " + text.replace("--", "\u2014") + " -->"
+
+
 def render_base(base: dict) -> str:
     """The English resources, grouped and annotated from _sections.json."""
     sections = json.loads((CATALOGUES / "_sections.json").read_text(encoding="utf-8"))["sections"]
@@ -151,11 +163,11 @@ def render_base(base: dict) -> str:
         if not keys:
             continue
         placed.update(keys)
-        out.append("    <!-- " + section["title"] + " -->")
+        out.append("    " + xml_comment(section["title"]))
         notes = section.get("notes", {})
         for key in keys:
             if key in notes:
-                out.append("    <!-- " + notes[key] + " -->")
+                out.append("    " + xml_comment(notes[key]))
             out.append(f'    <string name="{key}">{escape_android(base[key])}</string>')
         out.append("")
     leftover = [k for k in base if k not in placed]

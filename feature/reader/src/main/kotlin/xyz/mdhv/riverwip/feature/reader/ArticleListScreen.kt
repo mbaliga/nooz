@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -87,6 +88,7 @@ import xyz.mdhv.riverwip.design.R
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.ArticleSearch
 import xyz.mdhv.riverwip.model.Diversifier
 import xyz.mdhv.riverwip.model.ImageStyle
@@ -287,7 +289,7 @@ fun ArticleListScreen(
             IconButton(onClick = { showFilterSheet = true }) {
                 Icon(
                     Icons.Filled.FilterList,
-                    contentDescription = "Filter by region and topic",
+                    contentDescription = stringResource(DesignR.string.list_filter_region_topic),
                     tint = if (!filter.allTopics || filter.region != Region.GLOBAL) {
                         MaterialTheme.colorScheme.onBackground
                     } else {
@@ -318,9 +320,9 @@ fun ArticleListScreen(
                 Icon(
                     if (showUnreadOnly) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                     contentDescription = if (showUnreadOnly) {
-                        "Showing unread only, tap to show every story"
+                        stringResource(DesignR.string.list_showing_unread_only)
                     } else {
-                        "Showing every story, tap to show unread only"
+                        stringResource(DesignR.string.list_showing_all)
                     },
                     tint = if (showUnreadOnly) {
                         MaterialTheme.colorScheme.onBackground
@@ -330,23 +332,26 @@ fun ArticleListScreen(
                 )
             }
             IconButton(onClick = onOpenClippings) {
-                Icon(Icons.Filled.Bookmarks, contentDescription = "Open your clippings")
+                Icon(Icons.Filled.Bookmarks, contentDescription = stringResource(DesignR.string.list_open_clippings))
             }
             if (isRefreshing) {
+                // Resolved before the semantics block, which is not a
+                // composable scope.
+                val fetching = stringResource(DesignR.string.list_fetching)
                 CircularProgressIndicator(
                     modifier = Modifier
                         .padding(end = Tokens.Spacing.sm)
                         .size(18.dp)
-                        .semantics { contentDescription = "Fetching your sources" },
+                        .semantics { contentDescription = fetching },
                     strokeWidth = 2.dp,
                 )
             } else {
                 IconButton(onClick = { vm.refresh() }, enabled = enabledCount > 0) {
-                    Icon(Icons.Filled.Refresh, contentDescription = "Fetch your sources now")
+                    Icon(Icons.Filled.Refresh, contentDescription = stringResource(DesignR.string.list_fetch_now))
                 }
             }
             IconButton(onClick = onOpenEditSettings) {
-                Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                Icon(Icons.Filled.Settings, contentDescription = stringResource(DesignR.string.list_settings))
             }
         }
 
@@ -407,22 +412,25 @@ fun ArticleListScreen(
                 )
             }
             unreadFiltered.isEmpty() -> {
+                // Resolved here rather than inline: `clickable`'s onClickLabel
+                // is a plain argument, not a composable scope.
+                val showAllLabel = stringResource(DesignR.string.list_show_all_click)
                 // showUnreadOnly filtered everything away — an honest, different
                 // state from "no sources"/"nothing flowed": there's plenty here,
                 // all of it read already.
                 Box(Modifier.weight(1f).fillMaxWidth().then(pinchModifier)) {
                     EmptyState(
-                        title = "Nothing left unread",
-                        body = "Every story in this list has been opened. Pinch out, or tap here, to see the whole list again.",
+                        title = stringResource(DesignR.string.list_nothing_unread),
+                        body = stringResource(DesignR.string.list_nothing_unread_body),
                         modifier = Modifier
                             .fillMaxSize()
-                            .clickable(onClickLabel = "Show all articles") { showUnreadOnly = false },
+                            .clickable(onClickLabel = showAllLabel) { showUnreadOnly = false },
                     )
                 }
             }
             displayedItems.isEmpty() -> {
                 // Unread items exist, but this search came up empty — distinct
-                // from the pinch-filter's "Nothing left unread" above.
+                // from the pinch-filter's stringResource(DesignR.string.list_nothing_unread) above.
                 Box(Modifier.weight(1f).fillMaxWidth().then(pinchModifier)) {
                     NoResultsState()
                 }
@@ -478,7 +486,7 @@ fun ArticleListScreen(
         // as well, same as we have in the sources") — the same shared bar,
         // hidden only when there's nothing yet to search through at all.
         if (items.isNotEmpty()) {
-            AppSearchBar(query = searchQuery, onQueryChange = { searchQuery = it }, placeholder = "Search articles")
+            AppSearchBar(query = searchQuery, onQueryChange = { searchQuery = it }, placeholder = stringResource(DesignR.string.list_search))
         }
     }
 
@@ -678,13 +686,13 @@ private fun RegionTopicFilterSheet(
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("Filter", style = MaterialTheme.typography.titleLarge, color = ink, modifier = Modifier.weight(1f))
+                Text(stringResource(DesignR.string.list_filter), style = MaterialTheme.typography.titleLarge, color = ink, modifier = Modifier.weight(1f))
                 if (filter.region != Region.GLOBAL || !filter.allTopics) {
-                    TextButton(onClick = onClearFilter) { Text("Clear") }
+                    TextButton(onClick = onClearFilter) { Text(stringResource(DesignR.string.list_clear)) }
                 }
             }
 
-            SectionHeading("Region")
+            SectionHeading(stringResource(DesignR.string.list_region))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
@@ -703,7 +711,7 @@ private fun RegionTopicFilterSheet(
                 }
             }
 
-            SectionHeading("Topics")
+            SectionHeading(stringResource(DesignR.string.list_topics))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
@@ -713,7 +721,7 @@ private fun RegionTopicFilterSheet(
                     val picked = topic.key in filter.topicKeys
                     val chosen = filter.allTopics || picked
                     Text(
-                        "${topic.placeholderLabel} · $count",
+                        stringResource(DesignR.string.list_topic_count, topic.placeholderLabel, count),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = if (picked) FontWeight.Bold else FontWeight.Normal,
                         color = if (chosen) ink else muted,
@@ -746,6 +754,9 @@ private fun ItemRow(
     // A read article marks itself in place (owner's ask) — no separate icon,
     // just the title itself dimmed or struck through, per the reader's own
     // Settings choice.
+    // Resolved outside the semantics block, which is not a composable scope.
+    val readLabel = stringResource(DesignR.string.list_read)
+    val unreadLabel = stringResource(DesignR.string.list_unread)
     val strike = read && readMarkStyle == ReadMarkStyle.STRIKETHROUGH
     val titleColor = if (read && readMarkStyle == ReadMarkStyle.GREYED) {
         MaterialTheme.colorScheme.onSurfaceVariant
@@ -762,7 +773,7 @@ private fun ItemRow(
             // read row and an unread row were byte-identical in speech, in an
             // app whose stated purpose is showing consumption. stateDescription
             // is the channel that carries it, and it costs one line.
-            .semantics { stateDescription = if (read) "Read" else "Unread" }
+            .semantics { stateDescription = if (read) readLabel else unreadLabel }
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.md),
         horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
     ) {

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">এইটো নূজৰ নিজৰ লেখা। বাতৰি সদায় প্ৰকাশকে যি ভাষাত লিখিছে সেই ভাষাতেই থাকে।</string>
     <string name="language_partial">%1$s · %2$d%% অনূদিত</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">অঞ্চল আৰু বিষয় অনুসৰি বাছনি কৰক</string>
+    <string name="list_open_clippings">আপোনাৰ কটা টুকুৰা খোলক</string>
+    <string name="list_fetching">আপোনাৰ উৎসৰ পৰা অনা হৈছে</string>
+    <string name="list_fetch_now">এতিয়াই উৎসৰ পৰা আনক</string>
+    <string name="list_settings">ছেটিংছ</string>
+    <string name="list_nothing_unread">নপঢ়া একো বাকী নাই</string>
+    <string name="list_nothing_unread_body">এই তালিকাৰ প্ৰতিটো বাতৰিয়েই খোলা হৈছে। গোটেই তালিকা পুনৰ চাবলৈ বাহিৰলৈ পিঞ্চ কৰক, বা ইয়াত স্পৰ্শ কৰক।</string>
+    <string name="list_search">বাতৰি বিচাৰক</string>
+    <string name="list_filter">বাছনি</string>
+    <string name="list_clear">মচক</string>
+    <string name="list_region">অঞ্চল</string>
+    <string name="list_topics">বিষয়</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">পঢ়া</string>
+    <string name="list_unread">নপঢ়া</string>
+    <string name="list_showing_unread_only">কেৱল নপঢ়াবোৰ দেখুওৱা হৈছে; সকলো চাবলৈ স্পৰ্শ কৰক</string>
+    <string name="list_showing_all">সকলো বাতৰি দেখুওৱা হৈছে; কেৱল নপঢ়াবোৰ চাবলৈ স্পৰ্শ কৰক</string>
+    <string name="list_show_all_click">সকলো বাতৰি দেখুৱাওক</string>
+    <string name="reader_previous">‹ আগৰটো</string>
+    <string name="reader_end_of_article">লেখা শেষ</string>
+    <string name="reader_next">পিছৰটো ›</string>
+    <string name="reader_loading">লেখা আহি আছে</string>
+    <string name="reader_full_story">গোটেই বাতৰি উৎসত পঢ়ক ↗</string>
+    <string name="reader_back_to_stand">ষ্টেণ্ডলৈ উভতি যাওক</string>
+    <string name="reader_open_settings">পঢ়াৰ ছেটিংছ খোলক</string>
+    <string name="reader_lens_toggle">লেন্স: পক্ষপাতী ভাষা চিহ্নিতকৰণ</string>
+    <string name="reader_open_in_browser">ব্ৰাউজাৰত খোলক</string>
+    <string name="reader_share_clipping">বাতৰি কাকতৰ কটা টুকুৰা হিচাপে ভাগ কৰক</string>
+    <string name="reader_minutes_short">%1$d মিনিট</string>
+    <string name="reader_reading_time">পঢ়িবলৈ আনুমানিক %1$d মিনিট</string>
+    <string name="reader_progress">লেখাৰ প্ৰায় %1$d শতাংশ হ’ল</string>
 </resources>

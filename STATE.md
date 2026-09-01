@@ -1874,6 +1874,29 @@ respect as the CI-caught log above.
   `afterEvaluate`, so a callback added here runs first and sees an Android
   module as having no test task at all.
 
+- **D53 — The screens a reader actually lives in now speak their language
+  (2026-09-01).** The second migration tranche: `ArticleListScreen` and
+  `ReaderDetailScreen`, both to zero, taking the catalogue from 37 strings to 68
+  and the ratchet from 218 to 193.
+  Chosen over the larger `SettingsScreen` deliberately. **Most of these strings
+  are `contentDescription`s** — the words a screen reader utters on every screen
+  the reader touches: "Fetching your sources", "Showing unread only, tap to show
+  every story", "About 40 percent through the article", and the `stateDescription`
+  read/unread pair added in D42. Left in English they would have undone most of
+  what the thirty locales are for: a blind reader in Tamil would have had a Tamil
+  onboarding and then an English app read aloud to them forever after.
+  28 locales are complete at 68 strings; Kashmiri sits at 35%, and the picker
+  says so.
+  Two mechanical notes worth keeping. `semantics { }` and `clickable(onClickLabel
+  = …)` are **not composable scopes**, so every one of these needed the
+  `stringResource` hoisted to the nearest composable — the compiler catches it,
+  but only after the migration looks finished. And aapt **rejects `--` inside an
+  XML comment**, failing the whole resource file over a double dash in a
+  hand-written section note; the generator now converts it, because prose written
+  for humans reaches for a double dash constantly.
+  Verified in the artefact again, with a negative control this time: the Telugu,
+  Punjabi and Urdu strings are in `resources.arsc`, and a nonsense probe is not.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Il testo di Nooz stesso. Le notizie restano sempre nella lingua in cui chi le pubblica le ha scritte.</string>
     <string name="language_partial">%1$s · %2$d%% tradotto</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">Filtra per regione e argomento</string>
+    <string name="list_open_clippings">Apri i tuoi ritagli</string>
+    <string name="list_fetching">Recupero dalle tue fonti</string>
+    <string name="list_fetch_now">Recupera ora dalle tue fonti</string>
+    <string name="list_settings">Impostazioni</string>
+    <string name="list_nothing_unread">Non è rimasto nulla da leggere</string>
+    <string name="list_nothing_unread_body">Ogni notizia di questo elenco è stata aperta. Allarga le dita, o tocca qui, per rivedere l\'elenco intero.</string>
+    <string name="list_search">Cerca articoli</string>
+    <string name="list_filter">Filtro</string>
+    <string name="list_clear">Azzera</string>
+    <string name="list_region">Regione</string>
+    <string name="list_topics">Argomenti</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Letto</string>
+    <string name="list_unread">Non letto</string>
+    <string name="list_showing_unread_only">Mostro solo i non letti; tocca per vederli tutti</string>
+    <string name="list_showing_all">Mostro tutti; tocca per vedere solo i non letti</string>
+    <string name="list_show_all_click">Mostra tutti gli articoli</string>
+    <string name="reader_previous">‹ Precedente</string>
+    <string name="reader_end_of_article">Fine dell\'articolo</string>
+    <string name="reader_next">Successivo ›</string>
+    <string name="reader_loading">Caricamento dell\'articolo</string>
+    <string name="reader_full_story">Leggi l\'articolo completo alla fonte ↗</string>
+    <string name="reader_back_to_stand">Torna all\'edicola</string>
+    <string name="reader_open_settings">Apri le impostazioni di lettura</string>
+    <string name="reader_lens_toggle">Lente: evidenziazione del linguaggio tendenzioso</string>
+    <string name="reader_open_in_browser">Apri nel browser</string>
+    <string name="reader_share_clipping">Condividi come ritaglio di giornale</string>
+    <string name="reader_minutes_short">%1$d min</string>
+    <string name="reader_reading_time">Tempo di lettura stimato: %1$d minuti</string>
+    <string name="reader_progress">Circa il %1$d per cento dell\'articolo</string>
 </resources>

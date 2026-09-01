@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Nooz’ eigener Text. Meldungen bleiben immer in der Sprache, in der ihr Herausgeber sie geschrieben hat.</string>
     <string name="language_partial">%1$s · %2$d %% übersetzt</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">Nach Region und Thema filtern</string>
+    <string name="list_open_clippings">Deine Ausschnitte öffnen</string>
+    <string name="list_fetching">Wird von deinen Quellen geholt</string>
+    <string name="list_fetch_now">Jetzt von deinen Quellen holen</string>
+    <string name="list_settings">Einstellungen</string>
+    <string name="list_nothing_unread">Nichts mehr ungelesen</string>
+    <string name="list_nothing_unread_body">Jede Meldung in dieser Liste wurde geöffnet. Zieh die Finger auseinander oder tippe hier, um wieder die ganze Liste zu sehen.</string>
+    <string name="list_search">Artikel suchen</string>
+    <string name="list_filter">Filter</string>
+    <string name="list_clear">Löschen</string>
+    <string name="list_region">Region</string>
+    <string name="list_topics">Themen</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Gelesen</string>
+    <string name="list_unread">Ungelesen</string>
+    <string name="list_showing_unread_only">Es werden nur ungelesene gezeigt; tippen, um alle zu sehen</string>
+    <string name="list_showing_all">Es werden alle gezeigt; tippen, um nur ungelesene zu sehen</string>
+    <string name="list_show_all_click">Alle Artikel zeigen</string>
+    <string name="reader_previous">‹ Zurück</string>
+    <string name="reader_end_of_article">Ende des Artikels</string>
+    <string name="reader_next">Weiter ›</string>
+    <string name="reader_loading">Artikel wird geladen</string>
+    <string name="reader_full_story">Den ganzen Artikel an der Quelle lesen ↗</string>
+    <string name="reader_back_to_stand">Zurück zum Kiosk</string>
+    <string name="reader_open_settings">Leseeinstellungen öffnen</string>
+    <string name="reader_lens_toggle">Lupe: wertende Sprache markieren</string>
+    <string name="reader_open_in_browser">Im Browser öffnen</string>
+    <string name="reader_share_clipping">Als Zeitungsausschnitt teilen</string>
+    <string name="reader_minutes_short">%1$d Min.</string>
+    <string name="reader_reading_time">Geschätzte Lesezeit %1$d Minuten</string>
+    <string name="reader_progress">Etwa %1$d Prozent des Artikels</string>
 </resources>

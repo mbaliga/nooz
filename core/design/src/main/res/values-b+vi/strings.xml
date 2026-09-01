@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Đây là chữ của riêng Nooz. Tin bài luôn giữ nguyên ngôn ngữ mà nơi xuất bản đã viết.</string>
     <string name="language_partial">%1$s · đã dịch %2$d%%</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">Lọc theo vùng và chủ đề</string>
+    <string name="list_open_clippings">Mở mẩu cắt của bạn</string>
+    <string name="list_fetching">Đang lấy từ các nguồn của bạn</string>
+    <string name="list_fetch_now">Lấy từ các nguồn ngay</string>
+    <string name="list_settings">Cài đặt</string>
+    <string name="list_nothing_unread">Không còn gì chưa đọc</string>
+    <string name="list_nothing_unread_body">Mọi tin trong danh sách này đều đã được mở. Chụm rồi mở hai ngón tay, hoặc chạm vào đây, để xem lại toàn bộ danh sách.</string>
+    <string name="list_search">Tìm bài</string>
+    <string name="list_filter">Bộ lọc</string>
+    <string name="list_clear">Xoá</string>
+    <string name="list_region">Vùng</string>
+    <string name="list_topics">Chủ đề</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Đã đọc</string>
+    <string name="list_unread">Chưa đọc</string>
+    <string name="list_showing_unread_only">Chỉ hiện tin chưa đọc; chạm để xem tất cả</string>
+    <string name="list_showing_all">Đang hiện tất cả tin; chạm để chỉ xem tin chưa đọc</string>
+    <string name="list_show_all_click">Hiện tất cả bài</string>
+    <string name="reader_previous">‹ Trước</string>
+    <string name="reader_end_of_article">Hết bài</string>
+    <string name="reader_next">Tiếp ›</string>
+    <string name="reader_loading">Đang tải bài</string>
+    <string name="reader_full_story">Đọc bài đầy đủ tại nguồn ↗</string>
+    <string name="reader_back_to_stand">Về lại sạp báo</string>
+    <string name="reader_open_settings">Mở cài đặt đọc</string>
+    <string name="reader_lens_toggle">Thấu kính: đánh dấu ngôn từ thiên lệch</string>
+    <string name="reader_open_in_browser">Mở trong trình duyệt</string>
+    <string name="reader_share_clipping">Chia sẻ dưới dạng mẩu báo cắt</string>
+    <string name="reader_minutes_short">%1$d phút</string>
+    <string name="reader_reading_time">Ước tính đọc trong %1$d phút</string>
+    <string name="reader_progress">Khoảng %1$d phần trăm bài viết</string>
 </resources>

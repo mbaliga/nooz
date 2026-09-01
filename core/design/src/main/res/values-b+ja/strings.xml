@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Nooz 自身の文言です。記事は常に、発行元が書いた言語のままです。</string>
     <string name="language_partial">%1$s · %2$d%% 翻訳済み</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">地域と話題で絞り込む</string>
+    <string name="list_open_clippings">切り抜きを開く</string>
+    <string name="list_fetching">情報源から取得しています</string>
+    <string name="list_fetch_now">情報源から今すぐ取得</string>
+    <string name="list_settings">設定</string>
+    <string name="list_nothing_unread">未読はもうありません</string>
+    <string name="list_nothing_unread_body">この一覧の記事はすべて開き終えています。ピンチアウトするか、ここを押すと、一覧全体に戻ります。</string>
+    <string name="list_search">記事を検索</string>
+    <string name="list_filter">絞り込み</string>
+    <string name="list_clear">解除</string>
+    <string name="list_region">地域</string>
+    <string name="list_topics">話題</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">既読</string>
+    <string name="list_unread">未読</string>
+    <string name="list_showing_unread_only">未読のみ表示中。押すとすべて表示します</string>
+    <string name="list_showing_all">すべて表示中。押すと未読のみ表示します</string>
+    <string name="list_show_all_click">すべての記事を表示</string>
+    <string name="reader_previous">‹ 前へ</string>
+    <string name="reader_end_of_article">記事の終わり</string>
+    <string name="reader_next">次へ ›</string>
+    <string name="reader_loading">記事を読み込んでいます</string>
+    <string name="reader_full_story">全文を発行元で読む ↗</string>
+    <string name="reader_back_to_stand">スタンドへ戻る</string>
+    <string name="reader_open_settings">読書の設定を開く</string>
+    <string name="reader_lens_toggle">レンズ：偏った言い回しの強調</string>
+    <string name="reader_open_in_browser">ブラウザーで開く</string>
+    <string name="reader_share_clipping">新聞の切り抜きとして共有</string>
+    <string name="reader_minutes_short">%1$d 分</string>
+    <string name="reader_reading_time">読了まで約 %1$d 分</string>
+    <string name="reader_progress">記事の約 %1$d パーセント</string>
 </resources>

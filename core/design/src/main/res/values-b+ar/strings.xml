@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">هذا نصّ نُوز نفسه. تبقى الأخبار دائمًا باللغة التي كتبها بها ناشرها.</string>
     <string name="language_partial">%1$s · مُترجَم %2$d%%</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">تصفية حسب المنطقة والموضوع</string>
+    <string name="list_open_clippings">افتح قصاصاتك</string>
+    <string name="list_fetching">يجري الجلب من مصادرك</string>
+    <string name="list_fetch_now">اجلب من مصادرك الآن</string>
+    <string name="list_settings">الإعدادات</string>
+    <string name="list_nothing_unread">لم يبقَ شيء غير مقروء</string>
+    <string name="list_nothing_unread_body">فُتح كل خبر في هذه القائمة. باعِد بإصبعيك، أو المس هنا، لترى القائمة كاملة من جديد.</string>
+    <string name="list_search">ابحث في المقالات</string>
+    <string name="list_filter">تصفية</string>
+    <string name="list_clear">مسح</string>
+    <string name="list_region">المنطقة</string>
+    <string name="list_topics">المواضيع</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">مقروء</string>
+    <string name="list_unread">غير مقروء</string>
+    <string name="list_showing_unread_only">يُعرض غير المقروء فقط؛ المس لعرض الكل</string>
+    <string name="list_showing_all">تُعرض كل الأخبار؛ المس لعرض غير المقروء فقط</string>
+    <string name="list_show_all_click">اعرض كل المقالات</string>
+    <string name="reader_previous">‹ السابق</string>
+    <string name="reader_end_of_article">نهاية المقال</string>
+    <string name="reader_next">التالي ›</string>
+    <string name="reader_loading">يجري تحميل المقال</string>
+    <string name="reader_full_story">اقرأ الخبر كاملًا عند المصدر ↗</string>
+    <string name="reader_back_to_stand">العودة إلى الكشك</string>
+    <string name="reader_open_settings">افتح إعدادات القراءة</string>
+    <string name="reader_lens_toggle">العدسة: تمييز اللغة المنحازة</string>
+    <string name="reader_open_in_browser">افتح في المتصفّح</string>
+    <string name="reader_share_clipping">شارِك كقصاصة جريدة</string>
+    <string name="reader_minutes_short">%1$d د</string>
+    <string name="reader_reading_time">زمن القراءة التقريبي %1$d دقيقة</string>
+    <string name="reader_progress">نحو %1$d بالمئة من المقال</string>
 </resources>

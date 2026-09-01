@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">हा नूझचा स्वतःचा मजकूर आहे. बातम्या नेहमी प्रकाशकाने ज्या भाषेत लिहिल्या त्याच भाषेत राहतात.</string>
     <string name="language_partial">%1$s · %2$d%% अनुवादित</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">प्रदेश आणि विषयानुसार गाळा</string>
+    <string name="list_open_clippings">तुमची कात्रणे उघडा</string>
+    <string name="list_fetching">तुमच्या स्रोतांकडून आणले जात आहे</string>
+    <string name="list_fetch_now">आत्ताच स्रोतांकडून आणा</string>
+    <string name="list_settings">सेटिंग्ज</string>
+    <string name="list_nothing_unread">आता काहीही न वाचलेले नाही</string>
+    <string name="list_nothing_unread_body">या यादीतील प्रत्येक बातमी उघडून झाली आहे. संपूर्ण यादी पुन्हा पाहण्यासाठी बाहेरच्या दिशेने चिमटा घ्या, किंवा इथे स्पर्श करा.</string>
+    <string name="list_search">बातम्या शोधा</string>
+    <string name="list_filter">गाळणी</string>
+    <string name="list_clear">पुसा</string>
+    <string name="list_region">प्रदेश</string>
+    <string name="list_topics">विषय</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">वाचलेली</string>
+    <string name="list_unread">न वाचलेली</string>
+    <string name="list_showing_unread_only">फक्त न वाचलेल्या दिसत आहेत; सर्व बातम्या पाहण्यासाठी स्पर्श करा</string>
+    <string name="list_showing_all">सर्व बातम्या दिसत आहेत; फक्त न वाचलेल्या पाहण्यासाठी स्पर्श करा</string>
+    <string name="list_show_all_click">सर्व बातम्या दाखवा</string>
+    <string name="reader_previous">‹ मागील</string>
+    <string name="reader_end_of_article">लेख संपला</string>
+    <string name="reader_next">पुढील ›</string>
+    <string name="reader_loading">लेख येत आहे</string>
+    <string name="reader_full_story">पूर्ण बातमी स्रोतावर वाचा ↗</string>
+    <string name="reader_back_to_stand">स्टँडवर परत</string>
+    <string name="reader_open_settings">वाचनाच्या सेटिंग्ज उघडा</string>
+    <string name="reader_lens_toggle">लेन्स: पक्षपाती भाषेचे अधोरेखन</string>
+    <string name="reader_open_in_browser">ब्राउझरमध्ये उघडा</string>
+    <string name="reader_share_clipping">वर्तमानपत्राचे कात्रण म्हणून सामायिक करा</string>
+    <string name="reader_minutes_short">%1$d मिनिटे</string>
+    <string name="reader_reading_time">वाचायला अंदाजे %1$d मिनिटे</string>
+    <string name="reader_progress">लेखाचा सुमारे %1$d टक्के भाग झाला</string>
 </resources>

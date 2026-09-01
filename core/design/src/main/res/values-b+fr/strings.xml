@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Le texte propre à Nooz. Les articles restent toujours dans la langue où leur éditeur les a écrits.</string>
     <string name="language_partial">%1$s · %2$d %% traduit</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">Filtrer par région et par thème</string>
+    <string name="list_open_clippings">Ouvrir vos coupures</string>
+    <string name="list_fetching">Récupération depuis vos sources</string>
+    <string name="list_fetch_now">Récupérer depuis vos sources maintenant</string>
+    <string name="list_settings">Réglages</string>
+    <string name="list_nothing_unread">Plus rien à lire</string>
+    <string name="list_nothing_unread_body">Chaque article de cette liste a été ouvert. Écartez les doigts, ou touchez ici, pour revoir la liste entière.</string>
+    <string name="list_search">Rechercher des articles</string>
+    <string name="list_filter">Filtre</string>
+    <string name="list_clear">Effacer</string>
+    <string name="list_region">Région</string>
+    <string name="list_topics">Thèmes</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Lu</string>
+    <string name="list_unread">Non lu</string>
+    <string name="list_showing_unread_only">Seuls les non lus sont affichés ; touchez pour tout voir</string>
+    <string name="list_showing_all">Tous les articles sont affichés ; touchez pour ne voir que les non lus</string>
+    <string name="list_show_all_click">Afficher tous les articles</string>
+    <string name="reader_previous">‹ Précédent</string>
+    <string name="reader_end_of_article">Fin de l\'article</string>
+    <string name="reader_next">Suivant ›</string>
+    <string name="reader_loading">Chargement de l\'article</string>
+    <string name="reader_full_story">Lire l\'article complet à la source ↗</string>
+    <string name="reader_back_to_stand">Retour au kiosque</string>
+    <string name="reader_open_settings">Ouvrir les réglages de lecture</string>
+    <string name="reader_lens_toggle">Loupe : signalement du langage orienté</string>
+    <string name="reader_open_in_browser">Ouvrir dans le navigateur</string>
+    <string name="reader_share_clipping">Partager comme coupure de journal</string>
+    <string name="reader_minutes_short">%1$d min</string>
+    <string name="reader_reading_time">Temps de lecture estimé : %1$d minutes</string>
+    <string name="reader_progress">Environ %1$d pour cent de l\'article</string>
 </resources>

@@ -61,6 +61,44 @@
     <string name="screen_clippings">Clippings</string>
     <string name="screen_lens_words">Lens word list</string>
 
+    <!-- The article list: the Paper's chrome, and the labels a screen reader announces on it. Left in English these would undo most of what the locales are for. -->
+    <string name="list_filter_region_topic">Filter by region and topic</string>
+    <string name="list_open_clippings">Open your clippings</string>
+    <string name="list_fetching">Fetching your sources</string>
+    <string name="list_fetch_now">Fetch your sources now</string>
+    <string name="list_settings">Settings</string>
+    <string name="list_nothing_unread">Nothing left unread</string>
+    <string name="list_nothing_unread_body">Every story in this list has been opened. Pinch out, or tap here, to see the whole list again.</string>
+    <string name="list_search">Search articles</string>
+    <string name="list_filter">Filter</string>
+    <string name="list_clear">Clear</string>
+    <string name="list_region">Region</string>
+    <string name="list_topics">Topics</string>
+    <!-- %1$s is a topic's label; %2$d is how many stories carry it. -->
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Read</string>
+    <string name="list_unread">Unread</string>
+    <string name="list_showing_unread_only">Showing unread only, tap to show every story</string>
+    <string name="list_showing_all">Showing every story, tap to show unread only</string>
+    <string name="list_show_all_click">Show all articles</string>
+
+    <!-- The reader. -->
+    <string name="reader_previous">‹ Previous</string>
+    <string name="reader_end_of_article">End of article</string>
+    <string name="reader_next">Next ›</string>
+    <string name="reader_loading">Loading article</string>
+    <string name="reader_full_story">Read the full story at the source ↗</string>
+    <string name="reader_back_to_stand">Back to the stand</string>
+    <string name="reader_open_settings">Open reader settings</string>
+    <string name="reader_lens_toggle">Lens: loaded-language highlighting</string>
+    <string name="reader_open_in_browser">Open in browser</string>
+    <string name="reader_share_clipping">Share as a newspaper clipping</string>
+    <!-- %1$d is whole minutes. Abbreviated on purpose — it sits beside the headline. -->
+    <string name="reader_minutes_short">%1$d min</string>
+    <string name="reader_reading_time">Estimated reading time %1$d minutes</string>
+    <!-- %1$d is 0-100. Spoken, never drawn. -->
+    <string name="reader_progress">About %1$d percent through the article</string>
+
     <!-- The language picker. -->
     <string name="language_title">Language</string>
     <string name="language_system_default">Match my phone</string>

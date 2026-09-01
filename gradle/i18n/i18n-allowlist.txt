@@ -25,12 +25,10 @@ core/design/src/main/kotlin/xyz/mdhv/riverwip/design/Wordmark.kt 1
 feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefinitionSheet.kt 2
 feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefuseBottomSheet.kt 8
 feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/LensAnnotatedParagraph.kt 2
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ArticleListScreen.kt 12
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ClippingsScreen.kt 5
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FlashCard.kt 10
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FoundQuote.kt 1
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/NewspaperReaderPane.kt 2
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ReaderDetailScreen.kt 13
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ReaderScreenTwoPane.kt 1
 feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/TodayInHistoryCard.kt 3
 feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/ContrastPanel.kt 9

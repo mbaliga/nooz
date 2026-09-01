@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  15 of 37 strings translated.
+  24 of 68 strings translated.
 -->
 <resources>
 
@@ -26,4 +26,13 @@
     <string name="language_system_default">فونس مطابق</string>
     <string name="language_partial">%1$s · %2$d%% ترجمہ کرنہٕ آمُت</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_settings">ترتیبات</string>
+    <string name="list_clear">صاف کریو</string>
+    <string name="list_region">علاقہ</string>
+    <string name="list_topics">موضوع</string>
+    <string name="list_read">پأریتھ</string>
+    <string name="list_unread">نہٕ پأریتھ</string>
+    <string name="reader_previous">‹ پیٚٹھ</string>
+    <string name="reader_next">بیٛاکھ ›</string>
+    <string name="reader_open_in_browser">براؤزرس منٛز کھۆلیو</string>
 </resources>

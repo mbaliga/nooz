@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">ಇದು ನೂಜ಼್‌ನ ಸ್ವಂತ ಪಠ್ಯ. ಸುದ್ದಿಗಳು ಯಾವಾಗಲೂ ಪ್ರಕಾಶಕರು ಬರೆದ ಭಾಷೆಯಲ್ಲೇ ಇರುತ್ತವೆ.</string>
     <string name="language_partial">%1$s · %2$d%% ಅನುವಾದಿತ</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">ಪ್ರದೇಶ ಮತ್ತು ವಿಷಯದ ಪ್ರಕಾರ ಸೋಸಿ</string>
+    <string name="list_open_clippings">ನಿಮ್ಮ ಕತ್ತರಿಸಿದವನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="list_fetching">ನಿಮ್ಮ ಮೂಲಗಳಿಂದ ತರಲಾಗುತ್ತಿದೆ</string>
+    <string name="list_fetch_now">ಈಗಲೇ ಮೂಲಗಳಿಂದ ತನ್ನಿ</string>
+    <string name="list_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="list_nothing_unread">ಓದದಿರುವುದು ಏನೂ ಉಳಿದಿಲ್ಲ</string>
+    <string name="list_nothing_unread_body">ಈ ಪಟ್ಟಿಯ ಪ್ರತಿ ಸುದ್ದಿಯನ್ನೂ ತೆರೆದಿದ್ದೀರಿ. ಪೂರ್ಣ ಪಟ್ಟಿಯನ್ನು ಮತ್ತೆ ನೋಡಲು ಹೊರಗಡೆ ಪಿಂಚ್ ಮಾಡಿ, ಅಥವಾ ಇಲ್ಲಿ ಸ್ಪರ್ಶಿಸಿ.</string>
+    <string name="list_search">ಸುದ್ದಿಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="list_filter">ಸೋಸುವಿಕೆ</string>
+    <string name="list_clear">ಅಳಿಸಿ</string>
+    <string name="list_region">ಪ್ರದೇಶ</string>
+    <string name="list_topics">ವಿಷಯಗಳು</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">ಓದಿದ್ದು</string>
+    <string name="list_unread">ಓದದಿರುವುದು</string>
+    <string name="list_showing_unread_only">ಓದದಿರುವವು ಮಾತ್ರ ತೋರಿಸಲಾಗುತ್ತಿದೆ; ಎಲ್ಲವನ್ನೂ ನೋಡಲು ಸ್ಪರ್ಶಿಸಿ</string>
+    <string name="list_showing_all">ಎಲ್ಲ ಸುದ್ದಿಗಳನ್ನೂ ತೋರಿಸಲಾಗುತ್ತಿದೆ; ಓದದಿರುವವನ್ನು ಮಾತ್ರ ನೋಡಲು ಸ್ಪರ್ಶಿಸಿ</string>
+    <string name="list_show_all_click">ಎಲ್ಲ ಸುದ್ದಿಗಳನ್ನೂ ತೋರಿಸು</string>
+    <string name="reader_previous">‹ ಹಿಂದಿನದು</string>
+    <string name="reader_end_of_article">ಲೇಖನ ಮುಗಿಯಿತು</string>
+    <string name="reader_next">ಮುಂದಿನದು ›</string>
+    <string name="reader_loading">ಲೇಖನ ಬರುತ್ತಿದೆ</string>
+    <string name="reader_full_story">ಪೂರ್ಣ ಸುದ್ದಿಯನ್ನು ಮೂಲದಲ್ಲಿ ಓದಿ ↗</string>
+    <string name="reader_back_to_stand">ಸ್ಟ್ಯಾಂಡ್‌ಗೆ ಹಿಂತಿರುಗಿ</string>
+    <string name="reader_open_settings">ಓದುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="reader_lens_toggle">ಲೆನ್ಸ್: ಪಕ್ಷಪಾತದ ಭಾಷೆಯ ಗುರುತಿಸುವಿಕೆ</string>
+    <string name="reader_open_in_browser">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</string>
+    <string name="reader_share_clipping">ಪತ್ರಿಕೆಯ ಕತ್ತರಿಸಿದಂತೆ ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="reader_minutes_short">%1$d ನಿಮಿ</string>
+    <string name="reader_reading_time">ಓದಲು ಅಂದಾಜು %1$d ನಿಮಿಷಗಳು</string>
+    <string name="reader_progress">ಲೇಖನದ ಸುಮಾರು %1$d ಶೇಕಡಾ ಮುಗಿದಿದೆ</string>
 </resources>

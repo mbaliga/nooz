@@ -14,6 +14,21 @@
       "prefix": "screen_"
     },
     {
+      "title": "The article list: the Paper's chrome, and the labels a screen reader announces on it. Left in English these would undo most of what the locales are for.",
+      "prefix": "list_",
+      "notes": {
+        "list_topic_count": "%1$s is a topic's label; %2$d is how many stories carry it."
+      }
+    },
+    {
+      "title": "The reader.",
+      "prefix": "reader_",
+      "notes": {
+        "reader_minutes_short": "%1$d is whole minutes. Abbreviated on purpose -- it sits beside the headline.",
+        "reader_progress": "%1$d is 0-100. Spoken, never drawn."
+      }
+    },
+    {
       "title": "The language picker.",
       "prefix": "language_",
       "notes": {

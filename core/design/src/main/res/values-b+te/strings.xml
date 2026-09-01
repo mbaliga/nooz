@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">ఇది నూజ్ సొంత పాఠ్యం. వార్తలు ఎప్పుడూ ప్రచురణకర్త రాసిన భాషలోనే ఉంటాయి.</string>
     <string name="language_partial">%1$s · %2$d%% అనువదితం</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">ప్రాంతం, అంశం ప్రకారం వడపోత</string>
+    <string name="list_open_clippings">మీ కత్తిరింపులు తెరవండి</string>
+    <string name="list_fetching">మీ మూలాల నుంచి తెస్తున్నాం</string>
+    <string name="list_fetch_now">ఇప్పుడే మూలాల నుంచి తీసుకురండి</string>
+    <string name="list_settings">సెట్టింగ్‌లు</string>
+    <string name="list_nothing_unread">చదవనిది ఏమీ మిగల్లేదు</string>
+    <string name="list_nothing_unread_body">ఈ జాబితాలోని ప్రతి కథనమూ తెరిచారు. పూర్తి జాబితాను మళ్ళీ చూడటానికి బయటికి పించ్ చేయండి, లేదా ఇక్కడ తాకండి.</string>
+    <string name="list_search">కథనాలు వెతకండి</string>
+    <string name="list_filter">వడపోత</string>
+    <string name="list_clear">తీసేయి</string>
+    <string name="list_region">ప్రాంతం</string>
+    <string name="list_topics">అంశాలు</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">చదివినది</string>
+    <string name="list_unread">చదవనిది</string>
+    <string name="list_showing_unread_only">చదవనివి మాత్రమే చూపుతోంది; అన్నీ చూడటానికి తాకండి</string>
+    <string name="list_showing_all">అన్ని కథనాలూ చూపుతోంది; చదవనివి మాత్రమే చూడటానికి తాకండి</string>
+    <string name="list_show_all_click">అన్ని కథనాలూ చూపు</string>
+    <string name="reader_previous">‹ ముందుది</string>
+    <string name="reader_end_of_article">కథనం ముగిసింది</string>
+    <string name="reader_next">తరువాతిది ›</string>
+    <string name="reader_loading">కథనం వస్తోంది</string>
+    <string name="reader_full_story">పూర్తి కథనాన్ని మూలంలో చదవండి ↗</string>
+    <string name="reader_back_to_stand">స్టాండ్‌కి తిరిగి</string>
+    <string name="reader_open_settings">చదివే సెట్టింగ్‌లు తెరవండి</string>
+    <string name="reader_lens_toggle">లెన్స్: పక్షపాత భాషను గుర్తించడం</string>
+    <string name="reader_open_in_browser">బ్రౌజర్‌లో తెరవండి</string>
+    <string name="reader_share_clipping">పత్రిక కత్తిరింపుగా పంచుకోండి</string>
+    <string name="reader_minutes_short">%1$d నిమి</string>
+    <string name="reader_reading_time">చదవడానికి సుమారు %1$d నిమిషాలు</string>
+    <string name="reader_progress">కథనంలో సుమారు %1$d శాతం పూర్తయింది</string>
 </resources>

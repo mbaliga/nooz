@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">ਇਹ ਨੂਜ਼ ਦਾ ਆਪਣਾ ਲਿਖਤ ਹੈ। ਖ਼ਬਰਾਂ ਹਮੇਸ਼ਾ ਉਸੇ ਭਾਸ਼ਾ ਵਿੱਚ ਰਹਿੰਦੀਆਂ ਹਨ ਜਿਸ ਵਿੱਚ ਪ੍ਰਕਾਸ਼ਕ ਨੇ ਲਿਖੀਆਂ ਹਨ।</string>
     <string name="language_partial">%1$s · %2$d%% ਅਨੁਵਾਦਿਤ</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">ਖੇਤਰ ਅਤੇ ਵਿਸ਼ੇ ਅਨੁਸਾਰ ਛਾਣੋ</string>
+    <string name="list_open_clippings">ਆਪਣੀਆਂ ਕਤਰਨਾਂ ਖੋਲ੍ਹੋ</string>
+    <string name="list_fetching">ਤੁਹਾਡੇ ਸਰੋਤਾਂ ਤੋਂ ਲਿਆਂਦਾ ਜਾ ਰਿਹਾ ਹੈ</string>
+    <string name="list_fetch_now">ਹੁਣੇ ਸਰੋਤਾਂ ਤੋਂ ਲਿਆਓ</string>
+    <string name="list_settings">ਸੈਟਿੰਗਾਂ</string>
+    <string name="list_nothing_unread">ਹੁਣ ਕੁਝ ਵੀ ਅਣਪੜ੍ਹਿਆ ਨਹੀਂ</string>
+    <string name="list_nothing_unread_body">ਇਸ ਸੂਚੀ ਦੀ ਹਰ ਖ਼ਬਰ ਖੋਲ੍ਹੀ ਜਾ ਚੁੱਕੀ ਹੈ। ਪੂਰੀ ਸੂਚੀ ਮੁੜ ਵੇਖਣ ਲਈ ਬਾਹਰ ਵੱਲ ਚੂੰਢੀ ਭਰੋ, ਜਾਂ ਇੱਥੇ ਛੂਹੋ।</string>
+    <string name="list_search">ਖ਼ਬਰਾਂ ਲੱਭੋ</string>
+    <string name="list_filter">ਛਾਣਨੀ</string>
+    <string name="list_clear">ਸਾਫ਼ ਕਰੋ</string>
+    <string name="list_region">ਖੇਤਰ</string>
+    <string name="list_topics">ਵਿਸ਼ੇ</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">ਪੜ੍ਹੀ ਹੋਈ</string>
+    <string name="list_unread">ਅਣਪੜ੍ਹੀ</string>
+    <string name="list_showing_unread_only">ਸਿਰਫ਼ ਅਣਪੜ੍ਹੀਆਂ ਵਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ; ਸਾਰੀਆਂ ਵੇਖਣ ਲਈ ਛੂਹੋ</string>
+    <string name="list_showing_all">ਸਾਰੀਆਂ ਖ਼ਬਰਾਂ ਵਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ; ਸਿਰਫ਼ ਅਣਪੜ੍ਹੀਆਂ ਵੇਖਣ ਲਈ ਛੂਹੋ</string>
+    <string name="list_show_all_click">ਸਾਰੀਆਂ ਖ਼ਬਰਾਂ ਵਿਖਾਓ</string>
+    <string name="reader_previous">‹ ਪਿਛਲਾ</string>
+    <string name="reader_end_of_article">ਲੇਖ ਖ਼ਤਮ</string>
+    <string name="reader_next">ਅਗਲਾ ›</string>
+    <string name="reader_loading">ਲੇਖ ਆ ਰਿਹਾ ਹੈ</string>
+    <string name="reader_full_story">ਪੂਰੀ ਖ਼ਬਰ ਸਰੋਤ ਉੱਤੇ ਪੜ੍ਹੋ ↗</string>
+    <string name="reader_back_to_stand">ਸਟੈਂਡ ਉੱਤੇ ਵਾਪਸ</string>
+    <string name="reader_open_settings">ਪੜ੍ਹਨ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
+    <string name="reader_lens_toggle">ਲੈਂਜ਼: ਪੱਖਪਾਤੀ ਭਾਸ਼ਾ ਦੀ ਨਿਸ਼ਾਨਦੇਹੀ</string>
+    <string name="reader_open_in_browser">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</string>
+    <string name="reader_share_clipping">ਅਖ਼ਬਾਰ ਦੀ ਕਤਰਨ ਵਜੋਂ ਸਾਂਝਾ ਕਰੋ</string>
+    <string name="reader_minutes_short">%1$d ਮਿੰਟ</string>
+    <string name="reader_reading_time">ਪੜ੍ਹਨ ਵਿੱਚ ਲਗਭਗ %1$d ਮਿੰਟ</string>
+    <string name="reader_progress">ਲੇਖ ਦਾ ਲਗਭਗ %1$d ਫ਼ੀਸਦੀ ਹੋ ਗਿਆ</string>
 </resources>

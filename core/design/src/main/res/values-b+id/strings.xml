@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Teks milik Nooz sendiri. Berita selalu tetap dalam bahasa yang dipakai penerbitnya.</string>
     <string name="language_partial">%1$s · %2$d%% diterjemahkan</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">Saring menurut wilayah dan topik</string>
+    <string name="list_open_clippings">Buka guntingan Anda</string>
+    <string name="list_fetching">Mengambil dari sumber Anda</string>
+    <string name="list_fetch_now">Ambil dari sumber sekarang</string>
+    <string name="list_settings">Pengaturan</string>
+    <string name="list_nothing_unread">Tidak ada lagi yang belum dibaca</string>
+    <string name="list_nothing_unread_body">Setiap berita di daftar ini sudah dibuka. Cubit ke luar, atau ketuk di sini, untuk melihat seluruh daftar lagi.</string>
+    <string name="list_search">Cari artikel</string>
+    <string name="list_filter">Saringan</string>
+    <string name="list_clear">Hapus</string>
+    <string name="list_region">Wilayah</string>
+    <string name="list_topics">Topik</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Sudah dibaca</string>
+    <string name="list_unread">Belum dibaca</string>
+    <string name="list_showing_unread_only">Menampilkan yang belum dibaca saja; ketuk untuk melihat semua</string>
+    <string name="list_showing_all">Menampilkan semua berita; ketuk untuk melihat yang belum dibaca saja</string>
+    <string name="list_show_all_click">Tampilkan semua artikel</string>
+    <string name="reader_previous">‹ Sebelumnya</string>
+    <string name="reader_end_of_article">Akhir artikel</string>
+    <string name="reader_next">Berikutnya ›</string>
+    <string name="reader_loading">Memuat artikel</string>
+    <string name="reader_full_story">Baca beritanya secara utuh di sumbernya ↗</string>
+    <string name="reader_back_to_stand">Kembali ke lapak</string>
+    <string name="reader_open_settings">Buka pengaturan baca</string>
+    <string name="reader_lens_toggle">Lensa: penandaan bahasa bermuatan</string>
+    <string name="reader_open_in_browser">Buka di peramban</string>
+    <string name="reader_share_clipping">Bagikan sebagai guntingan koran</string>
+    <string name="reader_minutes_short">%1$d mnt</string>
+    <string name="reader_reading_time">Perkiraan waktu baca %1$d menit</string>
+    <string name="reader_progress">Sekitar %1$d persen dari artikel</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">这是 Nooz 自己的文字。新闻始终保持发布方书写时所用的语言。</string>
     <string name="language_partial">%1$s · 已翻译 %2$d%%</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">按地区和主题筛选</string>
+    <string name="list_open_clippings">打开你的剪报</string>
+    <string name="list_fetching">正在从你的信源取回</string>
+    <string name="list_fetch_now">立即从信源取回</string>
+    <string name="list_settings">设置</string>
+    <string name="list_nothing_unread">没有未读的了</string>
+    <string name="list_nothing_unread_body">这份列表里的每一条都已经打开过。向外捏合，或点这里，重新看到整份列表。</string>
+    <string name="list_search">搜索文章</string>
+    <string name="list_filter">筛选</string>
+    <string name="list_clear">清除</string>
+    <string name="list_region">地区</string>
+    <string name="list_topics">主题</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">已读</string>
+    <string name="list_unread">未读</string>
+    <string name="list_showing_unread_only">仅显示未读；点一下看全部</string>
+    <string name="list_showing_all">显示全部；点一下只看未读</string>
+    <string name="list_show_all_click">显示所有文章</string>
+    <string name="reader_previous">‹ 上一篇</string>
+    <string name="reader_end_of_article">全文结束</string>
+    <string name="reader_next">下一篇 ›</string>
+    <string name="reader_loading">正在载入文章</string>
+    <string name="reader_full_story">到来源处读全文 ↗</string>
+    <string name="reader_back_to_stand">回到报摊</string>
+    <string name="reader_open_settings">打开阅读设置</string>
+    <string name="reader_lens_toggle">透镜：标出带倾向的措辞</string>
+    <string name="reader_open_in_browser">在浏览器中打开</string>
+    <string name="reader_share_clipping">作为剪报分享</string>
+    <string name="reader_minutes_short">%1$d 分钟</string>
+    <string name="reader_reading_time">预计阅读 %1$d 分钟</string>
+    <string name="reader_progress">全文约 %1$d%% 处</string>
 </resources>

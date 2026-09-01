@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">ई नूज़ केर अपन पाठ अछि। खबरि सदिखन ओहि भाषा मे रहैत अछि जाहि मे प्रकाशक लिखने छथि।</string>
     <string name="language_partial">%1$s · %2$d%% अनूदित</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">क्षेत्र आ विषय अनुसार छानू</string>
+    <string name="list_open_clippings">अपन कतरनि खोलू</string>
+    <string name="list_fetching">अहाँक स्रोत सँ आनल जा रहल अछि</string>
+    <string name="list_fetch_now">आब स्रोत सँ आनू</string>
+    <string name="list_settings">सेटिंग</string>
+    <string name="list_nothing_unread">आब किछु अपठित नहि</string>
+    <string name="list_nothing_unread_body">एहि सूची केर सभ खबरि खोलल जा चुकल अछि। पूरा सूची फेर देखबा लेल बाहर दिस चुटकी लिअ, वा एतय छुऊ।</string>
+    <string name="list_search">खबरि ताकू</string>
+    <string name="list_filter">छननी</string>
+    <string name="list_clear">मेटाउ</string>
+    <string name="list_region">क्षेत्र</string>
+    <string name="list_topics">विषय</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">पढ़ल</string>
+    <string name="list_unread">अपठित</string>
+    <string name="list_showing_unread_only">मात्र अपठित देखाओल जा रहल अछि; सभ देखबा लेल छुऊ</string>
+    <string name="list_showing_all">सभ खबरि देखाओल जा रहल अछि; मात्र अपठित देखबा लेल छुऊ</string>
+    <string name="list_show_all_click">सभ खबरि देखाउ</string>
+    <string name="reader_previous">‹ पहिलुका</string>
+    <string name="reader_end_of_article">लेख समाप्त</string>
+    <string name="reader_next">अगिला ›</string>
+    <string name="reader_loading">लेख आबि रहल अछि</string>
+    <string name="reader_full_story">पूरा खबरि स्रोत पर पढ़ू ↗</string>
+    <string name="reader_back_to_stand">स्टैंड पर घुरू</string>
+    <string name="reader_open_settings">पढ़बाक सेटिंग खोलू</string>
+    <string name="reader_lens_toggle">लेंस: पक्षपाती भाषाक चिन्हांकन</string>
+    <string name="reader_open_in_browser">ब्राउज़र मे खोलू</string>
+    <string name="reader_share_clipping">अखबारक कतरनि जकाँ साझा करू</string>
+    <string name="reader_minutes_short">%1$d मिनट</string>
+    <string name="reader_reading_time">पढ़बा मे अनुमानित %1$d मिनट</string>
+    <string name="reader_progress">लेखक लगभग %1$d प्रतिशत भऽ गेल</string>
 </resources>

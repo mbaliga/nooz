@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  37 of 37 strings translated.
+  68 of 68 strings translated.
 -->
 <resources>
 
@@ -48,4 +48,35 @@
     <string name="language_explainer">Nooz\'un kendi metni. Haberler her zaman yayıncısının yazdığı dilde kalır.</string>
     <string name="language_partial">%1$s · %%%2$d çevrildi</string>
     <string name="language_complete">%1$s</string>
+    <string name="list_filter_region_topic">Bölgeye ve konuya göre süz</string>
+    <string name="list_open_clippings">Kupürlerinizi açın</string>
+    <string name="list_fetching">Kaynaklarınızdan getiriliyor</string>
+    <string name="list_fetch_now">Kaynaklardan şimdi getir</string>
+    <string name="list_settings">Ayarlar</string>
+    <string name="list_nothing_unread">Okunmamış bir şey kalmadı</string>
+    <string name="list_nothing_unread_body">Bu listedeki her haber açıldı. Listenin tamamını yeniden görmek için parmaklarınızı açın ya da buraya dokunun.</string>
+    <string name="list_search">Yazı ara</string>
+    <string name="list_filter">Süzgeç</string>
+    <string name="list_clear">Temizle</string>
+    <string name="list_region">Bölge</string>
+    <string name="list_topics">Konular</string>
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Okundu</string>
+    <string name="list_unread">Okunmadı</string>
+    <string name="list_showing_unread_only">Yalnızca okunmayanlar gösteriliyor; hepsini görmek için dokunun</string>
+    <string name="list_showing_all">Tüm haberler gösteriliyor; yalnızca okunmayanları görmek için dokunun</string>
+    <string name="list_show_all_click">Tüm yazıları göster</string>
+    <string name="reader_previous">‹ Önceki</string>
+    <string name="reader_end_of_article">Yazının sonu</string>
+    <string name="reader_next">Sonraki ›</string>
+    <string name="reader_loading">Yazı yükleniyor</string>
+    <string name="reader_full_story">Haberin tamamını kaynağında okuyun ↗</string>
+    <string name="reader_back_to_stand">Tezgâha dön</string>
+    <string name="reader_open_settings">Okuma ayarlarını aç</string>
+    <string name="reader_lens_toggle">Mercek: yüklü dilin işaretlenmesi</string>
+    <string name="reader_open_in_browser">Tarayıcıda aç</string>
+    <string name="reader_share_clipping">Gazete kupürü olarak paylaş</string>
+    <string name="reader_minutes_short">%1$d dk</string>
+    <string name="reader_reading_time">Tahmini okuma süresi %1$d dakika</string>
+    <string name="reader_progress">Yazının yaklaşık yüzde %1$d kadarı</string>
 </resources>

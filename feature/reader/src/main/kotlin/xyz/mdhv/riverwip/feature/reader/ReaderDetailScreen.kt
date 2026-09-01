@@ -39,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -66,6 +67,7 @@ import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.design.R as DesignR
 import androidx.compose.foundation.layout.aspectRatio
 import xyz.mdhv.riverwip.feature.lens.LensAnnotatedParagraph
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
@@ -103,7 +105,7 @@ fun EndOfArticleRow(
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
             if (hasPrevious) {
                 Text(
-                    "‹ Previous",
+                    stringResource(DesignR.string.reader_previous),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable(onClick = onPrevious),
@@ -111,14 +113,14 @@ fun EndOfArticleRow(
             }
         }
         Text(
-            "End of article",
+            stringResource(DesignR.string.reader_end_of_article),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
             if (hasNext) {
                 Text(
-                    "Next ›",
+                    stringResource(DesignR.string.reader_next),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable(onClick = onNext),
@@ -319,10 +321,11 @@ fun ReaderDetailScreen(
                 }
                 when (val s = state) {
                     is ArticleUiState.Loading -> item {
+                        val loading = stringResource(DesignR.string.reader_loading)
                         Box(Modifier.fillMaxWidth().padding(top = Tokens.Spacing.xxl), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator(
                                 modifier = Modifier.semantics {
-                                    contentDescription = "Loading article"
+                                    contentDescription = loading
                                     liveRegion = LiveRegionMode.Polite
                                 },
                             )
@@ -375,7 +378,7 @@ fun ReaderDetailScreen(
                                 style = MaterialTheme.typography.bodyLarge,
                             )
                             Text(
-                                "Read the full story at the source ↗",
+                                stringResource(DesignR.string.reader_full_story),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier
@@ -469,7 +472,7 @@ fun ReaderDetailScreen(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to the stand",
+                            contentDescription = stringResource(DesignR.string.reader_back_to_stand),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -481,7 +484,7 @@ fun ReaderDetailScreen(
                     ) {
                         Icon(
                             Icons.Filled.Settings,
-                            contentDescription = "Open reader settings",
+                            contentDescription = stringResource(DesignR.string.reader_open_settings),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -546,7 +549,7 @@ internal fun ReaderUtilityBar(
                 ) {
                     Icon(
                         Icons.Filled.RemoveRedEye,
-                        contentDescription = "Lens: loaded-language highlighting",
+                        contentDescription = stringResource(DesignR.string.reader_lens_toggle),
                         tint = if (lensOn) {
                             MaterialTheme.colorScheme.onSecondaryContainer
                         } else {
@@ -557,7 +560,7 @@ internal fun ReaderUtilityBar(
                 }
             }
             IconButton(onClick = onOpenBrowser) {
-                Icon(Icons.Filled.Public, contentDescription = "Open in browser")
+                Icon(Icons.Filled.Public, contentDescription = stringResource(DesignR.string.reader_open_in_browser))
             }
             IconButton(onClick = onToggleClip) {
                 Icon(
@@ -567,7 +570,7 @@ internal fun ReaderUtilityBar(
                 )
             }
             IconButton(onClick = onShare) {
-                Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping")
+                Icon(Icons.Filled.Share, contentDescription = stringResource(DesignR.string.reader_share_clipping))
             }
             val s = state
             // Listen to the article itself (owner: "where is the play button to
@@ -584,13 +587,14 @@ internal fun ReaderUtilityBar(
             }
             if (showReadingTime && s is ArticleUiState.Loaded) {
                 val minutes = remember(s.paragraphs) { readingMinutes(s.paragraphs) }
+                val readingTime = stringResource(DesignR.string.reader_reading_time, minutes)
                 Text(
-                    "$minutes min",
+                    stringResource(DesignR.string.reader_minutes_short, minutes),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .padding(horizontal = Tokens.Spacing.sm)
-                        .semantics { contentDescription = "Estimated reading time $minutes minutes" },
+                        .semantics { contentDescription = readingTime },
                 )
             } else {
                 Spacer(Modifier.width(Tokens.Spacing.sm))
@@ -619,11 +623,12 @@ private fun ProgressDial(progress: Float) {
     val track = MaterialTheme.colorScheme.outlineVariant
     val ink = MaterialTheme.colorScheme.onSurfaceVariant
     val pct = (progress * 100).toInt()
+    val spokenProgress = stringResource(DesignR.string.reader_progress, pct)
     Canvas(
         Modifier
             .padding(start = Tokens.Spacing.xs, end = Tokens.Spacing.xxs)
             .size(20.dp)
-            .semantics { contentDescription = "About $pct percent through the article" },
+            .semantics { contentDescription = spokenProgress },
     ) {
         val stroke = 2.5.dp.toPx()
         val inset = stroke / 2f
