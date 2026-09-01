@@ -81,6 +81,12 @@
     <string name="list_showing_unread_only">Showing unread only, tap to show every story</string>
     <string name="list_showing_all">Showing every story, tap to show unread only</string>
     <string name="list_show_all_click">Show all articles</string>
+    <string name="list_open_date_picker">Open the date picker</string>
+    <string name="list_open_loom">Open the day loom</string>
+    <string name="list_open_sources">Open your sources</string>
+    <string name="list_add_sources">Add sources</string>
+    <string name="list_filter_region">Filter to %1$s</string>
+    <string name="list_toggle_topic">Toggle %1$s</string>
 
     <!-- The reader. -->
     <string name="reader_previous">‹ Previous</string>
@@ -103,6 +109,8 @@
     <string name="reader_no_text">This source’s feed didn’t include the article text. Read the full piece at the source below.</string>
     <string name="reader_read_at_source">Read at the source</string>
     <string name="reader_no_link">This item’s feed didn’t include a usable link back to its source.</string>
+    <string name="reader_select_article">Select an article to read</string>
+    <string name="reader_quote">“%1$s”</string>
 
     <!-- The language picker. -->
     <string name="language_title">Language</string>
@@ -141,6 +149,17 @@
     <string name="loom_where_reading">Where your reading came from</string>
     <string name="loom_nothing_read_yet">You haven’t read anything yet — the strip fills in as you open stories.</string>
     <string name="loom_nothing_to_weave">Nothing to weave yet</string>
+    <string name="loom_axis_source">SOURCE</string>
+    <string name="loom_axis_consumption">CONSUMPTION</string>
+    <string name="loom_inspector_read">%1$d flowed · %2$d read</string>
+    <string name="loom_inspector_none_read">%1$d flowed · none read</string>
+    <string name="loom_totals">%1$d flowed · %2$d read · %3$s</string>
+    <string name="loom_single_day">Single day</string>
+    <string name="loom_range">Range</string>
+    <string name="loom_open_date_picker">Open the date picker</string>
+    <string name="loom_ask_gdelt_again">Ask GDELT again for this day</string>
+    <string name="loom_fetch_gdelt">Fetch GDELT results for this day</string>
+    <string name="loom_show_view">Show the %1$s view</string>
 
     <!-- The region globe, including the actions that replace its drag and pinch. -->
     <string name="globe_aimed">Region globe, aimed at %1$s, covering %2$s.</string>
@@ -169,6 +188,7 @@
     <string name="contrast_read">read</string>
     <string name="contrast_regions">Regions</string>
     <string name="contrast_no_reads">No reads yet today. The map fills in as you read.</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
 
     <!-- The cross-section. -->
     <string name="cross_coverage">Coverage</string>
@@ -178,6 +198,8 @@
     <string name="cross_what_changed">What changed since the previous period</string>
     <string name="cross_no_earlier">No earlier period yet to compare against.</string>
     <string name="cross_steady">Your topic mix held steady.</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">your %1$s share of what you read ÷ its share of the stream; above 1x means you read more of this topic than it made up of the stream</string>
 
     <!-- The web reader's own copy. Where the phrasing matches Android's, the same key is reused rather than duplicated — one set of words for two clients is the whole point. -->
     <string name="stand_title">The Stand</string>
@@ -197,6 +219,9 @@
     <string name="clippings_empty">Nothing clipped yet</string>
     <string name="clippings_empty_body">Tap the clip icon on any item to save it here — it stays even if you later remove or disable its source.</string>
     <string name="clippings_remove">Remove clipping</string>
+    <string name="clippings_screen_title">CLIPPINGS</string>
+    <string name="clippings_none_yet">No clippings yet</string>
+    <string name="clippings_open_in_browser">Open article in browser</string>
 
     <!-- Managing sources — the flow by which a reader chooses what this app is even about. -->
     <string name="sources_title">Sources</string>
@@ -307,5 +332,63 @@
     <string name="settings_no_indic_pair">No Indian-language pair is available from this source yet.</string>
     <string name="settings_downloading_named">Downloading %1$s</string>
     <string name="settings_installed">Installed</string>
+    <string name="settings_open_all">Open all settings</string>
+    <string name="settings_open_word_list">Open the loaded-language word list</string>
+    <string name="settings_contact_email">Contact Nooz by email</string>
+
+    <!-- Uncategorised: give these a section in _sections.json. -->
+    <string name="bar_waiting">Waiting for stories</string>
+    <string name="empty_no_results">No results found</string>
+    <string name="search_clear">Clear search</string>
+    <string name="flash_coming_soon">Coming soon: today\'s news compressed to 10 words or fewer, once on-device intelligence is ready.</string>
+    <string name="flash_tap_to_compress">Tap to compress today\'s news to 10 words or fewer</string>
+    <string name="flash_compressing">Compressing today\'s news…</string>
+    <string name="flash_setup_link">Set up an on-device model or connect an API →</string>
+    <string name="flash_action_compress">Compress today\'s news</string>
+    <string name="flash_action_setup">Set up Nooz Flash</string>
+    <string name="cast_tap_to_hear">Tap to hear this article read aloud in a natural voice</string>
+    <string name="cast_narrating">Narrating the article…</string>
+    <string name="cast_setup_link">Set up an on-device narration model →</string>
+    <string name="cast_action_narrate">Narrate this article</string>
+    <string name="cast_action_setup">Set up Nooz Cast</string>
+    <string name="provenance_on_device">on-device</string>
+    <string name="provenance_cloud_urbana">cloud (via Urbana)</string>
+    <string name="history_retry_notice">%1$s Tap to try again.</string>
+    <string name="history_read_year">Read about %1$s on Wikipedia</string>
+    <string name="history_open_wikipedia">Open Wikipedia\'s On this day</string>
+    <string name="history_try_again">Try loading Today in History again</string>
+    <string name="framings_empty">No overlapping stories yet</string>
+    <string name="lens_looking_up">Looking up…</string>
+    <string name="lens_no_definition">No definition for this word in your dictionary.</string>
+    <string name="lens_span_action">%1$s (%2$d of %3$d). %4$s.</string>
+    <string name="lens_define_word">Define %1$s</string>
+    <string name="defuse_original">Original</string>
+    <string name="defuse_loading">Loading suggested rewrite</string>
+    <string name="defuse_proposed">Proposed</string>
+    <string name="defuse_revert">Revert</string>
+    <string name="defuse_needs_setup">No neutral rewrite yet. This needs an on-device model or your own key, from Settings › Reader intelligence.</string>
+    <string name="defuse_close">Close</string>
+    <string name="defuse_suggest">Suggest a neutral rewrite</string>
+    <string name="defuse_revert_suggestion">Revert suggestion</string>
+    <string name="defuse_unavailable">Rewrite unavailable</string>
+    <string name="defuse_loading_short">Suggestion loading</string>
+    <string name="defuse_view_suggestion">View suggestion</string>
+    <string name="word_list_title">WORD LIST</string>
+    <string name="word_list_search">Search words</string>
+    <string name="word_list_body">Words and phrases the reading lens underlines as loaded language or editorial hedging. Turn off any default you don\'t want flagged, or add your own below.</string>
+    <string name="word_list_default">Default</string>
+    <string name="word_list_custom">Custom</string>
+    <string name="word_list_add_hint">Word or phrase to add</string>
+    <string name="word_list_add">Add this word</string>
+    <string name="word_list_remove">Remove “%1$s”</string>
+    <string name="model_on_device_body">Nooz tries your device first, automatically: nothing to set up. Download a model below and it runs right on your device; until then (or unless you add a key below), the lens honestly reports \"unavailable\" instead of guessing.</string>
+    <string name="model_download_body">Real, open-source models verified by this app\'s own catalogue. Download them here: they won\'t run automatically (see On-device), but once downloaded they\'re on disk and ready.</string>
+    <string name="model_none_available">No models available.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">Delete</string>
+    <string name="model_download">Download</string>
+    <string name="model_byok_body">Route defuse rewrites to your own OpenAI-compatible endpoint. Results are always marked cloud; your key stays on this device.</string>
+    <string name="model_save_key">Save key</string>
+    <string name="model_remove_key">Remove key</string>
 
 </resources>

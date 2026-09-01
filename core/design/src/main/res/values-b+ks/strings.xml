@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  76 of 249 strings translated.
+  119 of 330 strings translated.
 -->
 <resources>
 
@@ -87,4 +87,47 @@
     <string name="settings_remove">ہٹاویو</string>
     <string name="settings_downloading_named">%1$s ڈاؤن لوڈ گژھان چھُ</string>
     <string name="settings_installed">نصب</string>
+    <string name="bar_waiting">خبرن ہِنٛز اِنتِظار</string>
+    <string name="empty_no_results">کہین٘ہ نتیجہ نہٕ لبٕ</string>
+    <string name="search_clear">ژھانٛڈُن صاف کریو</string>
+    <string name="clippings_screen_title">تراشہٕ</string>
+    <string name="clippings_none_yet">وؠنی تام کہین٘ہ تراشہٕ چھُ نہٕ</string>
+    <string name="clippings_open_in_browser">مضمون براؤزرس منٛز کھولیو</string>
+    <string name="provenance_on_device">آلَس پؠٹھ</string>
+    <string name="reader_select_article">پأرنہٕ خٲطرٕ اَکھ مضمون ژٲریو</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="loom_axis_source">ماخذ</string>
+    <string name="loom_axis_consumption">اِستعمال</string>
+    <string name="loom_single_day">اَکھ دۄہ</string>
+    <string name="loom_range">مُدَت</string>
+    <string name="loom_open_date_picker">تٲریخ ژٲرَن وول کھولیو</string>
+    <string name="loom_show_view">%1$s منظر ہاویو</string>
+    <string name="lens_looking_up">ژھانٛڈان چھُ…</string>
+    <string name="lens_no_definition">توٚہنٛدِس لغتس منٛز چھُ نہٕ یِمِ لفظُک معنی۔</string>
+    <string name="lens_define_word">%1$s سُنٛد معنی</string>
+    <string name="defuse_original">اصل</string>
+    <string name="defuse_proposed">تجویز کرنہٕ آمُت</string>
+    <string name="defuse_close">بند کریو</string>
+    <string name="defuse_view_suggestion">تجویز وُچھیو</string>
+    <string name="word_list_title">لفظن ہٕنٛز فہرست</string>
+    <string name="word_list_search">لفظ ژھانڈیو</string>
+    <string name="word_list_default">طےشُدٕ</string>
+    <string name="word_list_custom">پنُٛن</string>
+    <string name="word_list_add">یہِ لفظ شٲمِل کریو</string>
+    <string name="word_list_remove">“%1$s” ہٹاویو</string>
+    <string name="model_none_available">کہین٘ہ ماڈل دستیاب چھُ نہٕ۔</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">مِٹاویو</string>
+    <string name="model_download">ڈاؤن لوڈ</string>
+    <string name="model_save_key">کُنٛجی محفوظ کریو</string>
+    <string name="model_remove_key">کُنٛجی ہٹاویو</string>
+    <string name="settings_open_all">سٲری ترتیبات کھولیو</string>
+    <string name="list_open_date_picker">تٲریخ ژٲرَن وول کھولیو</string>
+    <string name="list_open_loom">دۄہُک لُوم کھولیو</string>
+    <string name="list_open_sources">پنٕنؠ ماخذ کھولیو</string>
+    <string name="list_add_sources">ماخذ شٲمِل کریو</string>
+    <string name="list_filter_region">%1$s پؠٹھ چھانیو</string>
+    <string name="list_toggle_topic">%1$s بدلاویو</string>
 </resources>

@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -48,6 +49,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
 import xyz.mdhv.riverwip.design.EmptyState
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.topFadingEdge
@@ -92,10 +94,10 @@ fun ClippingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("CLIPPINGS", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
+                title = { Text(stringResource(DesignR.string.clippings_screen_title), style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(DesignR.string.settings_back))
                     }
                 },
             )
@@ -104,7 +106,7 @@ fun ClippingsScreen(
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (clippings.isEmpty()) {
                 EmptyState(
-                    title = "No clippings yet",
+                    title = stringResource(DesignR.string.clippings_none_yet),
                     body = "Tap the bookmark on any article to tear it out and keep it on this board.",
                 )
             } else {
@@ -157,7 +159,7 @@ private fun TornClippingCard(
             .clip(shape)
             .background(Tokens.Palette.paperField)
             .paperGrain(paperGrain, Tokens.Palette.paperInkDim)
-            .clickable(onClickLabel = "Open article in browser", onClick = onOpen)
+            .clickable(onClickLabel = stringResource(DesignR.string.clippings_open_in_browser), onClick = onOpen)
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
     ) {
@@ -184,10 +186,10 @@ private fun TornClippingCard(
                 modifier = Modifier.weight(1f),
             )
             IconButton(onClick = onShare) {
-                Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping", tint = Tokens.Palette.paperInkDim, modifier = Modifier.size(20.dp))
+                Icon(Icons.Filled.Share, contentDescription = stringResource(DesignR.string.reader_share_clipping), tint = Tokens.Palette.paperInkDim, modifier = Modifier.size(20.dp))
             }
             IconButton(onClick = onRemove) {
-                Icon(Icons.Filled.Bookmark, contentDescription = "Remove clipping", tint = Tokens.Palette.paperInkDim, modifier = Modifier.size(20.dp))
+                Icon(Icons.Filled.Bookmark, contentDescription = stringResource(DesignR.string.clippings_remove), tint = Tokens.Palette.paperInkDim, modifier = Modifier.size(20.dp))
             }
         }
     }

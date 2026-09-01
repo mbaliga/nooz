@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">لا يتوفر بعد أي زوج لغوي هندي من هذا المصدر.</string>
     <string name="settings_downloading_named">جارٍ تنزيل %1$s</string>
     <string name="settings_installed">مثبَّت</string>
+    <string name="bar_waiting">في انتظار الأخبار</string>
+    <string name="empty_no_results">لم يُعثر على نتائج</string>
+    <string name="search_clear">امسح البحث</string>
+    <string name="clippings_screen_title">القصاصات</string>
+    <string name="clippings_none_yet">لا قصاصات بعد</string>
+    <string name="clippings_open_in_browser">افتح المقال في المتصفح</string>
+    <string name="flash_coming_soon">قريبًا: أخبار اليوم في عشر كلمات أو أقل، ما إن يصبح الذكاء داخل الجهاز جاهزًا.</string>
+    <string name="flash_tap_to_compress">انقر لضغط أخبار اليوم في عشر كلمات أو أقل</string>
+    <string name="flash_compressing">جارٍ ضغط أخبار اليوم…</string>
+    <string name="flash_setup_link">أعدَّ نموذجًا داخل الجهاز أو أضف مفتاح API ←</string>
+    <string name="flash_action_compress">اضغط أخبار اليوم</string>
+    <string name="flash_action_setup">إعداد Nooz Flash</string>
+    <string name="cast_tap_to_hear">انقر لسماع هذا المقال مقروءًا بصوت طبيعي</string>
+    <string name="cast_narrating">جارٍ قراءة المقال…</string>
+    <string name="cast_setup_link">أعدَّ نموذج قراءة داخل الجهاز ←</string>
+    <string name="cast_action_narrate">اقرأ هذا المقال</string>
+    <string name="cast_action_setup">إعداد Nooz Cast</string>
+    <string name="provenance_on_device">داخل الجهاز</string>
+    <string name="provenance_cloud_urbana">سحابي (عبر Urbana)</string>
+    <string name="reader_select_article">اختر مقالًا لقراءته</string>
+    <string name="reader_quote">”%1$s“</string>
+    <string name="history_retry_notice">%1$s انقر للمحاولة مرة أخرى.</string>
+    <string name="history_read_year">اقرأ عن %1$s في ويكيبيديا</string>
+    <string name="history_open_wikipedia">افتح On this day في ويكيبيديا</string>
+    <string name="history_try_again">حاول تحميل اليوم في التاريخ مرة أخرى</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">حصة %1$s مما قرأتَه ÷ حصتها من التدفق؛ ما فوق 1x يعني أنك قرأت من هذا الموضوع أكثر مما شكَّله في التدفق</string>
+    <string name="loom_axis_source">المصدر</string>
+    <string name="loom_axis_consumption">الاستهلاك</string>
+    <string name="loom_inspector_read">%1$d تدفَّقت · %2$d قرأت</string>
+    <string name="loom_inspector_none_read">%1$d تدفَّقت · لم تقرأ شيئًا</string>
+    <string name="loom_totals">%1$d تدفَّقت · %2$d قرأت · %3$s</string>
+    <string name="framings_empty">لا قصص متقاطعة بعد</string>
+    <string name="loom_single_day">يوم واحد</string>
+    <string name="loom_range">مدة</string>
+    <string name="loom_open_date_picker">افتح منتقي التاريخ</string>
+    <string name="loom_ask_gdelt_again">اسأل GDELT مرة أخرى عن هذا اليوم</string>
+    <string name="loom_fetch_gdelt">اجلب نتائج GDELT لهذا اليوم</string>
+    <string name="loom_show_view">أظهر عرض %1$s</string>
+    <string name="lens_looking_up">جارٍ البحث…</string>
+    <string name="lens_no_definition">لا تعريف لهذه الكلمة في معجمك.</string>
+    <string name="lens_span_action">%1$s (%2$d من %3$d). %4$s.</string>
+    <string name="lens_define_word">تعريف %1$s</string>
+    <string name="defuse_original">الأصل</string>
+    <string name="defuse_loading">جارٍ تحميل الصياغة المقترحة</string>
+    <string name="defuse_proposed">المقترح</string>
+    <string name="defuse_revert">تراجع</string>
+    <string name="defuse_needs_setup">لا صياغة محايدة بعد. يحتاج هذا إلى نموذج داخل الجهاز أو مفتاحك الخاص، من الإعدادات › ذكاء القارئ.</string>
+    <string name="defuse_close">إغلاق</string>
+    <string name="defuse_suggest">اقترح صياغة محايدة</string>
+    <string name="defuse_revert_suggestion">تراجع عن الاقتراح</string>
+    <string name="defuse_unavailable">الصياغة غير متاحة</string>
+    <string name="defuse_loading_short">جارٍ تحميل الاقتراح</string>
+    <string name="defuse_view_suggestion">اعرض الاقتراح</string>
+    <string name="word_list_title">قائمة الكلمات</string>
+    <string name="word_list_search">ابحث في الكلمات</string>
+    <string name="word_list_body">الكلمات والعبارات التي تضع عدسة القراءة تحتها خطًا بوصفها لغة منحازة أو مراوغة تحريرية. عطِّل أي وسم افتراضي لا تريده، أو أضف كلماتك في الأسفل.</string>
+    <string name="word_list_default">افتراضي</string>
+    <string name="word_list_custom">كلماتك</string>
+    <string name="word_list_add_hint">كلمة أو عبارة لإضافتها</string>
+    <string name="word_list_add">أضف هذه الكلمة</string>
+    <string name="word_list_remove">أزل ”%1$s“</string>
+    <string name="model_on_device_body">يجرِّب Nooz جهازك أولًا وتلقائيًا: لا شيء لإعداده. نزِّل نموذجًا من الأسفل فيعمل على جهازك مباشرة؛ وحتى ذلك الحين (أو ما لم تضف مفتاحًا أدناه)، تقول العدسة بصدق ”غير متاح“ بدلًا من التخمين.</string>
+    <string name="model_download_body">نماذج حقيقية مفتوحة المصدر تحقَّق منها فهرس هذا التطبيق نفسه. نزِّلها هنا: لن تعمل تلقائيًا (انظر داخل الجهاز)، لكنها بعد التنزيل تبقى على القرص جاهزة.</string>
+    <string name="model_none_available">لا نماذج متاحة.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">حذف</string>
+    <string name="model_download">تنزيل</string>
+    <string name="model_byok_body">وجِّه صياغات defuse إلى نقطة النهاية المتوافقة مع OpenAI الخاصة بك. تُوسَم النتائج دائمًا بأنها سحابية؛ ويبقى مفتاحك على هذا الجهاز.</string>
+    <string name="model_save_key">احفظ المفتاح</string>
+    <string name="model_remove_key">أزل المفتاح</string>
+    <string name="settings_open_all">افتح كل الإعدادات</string>
+    <string name="settings_open_word_list">افتح قائمة كلمات اللغة المنحازة</string>
+    <string name="settings_contact_email">تواصل مع Nooz بالبريد</string>
+    <string name="list_open_date_picker">افتح منتقي التاريخ</string>
+    <string name="list_open_loom">افتح نول اليوم</string>
+    <string name="list_open_sources">افتح مصادرك</string>
+    <string name="list_add_sources">أضف مصادر</string>
+    <string name="list_filter_region">رشِّح إلى %1$s</string>
+    <string name="list_toggle_topic">بدِّل %1$s</string>
 </resources>

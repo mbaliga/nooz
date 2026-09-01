@@ -13,25 +13,7 @@
 # numbers below are therefore a floor on the work remaining, not a total.
 #
 #   <path relative to the repo root> <count>
-app/src/main/kotlin/xyz/mdhv/riverwip/LensWordListScreen.kt 9
-app/src/main/kotlin/xyz/mdhv/riverwip/ModelChoicePanel.kt 9
-core/design/src/main/kotlin/xyz/mdhv/riverwip/design/Bars.kt 3
-core/design/src/main/kotlin/xyz/mdhv/riverwip/design/EmptyState.kt 1
-core/design/src/main/kotlin/xyz/mdhv/riverwip/design/NoResultsState.kt 1
-core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SearchBar.kt 1
-core/design/src/main/kotlin/xyz/mdhv/riverwip/design/SectionHeading.kt 1
-feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefinitionSheet.kt 2
-feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/DefuseBottomSheet.kt 8
-feature/lens/src/main/kotlin/xyz/mdhv/riverwip/feature/lens/LensAnnotatedParagraph.kt 2
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ClippingsScreen.kt 5
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FlashCard.kt 8
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/FoundQuote.kt 1
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/NewspaperReaderPane.kt 2
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/ReaderScreenTwoPane.kt 1
-feature/reader/src/main/kotlin/xyz/mdhv/riverwip/feature/reader/TodayInHistoryCard.kt 3
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/ContrastPanel.kt 1
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/CrossSectionPanel.kt 2
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/DayLoomCanvas.kt 4
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/FramingsPanel.kt 1
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomDatePicker.kt 2
-feature/river/src/main/kotlin/xyz/mdhv/riverwip/feature/river/LoomScreen.kt 1
+#
+# EMPTY, and that is the point: every interface string in the scanned modules
+# now lives in strings.xml. A file appearing below again means copy went back
+# into Kotlin; the fix is to move it out, not to add a line here.

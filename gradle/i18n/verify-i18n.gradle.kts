@@ -74,6 +74,74 @@ abstract class VerifyI18nTask : DefaultTask() {
         return out.toString()
     }
 
+    /**
+     * Bodies of `@Preview` composables replaced by spaces, offsets preserved.
+     *
+     * A preview is developer-facing scaffolding that never reaches a build the
+     * public installs, so its copy is not copy. Left in, the guard would insist
+     * a preview's sample text be translated into twenty-nine languages, which
+     * is work no reader would ever see the result of.
+     */
+    private fun blankPreviews(source: String): String {
+        val out = StringBuilder(source)
+        var from = 0
+        while (true) {
+            val at = source.indexOf("@Preview", from)
+            if (at < 0) break
+            from = at + 8
+            val fn = source.indexOf("fun ", at)
+            if (fn < 0) break
+            var i = source.indexOf('{', fn)
+            if (i < 0) break
+            var depth = 0
+            while (i < source.length) {
+                when (source[i]) {
+                    '{' -> depth++
+                    '}' -> {
+                        depth--
+                        if (depth == 0) { i++; break }
+                    }
+                }
+                if (source[i] != '\n') out.setCharAt(i, ' ')
+                i++
+            }
+            from = i
+        }
+        return out.toString()
+    }
+
+    /**
+     * The name of the call whose argument list `at` sits in, or "" if none.
+     *
+     * Needed because `label = "…"` means two different things in Compose. On a
+     * tab or a button it is copy; on `rememberInfiniteTransition`, `animateFloat`
+     * and friends it is a debug name for the animation inspector that no user
+     * ever sees. Counting the second kind is worse than merely inaccurate: the
+     * only ways to satisfy the guard are to translate a debug label into
+     * twenty-nine languages or to park it on the allowlist, and the allowlist
+     * claims its entries are still to move.
+     */
+    private fun enclosingCall(source: String, at: Int): String {
+        var depth = 0
+        var i = at - 1
+        while (i >= 0) {
+            when (source[i]) {
+                ')' -> depth++
+                '(' -> {
+                    if (depth == 0) {
+                        var end = i
+                        var start = i
+                        while (start > 0 && (source[start - 1].isLetterOrDigit() || source[start - 1] == '_')) start--
+                        return source.substring(start, end)
+                    }
+                    depth--
+                }
+            }
+            i--
+        }
+        return ""
+    }
+
     companion object {
         /**
          * Words that must stay in English wherever they appear.
@@ -89,6 +157,12 @@ abstract class VerifyI18nTask : DefaultTask() {
          */
         val BRAND = setOf("Nooz", "Nooz Flash", "Nooz Cast", "GDELT", "Wikipedia")
 
+        /** Calls whose `label =` argument is an inspector name, not copy. */
+        val ANIMATION_CALLS = Regex(
+            """^(?:remember)?(?:InfiniteTransition|Transition|animate\w*|updateTransition|Crossfade|AnimatedContent|AnimatedVisibility)$""",
+            RegexOption.IGNORE_CASE,
+        )
+
         val UI_STRING = Regex(
             """(?x)
             (?:
@@ -100,6 +174,7 @@ abstract class VerifyI18nTask : DefaultTask() {
               | \bsupportingText\s*=\s*
               | \bSectionHeading\s*\(\s*
               | \blabel\s*=\s*
+              | \bonClickLabel\s*=\s*
               | \btitle\s*=\s*
             )
             \s*"(?<literal>(?:[^"\\\n]|\\.){2,})"
@@ -118,13 +193,18 @@ abstract class VerifyI18nTask : DefaultTask() {
             // breaks after the opening paren, so `Text(` and its literal live on
             // different lines -- a per-line scan silently missed most of the
             // copy in the app and reported a comfortable, wrong number.
-            val text = blankComments(file.readText())
+            val text = blankPreviews(blankComments(file.readText()))
             UI_STRING.findAll(text).forEach match@{ match ->
                 val literal = match.groups["literal"]!!.value
                 // A bare interpolation carries no words of its own.
                 if (literal.startsWith("$") && !literal.contains(' ')) return@match
                 // The masthead and the two feature names stay in English.
                 if (literal.trim() in BRAND) return@match
+                if (match.value.trimStart().startsWith("label") &&
+                    ANIMATION_CALLS.matches(enclosingCall(text, match.range.first))
+                ) {
+                    return@match
+                }
                 val line = text.substring(0, match.range.first).count { it == '\n' } + 1
                 found.getOrPut(rel) { mutableListOf() }.add(line to literal)
             }

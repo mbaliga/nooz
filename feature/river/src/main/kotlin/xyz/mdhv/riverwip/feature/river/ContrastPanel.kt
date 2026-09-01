@@ -489,7 +489,11 @@ private fun DumbbellRow(row: ContrastRow, maxShare: Float, ink: Color, muted: Co
                 modifier = Modifier.weight(1f).padding(start = Tokens.Spacing.xs),
             )
             Text(
-                "${(row.flowedShare * 100).roundToInt()}% / ${(row.readShare * 100).roundToInt()}%",
+                stringResource(
+                    DesignR.string.contrast_share_pair,
+                    (row.flowedShare * 100).roundToInt(),
+                    (row.readShare * 100).roundToInt(),
+                ),
                 style = MaterialTheme.typography.labelSmall,
                 color = muted,
             )

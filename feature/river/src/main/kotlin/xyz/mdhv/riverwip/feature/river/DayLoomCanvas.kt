@@ -189,10 +189,10 @@ fun DayLoomCanvas(
 
         Column(modifier = Modifier.align(BiasAlignment(-0.85f, 0.02f))) {
             Text(formatCompactCount(loom.totalFlowed), style = numberStyle, color = ink)
-            Text("SOURCE", style = captionStyle, color = dim)
+            Text(stringResource(DesignR.string.loom_axis_source), style = captionStyle, color = dim)
         }
         Column(modifier = Modifier.align(BiasAlignment(0.86f, 0.28f)), horizontalAlignment = Alignment.End) {
-            Text("CONSUMPTION", style = captionStyle, color = dim)
+            Text(stringResource(DesignR.string.loom_axis_consumption), style = captionStyle, color = dim)
             Text(formatCompactCount(loom.totalRead), style = numberStyle, color = ink)
         }
 
@@ -207,7 +207,11 @@ fun DayLoomCanvas(
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    "${sel.flowed} flowed" + if (sel.read > 0) " · ${sel.read} read" else " · none read",
+                    if (sel.read > 0) {
+                        stringResource(DesignR.string.loom_inspector_read, sel.flowed, sel.read)
+                    } else {
+                        stringResource(DesignR.string.loom_inspector_none_read, sel.flowed)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = dim,
                 )
@@ -216,7 +220,12 @@ fun DayLoomCanvas(
 
         // Denominator honesty (brief §1), verbatim register from the reference.
         Text(
-            "${loom.totalFlowed} flowed · ${loom.totalRead} read · ${Copy.fromSources(enabledSourceCount)}",
+            stringResource(
+                DesignR.string.loom_totals,
+                loom.totalFlowed,
+                loom.totalRead,
+                Copy.fromSources(enabledSourceCount),
+            ),
             style = MaterialTheme.typography.labelSmall,
             color = dim,
             modifier = Modifier.align(BiasAlignment(0f, 0.97f)),

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">Bu kaynaktan henüz bir Hint dili çifti yok.</string>
     <string name="settings_downloading_named">%1$s indiriliyor</string>
     <string name="settings_installed">Kurulu</string>
+    <string name="bar_waiting">Haberler bekleniyor</string>
+    <string name="empty_no_results">Sonuç bulunamadı</string>
+    <string name="search_clear">Aramayı temizle</string>
+    <string name="clippings_screen_title">KUPÜRLER</string>
+    <string name="clippings_none_yet">Henüz kupür yok</string>
+    <string name="clippings_open_in_browser">Yazıyı tarayıcıda aç</string>
+    <string name="flash_coming_soon">Yakında: cihaz üzerindeki zekâ hazır olur olmaz, günün haberleri 10 sözcük ya da daha azında.</string>
+    <string name="flash_tap_to_compress">Günün haberlerini 10 sözcük ya da daha azına sıkıştırmak için dokunun</string>
+    <string name="flash_compressing">Günün haberleri sıkıştırılıyor…</string>
+    <string name="flash_setup_link">Cihazda bir model kurun ya da bir API bağlayın →</string>
+    <string name="flash_action_compress">Günün haberlerini sıkıştır</string>
+    <string name="flash_action_setup">Nooz Flash\'ı kur</string>
+    <string name="cast_tap_to_hear">Bu yazıyı doğal bir sesle dinlemek için dokunun</string>
+    <string name="cast_narrating">Yazı okunuyor…</string>
+    <string name="cast_setup_link">Cihazda bir seslendirme modeli kurun →</string>
+    <string name="cast_action_narrate">Bu yazıyı seslendir</string>
+    <string name="cast_action_setup">Nooz Cast\'i kur</string>
+    <string name="provenance_on_device">cihazda</string>
+    <string name="provenance_cloud_urbana">bulut (Urbana üzerinden)</string>
+    <string name="reader_select_article">Okumak için bir yazı seçin</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s Yeniden denemek için dokunun.</string>
+    <string name="history_read_year">%1$s hakkında Vikipedi\'de okuyun</string>
+    <string name="history_open_wikipedia">Vikipedi\'nin On this day sayfasını aç</string>
+    <string name="history_try_again">Tarihte bugün\'ü yeniden yüklemeyi dene</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">okuduklarınız içinde %1$s payı ÷ akıştaki payı; 1x üzeri, bu konuyu akıştaki ağırlığından fazla okuduğunuz anlamına gelir</string>
+    <string name="loom_axis_source">KAYNAK</string>
+    <string name="loom_axis_consumption">TÜKETİM</string>
+    <string name="loom_inspector_read">%1$d aktı · %2$d okundu</string>
+    <string name="loom_inspector_none_read">%1$d aktı · hiçbiri okunmadı</string>
+    <string name="loom_totals">%1$d aktı · %2$d okundu · %3$s</string>
+    <string name="framings_empty">Henüz örtüşen haber yok</string>
+    <string name="loom_single_day">Tek gün</string>
+    <string name="loom_range">Aralık</string>
+    <string name="loom_open_date_picker">Tarih seçiciyi aç</string>
+    <string name="loom_ask_gdelt_again">Bu gün için GDELT\'e yeniden sor</string>
+    <string name="loom_fetch_gdelt">Bu günün GDELT sonuçlarını getir</string>
+    <string name="loom_show_view">%1$s görünümünü göster</string>
+    <string name="lens_looking_up">Aranıyor…</string>
+    <string name="lens_no_definition">Sözlüğünüzde bu sözcüğün karşılığı yok.</string>
+    <string name="lens_span_action">%1$s (%3$d içinden %2$d). %4$s.</string>
+    <string name="lens_define_word">%1$s ne demek</string>
+    <string name="defuse_original">Özgün</string>
+    <string name="defuse_loading">Önerilen yeniden yazım yükleniyor</string>
+    <string name="defuse_proposed">Öneri</string>
+    <string name="defuse_revert">Geri al</string>
+    <string name="defuse_needs_setup">Henüz tarafsız bir yeniden yazım yok. Bunun için cihazda bir model ya da kendi anahtarınız gerekir; Ayarlar › Okuyucu zekâsı\'ndan.</string>
+    <string name="defuse_close">Kapat</string>
+    <string name="defuse_suggest">Tarafsız bir yeniden yazım öner</string>
+    <string name="defuse_revert_suggestion">Öneriyi geri al</string>
+    <string name="defuse_unavailable">Yeniden yazım yok</string>
+    <string name="defuse_loading_short">Öneri yükleniyor</string>
+    <string name="defuse_view_suggestion">Öneriyi gör</string>
+    <string name="word_list_title">SÖZCÜK LİSTESİ</string>
+    <string name="word_list_search">Sözcük ara</string>
+    <string name="word_list_body">Okuma merceğinin yanlı dil ya da yazı işleri kaçamağı sayarak altını çizdiği sözcükler ve deyişler. İstemediğiniz varsayılan işaretleri kapatın ya da aşağıya kendi sözcüklerinizi ekleyin.</string>
+    <string name="word_list_default">Varsayılan</string>
+    <string name="word_list_custom">Sizinkiler</string>
+    <string name="word_list_add_hint">Eklenecek sözcük ya da deyiş</string>
+    <string name="word_list_add">Bu sözcüğü ekle</string>
+    <string name="word_list_remove">“%1$s” sözcüğünü kaldır</string>
+    <string name="model_on_device_body">Nooz önce kendiliğinden cihazınızı dener: kuracak bir şey yok. Aşağıdan bir model indirin, doğrudan cihazınızda çalışır; o zamana kadar (ya da aşağıya bir anahtar eklemediğiniz sürece) mercek tahmin yürütmek yerine dürüstçe \"kullanılamıyor\" der.</string>
+    <string name="model_download_body">Bu uygulamanın kendi kataloğunun doğruladığı gerçek, açık kaynaklı modeller. Buradan indirin: kendiliğinden çalışmazlar (bkz. Cihazda), ama bir kez indirildiklerinde diskte hazır dururlar.</string>
+    <string name="model_none_available">Kullanılabilir model yok.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">Sil</string>
+    <string name="model_download">İndir</string>
+    <string name="model_byok_body">defuse yeniden yazımlarını kendi OpenAI uyumlu uç noktanıza yönlendirin. Sonuçlar her zaman bulut olarak işaretlenir; anahtarınız bu cihazda kalır.</string>
+    <string name="model_save_key">Anahtarı kaydet</string>
+    <string name="model_remove_key">Anahtarı kaldır</string>
+    <string name="settings_open_all">Tüm ayarları aç</string>
+    <string name="settings_open_word_list">Yanlı dil sözcük listesini aç</string>
+    <string name="settings_contact_email">Nooz\'a e-postayla ulaşın</string>
+    <string name="list_open_date_picker">Tarih seçiciyi aç</string>
+    <string name="list_open_loom">Günün tezgâhını aç</string>
+    <string name="list_open_sources">Kaynaklarınızı aç</string>
+    <string name="list_add_sources">Kaynak ekle</string>
+    <string name="list_filter_region">%1$s ile süz</string>
+    <string name="list_toggle_topic">%1$s aç/kapat</string>
 </resources>

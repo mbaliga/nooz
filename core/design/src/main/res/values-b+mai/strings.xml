@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">एहि स्रोतसँ आब धरि कोनो भारतीय-भाषा युग्म उपलब्ध नहि अछि।</string>
     <string name="settings_downloading_named">%1$s डाउनलोड भऽ रहल अछि</string>
     <string name="settings_installed">स्थापित</string>
+    <string name="bar_waiting">समाचारक प्रतीक्षा</string>
+    <string name="empty_no_results">कोनो परिणाम नहि भेटल</string>
+    <string name="search_clear">खोज मेटाउ</string>
+    <string name="clippings_screen_title">कतरन</string>
+    <string name="clippings_none_yet">आब धरि कोनो कतरन नहि</string>
+    <string name="clippings_open_in_browser">लेख ब्राउजरमे खोलू</string>
+    <string name="flash_coming_soon">जल्दिये: डिवाइस पर बुद्धिमत्ता तैयार होइते, आइक समाचार 10 वा ओहिसँ कम शब्दमे।</string>
+    <string name="flash_tap_to_compress">आइक समाचार 10 वा ओहिसँ कम शब्दमे समेटबाक लेल टैप करू</string>
+    <string name="flash_compressing">आइक समाचार समेटल जा रहल अछि…</string>
+    <string name="flash_setup_link">डिवाइस पर मॉडल सेट करू वा कोनो API जोड़ू →</string>
+    <string name="flash_action_compress">आइक समाचार समेटू</string>
+    <string name="flash_action_setup">Nooz Flash सेट करू</string>
+    <string name="cast_tap_to_hear">ई लेख स्वाभाविक स्वरमे सुनबाक लेल टैप करू</string>
+    <string name="cast_narrating">लेख पढ़ि कऽ सुनाओल जा रहल अछि…</string>
+    <string name="cast_setup_link">डिवाइस पर वाचन मॉडल सेट करू →</string>
+    <string name="cast_action_narrate">ई लेख सुनाउ</string>
+    <string name="cast_action_setup">Nooz Cast सेट करू</string>
+    <string name="provenance_on_device">डिवाइस पर</string>
+    <string name="provenance_cloud_urbana">क्लाउड (Urbana द्वारा)</string>
+    <string name="reader_select_article">पढ़बाक लेल कोनो लेख चुनू</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s फेर आजमेबाक लेल टैप करू।</string>
+    <string name="history_read_year">%1$s क बारेमे विकिपीडिया पर पढ़ू</string>
+    <string name="history_open_wikipedia">विकिपीडियाक On this day खोलू</string>
+    <string name="history_try_again">इतिहासमे आइ फेर लोड करबाक चेष्टा करू</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">अहाँक पढ़लमे %1$s क हिस्सा ÷ धारामे ओकर हिस्सा; 1x सँ ऊपरक अर्थ अछि जे धारामे ई विषय जतेक छल, ओहिसँ बेसी अहाँ पढ़लहुँ</string>
+    <string name="loom_axis_source">स्रोत</string>
+    <string name="loom_axis_consumption">उपभोग</string>
+    <string name="loom_inspector_read">%1$d बहल · %2$d पढ़ल</string>
+    <string name="loom_inspector_none_read">%1$d बहल · एकोटा नहि पढ़ल</string>
+    <string name="loom_totals">%1$d बहल · %2$d पढ़ल · %3$s</string>
+    <string name="framings_empty">आब धरि कोनो मेल खाइत समाचार नहि</string>
+    <string name="loom_single_day">एक दिन</string>
+    <string name="loom_range">अवधि</string>
+    <string name="loom_open_date_picker">तिथि चयनक खोलू</string>
+    <string name="loom_ask_gdelt_again">एहि दिनक लेल GDELT सँ फेर पूछू</string>
+    <string name="loom_fetch_gdelt">एहि दिनक GDELT परिणाम आनू</string>
+    <string name="loom_show_view">%1$s दृश्य देखाउ</string>
+    <string name="lens_looking_up">ताकल जा रहल अछि…</string>
+    <string name="lens_no_definition">अहाँक शब्दकोशमे एहि शब्दक अर्थ नहि अछि।</string>
+    <string name="lens_span_action">%1$s (%3$d मे %2$d)। %4$s।</string>
+    <string name="lens_define_word">%1$s क अर्थ</string>
+    <string name="defuse_original">मूल</string>
+    <string name="defuse_loading">सुझाओल पुनर्लेखन लोड भऽ रहल अछि</string>
+    <string name="defuse_proposed">प्रस्तावित</string>
+    <string name="defuse_revert">घुरा लिअ</string>
+    <string name="defuse_needs_setup">आब धरि कोनो तटस्थ पुनर्लेखन नहि। एकर लेल डिवाइस पर मॉडल वा अहाँक अपन कुंजी चाही, सेटिंग › पाठक बुद्धिमत्तासँ।</string>
+    <string name="defuse_close">बन्न करू</string>
+    <string name="defuse_suggest">तटस्थ पुनर्लेखन सुझाउ</string>
+    <string name="defuse_revert_suggestion">सुझाव घुरा लिअ</string>
+    <string name="defuse_unavailable">पुनर्लेखन उपलब्ध नहि</string>
+    <string name="defuse_loading_short">सुझाव लोड भऽ रहल अछि</string>
+    <string name="defuse_view_suggestion">सुझाव देखू</string>
+    <string name="word_list_title">शब्द-सूची</string>
+    <string name="word_list_search">शब्द ताकू</string>
+    <string name="word_list_body">ओ शब्द आ वाक्यांश जकरा पठन काच पक्षपाती भाषा वा सम्पादकीय टालमटोल बुझि रेखांकित करैत अछि। जे पूर्वनिर्धारित चिन्ह नहि चाही से बन्न करू, वा नीचाँ अपन शब्द जोड़ू।</string>
+    <string name="word_list_default">पूर्वनिर्धारित</string>
+    <string name="word_list_custom">अपन</string>
+    <string name="word_list_add_hint">जोड़बाक लेल शब्द वा वाक्यांश</string>
+    <string name="word_list_add">ई शब्द जोड़ू</string>
+    <string name="word_list_remove">“%1$s” हटाउ</string>
+    <string name="model_on_device_body">Nooz पहिने अपने आप अहाँक डिवाइस आजमबैत अछि: सेट करबाक किछु नहि। नीचाँसँ एकटा मॉडल डाउनलोड करू, ओ अहींक डिवाइस पर चलत; ता धरि (वा जा धरि अहाँ नीचाँ कोनो कुंजी नहि जोड़ब), काच अनुमान लगेबाक बदला ईमानदारीसँ \"अनुपलब्ध\" कहैत अछि।</string>
+    <string name="model_download_body">असली, ओपन-सोर्स मॉडल जकरा एहि एपक अपन सूची जाँचने अछि। एकरा एतय डाउनलोड करू: ई अपने आप नहि चलत (देखू डिवाइस पर), मुदा एक बेर डाउनलोड भेला पर डिस्क पर तैयार रहत।</string>
+    <string name="model_none_available">कोनो मॉडल उपलब्ध नहि।</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">मेटाउ</string>
+    <string name="model_download">डाउनलोड</string>
+    <string name="model_byok_body">defuse पुनर्लेखनकेँ अपन OpenAI-संगत एंडपॉइंट दिस पठाउ। परिणाम सदिखन क्लाउड रूपमे चिन्हित होइत अछि; अहाँक कुंजी एहि डिवाइस पर रहैत अछि।</string>
+    <string name="model_save_key">कुंजी सुरक्षित करू</string>
+    <string name="model_remove_key">कुंजी हटाउ</string>
+    <string name="settings_open_all">सभ सेटिंग खोलू</string>
+    <string name="settings_open_word_list">पक्षपाती भाषाक शब्द-सूची खोलू</string>
+    <string name="settings_contact_email">ईमेलसँ Nooz सँ सम्पर्क करू</string>
+    <string name="list_open_date_picker">तिथि चयनक खोलू</string>
+    <string name="list_open_loom">दिनक लूम खोलू</string>
+    <string name="list_open_sources">अपन स्रोत खोलू</string>
+    <string name="list_add_sources">स्रोत जोड़ू</string>
+    <string name="list_filter_region">%1$s पर छानू</string>
+    <string name="list_toggle_topic">%1$s बदलू</string>
 </resources>

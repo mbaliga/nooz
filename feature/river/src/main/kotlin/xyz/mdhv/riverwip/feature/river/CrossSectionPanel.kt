@@ -160,12 +160,11 @@ private fun OverUnderRow(topic: Topic, ratio: Double) {
                 // Colour is never the only channel (brief §2): label always present.
                 Text(topic.placeholderLabel, style = MaterialTheme.typography.bodyMedium)
             }
-            Text("%.2fx".format(ratio), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            Text(stringResource(DesignR.string.cross_section_ratio, ratio), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
         }
         if (expanded) {
             Text(
-                "your ${topic.placeholderLabel} share of what you read ÷ its share of the stream; " +
-                    "above 1x means you read more of this topic than it made up of the stream",
+                stringResource(DesignR.string.cross_section_explainer, topic.placeholderLabel),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

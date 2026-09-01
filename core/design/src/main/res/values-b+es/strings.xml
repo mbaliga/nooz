@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">Todavía no hay ningún par con una lengua india disponible en esta fuente.</string>
     <string name="settings_downloading_named">Descargando %1$s</string>
     <string name="settings_installed">Instalado</string>
+    <string name="bar_waiting">Esperando noticias</string>
+    <string name="empty_no_results">No se encontraron resultados</string>
+    <string name="search_clear">Borrar la búsqueda</string>
+    <string name="clippings_screen_title">RECORTES</string>
+    <string name="clippings_none_yet">Aún no hay recortes</string>
+    <string name="clippings_open_in_browser">Abrir el artículo en el navegador</string>
+    <string name="flash_coming_soon">Muy pronto: las noticias de hoy en 10 palabras o menos, en cuanto la inteligencia en el dispositivo esté lista.</string>
+    <string name="flash_tap_to_compress">Toca para comprimir las noticias de hoy en 10 palabras o menos</string>
+    <string name="flash_compressing">Comprimiendo las noticias de hoy…</string>
+    <string name="flash_setup_link">Configura un modelo en el dispositivo o conecta una API →</string>
+    <string name="flash_action_compress">Comprimir las noticias de hoy</string>
+    <string name="flash_action_setup">Configurar Nooz Flash</string>
+    <string name="cast_tap_to_hear">Toca para escuchar este artículo leído con voz natural</string>
+    <string name="cast_narrating">Narrando el artículo…</string>
+    <string name="cast_setup_link">Configura un modelo de narración en el dispositivo →</string>
+    <string name="cast_action_narrate">Narrar este artículo</string>
+    <string name="cast_action_setup">Configurar Nooz Cast</string>
+    <string name="provenance_on_device">en el dispositivo</string>
+    <string name="provenance_cloud_urbana">nube (vía Urbana)</string>
+    <string name="reader_select_article">Elige un artículo para leer</string>
+    <string name="reader_quote">«%1$s»</string>
+    <string name="history_retry_notice">%1$s Toca para intentarlo de nuevo.</string>
+    <string name="history_read_year">Leer sobre %1$s en Wikipedia</string>
+    <string name="history_open_wikipedia">Abrir el On this day de Wikipedia</string>
+    <string name="history_try_again">Intentar cargar Hoy en la historia de nuevo</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">tu porción de %1$s en lo que leíste ÷ su porción del caudal; por encima de 1x significa que leíste más de este tema de lo que representaba en el caudal</string>
+    <string name="loom_axis_source">FUENTE</string>
+    <string name="loom_axis_consumption">CONSUMO</string>
+    <string name="loom_inspector_read">%1$d fluyeron · %2$d leídos</string>
+    <string name="loom_inspector_none_read">%1$d fluyeron · ninguno leído</string>
+    <string name="loom_totals">%1$d fluyeron · %2$d leídos · %3$s</string>
+    <string name="framings_empty">Aún no hay historias que se solapen</string>
+    <string name="loom_single_day">Un día</string>
+    <string name="loom_range">Intervalo</string>
+    <string name="loom_open_date_picker">Abrir el selector de fecha</string>
+    <string name="loom_ask_gdelt_again">Volver a preguntar a GDELT por este día</string>
+    <string name="loom_fetch_gdelt">Traer los resultados de GDELT de este día</string>
+    <string name="loom_show_view">Mostrar la vista %1$s</string>
+    <string name="lens_looking_up">Buscando…</string>
+    <string name="lens_no_definition">No hay definición de esta palabra en tu diccionario.</string>
+    <string name="lens_span_action">%1$s (%2$d de %3$d). %4$s.</string>
+    <string name="lens_define_word">Definir %1$s</string>
+    <string name="defuse_original">Original</string>
+    <string name="defuse_loading">Cargando la reescritura propuesta</string>
+    <string name="defuse_proposed">Propuesta</string>
+    <string name="defuse_revert">Deshacer</string>
+    <string name="defuse_needs_setup">Todavía no hay una reescritura neutra. Hace falta un modelo en el dispositivo o tu propia clave, desde Ajustes › Inteligencia del lector.</string>
+    <string name="defuse_close">Cerrar</string>
+    <string name="defuse_suggest">Proponer una reescritura neutra</string>
+    <string name="defuse_revert_suggestion">Deshacer la sugerencia</string>
+    <string name="defuse_unavailable">Reescritura no disponible</string>
+    <string name="defuse_loading_short">Cargando la sugerencia</string>
+    <string name="defuse_view_suggestion">Ver la sugerencia</string>
+    <string name="word_list_title">LISTA DE PALABRAS</string>
+    <string name="word_list_search">Buscar palabras</string>
+    <string name="word_list_body">Palabras y frases que la lente de lectura subraya como lenguaje sesgado o evasiva editorial. Desactiva cualquier marca predeterminada que no quieras, o añade las tuyas abajo.</string>
+    <string name="word_list_default">Predeterminadas</string>
+    <string name="word_list_custom">Tuyas</string>
+    <string name="word_list_add_hint">Palabra o frase que añadir</string>
+    <string name="word_list_add">Añadir esta palabra</string>
+    <string name="word_list_remove">Quitar «%1$s»</string>
+    <string name="model_on_device_body">Nooz prueba primero tu dispositivo, automáticamente: nada que configurar. Descarga un modelo abajo y funcionará en tu propio dispositivo; hasta entonces (o a menos que añadas una clave abajo), la lente informa honestamente «no disponible» en vez de adivinar.</string>
+    <string name="model_download_body">Modelos reales de código abierto verificados por el propio catálogo de esta app. Descárgalos aquí: no se ejecutarán solos (mira En el dispositivo), pero una vez descargados quedan en disco y listos.</string>
+    <string name="model_none_available">No hay modelos disponibles.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">Eliminar</string>
+    <string name="model_download">Descargar</string>
+    <string name="model_byok_body">Envía las reescrituras de defuse a tu propio endpoint compatible con OpenAI. Los resultados siempre se marcan como nube; tu clave se queda en este dispositivo.</string>
+    <string name="model_save_key">Guardar la clave</string>
+    <string name="model_remove_key">Quitar la clave</string>
+    <string name="settings_open_all">Abrir todos los ajustes</string>
+    <string name="settings_open_word_list">Abrir la lista de palabras del lenguaje sesgado</string>
+    <string name="settings_contact_email">Contactar con Nooz por correo</string>
+    <string name="list_open_date_picker">Abrir el selector de fecha</string>
+    <string name="list_open_loom">Abrir el telar del día</string>
+    <string name="list_open_sources">Abrir tus fuentes</string>
+    <string name="list_add_sources">Añadir fuentes</string>
+    <string name="list_filter_region">Filtrar a %1$s</string>
+    <string name="list_toggle_topic">Alternar %1$s</string>
 </resources>

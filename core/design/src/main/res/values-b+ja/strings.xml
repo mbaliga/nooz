@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">この提供元には、まだインドの言語との組み合わせがありません。</string>
     <string name="settings_downloading_named">%1$s をダウンロード中</string>
     <string name="settings_installed">インストール済み</string>
+    <string name="bar_waiting">記事を待っています</string>
+    <string name="empty_no_results">該当するものはありません</string>
+    <string name="search_clear">検索を消す</string>
+    <string name="clippings_screen_title">切り抜き</string>
+    <string name="clippings_none_yet">まだ切り抜きはありません</string>
+    <string name="clippings_open_in_browser">記事をブラウザーで開く</string>
+    <string name="flash_coming_soon">近日：端末上の知能が整いしだい、今日のニュースを10語以内に。</string>
+    <string name="flash_tap_to_compress">今日のニュースを10語以内に圧縮するにはタップ</string>
+    <string name="flash_compressing">今日のニュースを圧縮しています…</string>
+    <string name="flash_setup_link">端末上のモデルを用意するか、APIをつなぐ →</string>
+    <string name="flash_action_compress">今日のニュースを圧縮</string>
+    <string name="flash_action_setup">Nooz Flash を設定</string>
+    <string name="cast_tap_to_hear">この記事を自然な声で聴くにはタップ</string>
+    <string name="cast_narrating">記事を読み上げています…</string>
+    <string name="cast_setup_link">端末上の読み上げモデルを用意する →</string>
+    <string name="cast_action_narrate">この記事を読み上げる</string>
+    <string name="cast_action_setup">Nooz Cast を設定</string>
+    <string name="provenance_on_device">端末内</string>
+    <string name="provenance_cloud_urbana">クラウド（Urbana 経由）</string>
+    <string name="reader_select_article">読む記事を選んでください</string>
+    <string name="reader_quote">「%1$s」</string>
+    <string name="history_retry_notice">%1$s もう一度試すにはタップ。</string>
+    <string name="history_read_year">%1$s についてウィキペディアで読む</string>
+    <string name="history_open_wikipedia">ウィキペディアの On this day を開く</string>
+    <string name="history_try_again">歴史のなかの今日をもう一度読み込む</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">あなたが読んだものに占める%1$sの割合 ÷ 流れに占めるその割合。1x を超えていれば、流れの中での比率よりも多くこの話題を読んだということ</string>
+    <string name="loom_axis_source">情報源</string>
+    <string name="loom_axis_consumption">読んだ量</string>
+    <string name="loom_inspector_read">%1$d 件流れ · %2$d 件読了</string>
+    <string name="loom_inspector_none_read">%1$d 件流れ · 未読のまま</string>
+    <string name="loom_totals">%1$d 件流れ · %2$d 件読了 · %3$s</string>
+    <string name="framings_empty">重なり合う記事はまだありません</string>
+    <string name="loom_single_day">1日</string>
+    <string name="loom_range">期間</string>
+    <string name="loom_open_date_picker">日付選択を開く</string>
+    <string name="loom_ask_gdelt_again">この日について GDELT にもう一度尋ねる</string>
+    <string name="loom_fetch_gdelt">この日の GDELT の結果を取得</string>
+    <string name="loom_show_view">「%1$s」表示に切り替える</string>
+    <string name="lens_looking_up">調べています…</string>
+    <string name="lens_no_definition">お使いの辞書にこの語の意味はありません。</string>
+    <string name="lens_span_action">%1$s（%3$d 件中 %2$d 件目）。%4$s。</string>
+    <string name="lens_define_word">「%1$s」の意味</string>
+    <string name="defuse_original">原文</string>
+    <string name="defuse_loading">提案された書き換えを読み込み中</string>
+    <string name="defuse_proposed">提案</string>
+    <string name="defuse_revert">元に戻す</string>
+    <string name="defuse_needs_setup">中立的な書き換えはまだありません。端末上のモデルか、ご自身の鍵が必要です。設定 › リーダーの知能 から。</string>
+    <string name="defuse_close">閉じる</string>
+    <string name="defuse_suggest">中立的な書き換えを提案</string>
+    <string name="defuse_revert_suggestion">提案を取り消す</string>
+    <string name="defuse_unavailable">書き換えできません</string>
+    <string name="defuse_loading_short">提案を読み込み中</string>
+    <string name="defuse_view_suggestion">提案を見る</string>
+    <string name="word_list_title">語のリスト</string>
+    <string name="word_list_search">語を検索</string>
+    <string name="word_list_body">読解レンズが偏りのある言い回しや編集上のぼかしとして下線を引く語と言い回し。付けたくない既定の印は個別に外せますし、下から自分の語を追加もできます。</string>
+    <string name="word_list_default">既定</string>
+    <string name="word_list_custom">自分の語</string>
+    <string name="word_list_add_hint">追加する語または言い回し</string>
+    <string name="word_list_add">この語を追加</string>
+    <string name="word_list_remove">「%1$s」を削除</string>
+    <string name="model_on_device_body">Nooz はまず自動的にあなたの端末を試します。設定は要りません。下でモデルをダウンロードすれば端末上でそのまま動きます。それまでは（あるいは下で鍵を追加しないかぎり）、レンズは推測せず正直に「利用できません」と伝えます。</string>
+    <string name="model_download_body">このアプリ自身のカタログで検証済みの、本物のオープンソースモデル。ここからダウンロードできます。自動では動きませんが（「端末内」を参照）、一度ダウンロードすればディスク上で待機します。</string>
+    <string name="model_none_available">利用できるモデルがありません。</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">削除</string>
+    <string name="model_download">ダウンロード</string>
+    <string name="model_byok_body">defuse の書き換えを、ご自身の OpenAI 互換エンドポイントへ送ります。結果は常にクラウドと印が付き、鍵はこの端末から出ません。</string>
+    <string name="model_save_key">鍵を保存</string>
+    <string name="model_remove_key">鍵を削除</string>
+    <string name="settings_open_all">すべての設定を開く</string>
+    <string name="settings_open_word_list">偏りのある語のリストを開く</string>
+    <string name="settings_contact_email">メールで Nooz に問い合わせる</string>
+    <string name="list_open_date_picker">日付選択を開く</string>
+    <string name="list_open_loom">その日の織機を開く</string>
+    <string name="list_open_sources">情報源を開く</string>
+    <string name="list_add_sources">情報源を追加</string>
+    <string name="list_filter_region">%1$s で絞り込む</string>
+    <string name="list_toggle_topic">%1$s を切り替える</string>
 </resources>

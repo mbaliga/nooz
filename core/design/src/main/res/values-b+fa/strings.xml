@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">هنوز هیچ جفت زبان هندی از این منبع در دسترس نیست.</string>
     <string name="settings_downloading_named">در حال دانلود %1$s</string>
     <string name="settings_installed">نصب‌شده</string>
+    <string name="bar_waiting">در انتظار خبرها</string>
+    <string name="empty_no_results">نتیجه‌ای یافت نشد</string>
+    <string name="search_clear">پاک کردن جست‌وجو</string>
+    <string name="clippings_screen_title">بریده‌ها</string>
+    <string name="clippings_none_yet">هنوز بریده‌ای نیست</string>
+    <string name="clippings_open_in_browser">مقاله را در مرورگر باز کن</string>
+    <string name="flash_coming_soon">به‌زودی: خبرهای امروز در ده واژه یا کمتر، همین که هوشِ روی دستگاه آماده شود.</string>
+    <string name="flash_tap_to_compress">برای فشرده‌کردن خبرهای امروز در ده واژه یا کمتر بزنید</string>
+    <string name="flash_compressing">خبرهای امروز فشرده می‌شود…</string>
+    <string name="flash_setup_link">مدلی روی دستگاه برپا کنید یا کلید API بیفزایید ←</string>
+    <string name="flash_action_compress">خبرهای امروز را فشرده کن</string>
+    <string name="flash_action_setup">برپاسازی Nooz Flash</string>
+    <string name="cast_tap_to_hear">برای شنیدن این مقاله با صدایی طبیعی بزنید</string>
+    <string name="cast_narrating">مقاله خوانده می‌شود…</string>
+    <string name="cast_setup_link">مدل خواندن روی دستگاه را برپا کنید ←</string>
+    <string name="cast_action_narrate">این مقاله را بخوان</string>
+    <string name="cast_action_setup">برپاسازی Nooz Cast</string>
+    <string name="provenance_on_device">روی دستگاه</string>
+    <string name="provenance_cloud_urbana">ابری (از راه Urbana)</string>
+    <string name="reader_select_article">برای خواندن مقاله‌ای برگزینید</string>
+    <string name="reader_quote">«%1$s»</string>
+    <string name="history_retry_notice">%1$s برای تلاش دوباره بزنید.</string>
+    <string name="history_read_year">دربارهٔ %1$s در ویکی‌پدیا بخوانید</string>
+    <string name="history_open_wikipedia">‏On this day ویکی‌پدیا را باز کن</string>
+    <string name="history_try_again">بارگذاری دوبارهٔ امروز در تاریخ</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">سهم %1$s از آنچه خوانده‌اید ÷ سهم آن از جریان؛ بالای 1x یعنی از این موضوع بیش از آنچه در جریان بوده خوانده‌اید</string>
+    <string name="loom_axis_source">منبع</string>
+    <string name="loom_axis_consumption">مصرف</string>
+    <string name="loom_inspector_read">%1$d جاری شد · %2$d خوانده</string>
+    <string name="loom_inspector_none_read">%1$d جاری شد · هیچ‌کدام خوانده نشد</string>
+    <string name="loom_totals">%1$d جاری شد · %2$d خوانده · %3$s</string>
+    <string name="framings_empty">هنوز خبر هم‌پوشانی نیست</string>
+    <string name="loom_single_day">یک روز</string>
+    <string name="loom_range">بازه</string>
+    <string name="loom_open_date_picker">گزینندهٔ تاریخ را باز کن</string>
+    <string name="loom_ask_gdelt_again">برای این روز دوباره از GDELT بپرس</string>
+    <string name="loom_fetch_gdelt">نتیجه‌های GDELT این روز را بیاور</string>
+    <string name="loom_show_view">نمای %1$s را نشان بده</string>
+    <string name="lens_looking_up">در حال جست‌وجو…</string>
+    <string name="lens_no_definition">در واژه‌نامهٔ شما معنایی برای این واژه نیست.</string>
+    <string name="lens_span_action">%1$s (%2$d از %3$d). %4$s.</string>
+    <string name="lens_define_word">معنای %1$s</string>
+    <string name="defuse_original">اصل</string>
+    <string name="defuse_loading">بازنویسی پیشنهادی بارگذاری می‌شود</string>
+    <string name="defuse_proposed">پیشنهادی</string>
+    <string name="defuse_revert">بازگرداندن</string>
+    <string name="defuse_needs_setup">هنوز بازنویسی بی‌طرفی نیست. برای این کار مدلی روی دستگاه یا کلید خودتان لازم است، از تنظیمات › هوش خواننده.</string>
+    <string name="defuse_close">بستن</string>
+    <string name="defuse_suggest">بازنویسی بی‌طرف پیشنهاد بده</string>
+    <string name="defuse_revert_suggestion">پیشنهاد را بازگردان</string>
+    <string name="defuse_unavailable">بازنویسی در دسترس نیست</string>
+    <string name="defuse_loading_short">پیشنهاد بارگذاری می‌شود</string>
+    <string name="defuse_view_suggestion">پیشنهاد را ببین</string>
+    <string name="word_list_title">فهرست واژه‌ها</string>
+    <string name="word_list_search">جست‌وجوی واژه‌ها</string>
+    <string name="word_list_body">واژه‌ها و عبارت‌هایی که عدسی خواندن، آن‌ها را زبان جانب‌دارانه یا طفره‌روی تحریری می‌داند و زیرشان خط می‌کشد. هر نشانهٔ پیش‌فرضی را که نمی‌خواهید خاموش کنید، یا پایین‌تر واژه‌های خودتان را بیفزایید.</string>
+    <string name="word_list_default">پیش‌فرض</string>
+    <string name="word_list_custom">از خودتان</string>
+    <string name="word_list_add_hint">واژه یا عبارت برای افزودن</string>
+    <string name="word_list_add">این واژه را بیفزا</string>
+    <string name="word_list_remove">برداشتن «%1$s»</string>
+    <string name="model_on_device_body">‏Nooz نخست خودبه‌خود دستگاه شما را می‌آزماید: چیزی برای برپاکردن نیست. از پایین مدلی دانلود کنید تا روی خودِ دستگاه‌تان اجرا شود؛ تا آن هنگام (یا تا وقتی پایین‌تر کلیدی نیفزایید)، عدسی به‌جای حدس‌زدن صادقانه می‌گوید «در دسترس نیست».</string>
+    <string name="model_download_body">مدل‌های واقعی و متن‌باز که فهرست خودِ این برنامه آن‌ها را وارسی کرده است. همین‌جا دانلودشان کنید: خودبه‌خود اجرا نمی‌شوند (ببینید روی دستگاه)، اما پس از دانلود روی دیسک آماده می‌مانند.</string>
+    <string name="model_none_available">هیچ مدلی در دسترس نیست.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">حذف</string>
+    <string name="model_download">دانلود</string>
+    <string name="model_byok_body">بازنویسی‌های defuse را به نقطهٔ پایانی سازگار با OpenAI خودتان بفرستید. نتیجه‌ها همیشه ابری نشانه‌گذاری می‌شوند؛ کلید شما روی همین دستگاه می‌ماند.</string>
+    <string name="model_save_key">ذخیرهٔ کلید</string>
+    <string name="model_remove_key">برداشتن کلید</string>
+    <string name="settings_open_all">همهٔ تنظیمات را باز کن</string>
+    <string name="settings_open_word_list">فهرست واژه‌های زبان جانب‌دارانه را باز کن</string>
+    <string name="settings_contact_email">تماس با Nooz از راه ایمیل</string>
+    <string name="list_open_date_picker">گزینندهٔ تاریخ را باز کن</string>
+    <string name="list_open_loom">بافهٔ روز را باز کن</string>
+    <string name="list_open_sources">منبع‌هایتان را باز کن</string>
+    <string name="list_add_sources">افزودن منبع</string>
+    <string name="list_filter_region">پالایش به %1$s</string>
+    <string name="list_toggle_topic">تغییر %1$s</string>
 </resources>

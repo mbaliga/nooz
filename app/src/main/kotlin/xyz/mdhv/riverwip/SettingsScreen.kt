@@ -698,7 +698,7 @@ fun SettingsBody(
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClickLabel = "Open all settings") { onOpenAll() }
+                        .clickable(onClickLabel = stringResource(DesignR.string.settings_open_all)) { onOpenAll() }
                         .padding(vertical = Tokens.Spacing.sm),
                 )
                 Text(
@@ -1211,7 +1211,7 @@ private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClickLabel = "Open the loaded-language word list", onClick = onOpenLensWordList)
+                .clickable(onClickLabel = stringResource(DesignR.string.settings_open_word_list), onClick = onOpenLensWordList)
                 .padding(vertical = Tokens.Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -1262,7 +1262,7 @@ private fun ContactRow(label: String, subtitle: String, emailSubject: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = "Contact Nooz by email") {
+            .clickable(onClickLabel = stringResource(DesignR.string.settings_contact_email)) {
                 try {
                     uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=" + android.net.Uri.encode(emailSubject))
                 } catch (_: Exception) {

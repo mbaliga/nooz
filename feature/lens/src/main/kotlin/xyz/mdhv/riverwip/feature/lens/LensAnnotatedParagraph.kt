@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.model.AffectSpanDetector
@@ -99,6 +101,21 @@ fun LensAnnotatedParagraph(
     var layoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
     var selectedSpan by remember { mutableStateOf<AffectSpanDetector.Span?>(null) }
     var selectedWord by remember { mutableStateOf<String?>(null) }
+
+    // All four verbs and both label templates are resolved here, in composable
+    // scope. `semantics { }` is not one, and a custom action's label is the only
+    // thing a screen-reader user hears about a mark -- so it is exactly the copy
+    // that must not stay English.
+    val revertVerb = stringResource(DesignR.string.defuse_revert_suggestion)
+    val unavailableVerb = stringResource(DesignR.string.defuse_unavailable)
+    val loadingVerb = stringResource(DesignR.string.defuse_loading_short)
+    val viewVerb = stringResource(DesignR.string.defuse_view_suggestion)
+    val spanActionTemplate = stringResource(DesignR.string.lens_span_action)
+    val defineTemplate = stringResource(DesignR.string.lens_define_word)
+    val spanActionLabel = { evidence: String, position: Int, total: Int, verb: String ->
+        String.format(spanActionTemplate, evidence, position, total, verb)
+    }
+    val defineLabel = { word: String -> String.format(defineTemplate, word) }
 
     val rendered = remember(text, affect) { mutableListOf<RenderedMark>() }
     // Re-derive when any affect span's state changes (an accepted rewrite can
@@ -182,13 +199,13 @@ fun LensAnnotatedParagraph(
             .semantics {
                 val spanActions = rendered.mapIndexed { index, r ->
                     val verb = when (vm.stateFor(itemId, r.span)) {
-                        is AffectSpanUiState.Accepted -> "Revert suggestion"
-                        is AffectSpanUiState.Rejected -> "Rewrite unavailable"
-                        is AffectSpanUiState.Loading -> "Suggestion loading"
-                        else -> "View suggestion"
+                        is AffectSpanUiState.Accepted -> revertVerb
+                        is AffectSpanUiState.Rejected -> unavailableVerb
+                        is AffectSpanUiState.Loading -> loadingVerb
+                        else -> viewVerb
                     }
                     CustomAccessibilityAction(
-                        label = "${r.span.evidence} (${index + 1} of ${rendered.size}). $verb.",
+                        label = spanActionLabel(r.span.evidence, index + 1, rendered.size, verb),
                         action = { selectedSpan = r.span; true },
                     )
                 }
@@ -204,7 +221,7 @@ fun LensAnnotatedParagraph(
                     .take(MAX_DEFINE_ACTIONS)
                     .map { word ->
                         CustomAccessibilityAction(
-                            label = "Define $word",
+                            label = defineLabel(word),
                             action = { selectedWord = word; true },
                         )
                     }

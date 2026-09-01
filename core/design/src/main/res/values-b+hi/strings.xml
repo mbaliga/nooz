@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">इस स्रोत से अभी कोई भारतीय-भाषा युग्म उपलब्ध नहीं है।</string>
     <string name="settings_downloading_named">%1$s डाउनलोड हो रहा है</string>
     <string name="settings_installed">स्थापित</string>
+    <string name="bar_waiting">कहानियों की प्रतीक्षा</string>
+    <string name="empty_no_results">कोई परिणाम नहीं मिला</string>
+    <string name="search_clear">खोज साफ़ करें</string>
+    <string name="clippings_screen_title">कतरनें</string>
+    <string name="clippings_none_yet">अभी कोई कतरन नहीं</string>
+    <string name="clippings_open_in_browser">लेख ब्राउज़र में खोलें</string>
+    <string name="flash_coming_soon">जल्द ही: आज की ख़बरें 10 या उससे कम शब्दों में, जैसे ही ऑन-डिवाइस बुद्धिमत्ता तैयार होगी।</string>
+    <string name="flash_tap_to_compress">आज की ख़बरें 10 या उससे कम शब्दों में समेटने के लिए टैप करें</string>
+    <string name="flash_compressing">आज की ख़बरें समेटी जा रही हैं…</string>
+    <string name="flash_setup_link">ऑन-डिवाइस मॉडल सेट करें या कोई API जोड़ें →</string>
+    <string name="flash_action_compress">आज की ख़बरें समेटें</string>
+    <string name="flash_action_setup">Nooz Flash सेट करें</string>
+    <string name="cast_tap_to_hear">यह लेख स्वाभाविक आवाज़ में सुनने के लिए टैप करें</string>
+    <string name="cast_narrating">लेख पढ़कर सुनाया जा रहा है…</string>
+    <string name="cast_setup_link">ऑन-डिवाइस वाचन मॉडल सेट करें →</string>
+    <string name="cast_action_narrate">यह लेख सुनाएँ</string>
+    <string name="cast_action_setup">Nooz Cast सेट करें</string>
+    <string name="provenance_on_device">ऑन-डिवाइस</string>
+    <string name="provenance_cloud_urbana">क्लाउड (Urbana के ज़रिए)</string>
+    <string name="reader_select_article">पढ़ने के लिए कोई लेख चुनें</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s फिर से आज़माने के लिए टैप करें।</string>
+    <string name="history_read_year">%1$s के बारे में विकिपीडिया पर पढ़ें</string>
+    <string name="history_open_wikipedia">विकिपीडिया का On this day खोलें</string>
+    <string name="history_try_again">आज इतिहास में फिर से लोड करने की कोशिश करें</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">आपके पढ़े हुए में %1$s का हिस्सा ÷ धारा में उसका हिस्सा; 1x से ऊपर का अर्थ है कि आपने इस विषय को धारा में उसकी मात्रा से ज़्यादा पढ़ा</string>
+    <string name="loom_axis_source">स्रोत</string>
+    <string name="loom_axis_consumption">उपभोग</string>
+    <string name="loom_inspector_read">%1$d बहे · %2$d पढ़े</string>
+    <string name="loom_inspector_none_read">%1$d बहे · एक भी नहीं पढ़ा</string>
+    <string name="loom_totals">%1$d बहे · %2$d पढ़े · %3$s</string>
+    <string name="framings_empty">अभी कोई अतिव्यापी कहानी नहीं</string>
+    <string name="loom_single_day">एक दिन</string>
+    <string name="loom_range">अवधि</string>
+    <string name="loom_open_date_picker">तिथि चयनक खोलें</string>
+    <string name="loom_ask_gdelt_again">इस दिन के लिए GDELT से फिर पूछें</string>
+    <string name="loom_fetch_gdelt">इस दिन के GDELT परिणाम लाएँ</string>
+    <string name="loom_show_view">%1$s दृश्य दिखाएँ</string>
+    <string name="lens_looking_up">खोजा जा रहा है…</string>
+    <string name="lens_no_definition">आपके शब्दकोश में इस शब्द की कोई परिभाषा नहीं है।</string>
+    <string name="lens_span_action">%1$s (%3$d में से %2$d)। %4$s।</string>
+    <string name="lens_define_word">%1$s की परिभाषा</string>
+    <string name="defuse_original">मूल</string>
+    <string name="defuse_loading">सुझाया गया पुनर्लेखन लोड हो रहा है</string>
+    <string name="defuse_proposed">प्रस्तावित</string>
+    <string name="defuse_revert">वापस लें</string>
+    <string name="defuse_needs_setup">अभी कोई तटस्थ पुनर्लेखन नहीं। इसके लिए ऑन-डिवाइस मॉडल या आपकी अपनी कुंजी चाहिए, सेटिंग्स › रीडर बुद्धिमत्ता से।</string>
+    <string name="defuse_close">बंद करें</string>
+    <string name="defuse_suggest">तटस्थ पुनर्लेखन सुझाएँ</string>
+    <string name="defuse_revert_suggestion">सुझाव वापस लें</string>
+    <string name="defuse_unavailable">पुनर्लेखन उपलब्ध नहीं</string>
+    <string name="defuse_loading_short">सुझाव लोड हो रहा है</string>
+    <string name="defuse_view_suggestion">सुझाव देखें</string>
+    <string name="word_list_title">शब्द-सूची</string>
+    <string name="word_list_search">शब्द खोजें</string>
+    <string name="word_list_body">वे शब्द और वाक्यांश जिन्हें पठन लेंस पक्षपाती भाषा या संपादकीय टालमटोल के रूप में रेखांकित करता है। जिस भी डिफ़ॉल्ट को चिह्नित नहीं करवाना, उसे बंद कर दें, या नीचे अपने शब्द जोड़ें।</string>
+    <string name="word_list_default">डिफ़ॉल्ट</string>
+    <string name="word_list_custom">अपने</string>
+    <string name="word_list_add_hint">जोड़ने के लिए शब्द या वाक्यांश</string>
+    <string name="word_list_add">यह शब्द जोड़ें</string>
+    <string name="word_list_remove">“%1$s” हटाएँ</string>
+    <string name="model_on_device_body">Nooz पहले अपने आप आपके डिवाइस को आज़माता है: सेट करने को कुछ नहीं। नीचे से एक मॉडल डाउनलोड करें और वह आपके डिवाइस पर ही चलेगा; तब तक (या जब तक आप नीचे कोई कुंजी न जोड़ें), लेंस अनुमान लगाने के बजाय ईमानदारी से \"अनुपलब्ध\" बताता है।</string>
+    <string name="model_download_body">असली, ओपन-सोर्स मॉडल जिन्हें इस ऐप की अपनी सूची ने जाँचा है। इन्हें यहाँ डाउनलोड करें: ये अपने आप नहीं चलेंगे (देखें ऑन-डिवाइस), पर एक बार डाउनलोड होने पर डिस्क पर तैयार रहेंगे।</string>
+    <string name="model_none_available">कोई मॉडल उपलब्ध नहीं।</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">मिटाएँ</string>
+    <string name="model_download">डाउनलोड</string>
+    <string name="model_byok_body">defuse पुनर्लेखन को अपने OpenAI-संगत एंडपॉइंट पर भेजें। परिणाम हमेशा क्लाउड के रूप में चिह्नित होते हैं; आपकी कुंजी इसी डिवाइस पर रहती है।</string>
+    <string name="model_save_key">कुंजी सहेजें</string>
+    <string name="model_remove_key">कुंजी हटाएँ</string>
+    <string name="settings_open_all">सभी सेटिंग्स खोलें</string>
+    <string name="settings_open_word_list">पक्षपाती भाषा की शब्द-सूची खोलें</string>
+    <string name="settings_contact_email">Nooz से ईमेल द्वारा संपर्क करें</string>
+    <string name="list_open_date_picker">तिथि चयनक खोलें</string>
+    <string name="list_open_loom">दिन का लूम खोलें</string>
+    <string name="list_open_sources">अपने स्रोत खोलें</string>
+    <string name="list_add_sources">स्रोत जोड़ें</string>
+    <string name="list_filter_region">%1$s पर छाँटें</string>
+    <string name="list_toggle_topic">%1$s बदलें</string>
 </resources>

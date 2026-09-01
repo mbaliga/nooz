@@ -2013,6 +2013,35 @@ respect as the CI-caught log above.
   English underneath) and `settings_size_license` keeping both positional
   arguments in Arabic. 12 tests, all passing.
   29 locales complete at 249 strings; Kashmiri 76/249 (31%, up from 22%).
+- **D59 — The ratchet reaches zero, and the copy only blind users hear
+  (2026-09-01).** Final migration tranche: the remaining 22 files, 81 new keys,
+  catalogue 249 → 330. `i18n-allowlist.txt` is now empty and `verifyI18n`
+  reports `0 string(s) still to move, across 0 file(s)`. Every interface string
+  in the scanned modules lives in `strings.xml`.
+  **The find that mattered.** Widening the guard to `onClickLabel =` surfaced 23
+  strings it had never matched — `\b` finds no boundary inside `onClickLabel`,
+  so `\blabel\s*=` had been silently skipping every one. These are labels
+  TalkBack speaks and the display never shows: "Open the day loom", "Filter to
+  Politics", "Define quotidian". A sighted pass over a Tamil build would have
+  looked finished while every spoken affordance was still English. For an app
+  whose accessibility claim has to be decisive, that was the worst possible
+  place for the guard's blind spot, and it was invisible precisely because
+  nothing renders it.
+  **Two exemptions, on the same principle as BRAND.** `label =` on
+  `rememberInfiniteTransition`/`animate*` is an animation-inspector name, and
+  `@Preview` bodies are developer scaffolding; neither ships to a reader. Left
+  matched, the only ways to satisfy the guard would have been to translate a
+  debug label into twenty-nine languages or to park it on the allowlist — and
+  the allowlist claims its entries are still to move. `enclosingCall()` walks
+  back through balanced parens to tell the two kinds of `label` apart;
+  `blankPreviews()` blanks preview bodies offset-for-offset so line numbers stay
+  exact. Together they closed Bars, EmptyState and SectionHeading honestly
+  rather than by amnesty.
+  A third `LocaleResolutionTest` case asserts a spoken label resolves in Tamil,
+  including an interpolated word — the same reasoning as D58's: the copy nobody
+  can see is the copy that needs a test rather than a glance. 13 tests, 321
+  across the build, all passing.
+  29 locales complete at 330 strings; Kashmiri 119/330 (36%, up from 31%).
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

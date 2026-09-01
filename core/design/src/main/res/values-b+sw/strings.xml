@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">Bado hakuna jozi ya lugha ya Kihindi kutoka chanzo hiki.</string>
     <string name="settings_downloading_named">Inapakua %1$s</string>
     <string name="settings_installed">Imesakinishwa</string>
+    <string name="bar_waiting">Inasubiri habari</string>
+    <string name="empty_no_results">Hakuna matokeo yaliyopatikana</string>
+    <string name="search_clear">Futa utafutaji</string>
+    <string name="clippings_screen_title">VIPANDE</string>
+    <string name="clippings_none_yet">Bado hakuna vipande</string>
+    <string name="clippings_open_in_browser">Fungua makala katika kivinjari</string>
+    <string name="flash_coming_soon">Hivi karibuni: habari za leo katika maneno 10 au chini, mara tu akili ndani ya kifaa itakapokuwa tayari.</string>
+    <string name="flash_tap_to_compress">Gusa ili kubana habari za leo hadi maneno 10 au chini</string>
+    <string name="flash_compressing">Inabana habari za leo…</string>
+    <string name="flash_setup_link">Weka muundo ndani ya kifaa au unganisha API →</string>
+    <string name="flash_action_compress">Bana habari za leo</string>
+    <string name="flash_action_setup">Weka Nooz Flash</string>
+    <string name="cast_tap_to_hear">Gusa ili kusikia makala hii ikisomwa kwa sauti ya asili</string>
+    <string name="cast_narrating">Inasoma makala…</string>
+    <string name="cast_setup_link">Weka muundo wa kusoma ndani ya kifaa →</string>
+    <string name="cast_action_narrate">Soma makala hii kwa sauti</string>
+    <string name="cast_action_setup">Weka Nooz Cast</string>
+    <string name="provenance_on_device">ndani ya kifaa</string>
+    <string name="provenance_cloud_urbana">wingu (kupitia Urbana)</string>
+    <string name="reader_select_article">Chagua makala ya kusoma</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s Gusa ili kujaribu tena.</string>
+    <string name="history_read_year">Soma kuhusu %1$s katika Wikipedia</string>
+    <string name="history_open_wikipedia">Fungua On this day ya Wikipedia</string>
+    <string name="history_try_again">Jaribu kupakia Leo katika historia tena</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">sehemu ya %1$s katika ulichosoma ÷ sehemu yake katika mkondo; zaidi ya 1x maana yake umesoma mada hii zaidi ya uzito wake katika mkondo</string>
+    <string name="loom_axis_source">CHANZO</string>
+    <string name="loom_axis_consumption">MATUMIZI</string>
+    <string name="loom_inspector_read">%1$d zilipita · %2$d zilisomwa</string>
+    <string name="loom_inspector_none_read">%1$d zilipita · hakuna iliyosomwa</string>
+    <string name="loom_totals">%1$d zilipita · %2$d zilisomwa · %3$s</string>
+    <string name="framings_empty">Bado hakuna habari zinazoingiliana</string>
+    <string name="loom_single_day">Siku moja</string>
+    <string name="loom_range">Kipindi</string>
+    <string name="loom_open_date_picker">Fungua kichagua tarehe</string>
+    <string name="loom_ask_gdelt_again">Uliza GDELT tena kwa siku hii</string>
+    <string name="loom_fetch_gdelt">Leta matokeo ya GDELT ya siku hii</string>
+    <string name="loom_show_view">Onyesha mwonekano wa %1$s</string>
+    <string name="lens_looking_up">Inatafuta…</string>
+    <string name="lens_no_definition">Hakuna maana ya neno hili katika kamusi yako.</string>
+    <string name="lens_span_action">%1$s (%2$d kati ya %3$d). %4$s.</string>
+    <string name="lens_define_word">Maana ya %1$s</string>
+    <string name="defuse_original">Asili</string>
+    <string name="defuse_loading">Inapakia uandishi upya uliopendekezwa</string>
+    <string name="defuse_proposed">Iliyopendekezwa</string>
+    <string name="defuse_revert">Rudisha</string>
+    <string name="defuse_needs_setup">Bado hakuna uandishi upya usioegemea upande. Hii inahitaji muundo ndani ya kifaa au ufunguo wako mwenyewe, kutoka Mipangilio › Akili ya msomaji.</string>
+    <string name="defuse_close">Funga</string>
+    <string name="defuse_suggest">Pendekeza uandishi upya usioegemea</string>
+    <string name="defuse_revert_suggestion">Rudisha pendekezo</string>
+    <string name="defuse_unavailable">Uandishi upya haupatikani</string>
+    <string name="defuse_loading_short">Inapakia pendekezo</string>
+    <string name="defuse_view_suggestion">Tazama pendekezo</string>
+    <string name="word_list_title">ORODHA YA MANENO</string>
+    <string name="word_list_search">Tafuta maneno</string>
+    <string name="word_list_body">Maneno na misemo ambayo lenzi ya kusoma huipigia mstari kama lugha yenye upendeleo au kukwepa kwa uhariri. Zima alama chaguo-msingi zozote usizozitaka, au ongeza maneno yako mwenyewe hapa chini.</string>
+    <string name="word_list_default">Chaguo-msingi</string>
+    <string name="word_list_custom">Yako</string>
+    <string name="word_list_add_hint">Neno au msemo wa kuongeza</string>
+    <string name="word_list_add">Ongeza neno hili</string>
+    <string name="word_list_remove">Ondoa “%1$s”</string>
+    <string name="model_on_device_body">Nooz hujaribu kifaa chako kwanza, kiotomatiki: hakuna cha kuweka. Pakua muundo hapa chini nao utafanya kazi kwenye kifaa chako; hadi wakati huo (au isipokuwa uongeze ufunguo hapa chini), lenzi husema kwa uaminifu \"haipatikani\" badala ya kubahatisha.</string>
+    <string name="model_download_body">Miundo halisi ya chanzo huria, iliyothibitishwa na orodha ya programu hii yenyewe. Ipakue hapa: haitafanya kazi yenyewe (angalia Ndani ya kifaa), lakini ikishapakuliwa hukaa tayari kwenye diski.</string>
+    <string name="model_none_available">Hakuna miundo inayopatikana.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">Futa</string>
+    <string name="model_download">Pakua</string>
+    <string name="model_byok_body">Elekeza uandishi upya wa defuse kwenye sehemu yako mwenyewe inayooana na OpenAI. Matokeo huwekewa alama ya wingu kila wakati; ufunguo wako hubaki kwenye kifaa hiki.</string>
+    <string name="model_save_key">Hifadhi ufunguo</string>
+    <string name="model_remove_key">Ondoa ufunguo</string>
+    <string name="settings_open_all">Fungua mipangilio yote</string>
+    <string name="settings_open_word_list">Fungua orodha ya maneno ya lugha yenye upendeleo</string>
+    <string name="settings_contact_email">Wasiliana na Nooz kwa barua pepe</string>
+    <string name="list_open_date_picker">Fungua kichagua tarehe</string>
+    <string name="list_open_loom">Fungua kitanda cha kufuma cha siku</string>
+    <string name="list_open_sources">Fungua vyanzo vyako</string>
+    <string name="list_add_sources">Ongeza vyanzo</string>
+    <string name="list_filter_region">Chuja hadi %1$s</string>
+    <string name="list_toggle_topic">Washa au zima %1$s</string>
 </resources>

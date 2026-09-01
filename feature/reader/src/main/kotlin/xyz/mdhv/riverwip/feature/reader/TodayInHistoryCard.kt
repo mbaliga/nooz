@@ -25,11 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.data.repo.TodayInHistoryRepository
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.model.HistoricalEvent
@@ -88,7 +90,7 @@ private fun HistoryShell(modifier: Modifier = Modifier, content: @Composable Col
 private fun HistoryColumn(events: List<HistoricalEvent>, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     HistoryShell(modifier) {
-        SectionHeading("Today In History", color = MaterialTheme.colorScheme.onBackground)
+        SectionHeading(stringResource(DesignR.string.settings_today_in_history), color = MaterialTheme.colorScheme.onBackground)
         for ((index, event) in events.withIndex()) {
             if (index > 0) {
                 HorizontalDivider(
@@ -106,7 +108,7 @@ private fun HistoryColumn(events: List<HistoricalEvent>, modifier: Modifier = Mo
                         // Only rows that actually have somewhere to go are
                         // clickable, so a tap never silently does nothing.
                         if (url != null) {
-                            Modifier.clickable(onClickLabel = "Read about ${event.year} on Wikipedia") {
+                            Modifier.clickable(onClickLabel = stringResource(DesignR.string.history_read_year, event.year.toString())) {
                                 openLink(context, url)
                             }
                         } else {
@@ -142,7 +144,7 @@ private fun HistoryColumn(events: List<HistoricalEvent>, modifier: Modifier = Mo
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
-                .clickable(onClickLabel = "Open Wikipedia's On this day") {
+                .clickable(onClickLabel = stringResource(DesignR.string.history_open_wikipedia)) {
                     openLink(context, TodayInHistoryRepository.SOURCE_URL)
                 }
                 .padding(top = Tokens.Spacing.xxs),
@@ -153,14 +155,14 @@ private fun HistoryColumn(events: List<HistoricalEvent>, modifier: Modifier = Mo
 @Composable
 private fun HistoryNotice(reason: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     HistoryShell(modifier) {
-        SectionHeading("Today In History", color = MaterialTheme.colorScheme.onBackground)
+        SectionHeading(stringResource(DesignR.string.settings_today_in_history), color = MaterialTheme.colorScheme.onBackground)
         Text(
-            "$reason Tap to try again.",
+            stringResource(DesignR.string.history_retry_notice, reason),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClickLabel = "Try loading Today in History again") { onRetry() }
+                .clickable(onClickLabel = stringResource(DesignR.string.history_try_again)) { onRetry() }
                 .padding(top = Tokens.Spacing.xxs),
         )
     }

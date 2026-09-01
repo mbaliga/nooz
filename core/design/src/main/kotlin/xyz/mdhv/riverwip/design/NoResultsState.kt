@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -43,7 +44,7 @@ fun NoResultsState(modifier: Modifier = Modifier, fill: Boolean = true) {
             modifier = Modifier.height(72.dp),
         )
         Text(
-            "No results found",
+            stringResource(R.string.empty_no_results),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,

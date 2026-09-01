@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">ಈ ಮೂಲದಿಂದ ಇನ್ನೂ ಯಾವುದೇ ಭಾರತೀಯ ಭಾಷಾ ಜೋಡಿ ಲಭ್ಯವಿಲ್ಲ.</string>
     <string name="settings_downloading_named">%1$s ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ</string>
     <string name="settings_installed">ಸ್ಥಾಪಿತ</string>
+    <string name="bar_waiting">ಸುದ್ದಿಗಳಿಗಾಗಿ ಕಾಯುತ್ತಿದೆ</string>
+    <string name="empty_no_results">ಯಾವುದೇ ಫಲಿತಾಂಶ ಸಿಗಲಿಲ್ಲ</string>
+    <string name="search_clear">ಹುಡುಕಾಟ ಅಳಿಸಿ</string>
+    <string name="clippings_screen_title">ಕತ್ತರಿಸಿದವು</string>
+    <string name="clippings_none_yet">ಇನ್ನೂ ಕತ್ತರಿಸಿದವು ಇಲ್ಲ</string>
+    <string name="clippings_open_in_browser">ಲೇಖನವನ್ನು ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</string>
+    <string name="flash_coming_soon">ಶೀಘ್ರದಲ್ಲೇ: ಸಾಧನದೊಳಗಿನ ಬುದ್ಧಿಮತ್ತೆ ಸಿದ್ಧವಾದ ಕೂಡಲೇ, ಇಂದಿನ ಸುದ್ದಿ 10 ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಪದಗಳಲ್ಲಿ.</string>
+    <string name="flash_tap_to_compress">ಇಂದಿನ ಸುದ್ದಿಯನ್ನು 10 ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಪದಗಳಿಗೆ ಸಂಕುಚಿಸಲು ತಟ್ಟಿ</string>
+    <string name="flash_compressing">ಇಂದಿನ ಸುದ್ದಿ ಸಂಕುಚಿತವಾಗುತ್ತಿದೆ…</string>
+    <string name="flash_setup_link">ಸಾಧನದೊಳಗಿನ ಮಾದರಿಯನ್ನು ಹೊಂದಿಸಿ ಅಥವಾ ಒಂದು API ಸೇರಿಸಿ →</string>
+    <string name="flash_action_compress">ಇಂದಿನ ಸುದ್ದಿಯನ್ನು ಸಂಕುಚಿಸಿ</string>
+    <string name="flash_action_setup">Nooz Flash ಹೊಂದಿಸಿ</string>
+    <string name="cast_tap_to_hear">ಈ ಲೇಖನವನ್ನು ಸಹಜ ಧ್ವನಿಯಲ್ಲಿ ಕೇಳಲು ತಟ್ಟಿ</string>
+    <string name="cast_narrating">ಲೇಖನವನ್ನು ಓದಿ ಹೇಳಲಾಗುತ್ತಿದೆ…</string>
+    <string name="cast_setup_link">ಸಾಧನದೊಳಗಿನ ಓದುವ ಮಾದರಿಯನ್ನು ಹೊಂದಿಸಿ →</string>
+    <string name="cast_action_narrate">ಈ ಲೇಖನವನ್ನು ಓದಿ ಹೇಳಿ</string>
+    <string name="cast_action_setup">Nooz Cast ಹೊಂದಿಸಿ</string>
+    <string name="provenance_on_device">ಸಾಧನದಲ್ಲಿ</string>
+    <string name="provenance_cloud_urbana">ಕ್ಲೌಡ್ (Urbana ಮೂಲಕ)</string>
+    <string name="reader_select_article">ಓದಲು ಒಂದು ಲೇಖನವನ್ನು ಆರಿಸಿ</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಲು ತಟ್ಟಿ.</string>
+    <string name="history_read_year">%1$s ಕುರಿತು ವಿಕಿಪೀಡಿಯಾದಲ್ಲಿ ಓದಿ</string>
+    <string name="history_open_wikipedia">ವಿಕಿಪೀಡಿಯಾದ On this day ತೆರೆಯಿರಿ</string>
+    <string name="history_try_again">ಇತಿಹಾಸದಲ್ಲಿ ಇಂದು ಮತ್ತೆ ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">ನೀವು ಓದಿದ್ದರಲ್ಲಿ %1$s ರ ಪಾಲು ÷ ಹರಿವಿನಲ್ಲಿ ಅದರ ಪಾಲು; 1x ಗಿಂತ ಹೆಚ್ಚು ಎಂದರೆ ಹರಿವಿನಲ್ಲಿ ಈ ವಿಷಯ ಎಷ್ಟಿತ್ತೋ ಅದಕ್ಕಿಂತ ಹೆಚ್ಚು ನೀವು ಓದಿದ್ದೀರಿ</string>
+    <string name="loom_axis_source">ಮೂಲ</string>
+    <string name="loom_axis_consumption">ಬಳಕೆ</string>
+    <string name="loom_inspector_read">%1$d ಹರಿದವು · %2$d ಓದಿದಿರಿ</string>
+    <string name="loom_inspector_none_read">%1$d ಹರಿದವು · ಏನನ್ನೂ ಓದಲಿಲ್ಲ</string>
+    <string name="loom_totals">%1$d ಹರಿದವು · %2$d ಓದಿದಿರಿ · %3$s</string>
+    <string name="framings_empty">ಇನ್ನೂ ಹೊಂದಿಕೆಯಾಗುವ ಸುದ್ದಿಗಳಿಲ್ಲ</string>
+    <string name="loom_single_day">ಒಂದು ದಿನ</string>
+    <string name="loom_range">ಅವಧಿ</string>
+    <string name="loom_open_date_picker">ದಿನಾಂಕ ಆಯ್ಕೆಯನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="loom_ask_gdelt_again">ಈ ದಿನಕ್ಕಾಗಿ GDELT ಅನ್ನು ಮತ್ತೆ ಕೇಳಿ</string>
+    <string name="loom_fetch_gdelt">ಈ ದಿನದ GDELT ಫಲಿತಾಂಶಗಳನ್ನು ತನ್ನಿ</string>
+    <string name="loom_show_view">%1$s ನೋಟವನ್ನು ತೋರಿಸಿ</string>
+    <string name="lens_looking_up">ಹುಡುಕಲಾಗುತ್ತಿದೆ…</string>
+    <string name="lens_no_definition">ನಿಮ್ಮ ನಿಘಂಟಿನಲ್ಲಿ ಈ ಪದಕ್ಕೆ ಅರ್ಥವಿಲ್ಲ.</string>
+    <string name="lens_span_action">%1$s (%3$d ರಲ್ಲಿ %2$d). %4$s.</string>
+    <string name="lens_define_word">%1$s ರ ಅರ್ಥ</string>
+    <string name="defuse_original">ಮೂಲ</string>
+    <string name="defuse_loading">ಸೂಚಿಸಿದ ಪುನರ್ಲೇಖನ ಲೋಡ್ ಆಗುತ್ತಿದೆ</string>
+    <string name="defuse_proposed">ಪ್ರಸ್ತಾವಿತ</string>
+    <string name="defuse_revert">ಹಿಂಪಡೆಯಿರಿ</string>
+    <string name="defuse_needs_setup">ಇನ್ನೂ ತಟಸ್ಥ ಪುನರ್ಲೇಖನವಿಲ್ಲ. ಇದಕ್ಕೆ ಸಾಧನದೊಳಗಿನ ಮಾದರಿ ಅಥವಾ ನಿಮ್ಮ ಸ್ವಂತ ಕೀಲಿ ಬೇಕು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಓದುಗ ಬುದ್ಧಿಮತ್ತೆಯಿಂದ.</string>
+    <string name="defuse_close">ಮುಚ್ಚಿ</string>
+    <string name="defuse_suggest">ತಟಸ್ಥ ಪುನರ್ಲೇಖನವನ್ನು ಸೂಚಿಸಿ</string>
+    <string name="defuse_revert_suggestion">ಸಲಹೆಯನ್ನು ಹಿಂಪಡೆಯಿರಿ</string>
+    <string name="defuse_unavailable">ಪುನರ್ಲೇಖನ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="defuse_loading_short">ಸಲಹೆ ಲೋಡ್ ಆಗುತ್ತಿದೆ</string>
+    <string name="defuse_view_suggestion">ಸಲಹೆಯನ್ನು ನೋಡಿ</string>
+    <string name="word_list_title">ಪದಪಟ್ಟಿ</string>
+    <string name="word_list_search">ಪದಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="word_list_body">ಓದುವ ಮಸೂರವು ಪಕ್ಷಪಾತಿ ಭಾಷೆ ಅಥವಾ ಸಂಪಾದಕೀಯ ಮೀನಮೇಷ ಎಂದು ಗೆರೆ ಎಳೆಯುವ ಪದಗಳು ಮತ್ತು ನುಡಿಗಟ್ಟುಗಳು. ಗುರುತಿಸಬಾರದೆಂಬ ಯಾವುದೇ ಪೂರ್ವನಿಗದಿತವನ್ನು ಆಫ್ ಮಾಡಿ, ಅಥವಾ ಕೆಳಗೆ ನಿಮ್ಮ ಸ್ವಂತ ಪದಗಳನ್ನು ಸೇರಿಸಿ.</string>
+    <string name="word_list_default">ಪೂರ್ವನಿಗದಿತ</string>
+    <string name="word_list_custom">ನಿಮ್ಮದೇ</string>
+    <string name="word_list_add_hint">ಸೇರಿಸಬೇಕಾದ ಪದ ಅಥವಾ ನುಡಿಗಟ್ಟು</string>
+    <string name="word_list_add">ಈ ಪದವನ್ನು ಸೇರಿಸಿ</string>
+    <string name="word_list_remove">“%1$s” ತೆಗೆದುಹಾಕಿ</string>
+    <string name="model_on_device_body">Nooz ಮೊದಲು ತಾನಾಗಿಯೇ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪ್ರಯತ್ನಿಸುತ್ತದೆ: ಹೊಂದಿಸಲು ಏನೂ ಇಲ್ಲ. ಕೆಳಗಿನಿಂದ ಒಂದು ಮಾದರಿಯನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದರೆ ಅದು ನಿಮ್ಮ ಸಾಧನದಲ್ಲೇ ಚಲಿಸುತ್ತದೆ; ಅಲ್ಲಿಯವರೆಗೆ (ಅಥವಾ ನೀವು ಕೆಳಗೆ ಕೀಲಿ ಸೇರಿಸುವವರೆಗೆ), ಮಸೂರ ಊಹಿಸುವ ಬದಲು ಪ್ರಾಮಾಣಿಕವಾಗಿ \"ಲಭ್ಯವಿಲ್ಲ\" ಎಂದು ಹೇಳುತ್ತದೆ.</string>
+    <string name="model_download_body">ಈ ಆಪ್‌ನ ಸ್ವಂತ ಪಟ್ಟಿಯಿಂದ ಪರಿಶೀಲಿಸಲಾದ ನಿಜವಾದ, ಮುಕ್ತ-ಮೂಲ ಮಾದರಿಗಳು. ಅವನ್ನು ಇಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ: ಅವು ತಾವಾಗಿಯೇ ಚಲಿಸುವುದಿಲ್ಲ (ನೋಡಿ ಸಾಧನದಲ್ಲಿ), ಆದರೆ ಒಮ್ಮೆ ಡೌನ್‌ಲೋಡ್ ಆದ ಮೇಲೆ ಡಿಸ್ಕ್‌ನಲ್ಲಿ ಸಿದ್ಧವಾಗಿರುತ್ತವೆ.</string>
+    <string name="model_none_available">ಯಾವುದೇ ಮಾದರಿ ಲಭ್ಯವಿಲ್ಲ.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">ಅಳಿಸಿ</string>
+    <string name="model_download">ಡೌನ್‌ಲೋಡ್</string>
+    <string name="model_byok_body">defuse ಪುನರ್ಲೇಖನಗಳನ್ನು ನಿಮ್ಮ ಸ್ವಂತ OpenAI-ಹೊಂದಾಣಿಕೆಯ ಎಂಡ್‌ಪಾಯಿಂಟ್‌ಗೆ ಕಳುಹಿಸಿ. ಫಲಿತಾಂಶಗಳು ಯಾವಾಗಲೂ ಕ್ಲೌಡ್ ಎಂದು ಗುರುತಿಸಲ್ಪಡುತ್ತವೆ; ನಿಮ್ಮ ಕೀಲಿ ಈ ಸಾಧನದಲ್ಲೇ ಉಳಿಯುತ್ತದೆ.</string>
+    <string name="model_save_key">ಕೀಲಿಯನ್ನು ಉಳಿಸಿ</string>
+    <string name="model_remove_key">ಕೀಲಿಯನ್ನು ತೆಗೆದುಹಾಕಿ</string>
+    <string name="settings_open_all">ಎಲ್ಲಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="settings_open_word_list">ಪಕ್ಷಪಾತಿ ಭಾಷೆಯ ಪದಪಟ್ಟಿಯನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="settings_contact_email">ಇಮೇಲ್ ಮೂಲಕ Nooz ಅನ್ನು ಸಂಪರ್ಕಿಸಿ</string>
+    <string name="list_open_date_picker">ದಿನಾಂಕ ಆಯ್ಕೆಯನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="list_open_loom">ದಿನದ ಮಗ್ಗವನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="list_open_sources">ನಿಮ್ಮ ಮೂಲಗಳನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="list_add_sources">ಮೂಲಗಳನ್ನು ಸೇರಿಸಿ</string>
+    <string name="list_filter_region">%1$s ಗೆ ಸೋಸಿ</string>
+    <string name="list_toggle_topic">%1$s ಬದಲಿಸಿ</string>
 </resources>

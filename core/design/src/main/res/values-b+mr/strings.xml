@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">या स्रोताकडून अद्याप कोणतीही भारतीय-भाषा जोडी उपलब्ध नाही.</string>
     <string name="settings_downloading_named">%1$s डाउनलोड होत आहे</string>
     <string name="settings_installed">स्थापित</string>
+    <string name="bar_waiting">बातम्यांची वाट पाहत आहे</string>
+    <string name="empty_no_results">काहीही सापडले नाही</string>
+    <string name="search_clear">शोध पुसा</string>
+    <string name="clippings_screen_title">कात्रणे</string>
+    <string name="clippings_none_yet">अजून एकही कात्रण नाही</string>
+    <string name="clippings_open_in_browser">लेख ब्राउझरमध्ये उघडा</string>
+    <string name="flash_coming_soon">लवकरच: आजच्या बातम्या 10 किंवा त्याहून कमी शब्दांत, उपकरणावरची बुद्धिमत्ता तयार होताच.</string>
+    <string name="flash_tap_to_compress">आजच्या बातम्या 10 किंवा त्याहून कमी शब्दांत आणण्यासाठी टॅप करा</string>
+    <string name="flash_compressing">आजच्या बातम्या संक्षिप्त केल्या जात आहेत…</string>
+    <string name="flash_setup_link">उपकरणावरचे मॉडेल सेट करा किंवा API जोडा →</string>
+    <string name="flash_action_compress">आजच्या बातम्या संक्षिप्त करा</string>
+    <string name="flash_action_setup">Nooz Flash सेट करा</string>
+    <string name="cast_tap_to_hear">हा लेख नैसर्गिक आवाजात ऐकण्यासाठी टॅप करा</string>
+    <string name="cast_narrating">लेख वाचून दाखवला जात आहे…</string>
+    <string name="cast_setup_link">उपकरणावरचे वाचन मॉडेल सेट करा →</string>
+    <string name="cast_action_narrate">हा लेख वाचून दाखवा</string>
+    <string name="cast_action_setup">Nooz Cast सेट करा</string>
+    <string name="provenance_on_device">उपकरणावर</string>
+    <string name="provenance_cloud_urbana">क्लाउड (Urbana मार्फत)</string>
+    <string name="reader_select_article">वाचण्यासाठी एक लेख निवडा</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s पुन्हा प्रयत्न करण्यासाठी टॅप करा.</string>
+    <string name="history_read_year">%1$s बद्दल विकिपीडियावर वाचा</string>
+    <string name="history_open_wikipedia">विकिपीडियाचे On this day उघडा</string>
+    <string name="history_try_again">आज इतिहासात पुन्हा लोड करण्याचा प्रयत्न करा</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">तुम्ही वाचलेल्यात %1$s चा वाटा ÷ प्रवाहातील त्याचा वाटा; 1x पेक्षा जास्त म्हणजे प्रवाहात हा विषय जेवढा होता त्यापेक्षा जास्त तुम्ही वाचला</string>
+    <string name="loom_axis_source">स्रोत</string>
+    <string name="loom_axis_consumption">वापर</string>
+    <string name="loom_inspector_read">%1$d वाहिले · %2$d वाचले</string>
+    <string name="loom_inspector_none_read">%1$d वाहिले · एकही वाचले नाही</string>
+    <string name="loom_totals">%1$d वाहिले · %2$d वाचले · %3$s</string>
+    <string name="framings_empty">अजून एकही जुळणारी बातमी नाही</string>
+    <string name="loom_single_day">एक दिवस</string>
+    <string name="loom_range">कालावधी</string>
+    <string name="loom_open_date_picker">दिनांक निवडक उघडा</string>
+    <string name="loom_ask_gdelt_again">या दिवसासाठी GDELT ला पुन्हा विचारा</string>
+    <string name="loom_fetch_gdelt">या दिवसाचे GDELT निकाल आणा</string>
+    <string name="loom_show_view">%1$s दृश्य दाखवा</string>
+    <string name="lens_looking_up">शोधत आहे…</string>
+    <string name="lens_no_definition">तुमच्या शब्दकोशात या शब्दाचा अर्थ नाही.</string>
+    <string name="lens_span_action">%1$s (%3$d पैकी %2$d). %4$s.</string>
+    <string name="lens_define_word">%1$s चा अर्थ</string>
+    <string name="defuse_original">मूळ</string>
+    <string name="defuse_loading">सुचवलेले पुनर्लेखन लोड होत आहे</string>
+    <string name="defuse_proposed">प्रस्तावित</string>
+    <string name="defuse_revert">मागे घ्या</string>
+    <string name="defuse_needs_setup">अजून तटस्थ पुनर्लेखन नाही. यासाठी उपकरणावरचे मॉडेल किंवा तुमची स्वतःची किल्ली लागते, सेटिंग्ज › रीडर बुद्धिमत्ता मधून.</string>
+    <string name="defuse_close">बंद करा</string>
+    <string name="defuse_suggest">तटस्थ पुनर्लेखन सुचवा</string>
+    <string name="defuse_revert_suggestion">सूचना मागे घ्या</string>
+    <string name="defuse_unavailable">पुनर्लेखन उपलब्ध नाही</string>
+    <string name="defuse_loading_short">सूचना लोड होत आहे</string>
+    <string name="defuse_view_suggestion">सूचना पाहा</string>
+    <string name="word_list_title">शब्दयादी</string>
+    <string name="word_list_search">शब्द शोधा</string>
+    <string name="word_list_body">वाचन भिंग जे शब्द आणि वाक्प्रचार पक्षपाती भाषा किंवा संपादकीय सैलपणा म्हणून अधोरेखित करते. जी पूर्वनिर्धारित खूण नको ती बंद करा, किंवा खाली स्वतःचे शब्द जोडा.</string>
+    <string name="word_list_default">पूर्वनिर्धारित</string>
+    <string name="word_list_custom">स्वतःचे</string>
+    <string name="word_list_add_hint">जोडण्यासाठी शब्द किंवा वाक्प्रचार</string>
+    <string name="word_list_add">हा शब्द जोडा</string>
+    <string name="word_list_remove">“%1$s” काढून टाका</string>
+    <string name="model_on_device_body">Nooz आधी आपोआप तुमचे उपकरण वापरून पाहतो: सेट करायला काही नाही. खालून एक मॉडेल डाउनलोड करा, ते तुमच्याच उपकरणावर चालेल; तोपर्यंत (किंवा खाली किल्ली जोडेपर्यंत) भिंग अंदाज न लावता प्रामाणिकपणे \"अनुपलब्ध\" सांगते.</string>
+    <string name="model_download_body">खरी, मुक्त-स्रोत मॉडेल्स, या अ‍ॅपच्याच सूचीने तपासलेली. ती इथे डाउनलोड करा: ती आपोआप चालणार नाहीत (पाहा उपकरणावर), पण एकदा डाउनलोड झाल्यावर डिस्कवर तयार असतील.</string>
+    <string name="model_none_available">कोणतेही मॉडेल उपलब्ध नाही.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">हटवा</string>
+    <string name="model_download">डाउनलोड</string>
+    <string name="model_byok_body">defuse पुनर्लेखने तुमच्या स्वतःच्या OpenAI-सुसंगत एंडपॉइंटकडे पाठवा. निकाल नेहमी क्लाउड म्हणून चिन्हांकित होतात; तुमची किल्ली याच उपकरणावर राहते.</string>
+    <string name="model_save_key">किल्ली जतन करा</string>
+    <string name="model_remove_key">किल्ली काढून टाका</string>
+    <string name="settings_open_all">सर्व सेटिंग्ज उघडा</string>
+    <string name="settings_open_word_list">पक्षपाती भाषेची शब्दयादी उघडा</string>
+    <string name="settings_contact_email">ईमेलने Nooz शी संपर्क साधा</string>
+    <string name="list_open_date_picker">दिनांक निवडक उघडा</string>
+    <string name="list_open_loom">दिवसाचा लूम उघडा</string>
+    <string name="list_open_sources">तुमचे स्रोत उघडा</string>
+    <string name="list_add_sources">स्रोत जोडा</string>
+    <string name="list_filter_region">%1$s वर गाळा</string>
+    <string name="list_toggle_topic">%1$s बदला</string>
 </resources>

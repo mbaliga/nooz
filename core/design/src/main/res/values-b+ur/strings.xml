@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">اس ماخذ سے ابھی کوئی ہندوستانی زبان کا جوڑا دستیاب نہیں۔</string>
     <string name="settings_downloading_named">%1$s ڈاؤن لوڈ ہو رہا ہے</string>
     <string name="settings_installed">نصب شدہ</string>
+    <string name="bar_waiting">خبروں کے انتظار میں</string>
+    <string name="empty_no_results">کوئی نتیجہ نہیں ملا</string>
+    <string name="search_clear">تلاش صاف کریں</string>
+    <string name="clippings_screen_title">تراشے</string>
+    <string name="clippings_none_yet">ابھی کوئی تراشہ نہیں</string>
+    <string name="clippings_open_in_browser">مضمون براؤزر میں کھولیں</string>
+    <string name="flash_coming_soon">جلد ہی: آلے کے اندر کی ذہانت تیار ہوتے ہی، آج کی خبریں 10 یا اس سے کم الفاظ میں۔</string>
+    <string name="flash_tap_to_compress">آج کی خبریں 10 یا اس سے کم الفاظ میں سمیٹنے کے لیے ٹیپ کریں</string>
+    <string name="flash_compressing">آج کی خبریں سمیٹی جا رہی ہیں…</string>
+    <string name="flash_setup_link">آلے کے اندر ماڈل ترتیب دیں یا کوئی API جوڑیں →</string>
+    <string name="flash_action_compress">آج کی خبریں سمیٹیں</string>
+    <string name="flash_action_setup">Nooz Flash ترتیب دیں</string>
+    <string name="cast_tap_to_hear">یہ مضمون فطری آواز میں سننے کے لیے ٹیپ کریں</string>
+    <string name="cast_narrating">مضمون پڑھ کر سنایا جا رہا ہے…</string>
+    <string name="cast_setup_link">آلے کے اندر پڑھنے کا ماڈل ترتیب دیں →</string>
+    <string name="cast_action_narrate">یہ مضمون سنائیں</string>
+    <string name="cast_action_setup">Nooz Cast ترتیب دیں</string>
+    <string name="provenance_on_device">آلے پر</string>
+    <string name="provenance_cloud_urbana">کلاؤڈ (Urbana کے ذریعے)</string>
+    <string name="reader_select_article">پڑھنے کے لیے کوئی مضمون منتخب کریں</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s دوبارہ کوشش کے لیے ٹیپ کریں۔</string>
+    <string name="history_read_year">%1$s کے بارے میں ویکیپیڈیا پر پڑھیں</string>
+    <string name="history_open_wikipedia">ویکیپیڈیا کا On this day کھولیں</string>
+    <string name="history_try_again">تاریخ میں آج دوبارہ لوڈ کرنے کی کوشش کریں</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">آپ کے پڑھے ہوئے میں %1$s کا حصہ ÷ بہاؤ میں اس کا حصہ؛ 1x سے اوپر کا مطلب ہے کہ بہاؤ میں یہ موضوع جتنا تھا، آپ نے اس سے زیادہ پڑھا</string>
+    <string name="loom_axis_source">ماخذ</string>
+    <string name="loom_axis_consumption">استعمال</string>
+    <string name="loom_inspector_read">%1$d بہے · %2$d پڑھے</string>
+    <string name="loom_inspector_none_read">%1$d بہے · ایک بھی نہیں پڑھا</string>
+    <string name="loom_totals">%1$d بہے · %2$d پڑھے · %3$s</string>
+    <string name="framings_empty">ابھی کوئی ملتی جلتی خبر نہیں</string>
+    <string name="loom_single_day">ایک دن</string>
+    <string name="loom_range">مدت</string>
+    <string name="loom_open_date_picker">تاریخ منتخب کنندہ کھولیں</string>
+    <string name="loom_ask_gdelt_again">اس دن کے لیے GDELT سے دوبارہ پوچھیں</string>
+    <string name="loom_fetch_gdelt">اس دن کے GDELT نتائج لائیں</string>
+    <string name="loom_show_view">%1$s منظر دکھائیں</string>
+    <string name="lens_looking_up">تلاش جاری ہے…</string>
+    <string name="lens_no_definition">آپ کی لغت میں اس لفظ کا کوئی مطلب نہیں۔</string>
+    <string name="lens_span_action">%1$s (%3$d میں سے %2$d)۔ %4$s۔</string>
+    <string name="lens_define_word">%1$s کا مطلب</string>
+    <string name="defuse_original">اصل</string>
+    <string name="defuse_loading">تجویز کردہ دوبارہ تحریر لوڈ ہو رہی ہے</string>
+    <string name="defuse_proposed">تجویز کردہ</string>
+    <string name="defuse_revert">واپس لیں</string>
+    <string name="defuse_needs_setup">ابھی کوئی غیرجانبدار دوبارہ تحریر نہیں۔ اس کے لیے آلے کے اندر ماڈل یا آپ کی اپنی کلید چاہیے، ترتیبات › قاری کی ذہانت سے۔</string>
+    <string name="defuse_close">بند کریں</string>
+    <string name="defuse_suggest">غیرجانبدار دوبارہ تحریر تجویز کریں</string>
+    <string name="defuse_revert_suggestion">تجویز واپس لیں</string>
+    <string name="defuse_unavailable">دوبارہ تحریر دستیاب نہیں</string>
+    <string name="defuse_loading_short">تجویز لوڈ ہو رہی ہے</string>
+    <string name="defuse_view_suggestion">تجویز دیکھیں</string>
+    <string name="word_list_title">لفظی فہرست</string>
+    <string name="word_list_search">الفاظ تلاش کریں</string>
+    <string name="word_list_body">وہ الفاظ اور فقرے جنہیں مطالعے کا عدسہ جانبدار زبان یا ادارتی ٹال مٹول کے طور پر نمایاں کرتا ہے۔ جو طے شدہ نشان نہیں چاہیے اسے بند کریں، یا نیچے اپنے الفاظ شامل کریں۔</string>
+    <string name="word_list_default">طے شدہ</string>
+    <string name="word_list_custom">اپنے</string>
+    <string name="word_list_add_hint">شامل کرنے کے لیے لفظ یا فقرہ</string>
+    <string name="word_list_add">یہ لفظ شامل کریں</string>
+    <string name="word_list_remove">“%1$s” ہٹائیں</string>
+    <string name="model_on_device_body">‏Nooz پہلے خود بخود آپ کا آلہ آزماتا ہے: ترتیب دینے کو کچھ نہیں۔ نیچے سے ایک ماڈل ڈاؤن لوڈ کریں، وہ آپ ہی کے آلے پر چلے گا؛ تب تک (یا جب تک آپ نیچے کوئی کلید نہ جوڑیں)، عدسہ اندازہ لگانے کے بجائے دیانت داری سے \"دستیاب نہیں\" بتاتا ہے۔</string>
+    <string name="model_download_body">اصلی، اوپن سورس ماڈل جنہیں اس ایپ کی اپنی فہرست نے جانچا ہے۔ انہیں یہاں ڈاؤن لوڈ کریں: یہ خود بخود نہیں چلیں گے (دیکھیں آلے پر)، مگر ایک بار ڈاؤن لوڈ ہونے کے بعد ڈسک پر تیار رہیں گے۔</string>
+    <string name="model_none_available">کوئی ماڈل دستیاب نہیں۔</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">حذف کریں</string>
+    <string name="model_download">ڈاؤن لوڈ</string>
+    <string name="model_byok_body">‏defuse دوبارہ تحریروں کو اپنے OpenAI-ہم آہنگ اینڈپوائنٹ کی طرف بھیجیں۔ نتائج ہمیشہ کلاؤڈ کے طور پر نشان زد ہوتے ہیں؛ آپ کی کلید اسی آلے پر رہتی ہے۔</string>
+    <string name="model_save_key">کلید محفوظ کریں</string>
+    <string name="model_remove_key">کلید ہٹائیں</string>
+    <string name="settings_open_all">تمام ترتیبات کھولیں</string>
+    <string name="settings_open_word_list">جانبدار زبان کی لفظی فہرست کھولیں</string>
+    <string name="settings_contact_email">ای میل سے Nooz سے رابطہ کریں</string>
+    <string name="list_open_date_picker">تاریخ منتخب کنندہ کھولیں</string>
+    <string name="list_open_loom">دن کا لُوم کھولیں</string>
+    <string name="list_open_sources">اپنے ذرائع کھولیں</string>
+    <string name="list_add_sources">ذرائع شامل کریں</string>
+    <string name="list_filter_region">%1$s پر چھانٹیں</string>
+    <string name="list_toggle_topic">%1$s بدلیں</string>
 </resources>

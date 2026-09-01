@@ -160,7 +160,11 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
             Row {
                 NoozWordmark(fontSize = 30.sp, modifier = Modifier.alignByBaseline())
                 Text(
-                    "$enabledCount ${if (enabledCount == 1) "source" else "sources"}",
+                    if (enabledCount == 1) {
+                        stringResource(DesignR.string.loom_source_one, enabledCount)
+                    } else {
+                        stringResource(DesignR.string.loom_source_many, enabledCount)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.alignByBaseline().padding(start = Tokens.Spacing.sm),
@@ -176,7 +180,7 @@ fun LoomScreen(vm: LoomViewModel, onClose: () -> Unit, onOpenItem: (Item) -> Uni
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
-                        .clickable(onClickLabel = "Open the date picker") { vm.setDatePickerVisible(true) }
+                        .clickable(onClickLabel = stringResource(DesignR.string.loom_open_date_picker)) { vm.setDatePickerVisible(true) }
                         .semantics { role = Role.Button }
                         .padding(horizontal = Tokens.Spacing.xxs, vertical = Tokens.Spacing.xxs),
                 )
@@ -315,7 +319,7 @@ private fun HistoricalGdeltAffordance(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = modifier
-                    .clickable(onClickLabel = "Ask GDELT again for this day") { onFetch() }
+                    .clickable(onClickLabel = stringResource(DesignR.string.loom_ask_gdelt_again)) { onFetch() }
                     .semantics { role = Role.Button }
                     .padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
             )
@@ -325,7 +329,7 @@ private fun HistoricalGdeltAffordance(
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier
-                .clickable(onClickLabel = "Fetch GDELT results for this day") { onFetch() }
+                .clickable(onClickLabel = stringResource(DesignR.string.loom_fetch_gdelt)) { onFetch() }
                 .semantics { role = Role.Button }
                 .padding(horizontal = Tokens.Spacing.sm, vertical = Tokens.Spacing.xxs),
         )
@@ -340,7 +344,7 @@ private fun ModeTab(label: String, active: Boolean, onClick: () -> Unit) {
         style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp),
         color = if (active) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
         modifier = Modifier
-            .clickable(onClickLabel = "Show the $label view") { onClick() }
+            .clickable(onClickLabel = stringResource(DesignR.string.loom_show_view, label)) { onClick() }
             .semantics { role = Role.Tab }
             .minimumInteractiveComponentSize()
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xxs),

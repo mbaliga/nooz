@@ -237,7 +237,7 @@ fun ArticleListScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .clickable(onClickLabel = "Open the date picker") { onOpenDatePicker() }
+                    .clickable(onClickLabel = stringResource(DesignR.string.list_open_date_picker)) { onOpenDatePicker() }
                     .semantics { role = Role.Button }
                     .minimumInteractiveComponentSize()
                     .padding(horizontal = Tokens.Spacing.xs),
@@ -255,7 +255,7 @@ fun ArticleListScreen(
                 .minimumInteractiveComponentSize() // >=48dp tap target; the thin bar centres inside
                 .padding(horizontal = Tokens.Spacing.md)
                 .height(barHeight)
-                .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },
+                .clickable(onClickLabel = stringResource(DesignR.string.list_open_loom)) { onOpenLoom() },
         ) {
             if (todayReadMix.isEmpty() || isRefreshing) {
                 CandyCaneBar(Modifier.fillMaxSize())
@@ -281,7 +281,7 @@ fun ArticleListScreen(
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .clickable(onClickLabel = "Open your sources") { onOpenEdit() }
+                    .clickable(onClickLabel = stringResource(DesignR.string.list_open_sources)) { onOpenEdit() }
                     .semantics { role = Role.Button }
                     .padding(vertical = Tokens.Spacing.xxs),
             )
@@ -599,7 +599,7 @@ private fun EmptyStand(
                         .align(Alignment.CenterEnd)
                         .width(illustrationWidth)
                         .aspectRatio(NEEDLE_ILLUSTRATION_ASPECT_RATIO)
-                        .clickable(enabled = !isRefreshing, onClickLabel = "Add sources") { onAdd() }
+                        .clickable(enabled = !isRefreshing, onClickLabel = stringResource(DesignR.string.list_add_sources)) { onAdd() }
                         .semantics { role = Role.Button },
                 )
             }
@@ -614,7 +614,7 @@ private fun EmptyStand(
                 modifier = Modifier
                     .size(72.dp)
                     .background(MaterialTheme.colorScheme.onBackground, CircleShape)
-                    .clickable(enabled = !isRefreshing, onClickLabel = "Fetch now") { onRetry() }
+                    .clickable(enabled = !isRefreshing, onClickLabel = stringResource(DesignR.string.list_fetch_now)) { onRetry() }
                     .semantics { role = Role.Button },
                 contentAlignment = Alignment.Center,
             ) {
@@ -705,7 +705,7 @@ private fun RegionTopicFilterSheet(
                         fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
                         color = if (chosen) ink else muted,
                         modifier = Modifier
-                            .clickable(onClickLabel = "Filter to ${region.label}") { onSetRegion(region) }
+                            .clickable(onClickLabel = stringResource(DesignR.string.list_filter_region, region.label)) { onSetRegion(region) }
                             .padding(vertical = Tokens.Spacing.xxs),
                     )
                 }
@@ -728,7 +728,7 @@ private fun RegionTopicFilterSheet(
                         modifier = Modifier
                             .clickable(
                                 enabled = count > 0 || picked,
-                                onClickLabel = "Toggle ${topic.placeholderLabel}",
+                                onClickLabel = stringResource(DesignR.string.list_toggle_topic, topic.placeholderLabel),
                             ) { onToggleTopic(topic.key) }
                             .padding(vertical = Tokens.Spacing.xxs),
                     )

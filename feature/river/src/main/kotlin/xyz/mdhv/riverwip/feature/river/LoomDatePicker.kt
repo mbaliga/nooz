@@ -3,6 +3,7 @@ package xyz.mdhv.riverwip.feature.river
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -32,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.design.NoozWordmark
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import java.time.LocalDate
@@ -105,12 +107,12 @@ fun LoomDatePicker(
             FilterChip(
                 selected = !rangeMode,
                 onClick = { rangeMode = false; pendingRangeStart = null },
-                label = { Text("Single day") },
+                label = { Text(stringResource(DesignR.string.loom_single_day)) },
             )
             FilterChip(
                 selected = rangeMode,
                 onClick = { rangeMode = true },
-                label = { Text("Range") },
+                label = { Text(stringResource(DesignR.string.loom_range)) },
             )
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = Tokens.Spacing.md)) {

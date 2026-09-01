@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">Belum ada pasangan bahasa India dari sumber ini.</string>
     <string name="settings_downloading_named">Mengunduh %1$s</string>
     <string name="settings_installed">Terpasang</string>
+    <string name="bar_waiting">Menunggu berita</string>
+    <string name="empty_no_results">Tidak ada hasil</string>
+    <string name="search_clear">Hapus pencarian</string>
+    <string name="clippings_screen_title">GUNTINGAN</string>
+    <string name="clippings_none_yet">Belum ada guntingan</string>
+    <string name="clippings_open_in_browser">Buka artikel di peramban</string>
+    <string name="flash_coming_soon">Segera: berita hari ini dalam 10 kata atau kurang, begitu kecerdasan di perangkat siap.</string>
+    <string name="flash_tap_to_compress">Ketuk untuk memadatkan berita hari ini menjadi 10 kata atau kurang</string>
+    <string name="flash_compressing">Memadatkan berita hari ini…</string>
+    <string name="flash_setup_link">Siapkan model di perangkat atau sambungkan sebuah API →</string>
+    <string name="flash_action_compress">Padatkan berita hari ini</string>
+    <string name="flash_action_setup">Siapkan Nooz Flash</string>
+    <string name="cast_tap_to_hear">Ketuk untuk mendengar artikel ini dibacakan dengan suara alami</string>
+    <string name="cast_narrating">Membacakan artikel…</string>
+    <string name="cast_setup_link">Siapkan model pembacaan di perangkat →</string>
+    <string name="cast_action_narrate">Bacakan artikel ini</string>
+    <string name="cast_action_setup">Siapkan Nooz Cast</string>
+    <string name="provenance_on_device">di perangkat</string>
+    <string name="provenance_cloud_urbana">awan (lewat Urbana)</string>
+    <string name="reader_select_article">Pilih sebuah artikel untuk dibaca</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s Ketuk untuk mencoba lagi.</string>
+    <string name="history_read_year">Baca tentang %1$s di Wikipedia</string>
+    <string name="history_open_wikipedia">Buka On this day milik Wikipedia</string>
+    <string name="history_try_again">Coba muat lagi Hari ini dalam sejarah</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">porsi %1$s dalam yang Anda baca ÷ porsinya dalam arus; di atas 1x berarti Anda membaca topik ini lebih banyak daripada porsinya dalam arus</string>
+    <string name="loom_axis_source">SUMBER</string>
+    <string name="loom_axis_consumption">KONSUMSI</string>
+    <string name="loom_inspector_read">%1$d mengalir · %2$d dibaca</string>
+    <string name="loom_inspector_none_read">%1$d mengalir · tidak ada yang dibaca</string>
+    <string name="loom_totals">%1$d mengalir · %2$d dibaca · %3$s</string>
+    <string name="framings_empty">Belum ada cerita yang bertumpang tindih</string>
+    <string name="loom_single_day">Satu hari</string>
+    <string name="loom_range">Rentang</string>
+    <string name="loom_open_date_picker">Buka pemilih tanggal</string>
+    <string name="loom_ask_gdelt_again">Tanya GDELT lagi untuk hari ini</string>
+    <string name="loom_fetch_gdelt">Ambil hasil GDELT untuk hari ini</string>
+    <string name="loom_show_view">Tampilkan tampilan %1$s</string>
+    <string name="lens_looking_up">Mencari…</string>
+    <string name="lens_no_definition">Tidak ada arti kata ini di kamus Anda.</string>
+    <string name="lens_span_action">%1$s (%2$d dari %3$d). %4$s.</string>
+    <string name="lens_define_word">Arti %1$s</string>
+    <string name="defuse_original">Asli</string>
+    <string name="defuse_loading">Memuat penulisan ulang yang disarankan</string>
+    <string name="defuse_proposed">Diusulkan</string>
+    <string name="defuse_revert">Kembalikan</string>
+    <string name="defuse_needs_setup">Belum ada penulisan ulang yang netral. Ini butuh model di perangkat atau kunci Anda sendiri, dari Setelan › Kecerdasan pembaca.</string>
+    <string name="defuse_close">Tutup</string>
+    <string name="defuse_suggest">Usulkan penulisan ulang yang netral</string>
+    <string name="defuse_revert_suggestion">Kembalikan usulan</string>
+    <string name="defuse_unavailable">Penulisan ulang tak tersedia</string>
+    <string name="defuse_loading_short">Memuat usulan</string>
+    <string name="defuse_view_suggestion">Lihat usulan</string>
+    <string name="word_list_title">DAFTAR KATA</string>
+    <string name="word_list_search">Cari kata</string>
+    <string name="word_list_body">Kata dan frasa yang digarisbawahi lensa baca sebagai bahasa berpihak atau kehati-hatian redaksi. Matikan penandaan bawaan yang tidak Anda inginkan, atau tambahkan kata Anda sendiri di bawah.</string>
+    <string name="word_list_default">Bawaan</string>
+    <string name="word_list_custom">Milik Anda</string>
+    <string name="word_list_add_hint">Kata atau frasa untuk ditambahkan</string>
+    <string name="word_list_add">Tambahkan kata ini</string>
+    <string name="word_list_remove">Hapus “%1$s”</string>
+    <string name="model_on_device_body">Nooz mencoba perangkat Anda lebih dulu, otomatis: tidak ada yang perlu disiapkan. Unduh sebuah model di bawah dan ia berjalan langsung di perangkat Anda; sampai itu (atau kecuali Anda menambahkan kunci di bawah), lensa dengan jujur melaporkan \"tak tersedia\" alih-alih menebak.</string>
+    <string name="model_download_body">Model sumber terbuka yang nyata, diverifikasi oleh katalog aplikasi ini sendiri. Unduh di sini: mereka tidak berjalan sendiri (lihat Di perangkat), tetapi setelah diunduh mereka siap di penyimpanan.</string>
+    <string name="model_none_available">Tidak ada model tersedia.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">Hapus</string>
+    <string name="model_download">Unduh</string>
+    <string name="model_byok_body">Arahkan penulisan ulang defuse ke endpoint Anda sendiri yang kompatibel dengan OpenAI. Hasilnya selalu ditandai awan; kunci Anda tetap di perangkat ini.</string>
+    <string name="model_save_key">Simpan kunci</string>
+    <string name="model_remove_key">Hapus kunci</string>
+    <string name="settings_open_all">Buka semua setelan</string>
+    <string name="settings_open_word_list">Buka daftar kata bahasa berpihak</string>
+    <string name="settings_contact_email">Hubungi Nooz lewat surel</string>
+    <string name="list_open_date_picker">Buka pemilih tanggal</string>
+    <string name="list_open_loom">Buka alat tenun hari itu</string>
+    <string name="list_open_sources">Buka sumber Anda</string>
+    <string name="list_add_sources">Tambahkan sumber</string>
+    <string name="list_filter_region">Saring ke %1$s</string>
+    <string name="list_toggle_topic">Alihkan %1$s</string>
 </resources>

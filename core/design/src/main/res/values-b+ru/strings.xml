@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">Из этого источника пока нет ни одной пары с индийским языком.</string>
     <string name="settings_downloading_named">Загрузка %1$s</string>
     <string name="settings_installed">Установлено</string>
+    <string name="bar_waiting">Ожидание новостей</string>
+    <string name="empty_no_results">Ничего не найдено</string>
+    <string name="search_clear">Очистить поиск</string>
+    <string name="clippings_screen_title">ВЫРЕЗКИ</string>
+    <string name="clippings_none_yet">Вырезок пока нет</string>
+    <string name="clippings_open_in_browser">Открыть статью в браузере</string>
+    <string name="flash_coming_soon">Скоро: новости дня в десяти словах или меньше, как только заработает интеллект на устройстве.</string>
+    <string name="flash_tap_to_compress">Нажмите, чтобы сжать новости дня до десяти слов или меньше</string>
+    <string name="flash_compressing">Новости дня сжимаются…</string>
+    <string name="flash_setup_link">Настройте модель на устройстве или подключите API →</string>
+    <string name="flash_action_compress">Сжать новости дня</string>
+    <string name="flash_action_setup">Настроить Nooz Flash</string>
+    <string name="cast_tap_to_hear">Нажмите, чтобы услышать эту статью, прочитанную живым голосом</string>
+    <string name="cast_narrating">Статья читается вслух…</string>
+    <string name="cast_setup_link">Настройте модель чтения на устройстве →</string>
+    <string name="cast_action_narrate">Прочитать эту статью вслух</string>
+    <string name="cast_action_setup">Настроить Nooz Cast</string>
+    <string name="provenance_on_device">на устройстве</string>
+    <string name="provenance_cloud_urbana">облако (через Urbana)</string>
+    <string name="reader_select_article">Выберите статью для чтения</string>
+    <string name="reader_quote">«%1$s»</string>
+    <string name="history_retry_notice">%1$s Нажмите, чтобы повторить.</string>
+    <string name="history_read_year">Прочитать о %1$s в Википедии</string>
+    <string name="history_open_wikipedia">Открыть «On this day» Википедии</string>
+    <string name="history_try_again">Попробовать загрузить «Сегодня в истории» снова</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">доля %1$s в прочитанном вами ÷ её доля в потоке; выше 1x означает, что вы прочли этой темы больше, чем она занимала в потоке</string>
+    <string name="loom_axis_source">ИСТОЧНИК</string>
+    <string name="loom_axis_consumption">ПОТРЕБЛЕНИЕ</string>
+    <string name="loom_inspector_read">%1$d протекло · %2$d прочитано</string>
+    <string name="loom_inspector_none_read">%1$d протекло · не прочитано ничего</string>
+    <string name="loom_totals">%1$d протекло · %2$d прочитано · %3$s</string>
+    <string name="framings_empty">Пересекающихся сюжетов пока нет</string>
+    <string name="loom_single_day">Один день</string>
+    <string name="loom_range">Промежуток</string>
+    <string name="loom_open_date_picker">Открыть выбор даты</string>
+    <string name="loom_ask_gdelt_again">Снова спросить GDELT об этом дне</string>
+    <string name="loom_fetch_gdelt">Загрузить результаты GDELT за этот день</string>
+    <string name="loom_show_view">Показать вид «%1$s»</string>
+    <string name="lens_looking_up">Ищем…</string>
+    <string name="lens_no_definition">В вашем словаре нет значения этого слова.</string>
+    <string name="lens_span_action">%1$s (%2$d из %3$d). %4$s.</string>
+    <string name="lens_define_word">Значение слова %1$s</string>
+    <string name="defuse_original">Оригинал</string>
+    <string name="defuse_loading">Загружается предложенная переформулировка</string>
+    <string name="defuse_proposed">Предложено</string>
+    <string name="defuse_revert">Вернуть</string>
+    <string name="defuse_needs_setup">Нейтральной переформулировки пока нет. Для неё нужна модель на устройстве или ваш собственный ключ, из «Настройки › Интеллект читалки».</string>
+    <string name="defuse_close">Закрыть</string>
+    <string name="defuse_suggest">Предложить нейтральную переформулировку</string>
+    <string name="defuse_revert_suggestion">Отменить предложение</string>
+    <string name="defuse_unavailable">Переформулировка недоступна</string>
+    <string name="defuse_loading_short">Предложение загружается</string>
+    <string name="defuse_view_suggestion">Посмотреть предложение</string>
+    <string name="word_list_title">СПИСОК СЛОВ</string>
+    <string name="word_list_search">Искать слова</string>
+    <string name="word_list_body">Слова и обороты, которые читательская линза подчёркивает как оценочный язык или редакционные оговорки. Отключите любую стандартную пометку, которая вам не нужна, или добавьте ниже свои слова.</string>
+    <string name="word_list_default">Стандартные</string>
+    <string name="word_list_custom">Свои</string>
+    <string name="word_list_add_hint">Слово или оборот для добавления</string>
+    <string name="word_list_add">Добавить это слово</string>
+    <string name="word_list_remove">Удалить «%1$s»</string>
+    <string name="model_on_device_body">Nooz сначала автоматически пробует ваше устройство: настраивать нечего. Скачайте модель ниже, и она заработает прямо на устройстве; до тех пор (или пока вы не добавите ключ ниже) линза честно сообщает «недоступно», а не гадает.</string>
+    <string name="model_download_body">Настоящие модели с открытым исходным кодом, проверенные собственным каталогом этого приложения. Скачайте их здесь: сами по себе они не запустятся (см. «На устройстве»), но после загрузки лежат на диске наготове.</string>
+    <string name="model_none_available">Нет доступных моделей.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">Удалить</string>
+    <string name="model_download">Загрузить</string>
+    <string name="model_byok_body">Направляйте переформулировки defuse на ваш собственный OpenAI-совместимый эндпоинт. Результаты всегда помечаются как облачные; ваш ключ остаётся на этом устройстве.</string>
+    <string name="model_save_key">Сохранить ключ</string>
+    <string name="model_remove_key">Удалить ключ</string>
+    <string name="settings_open_all">Открыть все настройки</string>
+    <string name="settings_open_word_list">Открыть список оценочных слов</string>
+    <string name="settings_contact_email">Написать в Nooz по почте</string>
+    <string name="list_open_date_picker">Открыть выбор даты</string>
+    <string name="list_open_loom">Открыть ткацкий станок дня</string>
+    <string name="list_open_sources">Открыть ваши источники</string>
+    <string name="list_add_sources">Добавить источники</string>
+    <string name="list_filter_region">Отфильтровать по «%1$s»</string>
+    <string name="list_toggle_topic">Переключить «%1$s»</string>
 </resources>

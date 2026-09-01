@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.AppSearchBar
 import xyz.mdhv.riverwip.design.NoResultsState
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
@@ -78,10 +80,10 @@ fun LensWordListScreen(vm: SettingsViewModel, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("WORD LIST", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
+                title = { Text(stringResource(DesignR.string.word_list_title), style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(DesignR.string.settings_back))
                     }
                 },
             )
@@ -92,7 +94,7 @@ fun LensWordListScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding),
         ) {
-            AppSearchBar(query = query, onQueryChange = { query = it }, placeholder = "Search words")
+            AppSearchBar(query = query, onQueryChange = { query = it }, placeholder = stringResource(DesignR.string.word_list_search))
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -106,7 +108,7 @@ fun LensWordListScreen(vm: SettingsViewModel, onBack: () -> Unit) {
             ) {
                 item {
                     Text(
-                        "Words and phrases the reading lens underlines as loaded language or editorial hedging. Turn off any default you don't want flagged, or add your own below.",
+                        stringResource(DesignR.string.word_list_body),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = Tokens.Spacing.md),
@@ -114,7 +116,7 @@ fun LensWordListScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                 }
 
                 if (filteredDefaultTerms.isNotEmpty()) {
-                    item { SectionHeading("Default", modifier = Modifier.padding(bottom = Tokens.Spacing.xs)) }
+                    item { SectionHeading(stringResource(DesignR.string.word_list_default), modifier = Modifier.padding(bottom = Tokens.Spacing.xs)) }
                     for ((category, words) in filteredDefaultTerms) {
                         item {
                             Text(
@@ -139,7 +141,7 @@ fun LensWordListScreen(vm: SettingsViewModel, onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.outlineVariant,
                         modifier = Modifier.padding(vertical = Tokens.Spacing.md),
                     )
-                    SectionHeading("Custom", modifier = Modifier.padding(bottom = Tokens.Spacing.xs))
+                    SectionHeading(stringResource(DesignR.string.word_list_custom), modifier = Modifier.padding(bottom = Tokens.Spacing.xs))
                     AddCustomWordRow(onAdd = { vm.addLensCustomTerm(it) })
                 }
 
@@ -186,6 +188,8 @@ private fun WordToggleRow(word: String, checked: Boolean, onCheckedChange: (Bool
 /** Type-a-word-tap-add, the same idiom as EditScreen.kt's "Add by URL" (a plain text field + trailing Add icon, no modal). */
 @Composable
 private fun AddCustomWordRow(onAdd: (String) -> Unit) {
+    // Hoisted: a semantics block is not a composable scope.
+    val addHint = stringResource(DesignR.string.word_list_add_hint)
     var text by rememberSaveable { mutableStateOf("") }
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         BasicTextField(
@@ -197,7 +201,7 @@ private fun AddCustomWordRow(onAdd: (String) -> Unit) {
             singleLine = true,
             modifier = Modifier
                 .weight(1f)
-                .semantics { contentDescription = "Word or phrase to add" },
+                .semantics { contentDescription = addHint },
         )
         IconButton(
             onClick = {
@@ -207,7 +211,7 @@ private fun AddCustomWordRow(onAdd: (String) -> Unit) {
                 }
             },
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add this word")
+            Icon(Icons.Filled.Add, contentDescription = stringResource(DesignR.string.word_list_add))
         }
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -228,7 +232,7 @@ private fun CustomWordRow(word: String, onRemove: () -> Unit) {
         IconButton(onClick = onRemove) {
             Icon(
                 Icons.Filled.Close,
-                contentDescription = "Remove \"$word\"",
+                contentDescription = stringResource(DesignR.string.word_list_remove, word),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

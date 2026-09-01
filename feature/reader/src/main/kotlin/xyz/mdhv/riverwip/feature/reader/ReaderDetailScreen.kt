@@ -605,7 +605,7 @@ internal fun ReaderUtilityBar(
                     Modifier
                         .weight(1f)
                         .heightIn(min = 48.dp)
-                        .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },
+                        .clickable(onClickLabel = stringResource(DesignR.string.list_open_loom)) { onOpenLoom() },
                     contentAlignment = Alignment.Center,
                 ) {
                     DayMixBar(todayMix, Modifier.fillMaxWidth())

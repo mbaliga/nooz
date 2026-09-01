@@ -107,6 +107,18 @@ class LocaleResolutionTest {
         assertTrue("both arguments land: $row", row.contains("48 MB") && row.contains("MIT"))
     }
 
+    @Test @Config(qualifiers = "b+ta") fun spokenLabelsResolve() {
+        // `onClickLabel` and custom-action labels are copy that ONLY a screen
+        // reader ever renders -- nothing on the display shows them. That is
+        // exactly why they went unnoticed until the guard was widened to match
+        // them: a sighted check of a Tamil build looks completely translated
+        // while every spoken affordance is still English.
+        assertEquals("அன்றைய தறியைத் திற", context.getString(R.string.list_open_loom))
+        val define = context.getString(R.string.lens_define_word, "பத்திரிகை")
+        assertTrue("the word is interpolated, not dropped: $define", define.contains("பத்திரிகை"))
+        assertTrue("and the frame is Tamil: $define", !define.startsWith("Define"))
+    }
+
     @Test @Config(qualifiers = "b+bn") fun everyShippedLocaleDiffersFromEnglish() {
         // A weak assertion on purpose: it cannot check the Bengali is *good*,
         // only that resolution reached it at all rather than falling through.

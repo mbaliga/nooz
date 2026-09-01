@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  249 of 249 strings translated.
+  330 of 330 strings translated.
 -->
 <resources>
 
@@ -260,4 +260,85 @@
     <string name="settings_no_indic_pair">এই উৎসৰ পৰা এতিয়ালৈকে কোনো ভাৰতীয়-ভাষাৰ যোৰা উপলব্ধ নহয়।</string>
     <string name="settings_downloading_named">%1$s ডাউনল’ড হৈ আছে</string>
     <string name="settings_installed">স্থাপিত</string>
+    <string name="bar_waiting">বাতৰিৰ অপেক্ষাত</string>
+    <string name="empty_no_results">কোনো ফলাফল পোৱা নগ’ল</string>
+    <string name="search_clear">সন্ধান মচক</string>
+    <string name="clippings_screen_title">কাটিং</string>
+    <string name="clippings_none_yet">এতিয়ালৈকে কোনো কাটিং নাই</string>
+    <string name="clippings_open_in_browser">লেখা ব্ৰাউজাৰত খোলক</string>
+    <string name="flash_coming_soon">সোনকালে: ডিভাইচৰ ভিতৰৰ বুদ্ধিমত্তা সাজু হ’লেই, আজিৰ বাতৰি 10 বা তাতকৈ কম শব্দত।</string>
+    <string name="flash_tap_to_compress">আজিৰ বাতৰি 10 বা তাতকৈ কম শব্দলৈ সংকুচিত কৰিবলৈ টিপক</string>
+    <string name="flash_compressing">আজিৰ বাতৰি সংকুচিত হৈ আছে…</string>
+    <string name="flash_setup_link">ডিভাইচৰ ভিতৰৰ এটা মডেল ছেট কৰক বা এটা API যোগ কৰক →</string>
+    <string name="flash_action_compress">আজিৰ বাতৰি সংকুচিত কৰক</string>
+    <string name="flash_action_setup">Nooz Flash ছেট কৰক</string>
+    <string name="cast_tap_to_hear">এই লেখাটো স্বাভাৱিক মাতেৰে শুনিবলৈ টিপক</string>
+    <string name="cast_narrating">লেখাটো পঢ়ি শুনোৱা হৈ আছে…</string>
+    <string name="cast_setup_link">ডিভাইচৰ ভিতৰৰ পঢ়া মডেল ছেট কৰক →</string>
+    <string name="cast_action_narrate">এই লেখাটো পঢ়ি শুনাওক</string>
+    <string name="cast_action_setup">Nooz Cast ছেট কৰক</string>
+    <string name="provenance_on_device">ডিভাইচত</string>
+    <string name="provenance_cloud_urbana">ক্লাউড (Urbana-ৰ যোগেদি)</string>
+    <string name="reader_select_article">পঢ়িবলৈ এটা লেখা বাছক</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="history_retry_notice">%1$s আকৌ চেষ্টা কৰিবলৈ টিপক।</string>
+    <string name="history_read_year">%1$s ৰ বিষয়ে ৱিকিপিডিয়াত পঢ়ক</string>
+    <string name="history_open_wikipedia">ৱিকিপিডিয়াৰ On this day খোলক</string>
+    <string name="history_try_again">ইতিহাসত আজি আকৌ ল’ড কৰিবলৈ চেষ্টা কৰক</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">আপুনি পঢ়াখিনিত %1$s ৰ ভাগ ÷ সোঁতত তাৰ ভাগ; 1x তকৈ অধিক মানে সোঁতত এই বিষয়টো যিমান আছিল তাতকৈ অধিক আপুনি পঢ়িছে</string>
+    <string name="loom_axis_source">উৎস</string>
+    <string name="loom_axis_consumption">ব্যৱহাৰ</string>
+    <string name="loom_inspector_read">%1$d বৈ গ’ল · %2$d পঢ়িলে</string>
+    <string name="loom_inspector_none_read">%1$d বৈ গ’ল · একো পঢ়া নাই</string>
+    <string name="loom_totals">%1$d বৈ গ’ল · %2$d পঢ়িলে · %3$s</string>
+    <string name="framings_empty">এতিয়ালৈকে মিল খোৱা বাতৰি নাই</string>
+    <string name="loom_single_day">এদিন</string>
+    <string name="loom_range">সময়সীমা</string>
+    <string name="loom_open_date_picker">তাৰিখ বাছনিকৰ্তা খোলক</string>
+    <string name="loom_ask_gdelt_again">এই দিনটোৰ বাবে GDELT ক আকৌ সোধক</string>
+    <string name="loom_fetch_gdelt">এই দিনটোৰ GDELT ফলাফল আনক</string>
+    <string name="loom_show_view">%1$s দৃশ্য দেখুৱাওক</string>
+    <string name="lens_looking_up">বিচাৰি থকা হৈছে…</string>
+    <string name="lens_no_definition">আপোনাৰ অভিধানত এই শব্দৰ অৰ্থ নাই।</string>
+    <string name="lens_span_action">%1$s (%3$d ৰ %2$d)। %4$s।</string>
+    <string name="lens_define_word">%1$s ৰ অৰ্থ</string>
+    <string name="defuse_original">মূল</string>
+    <string name="defuse_loading">প্ৰস্তাৱিত পুনৰ্লিখন ল’ড হৈ আছে</string>
+    <string name="defuse_proposed">প্ৰস্তাৱিত</string>
+    <string name="defuse_revert">উভতাই লওক</string>
+    <string name="defuse_needs_setup">এতিয়ালৈকে নিৰপেক্ষ পুনৰ্লিখন নাই। ইয়াৰ বাবে ডিভাইচৰ ভিতৰৰ মডেল বা আপোনাৰ নিজৰ চাবি লাগে, ছেটিং › পঢ়ুৱৈ বুদ্ধিমত্তাৰ পৰা।</string>
+    <string name="defuse_close">বন্ধ কৰক</string>
+    <string name="defuse_suggest">এটা নিৰপেক্ষ পুনৰ্লিখন প্ৰস্তাৱ কৰক</string>
+    <string name="defuse_revert_suggestion">প্ৰস্তাৱ উভতাই লওক</string>
+    <string name="defuse_unavailable">পুনৰ্লিখন উপলব্ধ নহয়</string>
+    <string name="defuse_loading_short">প্ৰস্তাৱ ল’ড হৈ আছে</string>
+    <string name="defuse_view_suggestion">প্ৰস্তাৱ চাওক</string>
+    <string name="word_list_title">শব্দতালিকা</string>
+    <string name="word_list_search">শব্দ বিচাৰক</string>
+    <string name="word_list_body">পঢ়া লেন্সে যিবোৰ শব্দ আৰু বাক্যাংশক পক্ষপাতী ভাষা বা সম্পাদকীয় এৰাই যোৱা বুলি ৰেখাঙ্কিত কৰে। যিটো পূৰ্বনিৰ্ধাৰিত চিহ্ন নালাগে সেইটো বন্ধ কৰক, বা তলত নিজৰ শব্দ যোগ কৰক।</string>
+    <string name="word_list_default">পূৰ্বনিৰ্ধাৰিত</string>
+    <string name="word_list_custom">নিজৰ</string>
+    <string name="word_list_add_hint">যোগ কৰিবলগীয়া শব্দ বা বাক্যাংশ</string>
+    <string name="word_list_add">এই শব্দটো যোগ কৰক</string>
+    <string name="word_list_remove">“%1$s” আঁতৰাওক</string>
+    <string name="model_on_device_body">Nooz প্ৰথমে নিজেই আপোনাৰ ডিভাইচ চেষ্টা কৰে: ছেট কৰিবলগীয়া একো নাই। তলৰ পৰা এটা মডেল ডাউনল’ড কৰক, সেয়া আপোনাৰ ডিভাইচতেই চলিব; তেতিয়ালৈকে (বা আপুনি তলত চাবি নোযোগোৱালৈকে), লেন্সে অনুমান কৰাৰ সলনি সাধুভাৱে \"অনুপলব্ধ\" বুলি কয়।</string>
+    <string name="model_download_body">এই এপৰ নিজা তালিকাই যাচাই কৰা প্ৰকৃত, মুক্ত-উৎস মডেল। সেইবোৰ ইয়াত ডাউনল’ড কৰক: সেইবোৰ নিজে নিজে নচলিব (চাওক ডিভাইচত), কিন্তু এবাৰ ডাউনল’ড হ’লে ডিস্কত সাজু থাকিব।</string>
+    <string name="model_none_available">কোনো মডেল উপলব্ধ নহয়।</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">মচক</string>
+    <string name="model_download">ডাউনল’ড</string>
+    <string name="model_byok_body">defuse পুনৰ্লিখনসমূহ আপোনাৰ নিজৰ OpenAI-সংগতিপূৰ্ণ এণ্ডপইণ্টলৈ পঠাওক। ফলাফল সদায় ক্লাউড বুলি চিহ্নিত হয়; আপোনাৰ চাবি এই ডিভাইচতেই থাকে।</string>
+    <string name="model_save_key">চাবি সাঁচি থওক</string>
+    <string name="model_remove_key">চাবি আঁতৰাওক</string>
+    <string name="settings_open_all">সকলো ছেটিং খোলক</string>
+    <string name="settings_open_word_list">পক্ষপাতী ভাষাৰ শব্দতালিকা খোলক</string>
+    <string name="settings_contact_email">ইমেইলেৰে Nooz ৰ সৈতে যোগাযোগ কৰক</string>
+    <string name="list_open_date_picker">তাৰিখ বাছনিকৰ্তা খোলক</string>
+    <string name="list_open_loom">দিনটোৰ লুম খোলক</string>
+    <string name="list_open_sources">আপোনাৰ উৎসসমূহ খোলক</string>
+    <string name="list_add_sources">উৎস যোগ কৰক</string>
+    <string name="list_filter_region">%1$s লৈ ছেকক</string>
+    <string name="list_toggle_topic">%1$s সলনি কৰক</string>
 </resources>
