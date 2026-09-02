@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit.
+
+  Source:    i18n/strings/ks.json
+  Generator: tools/i18n/generate.py
+
+  Edit the JSON and re-run the generator. Keys absent here fall back to
+  values/strings.xml, per key, so a partial translation is safe to ship.
+  119 of 330 strings translated.
+-->
+<resources>
+
+    <string name="onboarding_skip">چھوڑیو</string>
+    <string name="onboarding_back">واپس</string>
+    <string name="onboarding_done">مکمل</string>
+    <string name="onboarding_start_reading">پرُن شروع کریو</string>
+    <string name="onboarding_reading_mode">پرنُک طریقہ</string>
+    <string name="tour_title">اَندر کیا چھُ</string>
+    <string name="tour_clippings_name">تراشہٕ</string>
+    <string name="tour_history_name">أز تاریخس منٛز</string>
+    <string name="screen_paper">اخبار</string>
+    <string name="screen_settings">ترتیبات</string>
+    <string name="screen_clippings">تراشہٕ</string>
+    <string name="language_title">زبان</string>
+    <string name="language_system_default">فونس مطابق</string>
+    <string name="language_partial">%1$s · %2$d%% ترجمہ کرنہٕ آمُت</string>
+    <string name="language_complete">%1$s</string>
+    <string name="list_settings">ترتیبات</string>
+    <string name="list_clear">صاف کریو</string>
+    <string name="list_region">علاقہ</string>
+    <string name="list_topics">موضوع</string>
+    <string name="list_read">پأریتھ</string>
+    <string name="list_unread">نہٕ پأریتھ</string>
+    <string name="reader_previous">‹ پیٚٹھ</string>
+    <string name="reader_next">بیٛاکھ ›</string>
+    <string name="reader_open_in_browser">براؤزرس منٛز کھۆلیو</string>
+    <string name="globe_spin_west">مغربس کُن گِنٛڈیو</string>
+    <string name="globe_spin_east">مشرقس کُن گِنٛڈیو</string>
+    <string name="loom_previous_day">پؠٹھ کُن دۄہ</string>
+    <string name="loom_next_day">بیٛاکھ دۄہ</string>
+    <string name="contrast_by_topic">موضوعَس مطابق</string>
+    <string name="contrast_flowed">بہیۆو</string>
+    <string name="contrast_read">پأریتھ</string>
+    <string name="contrast_regions">علاقہ</string>
+    <string name="stand_title">اسٹینڈ</string>
+    <string name="reader_read_at_source">ماخذس پؠٹھ پَرِو</string>
+    <string name="loom_strip_label">لُوم</string>
+    <string name="sources_title">ذریٖعہٕ</string>
+    <string name="sources_remove">ہٹاو</string>
+    <string name="edit_edit">ترمیم</string>
+    <string name="edit_done">مکمل</string>
+    <string name="edit_all">سٲری</string>
+    <string name="settings_back">واپس</string>
+    <string name="settings_theme">تھیم</string>
+    <string name="settings_theme_follow">فونُک روشن یا کالٕہ ترتیب استعمال کریو</string>
+    <string name="settings_theme_white">سفید تھیم</string>
+    <string name="settings_theme_paper">کاغذی تھیم</string>
+    <string name="settings_theme_dark">کالٕہ تھیم</string>
+    <string name="settings_font">فونٹ</string>
+    <string name="settings_text_size">اَکھرن ہُند سائز</string>
+    <string name="settings_paper_grain">کاغذُک بناوٹ</string>
+    <string name="settings_mark_read_as">پأریمٕتی مضمون یتھ طریقہ نشان کریو</string>
+    <string name="settings_while_you_read">پأرن دوران</string>
+    <string name="settings_today_in_history">تٲریخس منٛز اَز</string>
+    <string name="settings_show_the_column">یہ کالم ہاویو</string>
+    <string name="settings_show_reading_time">پأرنُک وقت ہاویو</string>
+    <string name="settings_immersive">غرق پأرُن</string>
+    <string name="settings_more">مزید ترتیبات</string>
+    <string name="settings_dictionary">لغت</string>
+    <string name="settings_copy">نقل کریو</string>
+    <string name="settings_dismiss">ہٹاویو</string>
+    <string name="settings_gestures">اِشارٕ</string>
+    <string name="settings_images">تصویرٕ</string>
+    <string name="settings_show_feed_images">فیڈٕچ تصویرٕ ہاویو</string>
+    <string name="settings_advanced">اعلیٰ</string>
+    <string name="settings_your_data">توٚہنٛز ڈیٹا</string>
+    <string name="settings_about">تعارف</string>
+    <string name="settings_visit_studio">mdhv.xyz وچھیو</string>
+    <string name="settings_view_source">GitHub پؠٹھ ماخذ وچھیو</string>
+    <string name="settings_contact">اَسہٕ سٟتؠ رابطہ کریو</string>
+    <string name="settings_more_from_studio">سٹوڈیو پؠٹھٕ مزید</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloaded">ڈاؤن لوڈ سپدیو</string>
+    <string name="settings_download">ڈاؤن لوڈ کریو</string>
+    <string name="settings_translation">ترجمہ</string>
+    <string name="settings_remove">ہٹاویو</string>
+    <string name="settings_downloading_named">%1$s ڈاؤن لوڈ گژھان چھُ</string>
+    <string name="settings_installed">نصب</string>
+    <string name="bar_waiting">خبرن ہِنٛز اِنتِظار</string>
+    <string name="empty_no_results">کہین٘ہ نتیجہ نہٕ لبٕ</string>
+    <string name="search_clear">ژھانٛڈُن صاف کریو</string>
+    <string name="clippings_screen_title">تراشہٕ</string>
+    <string name="clippings_none_yet">وؠنی تام کہین٘ہ تراشہٕ چھُ نہٕ</string>
+    <string name="clippings_open_in_browser">مضمون براؤزرس منٛز کھولیو</string>
+    <string name="provenance_on_device">آلَس پؠٹھ</string>
+    <string name="reader_select_article">پأرنہٕ خٲطرٕ اَکھ مضمون ژٲریو</string>
+    <string name="reader_quote">“%1$s”</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="loom_axis_source">ماخذ</string>
+    <string name="loom_axis_consumption">اِستعمال</string>
+    <string name="loom_single_day">اَکھ دۄہ</string>
+    <string name="loom_range">مُدَت</string>
+    <string name="loom_open_date_picker">تٲریخ ژٲرَن وول کھولیو</string>
+    <string name="loom_show_view">%1$s منظر ہاویو</string>
+    <string name="lens_looking_up">ژھانٛڈان چھُ…</string>
+    <string name="lens_no_definition">توٚہنٛدِس لغتس منٛز چھُ نہٕ یِمِ لفظُک معنی۔</string>
+    <string name="lens_define_word">%1$s سُنٛد معنی</string>
+    <string name="defuse_original">اصل</string>
+    <string name="defuse_proposed">تجویز کرنہٕ آمُت</string>
+    <string name="defuse_close">بند کریو</string>
+    <string name="defuse_view_suggestion">تجویز وُچھیو</string>
+    <string name="word_list_title">لفظن ہٕنٛز فہرست</string>
+    <string name="word_list_search">لفظ ژھانڈیو</string>
+    <string name="word_list_default">طےشُدٕ</string>
+    <string name="word_list_custom">پنُٛن</string>
+    <string name="word_list_add">یہِ لفظ شٲمِل کریو</string>
+    <string name="word_list_remove">“%1$s” ہٹاویو</string>
+    <string name="model_none_available">کہین٘ہ ماڈل دستیاب چھُ نہٕ۔</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">مِٹاویو</string>
+    <string name="model_download">ڈاؤن لوڈ</string>
+    <string name="model_save_key">کُنٛجی محفوظ کریو</string>
+    <string name="model_remove_key">کُنٛجی ہٹاویو</string>
+    <string name="settings_open_all">سٲری ترتیبات کھولیو</string>
+    <string name="list_open_date_picker">تٲریخ ژٲرَن وول کھولیو</string>
+    <string name="list_open_loom">دۄہُک لُوم کھولیو</string>
+    <string name="list_open_sources">پنٕنؠ ماخذ کھولیو</string>
+    <string name="list_add_sources">ماخذ شٲمِل کریو</string>
+    <string name="list_filter_region">%1$s پؠٹھ چھانیو</string>
+    <string name="list_toggle_topic">%1$s بدلاویو</string>
+</resources>

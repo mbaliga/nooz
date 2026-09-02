@@ -16,6 +16,8 @@ import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
+import xyz.mdhv.riverwip.data.repo.TodayInHistoryRepository
+import xyz.mdhv.riverwip.data.repo.TranslationRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.data.work.RiverWorkerFactory
 
@@ -35,7 +37,9 @@ class RiverData private constructor(
     val catalogueRepository: CatalogueRepository,
     val clippingRepository: ClippingRepository,
     val dictionaryRepository: DictionaryRepository,
+    val translationRepository: TranslationRepository,
     val settingsRepository: SettingsRepository,
+    val todayInHistoryRepository: TodayInHistoryRepository,
     val dataExporter: DataExporter,
     /** For `Configuration.Provider` on the Application — see `RiverApplication`. */
     val workerFactory: RiverWorkerFactory,
@@ -56,6 +60,7 @@ class RiverData private constructor(
             val fullTextCache = FullTextCache(File(appContext.cacheDir, "full-text"), DEFAULT_FULL_TEXT_CACHE_BYTES)
             val articleRepository = ArticleRepository(
                 itemDao = db.itemDao(), fetcher = HttpArticleFetcher(http), cache = fullTextCache,
+                articleTextDao = db.articleTextDao(),
             )
             val sourceRepository = SourceRepository(dao = db.sourceDao(), probe = probe)
             val readEventRepository = ReadEventRepository(dao = db.readEventDao())
@@ -70,14 +75,20 @@ class RiverData private constructor(
                 catalogueRepository = CatalogueRepository(context = appContext, http = http),
                 clippingRepository = clippingRepository,
                 dictionaryRepository = DictionaryRepository(appContext),
+                translationRepository = TranslationRepository(appContext),
                 settingsRepository = settingsRepository,
+                // Its own HttpClient, not the shared `http` above: Wikimedia's
+                // user-agent policy wants a UA that identifies this app and
+                // offers a contact, which feed fetches have no business
+                // carrying to the reader's own sources.
+                todayInHistoryRepository = TodayInHistoryRepository(appContext),
                 dataExporter = DataExporter(
                     settingsRepository = settingsRepository,
                     sourceRepository = sourceRepository,
                     clippingRepository = clippingRepository,
                     readEventRepository = readEventRepository,
                 ),
-                workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository),
+                workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository, articleRepository),
             )
         }
     }

@@ -27,7 +27,7 @@ Living build state. Updated every session (brief §0).
 | P2 | Ingest & classify | ✅ complete: parse/dedup/classify (pure) + Room persistence + WorkManager scheduled fetch |
 | P3 | Reader | ✅ complete: article list, typography-first reader, full-text extraction + LRU cache, end-of-feed marker |
 | P4 | The River (centerpiece) | ✅ complete: pure layout/analysis math + Canvas visualization + cross-section panel |
-| P5 | The Lens (tap-to-defuse) | ◑ UI + guard + router complete; **inference execution honestly stubbed** (see below) |
+| P5 | The Lens (tap-to-defuse) | ✅ complete: UI + guard + router + on-device inference all real (see D31) |
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
 | P7 | Hardening & release prep | ◑ a11y pass done (+ adversarially reviewed/fixed); F-Droid/Play metadata skeleton + screenshot script done; **baseline profiles honestly not attempted** (see below) |
@@ -40,18 +40,21 @@ present it. Every push is compiled by CI; several genuine bugs were caught and
 fixed this way (see "CI-caught issues" below) — that log is worth reading
 before touching WorkManager, Compose smart-casts, or the JSON-builder DSL again.
 
-### P5 — the one deliberately incomplete piece, and why
+### P5 — inference providers, current state
 Detection, evidence, the fidelity guard, session-ephemeral defuse state, the
 reader overlay, and the defuse bottom sheet are all real and wired end-to-end.
-What is **honestly stubbed**, and must stay that way until someone can verify
-against the real thing:
-- **LocalLlamaProvider**: `isAvailable()` is real (any `.gguf` on disk); model
-  *download* (real catalogue, streaming + progress, storage budget, delete) is
-  real too — see D18. `rewrite()` still returns a plain failure — no llama.cpp
-  JNI binding is integrated in this session, and faking a "successful" rewrite
-  would defeat the entire point of `FidelityGuard` (small models fabricate;
-  this app must never pretend one is running when it isn't). A downloaded
-  model sits on disk, verified-reachable, waiting for that binding.
+- **LocalLlamaProvider**: real end-to-end as of D31 — a genuine, vendored
+  llama.cpp build (`core/inference/src/main/cpp`), not a stub. `isAvailable()`
+  checks for any `.gguf` on disk (model *download* — real catalogue, streaming
+  + progress, storage budget, delete — was already real, see D18); `rewrite()`
+  and `digest()` now actually load that model and run it via JNI. What's
+  **still honestly unverified**: this sandbox can compile Kotlin/C++ and let
+  CI cross-compile the native library, but it can't run an Android
+  device/emulator, so real-device output quality (does a 1.5B-3B model
+  actually produce a *good* rewrite/digest, as opposed to "the pipeline runs
+  and returns text") is unverified here — same honesty caveat
+  `LocalKokoroTtsProvider`'s own doc comment already carries for Cast's audio
+  output. `FidelityGuard` still vets every result downstream regardless.
 - **UrbanaProvider**: real ContentProvider discovery attempt against
   `com.urbana.daemon.discovery` — correctly reports "not discoverable" since no
   real daemon exists to test against here (brief: absent support hides the
@@ -60,10 +63,6 @@ against the real thing:
   (so `foss` never references it). No real ML Kit GenAI dependency added yet
   (evolving API, no Pixel-class device to verify against) — conservatively
   reports unavailable.
-- **Net effect**: `InferenceRouter.rewrite(...)` will return `Failed(...)` on
-  any real device today, and the Lens UI shows that failure honestly (never a
-  silent no-op, never a fake success). Wiring one real provider (most likely
-  LocalLlamaProvider via a llama.cpp AAR) is the highest-value remaining P5 work.
 
 ### P6 — Catalogue sensing layer
 - **`SourceHealth`** (`:core:model`): a pure `classify(lastFetchAt, lastError,
@@ -1050,6 +1049,1000 @@ respect as the CI-caught log above.
   "isn't doing any setup at all." `SourcesViewModel.quickSetup()` now adds
   five verified, editorially varied global outlets before finishing.
 
+- **D31 — Real llama.cpp binding: Nooz Flash's on-device runtime wired
+  (2026-08-05).** The owner's explicit ask, after Play rejected the app twice
+  and separately asked "does Flash work" — no half-measure accepted. Closes
+  the gap D14/D18/P5 all logged as the highest-value remaining P5 work: there
+  was genuinely zero llama.cpp integration anywhere in the repo (`RUNTIME_WIRED
+  = false` hardcoded, no `.so`, no NDK/JNI config — confirmed by a repo-wide
+  grep before starting). Unlike Nooz Cast's onnxruntime-android (a prebuilt
+  Maven AAR), llama.cpp has no such artifact, so `core/inference/src/main/cpp`
+  now vendors the real upstream source via CMake `FetchContent`, pinned to
+  commit `360e1349f0009c5ad99d21e3c4546b707addc68a` — built from scratch as
+  part of `:core:inference`'s native build (first NDK/CMake build in this
+  project; a clean build now takes several minutes longer). The JNI bridge
+  (`nooz_llama_jni.cpp`) and the Kotlin wrapper (`LlamaCppEngine`) are adapted
+  from llama.cpp's own maintained Android reference
+  (`examples/llama.android`), cloned locally and read at the exact pinned
+  commit rather than trusted from memory — that C API moves fast enough that
+  guessing signatures would have been a real risk. Trimmed for Flash's actual
+  shape (short single-turn rewrite/digest, never a chat): no streaming Flow,
+  no benchmark harness, a smaller 4096-token context than the reference's
+  8192. `LocalLlamaProvider` now loads whichever `.gguf` is on disk and runs
+  real inference through it; `PromptTemplates` (new, shared with
+  `ByokProvider`) keeps the on-device and cloud paths sending a model the
+  identical wording for the same capability. `ReaderViewModel`'s
+  `FLASH_COMING_SOON` flag — added specifically so Flash could be shown
+  honestly instead of inviting a tap that could only fail — flips back to
+  `false` in this same change, exactly as its own doc comment said it would.
+  Adversarially reviewed (a second pass re-reading the pinned-commit reference
+  source line-by-line against every JNI signature, CMake target name, and C
+  API call in the new code) before pushing, since this sandbox has no local
+  JDK/NDK to compile-verify — CI's native build is the only real compile
+  signal. See the P5 section above for what's still honestly unverified
+  (real-device output quality).
+- **D32 — Today in History + a real adaptive launcher icon (2026-08-12).**
+  The owner proposed a batch of newspaper page furniture (crossword, comics,
+  spot-the-difference, today-in-history) and asked for a read on it before any
+  implementation. Only **Today in History** was built, and the reasoning is
+  worth keeping: comics are a rights problem, not a code one (every strip
+  worth having is copyrighted, and this app was mid-Play-rejection when it was
+  proposed); spot-the-difference would mean doctoring news photographs inside
+  a product whose whole premise is fidelity, with `FidelityGuard` existing
+  specifically to stop invented content; a crossword is genuinely interesting
+  in its Nooz-native form (cloze-deleted from *today's own headlines*, so it
+  quietly asks whether the reader actually read them) but the interactive grid
+  is a week-plus of work and belongs after the app has an audience. Today in
+  History, by contrast, is thesis-aligned rather than bolted on: the app
+  already shows what a reader missed across *sources*; this asks the same
+  question across *time*.
+  - `TodayInHistory` (`:core:model`, unit-tested like [Diversifier]): tidies
+    Wikipedia's blurbs (their "(aircraft involved pictured)" asides point at
+    an illustration this column doesn't show, so they come out) and picks the
+    column by sampling evenly across the whole returned span — the feed is
+    newest-first and front-loaded with recent decades, so taking the first
+    five would have made "today in history" mean "today in the last thirty
+    years". Deterministic, oldest-first, like a printed almanac.
+  - `TodayInHistoryRepository` (`:core:data`): Wikimedia's own curated
+    `onthisday/selected` endpoint, cached per calendar day. **It is the first
+    fetch this app makes to a destination the reader didn't choose** (the
+    manifest's own note: "The user's own fetches to their own chosen sources.
+    No other egress"), which is why it ships **off by default**, names
+    Wikipedia plainly in its settings row, and carries a UA identifying the
+    app with a contact URL per Wikimedia's policy. CC BY-SA is credited in
+    view under the column, not buried in About.
+  - Deliberately **never links an event to today's headlines**. Asserting that
+    a 1971 decision "echoes" today's would be exactly the invented connection
+    `FidelityGuard` exists to prevent; it sits beside the news and lets the
+    reader draw the line, the way Contrast already behaves.
+  - **Launcher icon.** The owner supplied new pixel-art artwork (black field,
+    after a first light-grey version that would have dissolved into a light
+    home screen). The deeper find: this app had **no adaptive icon at all** —
+    only a flat `mipmap/ic_launcher.png`, despite minSdk 31, so every device
+    it runs on was wrapping the artwork in a system-drawn plate and shrinking
+    it. That, not the artwork, was the "visibility problem". Now a real
+    `adaptive-icon` (foreground + black background + a filled-silhouette
+    `monochrome` layer for Android 13+ themed icons), sized so the furthest
+    *content* pixel lands just inside the strict circle mask (the tightest
+    common shape) while still filling ~87% of the visible aperture. Verified
+    by rendering circle/squircle/themed masks and 48-192px previews before
+    committing.
+  - Also corrected stale copy that outlived D31: the Flash settings row and
+    `ModelChoicePanel`'s on-device stanza both still said the on-device
+    runtime wasn't wired.
+
+- **D33 — Web reader: iPadOS lead-image flicker, and the real shape of
+  /api/article's 502s (2026-08-20).** Two web-reader glitches from the same
+  session. **(a) The flicker** (commit `b6975d6`): reported from a 25s
+  iPadOS DuckDuckGo recording, the open article's lead image was popping out
+  and back in about once a second with no user interaction. Root cause was
+  `ensureArticle()` ending in a bare `rerender()` on every completion,
+  including the ones from the background prefetch pump (concurrency 3, up to
+  60 items queued) — so a full stage rebuild fired once per background item
+  for however long the queue took to drain, and each rebuild recreated the
+  on-screen `<img>` from a bare `src`. Chrome keeps the decoded bitmap hot
+  across that; WebKit re-decodes the fresh node regardless, which is the
+  flicker. Fixed with a completion rerender policy (`js/app.js`:
+  immediate rerender only if the resolved item is on screen, skip entirely
+  in views with no article bodies laid out, otherwise coalesce into one
+  trailing rerender per burst), `<img>` node reuse keyed by `src` in
+  `js/images.js` so a same-content rebuild moves the existing node instead
+  of recreating it, a resize listener that only re-lays-out on a real width
+  change (iPadOS fires height-only resizes as its toolbar collapses on
+  scroll), and `style.css` dropping the stage's permanent `will-change:
+  transform` plus switching its height rules from `dvh` to `svh` so the
+  collapsing toolbar stops perturbing layout. **(b) /api/article's 502s**:
+  the prior session's write-up (see D32-adjacent commit `b6975d6`'s message)
+  had traced production 502s to a bare, headerless `error code: 502` body
+  with no `x-vercel-id` — not this function's own JSON — and guessed the
+  timeout race was the cause. That guess was wrong. Probing
+  `?url=https%3A%2F%2Fdefinitely-not-a-real-host-zzz.invalid%2Fx` — a target
+  that can only fail inside the function's own `catch` block, never near a
+  gateway timeout — still came back as that same bare Cloudflare body with a
+  `cf-ray` header. Production sits behind Cloudflare in front of Vercel, and
+  Cloudflare replaces *any* origin 502 with its own edge error page,
+  unconditionally — so every honest per-item error this function ever
+  produced was being masked at the edge, regardless of timing.
+  `api/article.js`'s three upstream-failure paths (non-OK status, non-HTML
+  content-type, fetch/timeout catch) now return `200 + {error, html: null}`
+  instead of `502`/`415` — the same shape the existing extraction-failure
+  path already used, which the client (`ensureArticle()` in `js/app.js`)
+  already treats as the per-item `'error'` state for any response lacking
+  usable `html`, `dbPutArticle` included. `TIMEOUT_MS` stays at 8000 (it
+  still keeps the function under the platform's own gateway limit) but its
+  comment now states the real finding instead of the superseded race
+  theory. Left open, and out of this repo's reach: *why* some sites'
+  upstream fetches fail from Vercel's IPs at all — reuters.com and wsj.com
+  failed in under a second in the earlier probing, which reads like
+  bot-blocking rather than a timeout, but that can't be confirmed from
+  here.
+
+- **D34 — Dark mode: a follow-the-phone tint, and system bars that agree with
+  it (2026-08-31).** Reported from a Galaxy S26+: in dark mode the app's text
+  stayed black and unreadable. Three separate causes, all of them the same
+  underlying mistake — *two different components each answering "is it dark?"
+  their own way*.
+  **(a) No follow-the-phone mode at all.** `ThemeMode` was three literal tints
+  (White/Paper/Dark), all manual, defaulting to Paper — a deliberate call at
+  the time (see the enum's own doc), but it means a phone in dark mode got the
+  light app and no obvious way to discover otherwise. Added
+  `ThemeMode.SYSTEM`, resolving to Paper by day and the charcoal Dark tint by
+  night, and made it the **default for new installs**. The three tints are
+  untouched and an existing reader's persisted choice is read straight back out
+  of DataStore, so nobody's setting changes under them. `"system"` — a key from
+  the first theme iteration that had been aliased to Paper — now means what it
+  always said.
+  **(b) System-bar icons followed the OS while the app followed the setting.**
+  `enableEdgeToEdge()` with no arguments uses `SystemBarStyle.auto`, which reads
+  `Configuration.UI_MODE_NIGHT`. With the app on light Paper and the phone in
+  night mode, that put *light* status/nav icons on a *light* surface (and the
+  converse for a hand-picked Dark tint on a day-mode phone). Bar appearance is
+  now driven from the app's own resolved tint via `WindowCompat` in a
+  `SideEffect` (`MainActivity`), so there is exactly one answer to "which
+  surface is this".
+  **(c) OEM force-dark was left enabled.** The activity theme is now
+  `android:forceDarkAllowed=false`. One UI offers to force-darken apps it
+  believes have no dark theme; force-dark re-colours what it can reach and
+  leaves Compose's own drawing alone, which lands as near-black text on a
+  darkened field — exactly the symptom reported. Nooz ships its own tints, so
+  it has nothing to gain from the OS doing this and everything to lose.
+  Also: the pre-Compose window background was hardcoded `#121212`, a value
+  matching no surface the app actually paints (the Dark tint is `#262624`). It
+  is now night-qualified — paper by day, the real charcoal by night — so the
+  first frame matches the tint about to be painted instead of flashing.
+  `Theme.kt` resolves `SYSTEM` in exactly one place and every colour derives
+  from that. Verified by `:core:model` unit tests (`resolve`/`isDarkSurface`/
+  `next` invariants, including "SYSTEM never survives resolution" and "a flick
+  never lands back on SYSTEM"); 159 model tests green locally. **Honestly
+  unverified here:** the on-device result on an actual S26+, since this sandbox
+  has no Android SDK or emulator — the reporter's device is the real check.
+
+- **D35 — India regional-language starter pack, re-verified from a contributed
+  patch (2026-08-31).** A contributor (via the owner) sent a patch adding 28
+  India regional feeds. Its own STATE entry conceded the Gradle suite could not
+  be run in its author's workspace; what it could also not do was fetch the
+  endpoints, and **4 of the 28 did not survive contact with the network**:
+  - `abp-sanjha-punjabi` — hard 404 (a Laravel "Not Found" page). The working
+    path is `/home/feed`, not `/feed`.
+  - `thanthi-tv-tamil` — 200 with a well-formed `<channel>` containing **zero
+    items**. Replaced with the publisher's collections endpoint (40 items).
+  - `oneindia-gujarati`, `oneindia-odia` — 200, correct script, and a
+    `lastBuildDate` refreshed *daily*, but every actual item was ~6 weeks old.
+    A feed can look alive at the envelope and be abandoned at the contents.
+  Also, all five `oneindia.com` feeds 403 under the User-Agent the app really
+  sends; they only answer a UA containing "Mozilla". Rather than change the
+  app's UA to get past someone's bot rule, native publishers were found for
+  every language those feeds covered — so the pack needs no UA workaround at
+  all and the shipped `HttpClient` default is untouched.
+  **What landed: 33 feeds**, each fetched with `HttpClient`'s actual UA
+  (`river/0.1 (+news-omission-reader)` — deliberately not a spoofed one) and
+  gated on four axes, not just a 200: parseable feed root, ≥5 items, item
+  titles in the *expected script*, and a newest item ≤7 days old. Coverage:
+  Telugu ×3, Tamil ×3, Kannada, Malayalam ×2, Marathi, Gujarati ×2, Bengali,
+  Punjabi, Odia ×2, Urdu, Hindi national ×2, 13 ABP Hindi state desks, and
+  Northeast Now (English, the region's own wire). Tests pin one representative
+  id per language (so a publisher can be swapped without editing a lockstep
+  list, but losing a whole language fails), the ≥13 state desks, URL
+  uniqueness, and — because the sources search is a plain substring match on
+  `title` — that each language's *name* stays in some title, which is the only
+  reason typing "Odia" finds anything.
+  One rejected candidate worth recording: `sambadodisha.com/feed` returns 200
+  and looks like an Odia outlet, but serves casino spam. Fetching is what
+  caught it.
+  **Known, pre-existing gap left honest:** `catalogue/catalogue.snapshot.json`
+  mirrored only the original 2026-07-07 seed (25 services) and never took the
+  Jul-11/Jul-13 all-region expansions. This lands the 33 new entries there
+  (now 58) so the CI sentry actually watches them — the rot above is exactly
+  what the sentry is for — but the snapshot still lags `Starters.kt`'s ~141
+  feeds. Not silently fixed here; logged.
+
+- **D36 — Onboarding ends on a tour, and Settings keeps it (2026-08-31).**
+  Owner: no idea whether anyone has found Nooz Cast or Nooz Flash, and the same
+  worry about the Loom. Reading the flow back, that is exactly what the app was
+  set up to produce — every individual decision defensible, the sum
+  undiscoverable. Onboarding was two steps (Welcome → Advanced) and named
+  **none** of Cast, Flash, the Loom, Clippings or Today in History; the Loom
+  opens by *pulling down on the stand*, Clippings by a bookmark inside the
+  reader, and Flash/Cast/Today in History all ship deliberately off. Nothing
+  ever said so.
+  Added a third step, `FeatureTourContent` — five lines, each naming a thing
+  and saying where it lives — reached from **both** doors (Quick setup and
+  Advanced's Done), and placed *last* rather than first: the names mean
+  something once there are stories behind them, and a tour up front taxes every
+  reader before they have a reason to care. **Skip still skips everything**,
+  including the tour.
+  Deliberately **not** toggles. Flash and Cast each pull down a model, and "off
+  until the reader decides" is the whole point of how they ship — flipping that
+  during setup, before the words mean anything, trades one bad outcome for a
+  worse one. The tour points at the switch instead of being the switch.
+  The same composable is mounted in Settings as a collapsed "What's inside"
+  disclosure, because onboarding runs **once and has no replay** — without it,
+  every reader who installed before today (i.e. everyone who prompted this)
+  would never see the tour at all. That, not the first-run copy, is what
+  actually reaches the people already asking.
+  Also fixed while here: onboarding's step, model path and immersive choice
+  were `remember`, not `rememberSaveable`, so rotating the phone mid-setup
+  dropped the reader back at Welcome having lost whichever door they picked.
+
+- **D37 — Search that reaches into the articles, and the app's first real
+  migration (2026-09-01).** Owner: search should be "rich wrt what's in the
+  articles so a person can search based on recall alone that they saw something
+  or read something that they remember fuzzily." The Stand's search was
+  `title.contains(q)` — it could only find a story if the reader remembered
+  words from its *headline*, which fuzzy recall almost never preserves.
+  Article prose existed **only** as loose `.txt` files in `FullTextCache`, a
+  class with no way to enumerate or query them, so there was nothing to search.
+  Added `article_text`, an FTS4 index written from `ArticleRepository`
+  alongside the cache, with `ArticleSearch` in `:core:model` as the pure half
+  (query building + snippet extraction, unit-tested). Results now match title,
+  summary **and** body, and a body match shows the excerpt it matched on —
+  without that, a result whose headline contains none of the search terms just
+  looks like a bug.
+  **Four real defects were caught by testing this rather than reasoning about
+  it, three of which would have shipped silently:**
+  1. **`AND` is not an operator.** SQLite builds FTS4 with standard query
+     syntax unless compiled with `SQLITE_ENABLE_FTS3_PARENTHESIS`; there,
+     whitespace already means AND and the word `AND` is *another search term*.
+     Joining terms with `" AND "` demanded the article also contain the literal
+     word "and" — which most prose does, so this would have hidden in plain
+     sight and eaten only the occasional short article.
+  2. **The index would have held exactly one row.** FTS4's only key is its
+     implicit rowid and `0` is a *valid* rowid, so every insert supplied 0 and
+     `REPLACE`-on-conflict made each newly indexed article overwrite the last.
+     `autoGenerate = true` fixes it; the table looked entirely healthy either
+     way.
+  3. **Indic scripts were being shredded.** Tokenising on `!isLetterOrDigit()`
+     splits on combining marks — which is how Telugu, Devanagari, Gujarati and
+     Odia write their vowels — so words broke mid-cluster and search was
+     unusable for exactly the languages D35 had just added feeds for. The FTS
+     side needed `unicode61` for the same reason; the default `simple`
+     tokenizer treats every non-ASCII byte as a separator.
+  4. **Function words excluded the answer.** Terms are ANDed, so "floods in
+     nepal" demanded a word starting "in", which the headline "Flash floods on
+     the Nepal-Tibet border" hasn't got.
+  **The migration is the bigger finding.** `RiverDatabase` was still built with
+  `fallbackToDestructiveMigration()` alone under a comment reading "v1 schema is
+  unshipped; destructive fallback is fine until the first release" — untrue
+  since versionCode 2. Bumping the version for this feature would have answered
+  the upgrade by **deleting every shipped reader's clippings, read events and
+  weekly aggregates**: the entire history the Loom draws. v4 therefore ships a
+  real `MIGRATION_3_4`, schemas are now exported to `core/data/schemas/` and
+  checked in, and `RiverDatabaseMigrationTest` opens a real v3 database, runs
+  the migration and asserts the old rows are still there. Destructive fallback
+  is kept only as the last resort it was always meant to be, for pre-release
+  databases with no path forward. The migration DDL is copied verbatim from
+  Room's own exported `4.json`, since Room compares that statement on open and a
+  hand-written near-miss passes review and then throws on a real device.
+  Bounds: index rows are dropped when their items age out of the ~60-day
+  retention (`FetchWorker`), and opening an article cached before the index
+  existed backfills it — there is no batch migration over the existing 200MB
+  cache. 180 model + 46 data tests green.
+
+- **D38 — Long-press a word, see it in your own language (2026-09-01).** Owner:
+  "if a user is reading this in a second or third language... they might just
+  want to be able to long press a word and see it in their native language even
+  if we don't translate the entire thing... how Kindle does it."
+  Built as an extension of the dictionary lens rather than a new gesture: the
+  reader already long-presses a word and gets a bottom sheet, so the sheet
+  gained a labelled translation block under the definition. The two are
+  independent downloads and load independently — a reader who installed only
+  one still gets everything that one can answer.
+  **Word-level, never document-level, on purpose.** Translating a whole article
+  would put a machine's paraphrase where a publisher's sentences were, which is
+  the one thing this reader does not do to a story. A glossed word leaves the
+  article intact and answers the question actually being asked.
+  Data is WikDict's Wiktionary-derived SQLite exports (CC BY-SA 3.0): **50 pairs
+  — 25 languages, both directions — every one fetched on 2026-09-01 with the
+  User-Agent `HttpClient` really sends** and confirmed HTTP 200. Both directions
+  ship for each language because a Spanish reader wanting English needs `es-en`
+  while an English reader wanting Spanish needs `en-es`; shipping one would
+  silently serve half the readers it appears to.
+  Stored as **SQLite rather than the flat JSON map** `DictionaryRepository`
+  uses. That is a deliberate departure: the Webster's map is held wholly in
+  memory (its own comment calls that "a considered v1 trade-off") and doing the
+  same to a 26 MB bilingual file would be a much worse one. Two things about the
+  real files, both found by reading one rather than assuming: WikDict ships
+  `simple_translation` **with no index on `written_rep`**, so an index is built
+  once at install rather than scanning per lookup; and headword matching is
+  **case-sensitive**, so "Water" — which is what a reader long-presses at the
+  start of a sentence — needs a lowercase fallback or finds nothing.
+  Downloads stage to a `.part` file and rename on success: a half-written
+  database wearing the real name would fail as a corrupt file on every lookup
+  forever instead of as one failed download. Tests cover install-and-translate,
+  the case fallback, index creation, a failed download leaving nothing behind, a
+  corrupted file yielding "no translation" rather than a crash mid-article,
+  replacement, and removal.
+  **Honest gap, surfaced in the UI and not just here:** WikDict publishes 650
+  pairs and **not one is an Indian language** — no Hindi, Telugu, Tamil,
+  Bengali, Malayalam, Kannada, Marathi, Gujarati, Punjabi, Odia or Urdu. That is
+  awkward directly after D35 added feeds in eleven of them. FreeDict has exactly
+  one (`eng-hin`) in a different format, unshipped for now. The Settings section
+  says so in as many words rather than presenting a language list that quietly
+  omits them.
+
+- **D39 — A sources search that matches the size of the list (2026-09-01).**
+  Owner asked for search "that matches the size of the list of resources we
+  would now have." The picker's filter was
+  `def.title.lowercase().contains(q)` — one substring over one field, which was
+  defensible against twenty starters and is not against a catalogue past its
+  second hundred. Three failures a reader meets immediately: **word order**
+  ("world bbc" found nothing though "BBC World" is right there), **one field**
+  (a domain the reader knows, a region, or a language name searched none of
+  them — which made D35's keep-the-language-in-the-title convention
+  unreachable), and **no ranking** (an incidental URL match could sit above an
+  exact masthead). `SourceSearch` in `:core:model` ANDs independent terms across
+  title, URL, homepage, region and notes, then orders by match strength — exact
+  title, title prefix, title word-prefix, title substring, other field — with
+  ties keeping their incoming order, since the catalogue's own arrangement is
+  deliberate and a search should not reshuffle what it did not rank. Tested
+  against the real shipped catalogue, not only fixtures.
+
+- **D40 — Accessibility: a screen reader can reach the dictionary; and an
+  honest scoping of localization (2026-09-01).**
+  **Shipped (a11y).** Sighted readers reach a definition — and now a
+  translation, since D38 put both in the same sheet — by long-pressing *any*
+  word. TalkBack cannot land a press on a particular word inside a paragraph, so
+  that entire feature was unreachable with a screen reader on;
+  `LensAnnotatedParagraph`'s own doc comment had already flagged it. Paragraphs
+  now expose "Define <word>" custom actions alongside the existing per-mark
+  ones, built from `ObscureWords` — the detector for "which words here would
+  someone want defined", which had been left unused when pre-marking was
+  dropped. Actions are **named, not positional** ("Define quotidian", not
+  "Define word three"): the menu is read aloud in sequence, where a list of
+  positions is unusable. Deduplicated and capped at six, because that menu is a
+  listening budget rather than a rendering one. Still gated on a downloaded
+  dictionary, so a translation-only reader does not get it — logged, not fixed.
+  **Audited — and one claim here was wrong, corrected in D41.**
+  `android:supportsRtl` is already on; there are no Java
+  `toLowerCase`/`toUpperCase` calls; `String.format` is never called without a
+  locale; the one `SimpleDateFormat` is correctly pinned to `Locale.US` for a
+  crash log. **But the conclusion drawn from that — that the Turkish dotless-i
+  class of bug "cannot occur" — was false**, and this entry asserted it. Kotlin's
+  no-arg `lowercase()`/`uppercase()` are indeed `Locale.ROOT`-based, but
+  `NewspaperShare.kt:110` passes `Locale.getDefault()` explicitly. The grep that
+  produced this paragraph searched for the Java method names and never looked
+  for the Kotlin ones with an argument. See D41. A suspected bug — `DateTimeFormatter.ofPattern`
+  emitting non-Latin digits into GDELT feed URLs under locales like `ar-EG` —
+  **was tested and is not real**: `ofPattern` uses `DecimalStyle.STANDARD`
+  regardless of locale, unlike `SimpleDateFormat`. Recorded because it is the
+  kind of thing that looks like a bug on inspection and would have produced a
+  confident, wrong commit.
+  **Not done, and it is a decision rather than an oversight (i18n).** The app
+  cannot presently be translated at all: `strings.xml` holds exactly one entry
+  (`app_name`) and every other user-facing string is a Kotlin literal —
+  **~146 of them across 25 files**, concentrated in `SettingsScreen` (43),
+  `EditScreen` (15) and `ArticleListScreen` (14). Externalizing them is
+  mechanical and compiler-checked, so it is tractable; what it is not is free.
+  It changes no behaviour, produces a large diff across every UI file, and
+  starts charging a tax on every future copy change — in exchange for a benefit
+  that only exists once somebody actually translates the result. Which
+  languages, and whether now, is the owner's call to make, not one to slip in
+  underneath a feature branch. **Recommended order when it happens:** externalize
+  in one pass per module (compiler catches every miss), keep the reader's own
+  prose last since it is the most likely to still be edited, and add
+  `android:localeConfig` at the end so the Android 13+ per-app language picker
+  appears only once there is more than one language to pick.
+
+- **D41 — Dedup was silently deleting Indic and Urdu news; the topic classifier
+  could not see them at all (2026-09-01).** A 23-agent audit of accessibility
+  and localization across both platforms turned up two defects that are not
+  accessibility problems at all — they are **silent data loss in exactly the
+  languages D35 had just added feeds for**, and both were reproduced before
+  being fixed.
+  **(a) `Simhash.normalize` stripped every combining mark.**
+  `NON_ALNUM = Regex("[^\\p{L}\\p{N}]+")` — `\p{M}` is in neither class, and
+  that is how Devanagari, Bengali, Telugu, Tamil, Gujarati, Kannada, Malayalam,
+  Odia and Gurmukhi write their vowels and virama. Measured, not inferred:
+  "मुंबई में भारी बारिश" normalised to the consonant skeleton **"म बई म भ र ब र श"**,
+  and against "मुंबई में भारी बेरोजगारी" (unemployment, not rain) landed at
+  Hamming distance **6** — inside `NEAR_DUP_THRESHOLD` of 8, so `Dedup` kept one
+  and discarded the other. An Urdu pair landed at exactly 8. There was no
+  symptom: `Dedup.deduplicate` keeps a cluster's representative and drops the
+  rest with no log, error or counter, so a Hindi build merely showed fewer
+  stories than its sources sent — indistinguishable from a quiet feed, in an app
+  whose entire claim is measuring what flowed. Adding `\p{M}` takes that pair to
+  16. An NFC pass was added alongside, because feeds are inconsistent about
+  composed vs decomposed nukta forms and the same headline in two encodings
+  would otherwise fail to dedup.
+  **(b) The fixed threshold was itself biased against dense scripts.** With
+  marks preserved, the short Urdu pair still sat at exactly 8 — while the
+  *identical one-word change in Latin* ("Heavy rain in Karachi" / "Heavy heat in
+  Karachi") sits at 19. A four-word headline yields ~16 shingles, and simhash
+  over that little evidence is noisy; scripts that pack more meaning into fewer
+  characters are systematically more exposed. `Simhash.thresholdFor` now scales
+  the budget with the evidence available (`min(8, max(2, shingles/6))`), so a
+  56-character syndication pair keeps the full 8 bits and still collapses, while
+  a four-word headline gets 2 — still collapsing identical and punctuation-only
+  variants, no longer collapsing different stories.
+  **(c) The web topic classifier could never fire on non-Latin text.**
+  `web/js/topics.js` built every matcher as `new RegExp('\\b' + term + '\\b')`.
+  JavaScript defines `\b` against `[A-Za-z0-9_]`, so it cannot fire adjacent to
+  a Devanagari, Arabic, Thai or CJK character: verified,
+  `new RegExp('\\bराजनीति\\b','i').test('आज की राजनीति खबर')` is `false`. Every
+  item from a non-English feed classified as `general` — the Loom collapsing to
+  one band and the Contrast dumbbells emptying, silently. Replaced with a
+  Unicode-aware boundary built from a leading character class rather than a
+  lookbehind (Safari only gained lookbehind in 16.4, and an unsupported
+  construct throws at regex *construction*, taking the module and the app with
+  it), plus containment matching for scripts written without spaces. Note this
+  was a **prerequisite**, not the whole fix: translating the keyword lexicon
+  first would have shipped terms that could never match.
+  **Also corrected: D40's own claim that the Turkish dotless-i bug "cannot
+  occur" was false.** `NewspaperShare.kt:110` passed `Locale.getDefault()` to
+  `uppercase()`, so a Turkish reader sharing a Livemint clipping published an
+  image reading "LİVEMİNT" — someone else's masthead, misspelled. Now
+  `Locale.ROOT`. The original grep searched for the Java method names and never
+  the Kotlin ones with an argument.
+  **And the web reader now has CI at all.** Its 6,300 lines of JS shipped
+  entirely unexercised, which is how (c) survived. `web/tests/` runs on node's
+  built-in test runner with no install step — deliberately, since
+  `web/package.json` has no lockfile for `npm ci` to use. `"type": "module"` was
+  **not** added: `web/api/*.js` are CommonJS Vercel functions and would break.
+
+- **D42 — The Loom can be operated by a screen reader, and the claim is now
+  machine-checked (2026-09-01).** First tranche of the accessibility audit's P0
+  list. What landed:
+  **Read versus unread is finally in the semantics tree.** `ArticleListScreen`
+  spent that state entirely on `TextDecoration.LineThrough` and a colour;
+  neither reaches the accessibility API, so a read row and an unread row were
+  **byte-identical in speech** — in an app whose stated purpose is showing
+  consumption. One `stateDescription` fixes it.
+  **The unread filter has a control.** It was reachable *only* by a two-finger
+  pinch — no button, no menu, no action (WCAG 2.5.1, Level A). The pinch still
+  works; it is no longer the only door.
+  **The Loom is operable.** Its semantics were one merged node whose entire
+  action list was `[SetTextSubstitution, ShowTextSubstitution,
+  ClearTextSubstitution, GetTextLayoutResult]` — no click, nothing custom —
+  while its own description ended *"Tap a stream for its counts."* The app was
+  instructing a gesture it would not accept, and the per-stream numbers existed
+  nowhere else in speech. Now one `CustomAccessibilityAction` per band, each
+  carrying its own counts in the label (the menu is read aloud in sequence, so
+  "stream three" would be useless), plus a `stateDescription` for the selection.
+  **And `describeLoom` names the supply side.** It enumerated only
+  `bands.filter { it.consumed }` — topics with at least one read — so a topic
+  that flooded the feed and was never opened was **never named**, which is
+  precisely the omission the screen exists to show.
+  **The evidence half matters as much as the fix.** No UI module had a single
+  test dependency, so every accessibility claim about this app was reasoning
+  over source rather than observation. `:feature:river` now carries
+  `compose.ui.test` + Robolectric, and `DayLoomAccessibilityTest` asserts
+  against the real semantics tree on the JVM: that every stream is reachable as
+  a named action, that the summary names an unread flood, that the tap
+  instruction is gone, and that an empty day still says something true. Note the
+  honest limit — this proves the tree carries the data and the actions; it does
+  **not** prove what TalkBack utters, and no device here can.
+  Remaining from the audit's P0 after D43: screen-change announcements, and
+  focus restoration on the web's full-stage rebuild.
+
+- **D43 — The web reader's stories are headings and links again, not buttons
+  wrapping whole articles (2026-09-01).** The audit's remaining P0 blockers.
+  Every story on the Paper, and every row in Clippings, was `role="button"` on
+  the container itself with the entire article nested inside it. Two
+  consequences, neither of them visible to a sighted tester:
+  `button` computes its accessible name from its contents *and flattens their
+  structure*, so each card's name was **an entire article read as one unbroken
+  string**, and the `<h2>` inside it stopped being a heading. Heading navigation
+  on the front page returned the masthead and nothing else; the links list was
+  empty. Those are the two ways a screen-reader user skims a page, and the Paper
+  offered neither. Second, the bookmark and the image-style chips became
+  interactive elements nested inside a button — invalid, and handled differently
+  by every engine.
+  **The headline is now the control.** A real `<a href="#/reader/…">` inside the
+  existing heading: the heading comes back, the name is the title alone, the
+  story lands in the links list, and keyboard operation is free rather than
+  hand-rolled. The card keeps a plain click listener so the large pointer target
+  survives — it has simply stopped pretending to be a control. `setAttribute`,
+  not the `.href` setter, because the setter resolves against the document URL
+  and re-serialises, which can decode escapes an item id needs to keep.
+  **Read state is spoken.** `.is-read` only dimmed the headline, so "have I read
+  this?" was carried by colour alone. A `nooz-visually-hidden` "Read." now sits
+  inside the heading.
+  **The web Loom had the same defect as the Android one, plus a worse one.**
+  Each tube was an SVG `<path>` carrying `role="button"`, `tabindex="0"` and its
+  counts in an `aria-label`. None of it was ever reachable: the `<svg>` declares
+  `role="img"`, which makes its whole subtree **one leaf** in the accessibility
+  tree, and Safari does not honour `tabindex` on SVG shapes regardless. It
+  looked like access and was not. The per-stream numbers now live in ordinary
+  `<button>` stream keys — off-screen until focus lands inside, then they slide
+  in as a legend, because a sighted keyboard user has to see where the focus
+  ring went. `describeLoom` gained the same supply-side fix as its Android twin,
+  and both stopped saying "1 sources".
+  **Evidence, again, is half of it.** `web/tests/a11y.test.mjs` runs the real
+  view modules against a real DOM (linkedom, already a dependency) and inspects
+  what comes out: no card claims to be a button, no control is nested inside a
+  fake one, every headline is a heading containing a link, an awkward item id
+  still produces a usable href, the read marker lands on the story that was
+  read, the card click still fires exactly once, and each Loom stream is a named
+  button whose selection is announced. Both reading modes are covered —
+  Newspaper mode is a separate code path a manual pass would probably not have
+  opened. Verified by mutation: reintroducing `role="button"` on a column story
+  fails the suite.
+
+- **D44 — Navigating the web reader now puts the cursor somewhere, and says so
+  (2026-09-01).** The last of the audit's P0 list. `renderNow` rebuilds the
+  stage and the drawer on every route change, so whatever had focus — the
+  headline link you just activated, the nav button you just pressed — ceased to
+  exist and focus fell to `<body>`. The only thing restored was a live `INPUT`
+  or `TEXTAREA`. For a keyboard or screen-reader user that **is** the
+  navigation: activate a story, land silently at the top of the document, walk
+  the entire page again to get anywhere. Nothing announced the new view either,
+  because from the accessibility tree's point of view nothing happened — the
+  document simply changed underneath.
+  Focus now lands on the new view's own `<h1>` (`tabindex="-1"`, ring
+  suppressed — nobody arrived by pressing Tab), which is also what makes the
+  change *audible*: a screen reader announces the newly focused heading. A
+  drawer takes focus on open and hands it back to the control that opened it on
+  close, even across drawer-to-drawer moves, and falls back to the stage heading
+  if that control is gone. `closeSearch` returns focus to the search toggle,
+  which it never did — the bar is hidden by a class, so a focused input inside
+  it stayed focused while invisible, taking keystrokes nobody could see.
+  **The two negative rules matter as much as the positive one**, and are the
+  easy ones to lose: focus must not move on an ordinary re-render (a fetch
+  landing, a story marked read, a setting toggling), and must not move on the
+  first paint. Getting either wrong is worse than the original bug, because it
+  takes the cursor from someone mid-sentence.
+  The logic lives in `web/js/focus.js` rather than inside `app.js` specifically
+  so it can be tested — `app.js` opens IndexedDB and starts fetching on import,
+  and a rule this consequential should not be verified by reading it.
+  `web/tests/focus.test.mjs` covers all four rules plus the fallbacks. Verified
+  by mutation: dropping the route-change guard fails two tests.
+  One test-craft note worth keeping: assertions here compare printable names,
+  never DOM nodes. `assert.deepEqual` on two linkedom elements walks a circular
+  object graph, and the run stops producing output instead of a failure
+  message — a suite that hangs on the bug it catches is not a suite.
+
+- **D45 — Arriving at a screen is announced (2026-09-01).** Every top-level
+  screen swap happens inside one activity and one composable, so nothing told
+  TalkBack the screen had changed: opening the Loom produced no announcement at
+  all, just a silently different set of nodes under the same window. The screen
+  switch is now wrapped in a pane whose `paneTitle` changes with it, which is
+  what Compose turns into the platform's window-state-changed event — the event
+  TalkBack reads aloud. Titles are the names the reader already knows from the
+  control they pressed ("Loom", not "LoomScreen").
+  **Honest limit:** this one is reasoned and compiled, not observed.
+  `MainActivity` needs the whole DI graph to compose, so there is no cheap
+  JVM test for it, and unlike D42 there is no assertion behind this claim.
+
+- **D46 — Android's font fallback already covers every script the catalogue
+  ships, so no fonts need bundling. This corrects an earlier claim of mine
+  (2026-09-01).** I had recorded non-Latin font coverage as the gate on the
+  whole locale rollout. It is not, and the reasoning behind that was wrong.
+  The premise was right: `fontTools` on the ten bundled faces shows Hyle
+  Grotesk at 735 codepoints (Latin + Greek) and Hyle Print / PT Serif at
+  1163/717 (Latin + Cyrillic + Greek). **Not one of them carries a single
+  Indic, Arabic or CJK glyph** — and the app already ships 33 India regional
+  feeds in eleven scripts.
+  What I got wrong was assuming a bundled font means tofu. AOSP
+  `Typeface.java` (android14-release) settles it: `Typeface.Builder.build()`
+  wraps its single family in `CustomFallbackBuilder`, and so does
+  `createFromResources` for XML families. `CustomFallbackBuilder.build()` passes
+  `getSystemDefaultTypeface(mFallbackName)` into `nativeCreateFromArray`, and
+  `mFallbackName` defaults to null, which that method resolves to
+  `Typeface.DEFAULT` — the full system font collection, Noto chain included.
+  A missing glyph therefore falls through to the platform's own fonts. Compose's
+  `Font(resId)`, `ResourcesCompat.getFont` and `NewspaperShare`'s `Canvas`
+  drawing all converge on that same path.
+  **Consequence:** no Noto bundling (which would have added megabytes), and the
+  locale rollout is not gated on fonts. Worth recording how nearly this went the
+  other way: the first attempt to check it was a Robolectric probe calling
+  `Paint.hasGlyph`, which reported Latin "A" missing from the *default* paint —
+  it was measuring Robolectric's stub, not Android, and would have "confirmed"
+  a catastrophic bug that does not exist. A test that cannot fail correctly is
+  worse than no test, and the tell was that its answer was too dramatic.
+
+- **D47 — A language is now a data file, and thirty of them exist
+  (2026-09-01).** The owner's correction was blunt and correct: *"tractable but
+  taxes future copy change is not really tenable nor acceptable — please advise
+  and course correct so it becomes easier to add more languages as we go."*
+  This is the course correction, and the shape of it is the point.
+  **Adding a locale is one JSON file.** `i18n/strings/<bcp47>.json` next to
+  `en.json`, then `python3 tools/i18n/generate.py`. No Kotlin, no build change,
+  no call-site edits. The generator writes Android's `values-b+<tag>/
+  strings.xml`, the web reader's `web/i18n/<tag>.json`, `locales_config.xml`
+  and a `LocaleCoverage.kt` of measured completeness. Removing a locale is
+  deleting the same one file; the generator reaps the orphans.
+  **Partial is safe, and that is what makes thirty possible.** Android resolves
+  each string separately and falls back to `values/` per key; the web layer does
+  the same. A locale that is 41% done shows 41% in the reader's language and
+  English for the rest — never a blank, never a key name. Without that property
+  the only honest options are "finish a language or don't start it", which is
+  how apps end up with two.
+  **One source for both front ends.** Nooz has two clients and one set of words.
+  Two hand-maintained catalogues means a translator does every language twice
+  and the two drift the first time anyone is in a hurry — which in practice
+  means the web reader stays English. *"The web reader must also do the same"*
+  is now structural rather than a promise.
+  **The languages.** `Locales.kt` lists India's fifteen most-spoken in 2011
+  Census order (that is the order the picker offers, and for a reader without
+  English the first screenful is most of the decision), then fifteen more of the
+  world's, skipping Hindi/Bengali/Urdu already covered. Endonyms are the primary
+  label throughout: a picker written entirely in English is a picker for people
+  who already have English. Shipped: 29 locales plus English, 28 of them
+  complete for this first tranche of 37 strings.
+  **Two honest gaps, recorded rather than hidden.** Kashmiri ships at 41% — the
+  entries I could not write responsibly are absent, and fall back to English,
+  which is exactly what the per-key fallback is for. **Santali is in
+  `Locales.kt` and has no catalogue at all.** It is listed because omitting the
+  language of ~7.6 million people to avoid an imperfect answer is not a trade
+  this app gets to make quietly; it is *not* in `locales_config.xml`, because
+  offering someone their language in Android's system picker and then handing
+  them an English app is worse than not offering it. `locales_config.xml` is
+  generated from what exists, never from what is intended, precisely so that
+  distinction cannot rot.
+  **Verified in the artefact, not the source.** `assembleFullDebug` produces an
+  APK whose `resources.arsc` contains the Hindi, Tamil, Urdu, Punjabi and
+  Chinese strings — checked by reading the built APK, since a generator that
+  writes plausible XML nobody packages is the failure mode worth guarding
+  against.
+  **Switching.** API 33+ uses the platform `LocaleManager`, so the choice lives
+  where every other app keeps it (Settings › Apps › Nooz › Language) and
+  survives reinstalls; API 31–32 mirrors it in SharedPreferences and applies it
+  in `attachBaseContext`, which needs the answer synchronously and so cannot use
+  the DataStore that holds everything else. Deliberately not AppCompat:
+  `setApplicationLocales` would cover both, but needs an AppCompat activity and
+  theme, and this app is Compose over platform themes on purpose (D34).
+  **Still to do:** 219 strings remain in Kotlin, ratcheted per file by
+  `verifyI18n`. Each future tranche is appended to `en.json` and every locale
+  file, so the cost of language number thirty-one is unchanged by any of it.
+
+- **D48 — The web reader speaks the same thirty languages, from the same files
+  (2026-09-01).** *"The web reader must also do the same, okay?"* — it does, and
+  structurally rather than by promise. `web/js/i18n.js` reads the catalogues
+  `tools/i18n/generate.py` writes from the very same `i18n/strings/*.json` the
+  Android app is built from. There is no second list to keep in step.
+  Per-key fallback matches Android's resource resolution exactly, so Kashmiri
+  renders its 41% in Kashmiri and the rest in English on both clients, and `t()`
+  takes a mandatory English fallback argument so a failed fetch shows words
+  rather than `tour_loom_body`.
+  **`lang` and `dir` are the accessibility half of this**, and they are easy to
+  forget because nothing looks wrong without them. `<html lang>` is what picks a
+  screen reader's voice and pronunciation rules — an Urdu interface still
+  labelled `lang="en"` gets read aloud with English phonetics, which is
+  unusable. Each row of the language picker also carries its **own** `lang`,
+  since every entry is written in a different language; without that the list is
+  read in one accent, and a list of native names is precisely the thing a
+  reader without English navigates by ear. `dir` flips the whole document for
+  Arabic, Persian, Urdu and Kashmiri, and the picker's CSS uses `text-align:
+  start` and `margin-inline-start` so rows align to their own reading edge.
+  **Resolution is the part with judgement in it, so it is the part under test.**
+  Browsers send what the OS gives them — `pt-BR`, `zh-Hans-CN`, `zh-hans` — and
+  almost none of it is the name of a catalogue. `resolveTag` walks the browser's
+  preference order, matches case-insensitively, then shortens progressively
+  (`zh-Hans-CN` → `zh-Hans` → `zh`). `web/tests/i18n.test.mjs` pins all of it.
+  **Three of those tests are really about the generator**, and they are the ones
+  worth keeping: no translation may lose or invent a `%1$s` its English carries,
+  none may hold a key the base does not (which is how an unpropagated rename
+  shows up), and the index the picker reads must agree with the catalogues that
+  exist, coverage figures included. A dropped placeholder leaves a silent gap in
+  a sentence on a screen nobody testing in English will ever look at.
+  Verified end to end: booting with `ur` stored yields `lang="ur"`, `dir="rtl"`,
+  a heading reading ترتیبات, thirty-one picker rows each in its own script, and
+  Kashmiri labelled کٲشُر · 41% ترجمہ شدہ.
+
+- **D49 — The last two silent visualizations now speak, and are tested
+  (2026-09-01).** Closes the audit's Canvas list, which D42 opened with the
+  Loom.
+  **The region globe told a screen-reader user to "Drag to spin, pinch to widen
+  the band"** — two gestures neither of which a screen reader can make — and
+  offered no action in their place. The sector chips beneath it cover picking a
+  region, so that half had a door; **the band width had none at all**, and the
+  topic-mix ring, the only place the aimed region's real counts are drawn,
+  existed nowhere in speech. Now four custom actions (spin east/west, widen/
+  narrow) sized so a few invocations visibly move the selection — an action menu
+  is read one item at a time, so a step needing twenty repeats is no step — and
+  a description that names the region, the band, the total and the top topics.
+  **`RegionHeatStrip` was a bare `Canvas`,** which publishes nothing at all. The
+  entire answer to "where in the world have I been reading?" — the question the
+  Contrast ledger exists to ask — was carried by the relative darkness of eight
+  rectangles: silent to a screen reader, and unreadable to anyone who cannot
+  separate two close greys. It now names every sector that has a read, with its
+  number, densest first, and says the current selection out loud instead of
+  leaving it to a highlight. Sectors with nothing read are omitted: reading
+  eight zeroes aloud before the one number that matters buries the answer.
+  **Evidence.** `:core:design` had no test dependency at all, so `GlobeCanvas` —
+  an interactive control living outside any feature module — had nowhere for its
+  proof to go; it now carries the same Robolectric + `compose.ui.test` setup as
+  `:feature:river`. `GlobeAccessibilityTest` (5) **invokes** the custom actions
+  rather than trusting their labels, since an action that fires nothing is
+  precisely the defect being fixed. `ContrastAccessibilityTest` (4) is
+  mutation-verified: deleting the `semantics` block fails all four.
+  **The remaining honest gap**, which `verifyI18n` cannot see: these spoken
+  descriptions are still assembled from English literals inside functions, not
+  from `strings.xml`. The scanner matches text call sites, and a string built in
+  a `buildString` is invisible to it. So the Loom, the globe and the heat strip
+  currently speak English in every locale.
+
+- **D50 — The classifier can finally read the languages the catalogue publishes
+  in (2026-09-01).** Two bugs met here, and either alone was enough to hide the
+  other.
+  **The lexicon was English-only** while the catalogue ships 33 India regional
+  feeds across eleven scripts (D35). Every one of those stories classified as
+  `general`. The Loom — this app's whole argument — collapsed to a single
+  undifferentiated band, and the Contrast dumbbells emptied, *for exactly the
+  readers the India expansion was for*. Nothing errored. It looked like a quiet
+  news day, every day.
+  **And the matcher could not have fired even with the terms present.** It was
+  `Regex("\\b" + escape(term) + "\\b")`, and Java defines `\b` against `\w`
+  = `[a-zA-Z_0-9]` unless `UNICODE_CHARACTER_CLASS` is set — so there is no
+  word/non-word transition at the edge of a Devanagari or Arabic character the
+  engine does not treat as a word character at all. **Every non-English term
+  anyone added to this lexicon would have been silently inert**, and the failure
+  would have looked exactly like "that keyword just isn't in this headline".
+  This is the third appearance of the same family of bug in this codebase, after
+  the JS `\b` in `topics.js` (D41) and the missing `\p{M}` in `ArticleSearch`
+  and `Simhash` (D39) — the boundary class is now `[\p{L}\p{N}\p{M}]` in all
+  four places, with containment matching for the unspaced scripts where a word
+  boundary is not a meaningful idea at all.
+  **987 terms across eleven languages**, in `i18n/lexicon/`, in the same shape
+  as the string catalogues: one file per language, generating both
+  `TopicLexiconL10n.kt` and `web/js/topics-l10n.js`. Emitted as a JS *module*
+  rather than JSON on purpose — `classifyItem` is synchronous and on every
+  render path, so a fetch would either make classification async or make it
+  return `general` for everything until the fetch landed, which is precisely the
+  bug being fixed. Terms are merged across languages rather than kept
+  per-language: a story is classified by the words it is written in, not by a
+  language label its feed may never have carried.
+  **Tested on both clients, including that they agree.** Six Kotlin tests and
+  two more JS ones: headlines in eleven scripts, English unchanged (`warden` is
+  still not `war`), the boundary construction tested independently of any
+  particular word, combining marks not splitting an inflected form, unspaced
+  scripts matching by containment, every generated term compiling and matching
+  itself, and finally a test asserting every web term is present in the Kotlin
+  file — because a hand-edit to one generated file works locally and is silently
+  reverted by the next generator run.
+  **Honest limit, recorded in `i18n/lexicon/README.md`:** this is a first pass
+  and has not been reviewed by native speakers. It ships because an incomplete
+  lexicon that fires beats a complete one that cannot, and because
+  `TopicEvidence` keeps every match inspectable — a reader can tap a
+  classification and see the exact term behind it, which is how a bad term gets
+  found.
+
+- **D51 — Accessibility is now checked by a browser, and it immediately found
+  what review had not (2026-09-01).**
+  **The finding first, because it is the argument for the tooling.** The palette's
+  secondary ink — `--paper-ink-dim` / `Tokens.Palette.paperInkDim`, `#8A8A86` —
+  measures **3.21:1** on the paper field, against the 4.5:1 WCAG AA requires for
+  body text. That token carries the masthead edition line, every byline and
+  timestamp, secondary copy throughout both clients, and the dek of a read
+  story. The dark theme's `inkDim` was the same failure by a different route:
+  42% alpha compositing to **3.57:1**. Both are now 4.6:1 or better, still far
+  lighter than the 17:1 primary ink, so dimmed text still reads as dimmed — that
+  distinction never needed to be this faint. **Nobody had noticed in months of
+  work on this app, including a full accessibility audit, because contrast is
+  not something you can eyeball.**
+  Worse, and more pointed: the loom strip — *the Loom's only entry point on the
+  Paper*, the feature the owner specifically flagged as undiscovered — combined
+  `--paper-ink-faint` (1.55:1) with `opacity: 0.82`. It was quiet to the point
+  of invisible. The opacity is gone; restraint survives in size, weight and
+  placement. Opacity is the wrong tool for quiet: it washes out text and bar
+  together, and no colour token can compensate for it downstream.
+  **The suite.** `web/tests/browser/axe.test.mjs` serves the reader, seeds real
+  stories through the app's own IndexedDB layer, and runs axe-core over the
+  Paper, an open article, the Loom, Settings, and the front page in Urdu with
+  `dir="rtl"`. An empty page passes any accessibility check, so the seeding is
+  the point; one test also asserts axe found enough to check. Mutation-verified:
+  restoring `#8A8A86` fails four of the five scans.
+  **What this does and does not claim.** axe catches roughly a third of real
+  barriers and is no substitute for a person with a screen reader. But that
+  third is the third that regresses invisibly — contrast drift, an icon button
+  that loses its name, a skipped heading level, a lost landmark. The parts axe
+  cannot see are covered by the Robolectric semantics tests (D42, D49) and, in
+  the end, by testing with actual users.
+  **A second finding, from writing the harness rather than running it.** The
+  first version dismissed onboarding with the wrong `localStorage` key, so every
+  scan was measuring the onboarding card and passing. A green suite that never
+  reached the app is the same failure as Lint's inert `HardcodedText`, and it is
+  why each test now waits on a selector that only exists once the Paper has
+  rendered.
+
+- **D52 — CI was running 94 of 309 unit tests (2026-09-01).** `ci.yml` asked for
+  `testDebugUnitTest testFossDebugUnitTest testFullDebugUnitTest`, which reads
+  like "all of them" and is not: those are Android variant tasks. **`:core:model`
+  is a plain `kotlin.jvm` module whose task is `test`** — and it is the
+  most-tested module in the repo. Its **215 tests** (Simhash, Dedup,
+  ArticleSearch, the feed parser, OPML, the classifier, and everything added in
+  D50) had never been executed by CI. The build was green the entire time,
+  because every task that was asked for passed.
+  A hand-maintained task list has the same failure mode the moment someone adds
+  a module, so `gradle/verification/unit-tests.gradle.kts` registers a
+  `unitTests` task that **discovers** each module's own test task, and **fails
+  the build** if a module has test sources it cannot find a task for. Exclusions
+  have to be written down in `skippedModules` with a reason, which is precisely
+  what never happened to `:core:model`.
+  Discovery runs in `gradle.projectsEvaluated`, not each project's
+  `afterEvaluate`: AGP registers its variant tasks from inside its own
+  `afterEvaluate`, so a callback added here runs first and sees an Android
+  module as having no test task at all.
+
+- **D53 — The screens a reader actually lives in now speak their language
+  (2026-09-01).** The second migration tranche: `ArticleListScreen` and
+  `ReaderDetailScreen`, both to zero, taking the catalogue from 37 strings to 68
+  and the ratchet from 218 to 193.
+  Chosen over the larger `SettingsScreen` deliberately. **Most of these strings
+  are `contentDescription`s** — the words a screen reader utters on every screen
+  the reader touches: "Fetching your sources", "Showing unread only, tap to show
+  every story", "About 40 percent through the article", and the `stateDescription`
+  read/unread pair added in D42. Left in English they would have undone most of
+  what the thirty locales are for: a blind reader in Tamil would have had a Tamil
+  onboarding and then an English app read aloud to them forever after.
+  28 locales are complete at 68 strings; Kashmiri sits at 35%, and the picker
+  says so.
+  Two mechanical notes worth keeping. `semantics { }` and `clickable(onClickLabel
+  = …)` are **not composable scopes**, so every one of these needed the
+  `stringResource` hoisted to the nearest composable — the compiler catches it,
+  but only after the migration looks finished. And aapt **rejects `--` inside an
+  XML comment**, failing the whole resource file over a double dash in a
+  hand-written section note; the generator now converts it, because prose written
+  for humans reaches for a double dash constantly.
+  Verified in the artefact again, with a negative control this time: the Telugu,
+  Punjabi and Urdu strings are in `resources.arsc`, and a nonsense probe is not.
+
+- **D54 — The Loom speaks the reader's language, closing the gap D49 recorded
+  (2026-09-01).** D49 ended with an admission: the Loom's, the globe's and the
+  heat strip's spoken descriptions were still assembled from English literals
+  inside plain functions, invisible to `verifyI18n` (which matches text call
+  sites, not string construction). So a blind reader who set the app to Tamil
+  got a Tamil interface and then heard **the app's centrepiece described in
+  English**, permanently, with nothing anywhere reporting it.
+  `describeLoom`, `describeGlobe` and `describeHeatStrip` are now `@Composable`
+  so they can reach `stringResource`, along with the Loom's per-stream action
+  labels, its selection state, the globe's four actions, and the Loom, Contrast
+  and CrossSection chrome. The catalogue goes 68 → 117 strings; the ratchet
+  193 → 170. **29 locales complete**, Kashmiri at 27%.
+  A Kotlin note worth keeping: `map` is `inline` and therefore *is* a composable
+  scope, but `joinToString`'s `transform` is not — so every list is resolved
+  first and joined afterwards. The compiler catches it, but only after the work
+  looks done.
+  And the placeholder guard earned its place twice over. It failed on Arabic's
+  `loom_source_one`: مصدر واحد carries "one" in the word rather than a digit.
+  That is a translation decision, not a slip, and several languages make it — so
+  the rule is now "a `_one` key may drop its number; nothing else may, and
+  inventing a placeholder is always an error." Narrowing the rule to fit the
+  language beats bending the language to fit the rule, and the guard still
+  catches the thing it exists for: a lost `%1$s` leaves a silent gap in a
+  sentence on a screen nobody testing in English will ever look at.
+
+- **D55 — The web reader was 13% translated, and nothing said so
+  (2026-09-01).** D48 built the web i18n layer and this entry is about what that
+  did *not* accomplish. The layer being in place is not the same as the reader
+  being translated, and the gap was invisible from the inside: `web/i18n/*.json`
+  reported **100% for twenty-nine locales**, every one of those numbers being
+  about the *catalogue* rather than about how much of the app reads from it.
+  Exactly **one view called `t()`**. A reader who chose Tamil got a Tamil
+  settings heading and an English everything-else, and the picker showed no
+  shortfall at all.
+  The measurement came first, deliberately — `web/tests/i18n-coverage.test.mjs`,
+  the same ratchet shape as Gradle's `verifyI18n`, printing the honest number on
+  every run. It started at **7 wired, 48 hardcoded**. It is now **60 and 3**,
+  with the Paper, the reader, the Loom, Clippings, the Stand and Sources all
+  going through `t()`. The catalogue grew 117 → 157; 29 locales complete;
+  Kashmiri 24%.
+  **A second guard, added because the first one could not have caught this:**
+  every `t('key', …)` must name a key that exists in `en.json`. A typo'd key
+  shows its English fallback silently — the catalogue still says 100%, the
+  coverage ratchet counts the call as *translated*, and the string is English
+  forever. It found `loom_strip_label` on its first run: a key the wiring
+  referenced and nobody had added. Two guards that each look correct in
+  isolation can still leave a hole exactly where they meet.
+  One deliberate exemption, written down rather than assumed: `Nooz`, `Nooz
+  Flash`, `Nooz Cast`, `GDELT` and `Wikipedia` are brand names. A translated
+  masthead is a bug, and routing them through keys would mean thirty identical
+  copies of one word and thirty chances for one to drift.
+
+- **D56 — Android actually *picks* the translations, now checked rather than
+  assumed (2026-09-01).** A real hole in how D47 was verified. That entry proved
+  the Hindi, Tamil, Urdu and Punjabi strings were in `resources.arsc` — which
+  establishes they were **packaged**, and nothing more. Resource *selection* is a
+  separate mechanism: it depends on the `values-b+<tag>` qualifier being spelled
+  exactly as `Locales.androidResourceQualifier` spells it, on the library
+  module's resources merging into the app, and on the tag Android derives from
+  the device locale matching. Get any of that wrong and **every locale falls back
+  to English silently, with the strings still sitting in the APK exactly where
+  the earlier check found them.** The check could not have told the difference.
+  `LocaleResolutionTest` closes it with `@Config(qualifiers = …)`, which runs the
+  real resolver: English as the base, Hindi, Tamil and Urdu resolving,
+  `b+zh+Hans` (the one tag with a script subtag, and the one place the BCP 47
+  conversion could break), `b+mai` (three-letter codes take a different path in
+  some resolvers than two-letter ones), an unshipped locale landing on English
+  rather than a blank, format arguments surviving translation, and — the property
+  the whole "partial is safe" design rests on — Kashmiri resolving its one
+  translated key while an untranslated one falls back per key.
+  Mutation-verified by moving `values-b+ta` out of the tree: `tamilResolves`
+  fails. The general lesson is the one worth keeping: **"the artefact contains
+  it" and "the artefact uses it" are different claims,** and the first is much
+  easier to check, which is exactly why it is the one that gets checked.
+
+- **D57 — Choosing your sources now works in every shipped language
+  (2026-09-01).** Third migration tranche: `EditScreen` and `SourcesUtilities`,
+  both to zero. Catalogue 157 → 185 strings; ratchet 170 → 140.
+  Picked over the larger `SettingsScreen` because this is the flow the app's own
+  premise rests on — *"you decide your news sources"*. A reader who cannot read
+  "Paste a feed or a site URL", "This page declares more than one feed, pick
+  one" or "Couldn't add this URL" cannot use the app for the thing it is for,
+  however much is translated around them.
+  Several keys are shared with the web's `sources_*` set rather than duplicated,
+  which is the payoff of one catalogue for two clients: the wording that already
+  existed in twenty-nine languages did not need translating twice.
+  29 locales complete at 185 strings; Kashmiri 22%.
+- **D58 — Settings, the last big screen, and the brand exemption that made it
+  finishable (2026-09-01).** Fourth migration tranche: `SettingsScreen`, 69
+  hardcoded strings to zero, the single largest file in the app. Catalogue
+  185 → 249 strings; ratchet 140 → 68 across 22 files.
+  Settings is where the app makes its promises — *"the report stayed on your
+  device; nothing was sent anywhere"*, *"what you look up is never sent
+  anywhere"*, *"API keys are never included"*. A privacy claim a reader cannot
+  read is not a claim they can rely on, which is why this screen was worth its
+  size.
+  Two files reached zero without a line of migration: `Wordmark` and the last
+  two in Settings were the words **Nooz**, **Nooz Flash** and **Nooz Cast**.
+  Routing a brand through `strings.xml` would mean twenty-nine identical copies
+  of the same word and twenty-nine chances for one to drift into a translated
+  masthead, so `verifyI18n` now carries a `BRAND` exemption mirroring the web
+  guard's. The exemption is what let the ratchet close those files honestly
+  instead of parking them at 1 and 2 forever.
+  A near-miss worth recording: the exemption was declared and then not applied —
+  the `return@match` never made it into the loop — and the build stayed green
+  and said `73 still to move`, exactly as it had before. Nothing failed. The
+  tell was the *other* half of the ratchet staying quiet: if the exemption had
+  worked, SettingsScreen would have dropped under its budget and the build would
+  have demanded the number be lowered. **A guard's silence is only evidence when
+  you know which noise it would have made.**
+  `LocaleResolutionTest` gains two cases for this tranche rather than trusting
+  the catalogue count: `settings_your_data_body` resolving to Malayalam (a long
+  body string, because a screen can be wired for its headings and still be
+  English underneath) and `settings_size_license` keeping both positional
+  arguments in Arabic. 12 tests, all passing.
+  29 locales complete at 249 strings; Kashmiri 76/249 (31%, up from 22%).
+- **D59 — The ratchet reaches zero, and the copy only blind users hear
+  (2026-09-01).** Final migration tranche: the remaining 22 files, 81 new keys,
+  catalogue 249 → 330. `i18n-allowlist.txt` is now empty and `verifyI18n`
+  reports `0 string(s) still to move, across 0 file(s)`. Every interface string
+  in the scanned modules lives in `strings.xml`.
+  **The find that mattered.** Widening the guard to `onClickLabel =` surfaced 23
+  strings it had never matched — `\b` finds no boundary inside `onClickLabel`,
+  so `\blabel\s*=` had been silently skipping every one. These are labels
+  TalkBack speaks and the display never shows: "Open the day loom", "Filter to
+  Politics", "Define quotidian". A sighted pass over a Tamil build would have
+  looked finished while every spoken affordance was still English. For an app
+  whose accessibility claim has to be decisive, that was the worst possible
+  place for the guard's blind spot, and it was invisible precisely because
+  nothing renders it.
+  **Two exemptions, on the same principle as BRAND.** `label =` on
+  `rememberInfiniteTransition`/`animate*` is an animation-inspector name, and
+  `@Preview` bodies are developer scaffolding; neither ships to a reader. Left
+  matched, the only ways to satisfy the guard would have been to translate a
+  debug label into twenty-nine languages or to park it on the allowlist — and
+  the allowlist claims its entries are still to move. `enclosingCall()` walks
+  back through balanced parens to tell the two kinds of `label` apart;
+  `blankPreviews()` blanks preview bodies offset-for-offset so line numbers stay
+  exact. Together they closed Bars, EmptyState and SectionHeading honestly
+  rather than by amnesty.
+  A third `LocaleResolutionTest` case asserts a spoken label resolves in Tamil,
+  including an interpolated word — the same reasoning as D58's: the copy nobody
+  can see is the copy that needs a test rather than a glance. 13 tests, 321
+  across the build, all passing.
+  29 locales complete at 330 strings; Kashmiri 119/330 (36%, up from 31%).
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
@@ -1132,6 +2125,19 @@ respect as the CI-caught log above.
     Standard, Sudan Tribune, Daily Mirror & Newsfirst & FT.lk (Sri Lanka),
     bdnews24 (Bangladesh) (403/HTML on repeated checks — dropped rather than
     guessed around).
+- **2026-08-31** — India regional-language pack: 41 candidate endpoints fetched
+  with `HttpClient`'s own UA (never a spoofed one), **33 ship**. Gated on a
+  parseable root, ≥5 items, expected script, and a newest item ≤7 days old —
+  not merely a 200. Dropped after fetching: `punjabi.abplive.com/feed` (404,
+  the working path is `/home/feed`), `thanthitv.com/feed` (well-formed, zero
+  items), the five `oneindia.com` feeds (403 to any UA without "Mozilla"; two
+  of them additionally ~6 weeks stale behind a daily-refreshed
+  `lastBuildDate`), `sambadodisha.com/feed` (200, but serving casino spam),
+  plus Kerala Kaumudi, Deshabhimani, Manorama, Asianet, Madhyamam, MediaOne,
+  Janmabhumi, Prajavani, Udayavani, Vijaya Karnataka, Eenadu, Loksatta, Sakal,
+  Anandabazar, Navbharat Times, the Samayam family, Jagbani, and three
+  Assamese candidates (404/403/500/empty between them). **No Assamese feed
+  could be verified live — that language is an honest gap, not an oversight.**
 
 ---
 

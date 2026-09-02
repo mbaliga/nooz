@@ -14,6 +14,7 @@ import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.ReaderFont
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
@@ -41,6 +42,7 @@ class SettingsRepository(private val context: Context) {
         val TOPICS = stringSetPreferencesKey("filter_topics")
         val NOOZ_FLASH = booleanPreferencesKey("nooz_flash_enabled")
         val NOOZ_CAST = booleanPreferencesKey("nooz_cast_enabled")
+        val TODAY_IN_HISTORY = booleanPreferencesKey("today_in_history_enabled")
         val PAPER_GRAIN = stringPreferencesKey("paper_grain")
         val READ_MARK_STYLE = stringPreferencesKey("read_mark_style")
         val UNREAD_PINCH_FILTER = booleanPreferencesKey("unread_pinch_filter")
@@ -49,6 +51,7 @@ class SettingsRepository(private val context: Context) {
         val IMAGE_STYLE = stringPreferencesKey("image_style")
         val LENS_DISABLED_DEFAULT_TERMS = stringSetPreferencesKey("lens_disabled_default_terms")
         val LENS_CUSTOM_TERMS = stringSetPreferencesKey("lens_custom_terms")
+        val READING_ASIDE_STYLE = stringPreferencesKey("reading_aside_style")
     }
 
     fun observeSettings(): Flow<AppSettings> = context.settingsDataStore.data.map { prefs ->
@@ -64,6 +67,7 @@ class SettingsRepository(private val context: Context) {
             onboarded = prefs[Keys.ONBOARDED] ?: false,
             noozFlashEnabled = prefs[Keys.NOOZ_FLASH] ?: false,
             noozCastEnabled = prefs[Keys.NOOZ_CAST] ?: false,
+            todayInHistoryEnabled = prefs[Keys.TODAY_IN_HISTORY] ?: false,
             paperGrain = PaperGrain.fromKey(prefs[Keys.PAPER_GRAIN]),
             readMarkStyle = ReadMarkStyle.fromKey(prefs[Keys.READ_MARK_STYLE]),
             unreadPinchFilter = prefs[Keys.UNREAD_PINCH_FILTER] ?: true,
@@ -72,6 +76,7 @@ class SettingsRepository(private val context: Context) {
             imageStyle = ImageStyle.fromKey(prefs[Keys.IMAGE_STYLE]),
             lensDisabledDefaultTerms = prefs[Keys.LENS_DISABLED_DEFAULT_TERMS] ?: emptySet(),
             lensCustomTerms = prefs[Keys.LENS_CUSTOM_TERMS] ?: emptySet(),
+            readingAsideStyle = ReadingAsideStyle.fromKey(prefs[Keys.READING_ASIDE_STYLE]),
         )
     }
 
@@ -126,12 +131,20 @@ class SettingsRepository(private val context: Context) {
         context.settingsDataStore.edit { it[Keys.NOOZ_CAST] = enabled }
     }
 
+    suspend fun setTodayInHistoryEnabled(enabled: Boolean) {
+        context.settingsDataStore.edit { it[Keys.TODAY_IN_HISTORY] = enabled }
+    }
+
     suspend fun setPaperGrain(grain: PaperGrain) {
         context.settingsDataStore.edit { it[Keys.PAPER_GRAIN] = grain.key }
     }
 
     suspend fun setReadMarkStyle(style: ReadMarkStyle) {
         context.settingsDataStore.edit { it[Keys.READ_MARK_STYLE] = style.key }
+    }
+
+    suspend fun setReadingAsideStyle(style: ReadingAsideStyle) {
+        context.settingsDataStore.edit { it[Keys.READING_ASIDE_STYLE] = style.key }
     }
 
     suspend fun setUnreadPinchFilter(enabled: Boolean) {

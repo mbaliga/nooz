@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Night overlay for the pre-Compose first frame. Same style, same opt-out
+      of OEM force-dark; only the bar-icon polarity flips, because the window
+      background under it is the charcoal value from values-night/colors.xml.
+
+      Compose takes over immediately afterwards and re-asserts this from the
+      app's own resolved tint (see MainActivity), which is the authority when a
+      reader has picked a tint by hand rather than following the phone.
+    -->
+    <style name="Theme.River" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/river_window_background</item>
+        <item name="android:statusBarColor">@color/river_window_background</item>
+        <item name="android:navigationBarColor">@color/river_window_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>

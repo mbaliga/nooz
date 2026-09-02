@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.semantics
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.RiverAnalysis
 import xyz.mdhv.riverwip.model.Topic
 import xyz.mdhv.riverwip.model.WeeklyAggregate
@@ -70,40 +72,40 @@ fun CrossSectionPanel(aggregates: List<WeeklyAggregate>, selectedIndex: Int, mod
         )
 
         MetricRow(
-            label = "Coverage",
+            label = stringResource(DesignR.string.cross_coverage),
             value = "${(coverage * 100).roundToInt()}%",
             formula = "items you opened ÷ items that flowed, this period",
         )
         MetricRow(
-            label = "Breadth: the stream",
+            label = stringResource(DesignR.string.cross_breadth_stream),
             value = "%.1f effective topics".format(breadthStream),
             formula = "exp(Shannon entropy) of the stream's topic mix: how spread across topics the supply was",
         )
         MetricRow(
-            label = "Breadth: you",
+            label = stringResource(DesignR.string.cross_breadth_you),
             value = "%.1f effective topics".format(breadthRead),
             formula = "exp(Shannon entropy) of what you read: how spread across topics your reading was",
         )
 
-        Text("Per-topic over/under", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = Tokens.Spacing.xs))
+        Text(stringResource(DesignR.string.cross_over_under), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = Tokens.Spacing.xs))
         for ((topic, ratio) in overUnder) {
             OverUnderRow(topic, ratio)
         }
 
         Text(
-            "What changed since the previous period",
+            stringResource(DesignR.string.cross_what_changed),
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = Tokens.Spacing.xs),
         )
         if (selectedIndex == 0) {
             Text(
-                "No earlier period yet to compare against.",
+                stringResource(DesignR.string.cross_no_earlier),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else if (decomposition.isEmpty()) {
             Text(
-                "Your topic mix held steady.",
+                stringResource(DesignR.string.cross_steady),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -158,12 +160,11 @@ private fun OverUnderRow(topic: Topic, ratio: Double) {
                 // Colour is never the only channel (brief §2): label always present.
                 Text(topic.placeholderLabel, style = MaterialTheme.typography.bodyMedium)
             }
-            Text("%.2fx".format(ratio), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            Text(stringResource(DesignR.string.cross_section_ratio, ratio), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
         }
         if (expanded) {
             Text(
-                "your ${topic.placeholderLabel} share of what you read ÷ its share of the stream; " +
-                    "above 1x means you read more of this topic than it made up of the stream",
+                stringResource(DesignR.string.cross_section_explainer, topic.placeholderLabel),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

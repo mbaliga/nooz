@@ -20,30 +20,42 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.design.CandyCaneBar
 import xyz.mdhv.riverwip.design.NoozWordmark
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
 
-private enum class OnbStep { WELCOME, ADVANCED }
+private enum class OnbStep { WELCOME, ADVANCED, TOUR }
 
 /**
  * First-run onboarding (owner's #19): the reader lands on the paper already
  * warming up — a candy-cane bar standing in for stories loading — and is
  * offered two doors. **Quick setup** takes the honest defaults (on-device
  * first, controls shown), adds a small starter set of verified global
- * outlets so the Stand isn't empty, and drops straight in. **Advanced** opens
- * a short wizard: the same three-path [ModelChoicePanel] Settings' Reader
- * intelligence uses (on-device / download a model / bring your own key — a
- * cross-repo consumer of Nooz's catalogue flagged the fake-button risk this
- * avoids), and a choice of immersive vs. controls-shown. A **Skip** is always
- * present — onboarding is never a wall.
+ * outlets so the Stand isn't empty. **Advanced** opens a short wizard: the
+ * same three-path [ModelChoicePanel] Settings' Reader intelligence uses
+ * (on-device / download a model / bring your own key — a cross-repo consumer
+ * of Nooz's catalogue flagged the fake-button risk this avoids), and a choice
+ * of immersive vs. controls-shown.
+ *
+ * Both doors then land on [FeatureTourContent] as a send-off (D36), because
+ * Cast, Flash and the Loom were going undiscovered: the Loom opens by pulling
+ * down on the stand, and the other two ship deliberately off. The tour comes
+ * *last* rather than first on purpose — the names mean something once the app
+ * is set up and there are stories behind it, and putting it up front would
+ * have taxed every reader before they had any reason to care.
+ *
+ * A **Skip** is always present, and skips the tour too — onboarding is never a
+ * wall, and a reader who says "skip" has been clear. Settings keeps the same
+ * tour permanently for anyone who skipped, or who onboarded before it existed.
  */
 @Composable
 fun OnboardingScreen(
@@ -55,7 +67,9 @@ fun OnboardingScreen(
     onClearByok: () -> Unit,
     onSetImmersive: (Boolean) -> Unit,
 ) {
-    var step by remember { mutableStateOf(OnbStep.WELCOME) }
+    // rememberSaveable, not remember: rotating the phone mid-setup used to drop
+    // the reader back on the welcome step, losing whichever door they'd picked.
+    var step by rememberSaveable { mutableStateOf(OnbStep.WELCOME) }
 
     Box(Modifier.fillMaxSize()) {
         // The "articles loading" backdrop: the wordmark and a live candy-cane bar.
@@ -70,7 +84,7 @@ fun OnboardingScreen(
             CandyCaneBar()
             Spacer(Modifier.height(Tokens.Spacing.xs))
             Text(
-                "Gathering today's stories…",
+                stringResource(DesignR.string.onboarding_loading),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -90,8 +104,8 @@ fun OnboardingScreen(
                     // Quick setup used to just skip Advanced and drop the reader
                     // on an empty Stand — indistinguishable from Skip (owner: "the
                     // quick setup isn't doing any setup at all"). It now actually
-                    // adds a small starter set before finishing.
-                    onQuick = { onQuickSetup(); onFinish() },
+                    // adds a small starter set, then hands off to the tour.
+                    onQuick = { onQuickSetup(); step = OnbStep.TOUR },
                     onAdvanced = { step = OnbStep.ADVANCED },
                     onSkip = onFinish,
                 )
@@ -99,11 +113,13 @@ fun OnboardingScreen(
                     byokConfig = byokConfig,
                     download = download,
                     onBack = { step = OnbStep.WELCOME },
-                    onFinish = onFinish,
+                    onDone = { step = OnbStep.TOUR },
+                    onSkip = onFinish,
                     onSaveByok = onSaveByok,
                     onClearByok = onClearByok,
                     onSetImmersive = onSetImmersive,
                 )
+                OnbStep.TOUR -> TourStep(onFinish = onFinish)
             }
         }
     }
@@ -112,23 +128,37 @@ fun OnboardingScreen(
 @Composable
 private fun WelcomeStep(onQuick: () -> Unit, onAdvanced: () -> Unit, onSkip: () -> Unit) {
     Text(
-        "Read what's there, and notice what isn't.",
+        stringResource(DesignR.string.onboarding_headline),
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.onBackground,
     )
     Text(
-        "Nooz is a quiet news reader. The lens can flag loaded language and, with a dictionary, define any word on a long-press. Everything runs on your device by default.",
+        stringResource(DesignR.string.onboarding_blurb),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Button(onClick = onQuick, modifier = Modifier.fillMaxWidth()) {
-        Text("Quick setup")
+        Text(stringResource(DesignR.string.onboarding_quick_setup))
     }
     OutlinedButton(onClick = onAdvanced, modifier = Modifier.fillMaxWidth()) {
-        Text("Advanced setup")
+        Text(stringResource(DesignR.string.onboarding_advanced_setup))
     }
     TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
-        Text("Skip")
+        Text(stringResource(DesignR.string.onboarding_skip))
+    }
+}
+
+/** The send-off: what's here and where it lives. See [FeatureTourContent]. */
+@Composable
+private fun TourStep(onFinish: () -> Unit) {
+    Text(
+        stringResource(DesignR.string.tour_title),
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.onBackground,
+    )
+    FeatureTourContent()
+    Button(onClick = onFinish, modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(DesignR.string.onboarding_start_reading))
     }
 }
 
@@ -137,18 +167,19 @@ private fun AdvancedStep(
     byokConfig: ByokConfig,
     download: ModelDownloadUi,
     onBack: () -> Unit,
-    onFinish: () -> Unit,
+    onDone: () -> Unit,
+    onSkip: () -> Unit,
     onSaveByok: (String, String, String) -> Unit,
     onClearByok: () -> Unit,
     onSetImmersive: (Boolean) -> Unit,
 ) {
-    var modelPath by remember { mutableStateOf(if (byokConfig.isComplete) ModelPath.BYOK else ModelPath.ON_DEVICE) }
-    var immersive by remember { mutableStateOf(false) }
+    var modelPath by rememberSaveable { mutableStateOf(if (byokConfig.isComplete) ModelPath.BYOK else ModelPath.ON_DEVICE) }
+    var immersive by rememberSaveable { mutableStateOf(false) }
 
-    Text("Advanced setup", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+    Text(stringResource(DesignR.string.onboarding_advanced_setup), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
 
     Text(
-        "How should the lens think?",
+        stringResource(DesignR.string.onboarding_lens_question),
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -162,13 +193,13 @@ private fun AdvancedStep(
     )
 
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    SectionHeading("Reading mode")
+    SectionHeading(stringResource(DesignR.string.onboarding_reading_mode))
     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
-        ModeChip("Controls shown", !immersive) { immersive = false }
-        ModeChip("Immersive", immersive) { immersive = true }
+        ModeChip(stringResource(DesignR.string.onboarding_mode_controls), !immersive) { immersive = false }
+        ModeChip(stringResource(DesignR.string.onboarding_mode_immersive), immersive) { immersive = true }
     }
     Text(
-        "Controls shown keeps an obvious back button and the utility bar. Immersive hides them for a bare page; swipe right to go back. You can change this any time in Settings.",
+        stringResource(DesignR.string.onboarding_mode_explainer),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -176,13 +207,13 @@ private fun AdvancedStep(
     Button(
         onClick = {
             onSetImmersive(immersive)
-            onFinish()
+            onDone()
         },
         modifier = Modifier.fillMaxWidth(),
-    ) { Text("Done") }
+    ) { Text(stringResource(DesignR.string.onboarding_done)) }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        TextButton(onClick = onBack) { Text("Back") }
-        TextButton(onClick = onFinish) { Text("Skip") }
+        TextButton(onClick = onBack) { Text(stringResource(DesignR.string.onboarding_back)) }
+        TextButton(onClick = onSkip) { Text(stringResource(DesignR.string.onboarding_skip)) }
     }
 }
 

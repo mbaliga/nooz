@@ -11,10 +11,12 @@
 // by default, switchable from the chip on the lead photo); the extracted/feed
 // image URLs were already restricted to https by feeds.js.
 
+import { t } from '../i18n.js';
 import { classifyItem, TOPIC_LABEL } from '../topics.js';
 import { frameImage } from '../images.js';
 import { buildLoomStrip } from './loom.js';
 import { sanitizeHtml } from '../sanitize.js';
+import { buildFoundQuoteAside, insertFoundQuoteAside } from '../foundQuote.js';
 
 // Which spread of the Newspaper mode is open; kept across background re-renders.
 // Spread 0 is the front page (shown on its own); spread 1 is pages 2-3, etc.
@@ -43,11 +45,8 @@ export function render(container, state, actions) {
     return;
   }
 
-  const notice = buildFetchErrorNotice(state);
-
   if (state.items.length === 0) {
     paper.appendChild(buildMasthead(state));
-    if (notice) paper.appendChild(notice);
     paper.appendChild(
       state.searchQuery ? buildNoResultsEmptyState(state) : buildNothingFlowedEmptyState(actions)
     );
@@ -61,18 +60,23 @@ export function render(container, state, actions) {
   // Paper on a category/publisher/region.
   const focus = buildFocusBar(state, actions);
 
+  // The strip is a quiet echo of the Loom's own bar, meant to fly into and
+  // become it on open (see loom.js's flyStripToLoom). Once the Loom drawer is
+  // actually open, its own bar is already showing that same information --
+  // leaving the strip up too would just read as two duplicate bars, so it's
+  // hidden for as long as the drawer stays open.
+  const loomOpen = state.activeDrawer === 'loom';
+
   if (mode === 'newspaper') {
     // The big Nooz nameplate lives on the front page itself; inner pages carry
     // a plain running head -- standard newspaper format.
     if (focus) paper.appendChild(focus);
-    if (notice) paper.appendChild(notice);
-    paper.appendChild(buildLoomStrip(state, actions));
+    if (!loomOpen) paper.appendChild(buildLoomStrip(state, actions));
     paper.appendChild(buildNewspaper(state, actions));
   } else {
     paper.appendChild(buildMasthead(state));
     if (focus) paper.appendChild(focus);
-    if (notice) paper.appendChild(notice);
-    paper.appendChild(buildLoomStrip(state, actions));
+    if (!loomOpen) paper.appendChild(buildLoomStrip(state, actions));
     paper.appendChild(buildFrontPage(state, actions));
   }
 
@@ -259,10 +263,77 @@ function buildNewspaper(state, actions) {
     newspaperSpread = target;
     actions.refreshView();
   };
+  attachMarginTurn(frame, book, doTurn);
 
   wrap.appendChild(frame);
-  wrap.appendChild(buildPager(newspaperSpread, maxSpread, shown, pages.length, doTurn));
+  // Immersive: nothing below the page -- no page count, no turn buttons.
+  // Margin click/hold still turns pages; it doesn't depend on this row.
+  const immersive = state.settings && state.settings.immersiveNewspaper === true;
+  if (!immersive) wrap.appendChild(buildPager(newspaperSpread, maxSpread, shown, pages.length, doTurn));
   return wrap;
+}
+
+// Clicking the blank margin either side of the book turns the page that way --
+// the default way to move through Newspaper mode (its pages are the web's
+// equivalent of the app's immersive, chrome-free reading surface). Clicking
+// and holding repeats the turn, accelerating like a fast-forward/rewind, until
+// released. A plain click (target === frame, i.e. the flex container's own
+// background, not the book or anything in it -- headlines stay clickable)
+// turns once; holding past ~480ms takes over and the trailing click is
+// suppressed so a hold doesn't also count as one more single turn.
+//
+// holdTimer/heldFired are MODULE-level, not local to one call: every doTurn()
+// inside the repeat loop calls actions.refreshView(), which re-renders the
+// newspaper and hands buildNewspaper a brand-new `frame` element -- so the
+// listeners this function attaches are re-attached fresh on every tick, each
+// time to a different DOM node. If the timer lived in this function's own
+// closure, the release ("pointerup") would land on whichever frame is
+// current at that instant, not the (now-detached) one the timer's closure
+// captured, so the "stop" listener would never fire and the repeat would run
+// forever ("pages keep scrolling long after I release the click"). Module
+// scope plus a release listener on `window` (registered once, not per call)
+// sidesteps that: the same timer variable is visible from every call, and
+// `window` never gets swapped out from under the pointer.
+let holdTimer = null;
+let heldFired = false;
+let holdReleaseWired = false;
+
+function attachMarginTurn(frame, book, doTurn) {
+  const isBlank = (evt) => evt.target === frame;
+  const sideOf = (evt) => {
+    const r = book.getBoundingClientRect();
+    const mid = r.width > 0 ? r.left + r.width / 2 : frame.getBoundingClientRect().left + frame.getBoundingClientRect().width / 2;
+    return evt.clientX < mid ? -1 : 1;
+  };
+
+  frame.addEventListener('click', (evt) => {
+    if (!isBlank(evt)) return;
+    if (heldFired) { heldFired = false; return; }
+    doTurn(sideOf(evt));
+  });
+
+  frame.addEventListener('pointerdown', (evt) => {
+    if (!isBlank(evt)) return;
+    if (evt.button !== undefined && evt.button !== 0) return;
+    const dir = sideOf(evt);
+    clearTimeout(holdTimer);
+    heldFired = false;
+    let speed = 420; // ms between repeats; shrinks each tick, i.e. accelerates
+    const tick = () => {
+      heldFired = true;
+      doTurn(dir);
+      speed = Math.max(90, speed - 35);
+      holdTimer = setTimeout(tick, speed);
+    };
+    holdTimer = setTimeout(tick, 480); // grace period so a quick tap stays a single turn
+  });
+
+  if (!holdReleaseWired) {
+    holdReleaseWired = true;
+    const stop = () => { clearTimeout(holdTimer); holdTimer = null; };
+    window.addEventListener('pointerup', stop);
+    window.addEventListener('pointercancel', stop);
+  }
 }
 
 // Front alone, then two pages per spread when there's room (else one at a time),
@@ -308,13 +379,13 @@ function buildArticleEls(item, state, actions, showImages, isLead) {
   const els = [];
   const head = document.createElement('div');
   head.className = 'nooz-art-head' + (isLead ? ' nooz-art-head--lead' : '');
-  head.setAttribute('role', 'button');
-  head.setAttribute('tabindex', '0');
   if (state.readIds && state.readIds.has(item.id)) head.classList.add('is-read');
   head.appendChild(kicker(item));
   const h = document.createElement(isLead ? 'h2' : 'h3');
   h.className = 'nooz-art-headline' + (isLead ? ' nooz-art-headline--lead' : '');
-  h.textContent = item.title || '(untitled)';
+  const headMark = readMarker(item, state);
+  if (headMark) h.appendChild(headMark);
+  h.appendChild(headlineLink(item, actions, item.title || '(untitled)'));
   head.appendChild(h);
   if (showImages && item.image) {
     const fig = isLead
@@ -328,7 +399,7 @@ function buildArticleEls(item, state, actions, showImages, isLead) {
     if (fig) head.appendChild(fig);
   }
   head.appendChild(byline(item, state));
-  wire(head, () => actions.openItem(item.id));
+  cardActivation(head, item, actions);
   els.push(head);
 
   const body = buildBodyBlocks(item, state);
@@ -375,7 +446,7 @@ function buildBodyBlocks(item, state) {
   if (blocks.length === 0) {
     const p = document.createElement('p');
     p.className = 'nooz-art-b nooz-art-b--thin';
-    p.textContent = 'The full text is not in this feed. Open the story to read it at the source.';
+    p.textContent = t('stand_no_full_text', 'The full text is not in this feed. Open the story to read it at the source.');
     blocks.push(p);
   }
   return blocks;
@@ -415,10 +486,10 @@ function buildFrontNameplate(state) {
   top.className = 'nooz-np-topline';
   const ed = document.createElement('span');
   ed.className = 'nooz-np-edition';
-  ed.textContent = 'The Loom Edition';
+  ed.textContent = t('stand_loom_edition', 'The Loom Edition');
   const tag = document.createElement('span');
   tag.className = 'nooz-np-tagline';
-  tag.textContent = 'Woven from your own sources';
+  tag.textContent = t('stand_woven_from', 'Woven from your own sources');
   top.appendChild(ed);
   top.appendChild(tag);
   wrap.appendChild(top);
@@ -435,7 +506,7 @@ function buildFrontNameplate(state) {
   d1.textContent = fullToday();
   const d2 = document.createElement('span');
   d2.className = 'nooz-np-dateline-mid';
-  d2.textContent = 'Your Source, Your News';
+  d2.textContent = t('stand_your_source', 'Your Source, Your News');
   const d3 = document.createElement('span');
   d3.textContent = `${enabled} ${enabled === 1 ? 'source' : 'sources'}`;
   dateline.appendChild(d1);
@@ -568,7 +639,7 @@ function buildVisiblePage(state, actions, page, dims) {
 function newspaperLoading() {
   const p = document.createElement('p');
   p.className = 'nooz-np-loading';
-  p.textContent = 'Setting the paper…';
+  p.textContent = t('stand_setting_paper', 'Setting the paper…');
   return p;
 }
 
@@ -579,7 +650,7 @@ function buildPager(spread, maxSpread, shown, pageCount, doTurn) {
   const prev = document.createElement('button');
   prev.type = 'button';
   prev.className = 'nooz-button nooz-pager-btn';
-  prev.textContent = '‹ Turn back';
+  prev.textContent = t('stand_turn_back', '‹ Turn back');
   prev.disabled = spread <= 0;
   prev.addEventListener('click', () => doTurn(-1));
   pager.appendChild(prev);
@@ -592,7 +663,7 @@ function buildPager(spread, maxSpread, shown, pageCount, doTurn) {
   const next = document.createElement('button');
   next.type = 'button';
   next.className = 'nooz-button nooz-pager-btn';
-  next.textContent = 'Turn page ›';
+  next.textContent = t('stand_turn_page', 'Turn page ›');
   next.disabled = spread >= maxSpread;
   next.addEventListener('click', () => doTurn(1));
   pager.appendChild(next);
@@ -610,11 +681,73 @@ function pagerLabel(spread, shown, pageCount) {
 // Stories
 // ---------------------------------------------------------------------------
 
+/**
+ * Turns a headline element into the story's actual control.
+ *
+ * Every story card used to be `role="button"` on the <article> itself, with the
+ * whole article body nested inside it. Two things follow from that, and both
+ * are severe:
+ *
+ *  - `button` takes its accessible name from its contents and prunes their
+ *    structure, so the card's name was an *entire article* read as one string,
+ *    and the <h2> inside stopped being a heading. Heading navigation on the
+ *    Paper returned only the masthead, and the links list was empty — the two
+ *    ways a screen-reader user skims a page, both gone.
+ *  - Interactive descendants (the image style toggles, the bookmark) became
+ *    nested interactives inside a button, which is invalid and behaves
+ *    differently in every engine.
+ *
+ * The headline link is the fix: a real <a href="#/reader/…"> restores the
+ * heading, gives the story a name that is just its title, puts it in the links
+ * list, and is keyboard-operable for free. The card keeps a plain click
+ * listener so the large tap target survives for pointer users — it is simply no
+ * longer pretending to be a control.
+ */
+function headlineLink(item, actions, text) {
+  const link = document.createElement('a');
+  link.className = 'nooz-headline-link';
+  // setAttribute, not the .href setter: the setter resolves against the
+  // document URL and re-serialises, which can decode escapes an item id needs
+  // to keep. The attribute is stored exactly as written.
+  link.setAttribute('href', `#/reader/${encodeURIComponent(item.id)}`);
+  link.textContent = text;
+  link.addEventListener('click', (event) => {
+    // Let modified clicks (new tab, download) behave normally.
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+        event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    actions.openItem(item.id);
+  });
+  return link;
+}
+
+/**
+ * Read state as text, not only as a colour.
+ *
+ * `.is-read` dims the headline and nothing else, so "have I read this?" was
+ * conveyed by colour alone — invisible to a screen reader and to anyone who
+ * cannot distinguish the two greys.
+ */
+function readMarker(item, state) {
+  if (!state.readIds || !state.readIds.has(item.id)) return null;
+  const mark = document.createElement('span');
+  mark.className = 'nooz-visually-hidden';
+  mark.textContent = t('list_read', 'Read') + '. ';
+  return mark;
+}
+
+/** A whole-card click target that is not itself a control. */
+function cardActivation(el, item, actions) {
+  el.addEventListener('click', (event) => {
+    // The headline link, the bookmark and the image controls handle themselves.
+    if (event.target.closest('a, button')) return;
+    actions.openItem(item.id);
+  });
+}
+
 function buildLeadStory(item, state, actions, showImages, imageStyle, continued) {
   const story = document.createElement('article');
   story.className = 'nooz-lead';
-  story.setAttribute('role', 'button');
-  story.setAttribute('tabindex', '0');
   if (state.readIds.has(item.id)) story.classList.add('is-read');
 
   if (showImages && item.image) {
@@ -633,10 +766,14 @@ function buildLeadStory(item, state, actions, showImages, imageStyle, continued)
 
   const headline = document.createElement('h2');
   headline.className = 'nooz-lead-headline';
-  headline.textContent = item.title || '(untitled)';
+  const leadMark = readMarker(item, state);
+  if (leadMark) headline.appendChild(leadMark);
+  headline.appendChild(headlineLink(item, actions, item.title || '(untitled)'));
   body.appendChild(headline);
 
-  if (item.summary) {
+  if (isFullDisplay(state)) {
+    body.appendChild(buildFullBody(item, state));
+  } else if (item.summary) {
     const dek = document.createElement('p');
     dek.className = 'nooz-lead-dek';
     dek.textContent = clampText(item.summary, continued ? 220 : 320);
@@ -647,26 +784,65 @@ function buildLeadStory(item, state, actions, showImages, imageStyle, continued)
 
   const cont = document.createElement('span');
   cont.className = 'nooz-continue';
-  cont.textContent = 'Continue reading →';
+  cont.textContent = t('stand_continue_reading', 'Continue reading →');
   body.appendChild(cont);
 
   story.appendChild(body);
-  wire(story, () => actions.openItem(item.id));
+  cardActivation(story, item, actions);
   return story;
+}
+
+// Continuous mode's article-length setting (Settings > Articles): full extracted
+// text inline (like a newspaper), or the short dek. Falls back to the dek while
+// full text is still being fetched (app.js prefetches it eagerly when this
+// setting is on) -- it upgrades in place on the next render once ready.
+function isFullDisplay(state) {
+  return !state.settings || state.settings.articleDisplay !== 'excerpt';
+}
+
+function buildFullBody(item, state) {
+  const extracted = state.articles && state.articles[item.id];
+  let frag = null;
+  if (extracted && extracted.html) frag = sanitizeHtml(extracted.html, { allowImages: false });
+  else if (item.contentHtml) frag = sanitizeHtml(item.contentHtml, { allowImages: false });
+
+  const wrap = document.createElement('div');
+  wrap.className = 'nooz-reader-body';
+  if (frag && frag.childNodes.length) {
+    wrap.appendChild(frag);
+  } else if (item.summary) {
+    for (const para of splitParagraphsLocal(item.summary)) {
+      const p = document.createElement('p');
+      p.textContent = para;
+      wrap.appendChild(p);
+    }
+  } else {
+    const p = document.createElement('p');
+    p.className = 'nooz-reader-thin';
+    p.textContent = t('stand_no_full_text_yet', 'The full text is not in this feed yet. Open the story to read it at the source.');
+    wrap.appendChild(p);
+  }
+
+  const aside = state.readingAside;
+  if (aside && aside.itemId === item.id) {
+    insertFoundQuoteAside(wrap, buildFoundQuoteAside(aside, state.settings && state.settings.foundQuoteStyle));
+  }
+
+  return wrap;
 }
 
 function buildColumnStory(item, state, actions, showImages) {
   const story = document.createElement('article');
   story.className = 'nooz-col-story';
-  story.setAttribute('role', 'button');
-  story.setAttribute('tabindex', '0');
   if (state.readIds.has(item.id)) story.classList.add('is-read');
 
   story.appendChild(kicker(item));
 
   const headline = document.createElement('h3');
   headline.className = 'nooz-col-headline';
-  headline.textContent = item.title || '(untitled)';
+  const colMark = readMarker(item, state);
+  if (colMark) headline.appendChild(colMark);
+  headline.appendChild(headlineLink(item, actions, item.title || '(untitled)'));
   story.appendChild(headline);
 
   if (showImages && item.image) {
@@ -674,7 +850,9 @@ function buildColumnStory(item, state, actions, showImages) {
     if (figure) story.appendChild(figure);
   }
 
-  if (item.summary) {
+  if (isFullDisplay(state)) {
+    story.appendChild(buildFullBody(item, state));
+  } else if (item.summary) {
     const dek = document.createElement('p');
     dek.className = 'nooz-col-dek';
     dek.textContent = clampText(item.summary, 160);
@@ -682,7 +860,7 @@ function buildColumnStory(item, state, actions, showImages) {
   }
 
   story.appendChild(byline(item, state));
-  wire(story, () => actions.openItem(item.id));
+  cardActivation(story, item, actions);
   return story;
 }
 
@@ -707,17 +885,6 @@ function byline(item, state) {
   return line;
 }
 
-function wire(el, activate) {
-  el.addEventListener('click', activate);
-  el.addEventListener('keydown', (event) => {
-    if (event.target !== el) return;
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      activate();
-    }
-  });
-}
-
 function clampText(text, max) {
   const t = (text || '').trim();
   if (t.length <= max) return t;
@@ -727,24 +894,6 @@ function clampText(text, max) {
 // ---------------------------------------------------------------------------
 // Notices + empty states
 // ---------------------------------------------------------------------------
-
-function buildFetchErrorNotice(state) {
-  const fetchStatus = state.fetchStatus || {};
-  const failed = state.sources.filter((s) => s.enabled && fetchStatus[s.id] === 'error');
-  if (failed.length === 0) return null;
-  const notice = document.createElement('div');
-  notice.className = 'nooz-notice';
-  notice.setAttribute('role', 'status');
-  const label = document.createElement('p');
-  label.className = 'nooz-notice-title';
-  label.textContent = failed.length === 1 ? "Couldn't reach 1 source" : `Couldn't reach ${failed.length} sources`;
-  notice.appendChild(label);
-  const names = document.createElement('p');
-  names.className = 'nooz-notice-detail';
-  names.textContent = failed.map((s) => s.title).join(', ');
-  notice.appendChild(names);
-  return notice;
-}
 
 function buildNoSourcesEmptyState(actions) {
   const wrap = emptyState('Nothing on your paper yet', 'Add a feed, or pick from a short list of pre-checked starter sources -- open Sources from the footer.');

@@ -9,3 +9,12 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.ksp) apply false
 }
+
+// The i18n ratchet. See gradle/i18n/verify-i18n.gradle.kts for what it checks
+// and why Android Lint's HardcodedText cannot do this job.
+apply(from = "gradle/i18n/verify-i18n.gradle.kts")
+
+// One task that runs every module's unit tests. See the script for why the
+// obvious task list did not: ci.yml's three variant tasks silently skipped
+// :core:model, the most-tested module in the repo.
+apply(from = "gradle/verification/unit-tests.gradle.kts")

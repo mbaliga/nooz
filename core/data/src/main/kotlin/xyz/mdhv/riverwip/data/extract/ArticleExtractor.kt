@@ -9,7 +9,10 @@ import org.jsoup.nodes.Element
  * it is unit-tested against real article HTML on the JVM.
  *
  * Algorithm:
- *  1. Strip boilerplate tags (script/style/nav/header/footer/aside/etc).
+ *  1. Strip boilerplate tags (script/style/nav/header/footer/aside/etc) and
+ *     interactive chrome ([UI_CONTROL_TAGS]), then reject any candidate whose
+ *     text is really markup a share/embed widget printed for the reader to
+ *     copy (see [EMBEDDED_MARKUP]).
  *  2. Prefer a well-known semantic content container (schema.org's
  *     `itemprop=articleBody`, common CMS classes like `.entry-content` /
  *     `.post-content`, or a bare `<article>`/`<main>`) when it holds real
@@ -45,6 +48,34 @@ object ArticleExtractor {
     private const val MAX_LINK_DENSITY = 0.3
 
     /**
+     * Interactive chrome, never article prose. Stripped alongside the usual
+     * boilerplate so a widget's own labels ("Embed", "Download", "Subscribe")
+     * can't be read as body copy — either on their own or by leaking into the
+     * text of whatever container happens to hold them.
+     */
+    private const val UI_CONTROL_TAGS = "button, input, select, textarea, label"
+
+    /**
+     * Markup that arrived as visible *text* rather than as elements — a
+     * share/embed widget printing its own snippet for the reader to copy.
+     * NPR's audio tool is the case that surfaced this: it renders
+     * `&lt;iframe src="..."&gt;` inside a `<code>` block, so by the time jsoup
+     * has decoded the entities it is ordinary text, and stripping `<iframe>`
+     * *elements* (which this extractor already did) never touched it. The
+     * whole `<li>` then scored as a perfectly good paragraph: hundreds of
+     * characters, no links, and it led the article.
+     *
+     * Matches a deliberately narrow set of real tag names. `b`/`i`/`em`/`u`
+     * are excluded on purpose so ordinary prose comparisons ("the ratio a < b
+     * and c > d held") can't be mistaken for markup.
+     */
+    private val EMBEDDED_MARKUP = Regex(
+        "<\\s*/?\\s*(iframe|script|embed|object|video|audio|img|source|div|span|table|form|" +
+            "input|textarea|button|a|p|br|hr|blockquote|code|pre|style|link|meta)\\b[^<>]*>",
+        RegexOption.IGNORE_CASE,
+    )
+
+    /**
      * Common containers for the real article body across major CMSes and
      * news orgs' own schema.org markup, most-specific first. Checked before
      * falling back to whole-document density scoring.
@@ -71,6 +102,7 @@ object ArticleExtractor {
             return Extracted(null, null, emptyList())
         }
         doc.select("script, style, noscript, iframe, form, svg, nav, header, footer, aside").remove()
+        doc.select(UI_CONTROL_TAGS).remove()
 
         val title = doc.selectFirst("h1")?.text()?.ifBlank { null } ?: doc.title().ifBlank { null }
         val byline = doc.selectFirst("[rel=author], .byline, .author, meta[name=author]")
@@ -149,6 +181,10 @@ object ArticleExtractor {
     private fun isGoodParagraph(p: Element): Boolean {
         val text = p.text().trim()
         if (text.length < MIN_PARAGRAPH_LEN) return false
+        // A block that prints markup at the reader is a widget, not writing —
+        // drop the whole candidate rather than trying to clean the tag out of
+        // it, since what's left is invariably the widget's own labels.
+        if (EMBEDDED_MARKUP.containsMatchIn(text)) return false
         return linkDensity(p) < MAX_LINK_DENSITY
     }
 

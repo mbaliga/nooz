@@ -5,19 +5,20 @@
 //   1. Add a source by URL (a plain input + button; validated just enough to
 //      catch an obviously empty or malformed value -- no lecture, one short
 //      line of inline text if it doesn't look like a URL).
-//   2. The reader's current sources, each with its enabled toggle, a remove
-//      button, and an honest fetch-health indicator. Per the "never silent"
-//      principle that runs through this whole app: a source that has been
-//      failing keeps showing its status and its reason, in place, for as
-//      long as it keeps failing -- it never quietly drops off the list.
+//   2. "Your feeds" -- only the sources you added by URL, each with its enabled
+//      toggle, a remove button, and an honest fetch-health indicator. Per the
+//      "never silent" principle: a source that has been failing keeps showing
+//      its status and reason, in place, for as long as it keeps failing.
+//      Sources that come from the starter catalogue are NOT relisted here.
 //   3. A short catalogue of pre-checked starter sources, grouped by region,
-//      each one tappable to add -- except the ones already on the reader's
-//      list, which show "Added" (disabled, greyed) instead of an Add button,
-//      never simply removed from view.
+//      each with a plain on/off switch you flip in place. Switching one on adds
+//      it; switching it off removes it -- it never jumps into a separate list.
 //
 // All feed-derived and reader-typed text (titles, URLs, error strings) is
 // only ever assigned via .textContent, never innerHTML, so nothing a source
 // or a reader types can inject markup into the page.
+
+import { t } from '../i18n.js';
 
 /**
  * @param {HTMLElement} container
@@ -31,11 +32,12 @@ export function render(container, state, actions) {
   root.className = 'nooz-layout nooz-stack nooz-stack--lg';
 
   const heading = document.createElement('h1');
-  heading.textContent = 'Sources';
+  heading.textContent = t('sources_title', 'Sources');
   root.appendChild(heading);
 
   root.appendChild(buildAddSourceSection(actions));
-  root.appendChild(buildYourSourcesSection(state, actions));
+  const yourFeeds = buildYourFeedsSection(state, actions);
+  if (yourFeeds) root.appendChild(yourFeeds);
   root.appendChild(buildStarterSourcesSection(state, actions));
 
   container.appendChild(root);
@@ -57,7 +59,7 @@ function buildAddSourceSection(actions) {
 
   const label = document.createElement('p');
   label.className = 'nooz-section-title';
-  label.textContent = 'Add a source';
+  label.textContent = t('sources_add', 'Add a source');
   section.appendChild(label);
 
   const form = document.createElement('form');
@@ -67,8 +69,8 @@ function buildAddSourceSection(actions) {
   const input = document.createElement('input');
   input.type = 'url';
   input.className = 'nooz-input';
-  input.placeholder = 'https://example.com/feed.xml';
-  input.setAttribute('aria-label', 'Feed URL');
+  input.placeholder = t('sources_url_placeholder', 'https://example.com/feed.xml');
+  input.setAttribute('aria-label', t('sources_url_label', 'Feed URL'));
   input.autocomplete = 'off';
   input.value = addUrlDraft;
   form.appendChild(input);
@@ -76,7 +78,7 @@ function buildAddSourceSection(actions) {
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
   submitBtn.className = 'nooz-button nooz-button--primary';
-  submitBtn.textContent = 'Add';
+  submitBtn.textContent = t('sources_add_button', 'Add');
   form.appendChild(submitBtn);
 
   section.appendChild(form);
@@ -136,27 +138,25 @@ function isPlausibleUrl(value) {
 // 2. Your sources
 // ---------------------------------------------------------------------------
 
-function buildYourSourcesSection(state, actions) {
+// "Your feeds" -- only the sources you added by URL yourself. Sources that come
+// from the starter catalogue are controlled by their on/off switch down in that
+// catalogue, in place, so they are never duplicated up here or "moved" into a
+// separate list. Returns null (nothing rendered) when you have no custom feeds.
+function buildYourFeedsSection(state, actions) {
+  const starterUrls = new Set((state.starters || []).map((s) => s.url));
+  const custom = state.sources.filter((s) => !starterUrls.has(s.url));
+  if (custom.length === 0) return null;
+
   const section = document.createElement('div');
   section.className = 'nooz-stack nooz-stack--xs';
 
   const label = document.createElement('p');
   label.className = 'nooz-section-title';
-  label.textContent = 'Your sources';
+  label.textContent = t('sources_your_feeds', 'Your feeds');
   section.appendChild(label);
 
-  if (state.sources.length === 0) {
-    const empty = document.createElement('p');
-    empty.className = 'nooz-empty-state-text';
-    empty.style.textAlign = 'left';
-    empty.style.maxWidth = 'none';
-    empty.textContent = 'No sources yet -- add one above, or pick a starter below.';
-    section.appendChild(empty);
-    return section;
-  }
-
   const list = document.createElement('div');
-  for (const source of state.sources) {
+  for (const source of custom) {
     list.appendChild(buildSourceRow(source, state, actions));
   }
   section.appendChild(list);
@@ -203,7 +203,7 @@ function buildSourceRow(source, state, actions) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.className = 'nooz-button';
-  removeBtn.textContent = 'Remove';
+  removeBtn.textContent = t('sources_remove', 'Remove');
   removeBtn.setAttribute('aria-label', `Remove ${displayTitle}`);
   removeBtn.addEventListener('click', () => actions.removeSource(source.id));
   actionsWrap.appendChild(removeBtn);
@@ -238,7 +238,7 @@ function buildStatusIndicator(source, state) {
     label.textContent = 'OK';
   } else if (status === 'loading') {
     dot.classList.add('nooz-status-dot--loading');
-    label.textContent = 'Checking…';
+    label.textContent = t('sources_checking', 'Checking…');
   } else if (status === 'error') {
     dot.classList.add('nooz-status-dot--error');
     const reason = errorMessage || 'Unknown error';
@@ -247,7 +247,7 @@ function buildStatusIndicator(source, state) {
     label.title = reason;
     wrap.title = reason;
   } else {
-    label.textContent = 'Not checked yet';
+    label.textContent = t('sources_not_checked', 'Not checked yet');
   }
 
   wrap.appendChild(dot);
@@ -267,7 +267,7 @@ function buildStarterSourcesSection(state, actions) {
 
   const label = document.createElement('p');
   label.className = 'nooz-section-title';
-  label.textContent = 'Starter sources';
+  label.textContent = t('sources_starters', 'Starter sources');
   section.appendChild(label);
 
   const starters = state.starters || [];
@@ -277,7 +277,7 @@ function buildStarterSourcesSection(state, actions) {
     empty.className = 'nooz-empty-state-text';
     empty.style.textAlign = 'left';
     empty.style.maxWidth = 'none';
-    empty.textContent = 'No starter sources available.';
+    empty.textContent = t('sources_no_starters', 'No starter sources available.');
     section.appendChild(empty);
     return section;
   }
@@ -286,10 +286,10 @@ function buildStarterSourcesSection(state, actions) {
   description.className = 'nooz-empty-state-text';
   description.style.textAlign = 'left';
   description.style.maxWidth = 'none';
-  description.textContent = 'A short list of pre-checked, currently-live feeds -- add any you like.';
+  description.textContent = t('sources_starters_body', 'A short list of pre-checked, currently-live feeds — switch on any you like.');
   section.appendChild(description);
 
-  const existingUrls = new Set(state.sources.map((source) => source.url));
+  const byUrl = new Map(state.sources.map((source) => [source.url, source]));
 
   const groups = new Map();
   for (const starter of starters) {
@@ -308,7 +308,7 @@ function buildStarterSourcesSection(state, actions) {
 
     const rows = document.createElement('div');
     for (const starter of regionStarters) {
-      rows.appendChild(buildStarterRow(starter, existingUrls.has(starter.url), actions));
+      rows.appendChild(buildStarterRow(starter, byUrl.get(starter.url), state, actions));
     }
     group.appendChild(rows);
 
@@ -318,7 +318,11 @@ function buildStarterSourcesSection(state, actions) {
   return section;
 }
 
-function buildStarterRow(starter, alreadyAdded, actions) {
+// `subscribed` is the reader's own source object for this starter's URL, or
+// undefined if it isn't on their list yet. The switch reflects that -- on means
+// subscribed -- and flipping it adds or removes the source. Either way the row
+// stays exactly where it is in the catalogue; nothing jumps to another section.
+function buildStarterRow(starter, subscribed, state, actions) {
   const row = document.createElement('div');
   row.className = 'nooz-source-row';
 
@@ -340,18 +344,27 @@ function buildStarterRow(starter, alreadyAdded, actions) {
   const actionsWrap = document.createElement('div');
   actionsWrap.className = 'nooz-source-row-actions';
 
+  // Never-silent: a subscribed starter that's mid-check or failing shows its
+  // status right here, in place, exactly as a feed in "Your feeds" would.
+  if (subscribed) {
+    const status = (state.fetchStatus || {})[subscribed.id];
+    if (status === 'loading' || status === 'error') {
+      actionsWrap.appendChild(buildStatusIndicator(subscribed, state));
+    }
+  }
+
+  // A plain Add/Remove button -- not a switch. One control, one action; the
+  // row never moves regardless of which state it's in.
+  const on = !!subscribed;
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'nooz-button';
-  if (alreadyAdded) {
-    btn.textContent = 'Added';
-    btn.disabled = true;
-    btn.setAttribute('aria-label', `${starter.title} is already added`);
-  } else {
-    btn.textContent = 'Add';
-    btn.setAttribute('aria-label', `Add ${starter.title}`);
-    btn.addEventListener('click', () => actions.addStarter(starter));
-  }
+  btn.className = 'nooz-button' + (on ? '' : ' nooz-button--primary');
+  btn.textContent = on ? t('sources_remove', 'Remove') : t('sources_add_button', 'Add');
+  btn.setAttribute('aria-label', `${on ? t('sources_remove', 'Remove') : t('sources_add_button', 'Add')} ${starter.title}`);
+  btn.addEventListener('click', () => {
+    if (subscribed) actions.removeSource(subscribed.id);
+    else actions.addStarter(starter);
+  });
   actionsWrap.appendChild(btn);
 
   row.appendChild(actionsWrap);

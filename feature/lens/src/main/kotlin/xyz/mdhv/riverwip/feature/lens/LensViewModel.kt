@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
+import xyz.mdhv.riverwip.data.repo.TranslationRepository
+import xyz.mdhv.riverwip.model.TranslationCatalog
 import xyz.mdhv.riverwip.inference.InferenceRouter
 import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.inference.RewriteRequest
@@ -38,6 +40,7 @@ sealed interface AffectSpanUiState {
 class LensViewModel(
     private val inferenceRouter: InferenceRouter,
     private val dictionaryRepository: DictionaryRepository,
+    private val translationRepository: TranslationRepository,
 ) : ViewModel() {
 
     data class SpanKey(val itemId: String, val start: Int, val end: Int)
@@ -58,6 +61,18 @@ class LensViewModel(
     /** The bundled common-word gate; loaded lazily once a dictionary is present. */
     private var commonWords: Set<String> by mutableStateOf(emptySet())
 
+    /**
+     * The installed translation pair's destination language ("Spanish"), or
+     * null when none is installed (owner's ask: long-press a word while reading
+     * a foreign language and see it in your own).
+     *
+     * A name rather than a boolean because the definition sheet has to *label*
+     * the translations — "Spanish" tells the reader which of their languages
+     * they are looking at, where an unlabelled block would not.
+     */
+    var translationTargetName: String? by mutableStateOf(null)
+        private set
+
     init {
         viewModelScope.launch {
             dictionaryRepository.observeDownloadedId().collect { id ->
@@ -65,6 +80,11 @@ class LensViewModel(
                 if (id != null && commonWords.isEmpty()) {
                     commonWords = dictionaryRepository.commonWords()
                 }
+            }
+        }
+        viewModelScope.launch {
+            translationRepository.observeInstalledId().collect { id ->
+                translationTargetName = TranslationCatalog.byId(id)?.targetName
             }
         }
     }
@@ -78,6 +98,14 @@ class LensViewModel(
 
     /** Look up a word in the downloaded dictionary (null if none / not found). */
     suspend fun define(word: String): String? = dictionaryRepository.define(word)
+
+    /**
+     * Word-level translations from the installed bilingual dictionary, or
+     * empty when none is installed and when the word simply isn't in it.
+     * Local only — the same promise [define] makes: which words a reader
+     * looks up is never stored and never sent anywhere.
+     */
+    suspend fun translate(word: String): List<String> = translationRepository.translate(word)
 
     /**
      * Pre-underline detected spans. Driven by the persisted "Highlight loaded
@@ -180,9 +208,10 @@ class LensViewModel(
     class Factory(
         private val inferenceRouter: InferenceRouter,
         private val dictionaryRepository: DictionaryRepository,
+        private val translationRepository: TranslationRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            LensViewModel(inferenceRouter, dictionaryRepository) as T
+            LensViewModel(inferenceRouter, dictionaryRepository, translationRepository) as T
     }
 }

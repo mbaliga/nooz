@@ -23,6 +23,9 @@ import {
 } from './db.js';
 import { fetchFeed } from './feeds.js';
 import { STARTERS } from './starters.js';
+import { renderNewspaperClipping } from './newspaperShare.js';
+import { shouldShowOnboarding, showOnboarding } from './onboarding.js';
+import { pickFoundQuote } from './foundQuote.js';
 import { loadSettings, getSettings, setSetting } from './settings.js';
 import { installSelectionSearch } from './selection.js';
 import { render as renderStand } from './views/stand.js';
@@ -34,6 +37,8 @@ import { render as renderSettings } from './views/settings.js';
 import { render as renderNewsstand } from './views/newsstand.js';
 import { classifyItem } from './topics.js';
 import { parseRoute, navigate, onRoute } from './router.js';
+import { createFocusManager } from './focus.js';
+import { init as initI18n, onLanguageChange } from './i18n.js';
 
 const VIEW_RENDERERS = {
   stand: renderStand,
@@ -61,6 +66,50 @@ const DRAWER_VIEWS = new Set(['loom', 'sources', 'clippings', 'settings']);
 // for it. Below it (BBC-style one-liners), we try to extract the real article.
 const RICH_ENOUGH_CHARS = 900;
 
+// Settings > Articles > "Full articles": how many of the currently-visible
+// items get proactively extracted per render, top of the list first. Bounded
+// so a very large feed list can't fire hundreds of extraction requests at
+// once -- the browser's own per-origin connection limit throttles what does
+// run, but there's no reason to even queue more than a page's worth; items
+// past the cap still extract normally the moment they're opened.
+const FULL_ARTICLE_PREFETCH_CAP = 60;
+
+// The prefetch loop above queues up to a page's worth of extractions, but only
+// this many run at once -- otherwise a large feed list fires dozens of
+// concurrent /api/article requests and dozens of near-simultaneous 'loading'
+// state transitions (each calling rerender()) the instant the page loads,
+// which reads as the whole paper flickering and makes the first load feel
+// slow. Queued items still extract, just a few at a time.
+const ARTICLE_PREFETCH_CONCURRENCY = 3;
+const articlePrefetchQueue = [];
+const queuedArticleIds = new Set();
+let articlePrefetchActive = 0;
+
+function queueArticlePrefetch(item) {
+  if (!item || !item.link) return;
+  const id = item.id;
+  if (currentState.articles[id] || currentState.articleStatus[id] || queuedArticleIds.has(id)) return;
+  queuedArticleIds.add(id);
+  articlePrefetchQueue.push(item);
+  pumpArticlePrefetch();
+}
+
+function pumpArticlePrefetch() {
+  while (articlePrefetchActive < ARTICLE_PREFETCH_CONCURRENCY && articlePrefetchQueue.length) {
+    const item = articlePrefetchQueue.shift();
+    queuedArticleIds.delete(item.id);
+    articlePrefetchActive += 1;
+    ensureArticle(item).finally(() => {
+      articlePrefetchActive -= 1;
+      pumpArticlePrefetch();
+      // The whole background queue just drained -- flush any rerender a
+      // burst of completions was coalescing rather than leave the last
+      // batch sitting out the rest of its timer for nothing.
+      if (articlePrefetchQueue.length === 0 && articlePrefetchActive === 0) flushArticleCoalesce();
+    });
+  }
+}
+
 let allItems = [];
 const itemsById = new Map();
 
@@ -79,6 +128,7 @@ const currentState = {
   articles: {}, // itemId -> { id, html, byline, leadImage, textLen, fetchedAt }
   articleStatus: {}, // itemId -> 'loading' | 'ready' | 'error' | 'skip'
   settings: null,
+  readingAside: null, // the current found-quote/dateline pick (see foundQuote.js), or null
 };
 
 let viewEl = null;
@@ -86,14 +136,23 @@ let stageEl = null;
 let drawerEl = null;
 let shellEl = null;
 let navLinksEl = {};
+let sourcesBadgeEl = null;
 let toastEl = null;
 let toastTimer = null;
 let searchToggleEl = null;
 let searchBarEl = null;
 let searchInputEl = null;
+// Decides where the keyboard cursor goes after each rebuild -- see focus.js.
+// Built once the shell exists, since it holds on to the two rebuilt regions.
+let focusManager = null;
 
 async function boot() {
   currentState.settings = loadSettings();
+  // Before the shell is built, so the first paint is already in the reader's
+  // language and <html lang>/<html dir> are right for the first thing a screen
+  // reader announces. A failed fetch here leaves the interface in English
+  // rather than stopping the app.
+  await initI18n();
   await dbInit();
   const [sources, items, readIds, clippedIds, clippings] = await Promise.all([
     dbGetSources(),
@@ -110,18 +169,66 @@ async function boot() {
   rebuildItemsById();
 
   buildShell();
+  // A language change rebuilds the chrome as well as the view: the footer nav
+  // labels and the drawer's own name live outside the rendered view.
+  onLanguageChange(() => { buildShell(); scheduleRender(); });
   installSelectionSearch();
   onRoute(handleRoute);
   installResizeReflow();
+  installReadingClock();
   refreshAll();
+  if (shouldShowOnboarding()) showOnboarding();
+}
+
+// Every so often while actually reading, a quiet aside: a real line pulled
+// from something already read (see foundQuote.js) -- not a reward, no
+// counter kept anywhere, just an editorial break the way a long newspaper
+// column gets a pull-quote. The clock only runs while a reading view is on
+// screen and the tab is actually visible, so switching away or sitting in
+// Sources/Settings/the Loom doesn't quietly rack up "reading" time.
+const READING_ASIDE_INTERVAL_MS = 6 * 60 * 1000;
+const READING_CLOCK_TICK_MS = 5000;
+let readingClockMs = 0;
+
+function installReadingClock() {
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    if (!STAGE_VIEWS.has(parseRoute().view)) return;
+    readingClockMs += READING_CLOCK_TICK_MS;
+    if (readingClockMs < READING_ASIDE_INTERVAL_MS) return;
+    readingClockMs = 0;
+    const quote = pickFoundQuote({
+      items: computeVisibleItems(),
+      readIds: currentState.readIds,
+      articles: currentState.articles,
+      sources: currentState.sources,
+      currentItemId: parseRoute().itemId,
+    });
+    if (!quote) return; // nothing read yet with real text to pull from -- try again next interval
+    currentState.readingAside = quote;
+    rerender();
+  }, READING_CLOCK_TICK_MS);
 }
 
 // The Newspaper layout measures the masthead and fits a spread to the frame, so
 // it has to re-lay-out when the window changes size (and when the wide/narrow
 // two-up threshold is crossed). Debounced so a drag-resize doesn't thrash.
+//
+// iPadOS (and other mobile WebKit) browsers collapse and expand their own
+// toolbar chrome as the page scrolls, which fires plain 'resize' events with
+// only the viewport HEIGHT changing -- nothing in this app's layout depends
+// on that (the Newspaper's own page height already accounts for it via vh
+// units at layout time), so reacting to it just means rebuilding the whole
+// stage, including recreating the visible article's image, on every toolbar
+// twitch. Only a WIDTH change can move the wide/narrow column threshold, so
+// that's the only change worth a rerender.
 function installResizeReflow() {
   let timer = null;
+  let lastWidth = window.innerWidth;
   window.addEventListener('resize', () => {
+    const width = window.innerWidth;
+    if (width === lastWidth) return;
+    lastWidth = width;
     clearTimeout(timer);
     timer = setTimeout(() => rerender(), 150);
   });
@@ -164,6 +271,8 @@ function buildShell() {
 
   shell.appendChild(viewEl);
 
+  focusManager = createFocusManager({ stage: stageEl, drawer: drawerEl });
+
   const footer = document.createElement('footer');
   footer.className = 'nooz-footerbar';
 
@@ -202,6 +311,15 @@ function buildShell() {
       if (DRAWER_VIEWS.has(view) && route.view === view) navigate('stand');
       else navigate(view);
     });
+    // The Sources tab carries an alert dot when a source is failing (that's
+    // where you fix it) -- see updateSourceHealth. No banner on the paper.
+    if (view === 'sources') {
+      sourcesBadgeEl = document.createElement('span');
+      sourcesBadgeEl.className = 'nooz-footer-badge';
+      sourcesBadgeEl.hidden = true;
+      sourcesBadgeEl.setAttribute('aria-hidden', 'true');
+      link.appendChild(sourcesBadgeEl);
+    }
     nav.appendChild(link);
     navLinksEl[view] = link;
   }
@@ -240,7 +358,16 @@ function buildShell() {
 
   app.appendChild(shell);
 
-  // Escape closes an open drawer or the search bar.
+  // Escape closes an open drawer or the search bar. Registered once for the
+  // life of the page: buildShell runs again when the language changes, and a
+  // second copy of this would close the search bar twice per keypress.
+  if (!escapeHandlerInstalled) installEscapeHandler();
+}
+
+let escapeHandlerInstalled = false;
+
+function installEscapeHandler() {
+  escapeHandlerInstalled = true;
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (shellEl.classList.contains('has-search')) closeSearch();
@@ -279,9 +406,13 @@ function openSearch() {
 }
 
 function closeSearch() {
+  const hadFocus = !!searchBarEl && searchBarEl.contains(document.activeElement);
   shellEl.classList.remove('has-search');
   searchToggleEl.classList.toggle('is-active', !!currentState.searchQuery);
   searchToggleEl.setAttribute('aria-expanded', 'false');
+  // The search bar is hidden by a class, so a focused input inside it stays
+  // focused while being invisible -- keystrokes going somewhere nobody can see.
+  if (hadFocus) searchToggleEl.focus();
 }
 
 function buildDrawerClose() {
@@ -316,7 +447,48 @@ function handleRoute(route) {
   rerender();
 }
 
+// A failing enabled source raises a small alert dot on the Sources tab -- the
+// place it gets resolved -- with the "Couldn't reach ..." detail on hover,
+// rather than a notice banner across the top of the paper.
+function updateSourceHealth() {
+  if (!sourcesBadgeEl || !navLinksEl.sources) return;
+  const fetchStatus = currentState.fetchStatus || {};
+  const failed = (currentState.sources || []).filter(
+    (s) => s.enabled && fetchStatus[s.id] === 'error'
+  );
+  const link = navLinksEl.sources;
+  if (failed.length === 0) {
+    sourcesBadgeEl.hidden = true;
+    link.removeAttribute('title');
+    link.removeAttribute('aria-label');
+    return;
+  }
+  sourcesBadgeEl.hidden = false;
+  const summary = failed.length === 1
+    ? "Couldn't reach 1 source"
+    : `Couldn't reach ${failed.length} sources`;
+  link.title = `${summary}: ${failed.map((s) => s.title || s.url).join(', ')}`;
+  link.setAttribute('aria-label', `${NAV_LABELS.sources} — ${summary}`);
+}
+
+// Many state changes (a burst of article extractions finishing, a fetch tick)
+// can each call rerender() within the same instant. Coalescing them into one
+// rAF-scheduled pass means one DOM rebuild for the whole burst instead of one
+// per change -- the difference between a single repaint and the UI visibly
+// flickering as it rebuilds itself over and over.
+let renderScheduled = false;
+
 function rerender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => {
+    renderScheduled = false;
+    renderNow();
+  });
+}
+
+function renderNow() {
+  updateSourceHealth();
   const active = document.activeElement;
   let restore = null;
   if (active && viewEl.contains(active) && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
@@ -350,14 +522,23 @@ function rerender() {
     articles: currentState.articles,
     articleStatus: currentState.articleStatus,
     settings: getSettings(),
+    readingAside: currentState.readingAside,
+    // Which drawer (if any) is open -- the Paper stays mounted behind it, so it
+    // needs this to know when to quiet its own on-page echo of a drawer's
+    // content (e.g. the loom strip, once the Loom drawer has its own bar open).
+    activeDrawer: DRAWER_VIEWS.has(route.view) ? route.view : null,
   };
+
+  if (stateForView.settings.articleDisplay !== 'excerpt') {
+    for (const item of stateForView.items.slice(0, FULL_ARTICLE_PREFETCH_CAP)) queueArticlePrefetch(item);
+  }
 
   // Stage: reader / newsstand / Paper (which stays mounted behind an open drawer).
   const stageView = STAGE_VIEWS.has(route.view) ? route.view : 'stand';
   VIEW_RENDERERS[stageView](stageEl, stateForView, actions);
 
   // Drawer: an option view slides in from the right; the Paper shifts aside.
-  const drawerView = DRAWER_VIEWS.has(route.view) ? route.view : null;
+  const drawerView = stateForView.activeDrawer;
   if (drawerView) {
     drawerEl.replaceChildren();
     drawerEl.appendChild(buildDrawerClose());
@@ -373,11 +554,13 @@ function rerender() {
     delete drawerEl.dataset.view;
   }
 
+  let restoredAnInput = false;
   if (restore && restore.index >= 0) {
     const candidates = Array.prototype.filter.call(viewEl.querySelectorAll(restore.tag), (el) => el.type === restore.type);
     const el = candidates[restore.index];
     if (el) {
       el.focus();
+      restoredAnInput = true;
       if (typeof el.setSelectionRange === 'function' && restore.selectionStart != null) {
         try {
           el.setSelectionRange(restore.selectionStart, restore.selectionEnd);
@@ -387,7 +570,9 @@ function rerender() {
       }
     }
   }
+  if (focusManager) focusManager.settle(route, drawerView, active, restoredAnInput);
 }
+
 
 /** Stand's items: enabled sources only (the honest denominator), then region, then search. */
 function computeVisibleItems() {
@@ -464,6 +649,74 @@ function plainLength(html) {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().length;
 }
 
+// ---------------------------------------------------------------------------
+// Rerender policy for article completions
+//
+// The background prefetch pump (pumpArticlePrefetch, up to 3 at a time, a
+// queue up to FULL_ARTICLE_PREFETCH_CAP deep) runs ensureArticle() for every
+// visible item so "Full articles" can upgrade in place -- but a bare
+// rerender() on every single one of those completions means a full stage
+// rebuild once per item, spread over however long the whole queue takes to
+// drain. Each rebuild recreates the on-screen article's <img> from scratch;
+// Chrome keeps the already-decoded bitmap hot across that, so it's invisible
+// there, but WebKit re-decodes a freshly-created <img> node even when the
+// bytes are already cached, which reads as the lead photo popping out and
+// back in, roughly once per completion, for as long as the queue is running.
+//
+// The fix is to only rerender when a result can actually change what's on
+// screen right now, and to coalesce the rest into one rebuild instead of one
+// per item.
+const ARTICLE_COALESCE_MS = 1500;
+let articleCoalesceTimer = null;
+
+// Whether the view currently on screen lays out extracted article bodies at
+// all -- if it doesn't, a background item resolving has nothing to redraw.
+// 'reader' shows exactly one article (route.itemId); a different item
+// finishing has nothing to add there, and the itemId-matches case is handled
+// separately, before this is ever consulted. 'stand' inlines every visible
+// item's full extracted text when Settings > Articles > "Full articles" is
+// on (the default), so any item resolving there can extend what's already
+// showing; in excerpt mode the Paper only ever reads the feed's own summary,
+// never state.articles, so it has nothing to gain from a rerender either.
+// 'newsstand' is a browse surface (titles and counts only) and never reads
+// state.articles at all.
+function viewRendersArticleBodies(route) {
+  return route.view === 'stand' && getSettings().articleDisplay !== 'excerpt';
+}
+
+function flushArticleCoalesce() {
+  if (articleCoalesceTimer === null) return;
+  clearTimeout(articleCoalesceTimer);
+  articleCoalesceTimer = null;
+  rerender();
+}
+
+function rerenderForArticleResult(item) {
+  const route = parseRoute();
+  if (route.itemId === item.id) {
+    // The article on screen just resolved (or changed loading state) --
+    // nothing coalesces this, it should show up right away.
+    rerender();
+    return;
+  }
+  if (!viewRendersArticleBodies(route)) {
+    // Nothing on screen reads state.articles/articleStatus for this item
+    // right now. The result still lands in currentState, so the next real
+    // render (opening the item, a nav, a setting change) picks it up for
+    // free -- no rebuild needed to make that true.
+    return;
+  }
+  // One trailing rerender for however many of these land in the same burst,
+  // reset on every new arrival; pumpArticlePrefetch's finally callback
+  // flushes it immediately once the queue is fully drained so the last
+  // batch in a run isn't left waiting out a timer nobody will reset again.
+  clearTimeout(articleCoalesceTimer);
+  articleCoalesceTimer = setTimeout(() => {
+    articleCoalesceTimer = null;
+    rerender();
+  }, ARTICLE_COALESCE_MS);
+}
+
 async function ensureArticle(item) {
   if (!item || !item.link) return;
   const id = item.id;
@@ -478,12 +731,12 @@ async function ensureArticle(item) {
   if (cached && cached.html) {
     currentState.articles[id] = cached;
     currentState.articleStatus[id] = 'ready';
-    rerender();
+    rerenderForArticleResult(item);
     return;
   }
 
   currentState.articleStatus[id] = 'loading';
-  rerender();
+  rerenderForArticleResult(item);
 
   try {
     const res = await fetch(`/api/article?url=${encodeURIComponent(item.link)}`, {
@@ -510,7 +763,7 @@ async function ensureArticle(item) {
   } catch (_err) {
     currentState.articleStatus[id] = 'error';
   }
-  rerender();
+  rerenderForArticleResult(item);
 }
 
 // ---------------------------------------------------------------------------
@@ -605,20 +858,60 @@ function goTo(view) {
 async function shareItem(itemId) {
   const item = itemsById.get(itemId);
   if (!item) return;
-  const shareData = { title: item.title || 'Nooz', text: item.summary || '', url: item.link || undefined };
+  const source = (currentState.sources || []).find((s) => s.id === item.sourceId);
+  const shareText = item.link ? `${item.title || 'Nooz'} — ${item.link}` : (item.title || 'Nooz');
+
+  // A "newspaper clipping" mockup image, matching the Android app's own
+  // share -- rendered client-side. Never dead-ends: if rendering fails, or
+  // the platform can't share files, this falls through to the plain
+  // link/text share (and, with no Web Share API at all, a direct download
+  // plus a copied link) exactly as share worked before this existed.
+  let blob = null;
+  try {
+    blob = await renderNewspaperClipping({
+      title: item.title,
+      sourceTitle: source ? source.title : null,
+      author: item.author,
+    });
+  } catch (_err) {
+    blob = null;
+  }
+
+  if (blob && navigator.canShare) {
+    const file = new File([blob], 'nooz-clipping.png', { type: 'image/png' });
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: item.title || 'Nooz', text: shareText });
+        return;
+      } catch (_err) {
+        /* cancelled -- fall through to the plain share below */
+      }
+    }
+  }
+
   if (navigator.share) {
     try {
-      await navigator.share(shareData);
+      await navigator.share({ title: item.title || 'Nooz', text: item.summary || '', url: item.link || undefined });
     } catch (_err) {
       /* cancelled/unsupported -- not worth surfacing */
     }
     return;
   }
+
+  // No Web Share API at all (desktop Safari/Firefox): download the clipping
+  // if one rendered, and copy the link either way.
+  if (blob) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'nooz-clipping.png';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
   const text = item.link || item.title || '';
   if (!text) return;
   try {
     await navigator.clipboard.writeText(text);
-    showToast('Link copied');
+    showToast(blob ? 'Clipping downloaded, link copied' : 'Link copied');
   } catch (_err) {
     showToast('Could not copy link');
   }

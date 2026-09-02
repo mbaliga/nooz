@@ -15,14 +15,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 
 /** The Material list-detail breakpoint (≥840dp) — the point past which a phone-width single pane starts wasting real space. */
 val TWO_PANE_MIN_WIDTH = 840.dp
@@ -53,6 +56,7 @@ fun ReaderScreenTwoPane(
     immersiveReader: Boolean,
     noozFlashEnabled: Boolean,
     noozCastEnabled: Boolean,
+    todayInHistoryEnabled: Boolean,
     paperGrain: PaperGrain,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
@@ -61,6 +65,7 @@ fun ReaderScreenTwoPane(
     showFeedImages: Boolean,
     hideNsfwImages: Boolean,
     imageStyle: ImageStyle,
+    readingAsideStyle: ReadingAsideStyle,
     onToggleLens: () -> Unit,
     onOpenEdit: () -> Unit,
     onOpenEditSettings: () -> Unit,
@@ -98,6 +103,7 @@ fun ReaderScreenTwoPane(
                 vm = vm,
                 noozFlashEnabled = noozFlashEnabled,
                 noozCastEnabled = noozCastEnabled,
+                todayInHistoryEnabled = todayInHistoryEnabled,
                 readMarkStyle = readMarkStyle,
                 unreadPinchFilter = unreadPinchFilter,
                 showFeedImages = showFeedImages,
@@ -128,7 +134,7 @@ fun ReaderScreenTwoPane(
                 // empty state already explains why; this pane just stays quiet.
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        "Select an article to read",
+                        stringResource(DesignR.string.reader_select_article),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -166,6 +172,7 @@ fun ReaderScreenTwoPane(
                     showFeedImages = showFeedImages,
                     hideNsfwImages = hideNsfwImages,
                     imageStyle = imageStyle,
+                    readingAsideStyle = readingAsideStyle,
                     offsetX = 0f,
                     progress = 0f,
                     parkedRoom = null,

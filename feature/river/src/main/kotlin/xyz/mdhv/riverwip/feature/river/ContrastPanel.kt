@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,12 +36,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.GlobeModel
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
@@ -154,7 +158,7 @@ fun ContrastPanel(
 
         if (totalFlowed == 0) {
             EmptyState(
-                title = "Nothing flowed this day",
+                title = stringResource(DesignR.string.contrast_nothing_flowed),
                 body = "The contrast, what your sources ran against what you read, appears once anything comes in.",
                 fill = false,
                 modifier = Modifier.fillMaxWidth(),
@@ -164,7 +168,7 @@ fun ContrastPanel(
 
         // ---- Reach: one nested funnel bar + a spare legend ----
         Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
-            SectionHeading("Reach")
+            SectionHeading(stringResource(DesignR.string.contrast_reach))
             NestedFunnel(
                 filterFraction = admitted.toFloat() / totalFlowed,
                 readFraction = totalRead.toFloat() / totalFlowed,
@@ -193,7 +197,7 @@ fun ContrastPanel(
         // ---- By topic: dumbbells + a spare sort lever ----
         Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionHeading("By topic", modifier = Modifier.weight(1f))
+                SectionHeading(stringResource(DesignR.string.contrast_by_topic), modifier = Modifier.weight(1f))
                 Row(
                     Modifier.selectableGroup(),
                     horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
@@ -215,7 +219,7 @@ fun ContrastPanel(
             val blindSpot = ordered.maxByOrNull { it.gap }
             if (totalRead > 0 && blindSpot != null && blindSpot.gap > 0.08f) {
                 Text(
-                    "Widest gap in ${blindSpot.topic.placeholderLabel}: ${(blindSpot.flowedShare * 100).roundToInt()}% flowed, ${(blindSpot.readShare * 100).roundToInt()}% read.",
+                    stringResource(DesignR.string.contrast_widest_gap, blindSpot.topic.placeholderLabel, (blindSpot.flowedShare * 100).roundToInt(), (blindSpot.readShare * 100).roundToInt()),
                     style = MaterialTheme.typography.bodyMedium,
                     color = muted,
                 )
@@ -229,8 +233,8 @@ fun ContrastPanel(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(top = Tokens.Spacing.xs),
             ) {
-                DotKey(filled = false, label = "flowed", ink = ink, muted = muted)
-                DotKey(filled = true, label = "read", ink = ink, muted = muted)
+                DotKey(filled = false, label = stringResource(DesignR.string.contrast_flowed), ink = ink, muted = muted)
+                DotKey(filled = true, label = stringResource(DesignR.string.contrast_read), ink = ink, muted = muted)
             }
         }
     }
@@ -258,11 +262,11 @@ private fun RegionsSection(
     muted: Color,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
-        SectionHeading("Regions")
+        SectionHeading(stringResource(DesignR.string.contrast_regions))
         RegionHeatStrip(reads = reads, selected = filter.region, ink = ink)
         if (reads.values.sum() == 0) {
             Text(
-                "No reads yet today. The map fills in as you read.",
+                stringResource(DesignR.string.contrast_no_reads),
                 style = MaterialTheme.typography.bodySmall,
                 color = muted,
             )
@@ -285,14 +289,23 @@ private fun RegionsSection(
  * real control, not a rendering glitch (an earlier version's near-zero-alpha
  * fill at zero reads looked like nothing was there).
  */
+// internal rather than private so ContrastAccessibilityTest can compose it on
+// its own: the assertion is about what this one node publishes, and hoisting
+// the whole panel to reach it would test the panel instead.
 @Composable
-private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Color) {
+internal fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Color) {
     val maxV = reads.entries.filter { it.key != Region.GLOBAL }.maxOfOrNull { it.value }?.takeIf { it > 0 } ?: 1
+    // A bare Canvas publishes nothing, so this map — which is the entire answer
+    // to "where in the world have I been reading?" — was silent. Shade alone
+    // carried the whole comparison, which is also unreadable for anyone who
+    // cannot separate two close greys.
+    val spoken = describeHeatStrip(reads, selected)
     Canvas(
         Modifier
             .fillMaxWidth()
             .aspectRatio(360f / 168f)
-            .clip(RoundedCornerShape(Tokens.Radius.sm)),
+            .clip(RoundedCornerShape(Tokens.Radius.sm))
+            .semantics { contentDescription = spoken },
     ) {
         val w = size.width
         val h = size.height
@@ -339,6 +352,34 @@ private fun RegionHeatStrip(reads: Map<Region, Int>, selected: Region, ink: Colo
             else -> outline(selected.fromLon, selected.toLon)
         }
     }
+}
+
+/**
+ * The heat strip in words: every sector with a read, named with its number,
+ * densest first, and the current selection said out loud rather than left to
+ * a highlight. Sectors with nothing read are omitted — naming eight zeroes
+ * before the two that matter buries the answer.
+ *
+ * `@Composable` so it can reach `stringResource`; assembled from literals it
+ * was English in every locale.
+ */
+@Composable
+private fun describeHeatStrip(reads: Map<Region, Int>, selected: Region): String {
+    val withReads = reads.entries
+        .filter { it.key != Region.GLOBAL && it.value > 0 }
+        .sortedByDescending { it.value }
+    val head = stringResource(DesignR.string.heatstrip_title, selected.label)
+    if (withReads.isEmpty()) return head + " " + stringResource(DesignR.string.heatstrip_empty)
+    val total = withReads.sumOf { it.value }
+    // `map` is inline and so is a composable scope; `joinToString`'s transform
+    // is not, which is why the pieces are resolved before being joined.
+    val named = withReads
+        .map { stringResource(DesignR.string.loom_topic_count, it.key.label, it.value) }
+        .joinToString(", ")
+    val stories = stringResource(
+        if (total == 1) DesignR.string.heatstrip_story_one else DesignR.string.heatstrip_story_many,
+    )
+    return head + " " + stringResource(DesignR.string.heatstrip_read, total, stories, named)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -448,7 +489,11 @@ private fun DumbbellRow(row: ContrastRow, maxShare: Float, ink: Color, muted: Co
                 modifier = Modifier.weight(1f).padding(start = Tokens.Spacing.xs),
             )
             Text(
-                "${(row.flowedShare * 100).roundToInt()}% / ${(row.readShare * 100).roundToInt()}%",
+                stringResource(
+                    DesignR.string.contrast_share_pair,
+                    (row.flowedShare * 100).roundToInt(),
+                    (row.readShare * 100).roundToInt(),
+                ),
                 style = MaterialTheme.typography.labelSmall,
                 color = muted,
             )

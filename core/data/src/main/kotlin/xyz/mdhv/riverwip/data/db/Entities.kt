@@ -1,6 +1,9 @@
 package xyz.mdhv.riverwip.data.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Fts4
+import androidx.room.FtsOptions
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
@@ -105,4 +108,38 @@ data class ClippingEntity(
     val publishedAt: Long,
     val savedAt: Long,
     val excerpt: String?,
+)
+
+/**
+ * The extracted body of an article the reader has actually opened, in an FTS4
+ * index (D37).
+ *
+ * Article prose used to live *only* as loose `.txt` files in [FullTextCache],
+ * which has no way to enumerate or query them — so the Stand's search could
+ * only ever match a headline, and finding a story by a half-remembered phrase
+ * from the middle of it was impossible. This is that same text, indexed.
+ *
+ * `unicode61`, not the default `simple` tokenizer: `simple` treats every
+ * non-ASCII byte as a token separator, which would shred Telugu, Tamil,
+ * Devanagari, Gujarati, Gurmukhi and Odia into unsearchable fragments — and the
+ * catalogue now carries feeds in all of them.
+ *
+ * Only bodies live here. Titles and summaries are matched in memory against the
+ * items already on screen, because those exist for every item whereas a body
+ * exists only once an article has been opened; searching one table would have
+ * quietly answered a narrower question than the reader asked.
+ */
+@Fts4(tokenizer = FtsOptions.TOKENIZER_UNICODE61)
+@Entity(tableName = "article_text")
+data class ArticleTextEntity(
+    /**
+     * `autoGenerate` is load-bearing, not decoration. FTS4's only key is the
+     * implicit rowid, and 0 is a *valid* rowid — so without this, every insert
+     * supplied rowid 0, and REPLACE-on-conflict made each newly indexed article
+     * overwrite the previous one. The index would have held exactly one row,
+     * for the last article opened, while looking entirely healthy.
+     */
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "rowid") val rowId: Int = 0,
+    val itemId: String,
+    val body: String,
 )

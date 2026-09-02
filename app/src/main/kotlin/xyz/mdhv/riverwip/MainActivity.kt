@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,17 +14,25 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import xyz.mdhv.riverwip.design.RiverTheme
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
 import xyz.mdhv.riverwip.feature.reader.ClippingsScreen
 import xyz.mdhv.riverwip.feature.reader.ClippingsViewModel
@@ -38,6 +47,12 @@ import xyz.mdhv.riverwip.feature.sources.EditTab
 import xyz.mdhv.riverwip.feature.sources.SourcesViewModel
 
 class MainActivity : ComponentActivity() {
+    // The reader's chosen interface language, applied before any resource is
+    // resolved. A no-op on API 33+, where the platform has already done it.
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -68,6 +83,7 @@ fun RiverApp() {
         factory = SettingsViewModel.Factory(
             container.settingsRepository,
             container.dictionaryRepository,
+            container.translationRepository,
             container.dataExporter,
             container.byokConfigStore,
             container.modelCatalogueRepository,
@@ -84,12 +100,17 @@ fun RiverApp() {
             weeklyAggregateRepository = container.weeklyAggregateRepository,
             clippingRepository = container.clippingRepository,
             settingsRepository = container.settingsRepository,
+            todayInHistoryRepository = container.todayInHistoryRepository,
             flashRouter = container.flashRouter,
             ttsProvider = container.ttsProvider,
         ),
     )
     val lensVm: LensViewModel = viewModel(
-        factory = LensViewModel.Factory(container.inferenceRouter, container.dictionaryRepository),
+        factory = LensViewModel.Factory(
+            container.inferenceRouter,
+            container.dictionaryRepository,
+            container.translationRepository,
+        ),
     )
     val sourcesVm: SourcesViewModel = viewModel(
         factory = SourcesViewModel.Factory(
@@ -121,6 +142,28 @@ fun RiverApp() {
             val current = if (attrs.screenBrightness < 0f) 0.5f else attrs.screenBrightness
             attrs.screenBrightness = (current + delta).coerceIn(0.05f, 1f)
             w.attributes = attrs
+        }
+    }
+
+    // System-bar icon contrast follows the *app's* resolved tint, not the OS
+    // night setting. enableEdgeToEdge()'s default SystemBarStyle.auto answers
+    // from Configuration.UI_MODE_NIGHT, which stops being the same question as
+    // "what is Nooz painting right now" the moment a reader picks a tint by
+    // hand — or, before D34, simply left the app on light Paper while the phone
+    // said night. Either way the bars drew light icons onto a light surface,
+    // which is the unreadable-in-dark-mode report this fixes. Re-runs whenever
+    // the tint or the phone's night setting changes.
+    val systemDark = isSystemInDarkTheme()
+    val darkSurface = settings.themeMode.isDarkSurface(systemDark)
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            activity?.window?.let { window ->
+                WindowCompat.getInsetsController(window, view).apply {
+                    isAppearanceLightStatusBars = !darkSurface
+                    isAppearanceLightNavigationBars = !darkSurface
+                }
+            }
         }
     }
 
@@ -208,6 +251,26 @@ fun RiverApp() {
             }
             val onOpenClippings = { screen = Screen.CLIPPINGS }
 
+            // Every top-level screen swap happens inside one activity and one
+            // composable, so nothing tells TalkBack the screen changed: a
+            // reader who opened the Loom got no announcement at all, only a
+            // silently different set of nodes under the same window. A
+            // `paneTitle` that changes with `screen` is what Compose turns into
+            // the platform's window-state-changed event, which is the event
+            // TalkBack reads aloud as "Loom".
+            val paneTitles = mapOf(
+                Screen.STAND to stringResource(DesignR.string.screen_paper),
+                Screen.EDIT to stringResource(DesignR.string.screen_sources_and_settings),
+                Screen.SETTINGS to stringResource(DesignR.string.screen_settings),
+                Screen.LOOM to stringResource(DesignR.string.screen_loom),
+                Screen.CLIPPINGS to stringResource(DesignR.string.screen_clippings),
+                Screen.LENS_WORDS to stringResource(DesignR.string.screen_lens_words),
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .semantics { paneTitle = paneTitles.getValue(screen) },
+            ) {
             when (screen) {
                 Screen.STAND -> if (isExpandedWidth) {
                     // Tablet/large-screen: list and reader are both always on
@@ -221,6 +284,7 @@ fun RiverApp() {
                         immersiveReader = settings.immersiveReader,
                         noozFlashEnabled = settings.noozFlashEnabled,
                         noozCastEnabled = settings.noozCastEnabled,
+                        todayInHistoryEnabled = settings.todayInHistoryEnabled,
                         paperGrain = settings.paperGrain,
                         readMarkStyle = settings.readMarkStyle,
                         unreadPinchFilter = settings.unreadPinchFilter,
@@ -229,6 +293,7 @@ fun RiverApp() {
                         showFeedImages = settings.showFeedImages,
                         hideNsfwImages = settings.hideNsfwImages,
                         imageStyle = settings.imageStyle,
+                        readingAsideStyle = settings.readingAsideStyle,
                         onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                         onOpenEdit = onOpenEdit,
                         onOpenEditSettings = onOpenEditSettings,
@@ -245,6 +310,7 @@ fun RiverApp() {
                         immersiveReader = settings.immersiveReader,
                         noozFlashEnabled = settings.noozFlashEnabled,
                         noozCastEnabled = settings.noozCastEnabled,
+                        todayInHistoryEnabled = settings.todayInHistoryEnabled,
                         paperGrain = settings.paperGrain,
                         readMarkStyle = settings.readMarkStyle,
                         unreadPinchFilter = settings.unreadPinchFilter,
@@ -253,6 +319,7 @@ fun RiverApp() {
                         showFeedImages = settings.showFeedImages,
                         hideNsfwImages = settings.hideNsfwImages,
                         imageStyle = settings.imageStyle,
+                        readingAsideStyle = settings.readingAsideStyle,
                         onToggleLens = { settingsVm.setHighlightLoadedLanguage(!settings.highlightLoadedLanguage) },
                         onOpenEdit = onOpenEdit,
                         onOpenEditSettings = onOpenEditSettings,
@@ -275,7 +342,7 @@ fun RiverApp() {
                         onOpenClippings = onOpenClippings,
                         onBrightnessDelta = if (settings.twoFingerBrightness) adjustBrightness else { _ -> },
                         onThemeFlick = if (settings.twoFingerThemeFlick) {
-                            { settingsVm.setTheme(settings.themeMode.next()) }
+                            { settingsVm.setTheme(settings.themeMode.next(systemDark)) }
                         } else {
                             {}
                         },
@@ -328,6 +395,8 @@ fun RiverApp() {
                     onBack = { screen = Screen.STAND },
                 )
             }
+            }
         }
     }
 }
+

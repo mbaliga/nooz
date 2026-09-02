@@ -6,6 +6,7 @@
 // It's a browse surface, not a reader: everything here is derived from the
 // same visible items, so it can only ever show what actually flowed.
 
+import { t } from '../i18n.js';
 import { classifyItem, TOPIC_LABEL, TOPICS } from '../topics.js';
 
 // Kept across re-renders so a background refresh doesn't reset the arrangement.
@@ -27,11 +28,11 @@ export function render(container, state, actions) {
   header.className = 'nooz-newsstand-header';
   const title = document.createElement('h1');
   title.className = 'nooz-newsstand-title';
-  title.textContent = 'The Stand';
+  title.textContent = t('stand_title', 'The Stand');
   header.appendChild(title);
   const sub = document.createElement('p');
   sub.className = 'nooz-newsstand-sub';
-  sub.textContent = 'Browse the papers. Pick a pile to read that slice.';
+  sub.textContent = t('stand_subtitle', 'Browse the papers. Pick a pile to read that slice.');
   header.appendChild(sub);
   root.appendChild(header);
 
@@ -190,7 +191,7 @@ function empty(state) {
   wrap.className = 'nooz-empty-state';
   const title = document.createElement('p');
   title.className = 'nooz-empty-state-title';
-  title.textContent = 'The stand is empty';
+  title.textContent = t('stand_empty', 'The stand is empty');
   wrap.appendChild(title);
   const text = document.createElement('p');
   text.className = 'nooz-empty-state-text';

@@ -1,0 +1,79 @@
+{
+  "_comment": "How the generated strings.xml is grouped and annotated. Keys not listed here land in a final 'Uncategorised' block, which is a nudge to file them rather than an error.",
+  "sections": [
+    {
+      "title": "Onboarding: the first thing anyone sees.",
+      "prefix": "onboarding_"
+    },
+    {
+      "title": "\"What's inside\": the short tour of things a reader would otherwise never find. Shown once during onboarding, and kept in Settings so readers who onboarded before it existed still meet it.",
+      "prefix": "tour_"
+    },
+    {
+      "title": "Screen names. These are what TalkBack announces on arrival, so they are the names the reader already knows from the control they pressed — \"Loom\", not \"LoomScreen\".",
+      "prefix": "screen_"
+    },
+    {
+      "title": "The article list: the Paper's chrome, and the labels a screen reader announces on it. Left in English these would undo most of what the locales are for.",
+      "prefix": "list_",
+      "notes": {
+        "list_topic_count": "%1$s is a topic's label; %2$d is how many stories carry it."
+      }
+    },
+    {
+      "title": "The reader.",
+      "prefix": "reader_",
+      "notes": {
+        "reader_minutes_short": "%1$d is whole minutes. Abbreviated on purpose -- it sits beside the headline.",
+        "reader_progress": "%1$d is 0-100. Spoken, never drawn."
+      }
+    },
+    {
+      "title": "The language picker.",
+      "prefix": "language_",
+      "notes": {
+        "language_partial": "%1$s is a language's own name for itself; %2$d is how much of the app is translated into it, 0–100. Shown so nobody is surprised by a screen that is half in English."
+      }
+    },
+    {
+      "title": "The Loom — the app's centrepiece, and the descriptions a screen reader speaks for it. These are assembled inside functions, where verifyI18n's call-site scanner cannot see them, so they stayed English in every locale until this tranche.",
+      "prefix": "loom_"
+    },
+    {
+      "title": "The region globe, including the actions that replace its drag and pinch.",
+      "prefix": "globe_"
+    },
+    {
+      "title": "The read-by-region map, which was a silent Canvas until D49.",
+      "prefix": "heatstrip_"
+    },
+    {
+      "title": "The Contrast ledger.",
+      "prefix": "contrast_"
+    },
+    {
+      "title": "The cross-section.",
+      "prefix": "cross_"
+    },
+    {
+      "title": "The web reader's own copy. Where the phrasing matches Android's, the same key is reused rather than duplicated -- one set of words for two clients is the whole point.",
+      "prefix": "stand_"
+    },
+    {
+      "title": "Clippings.",
+      "prefix": "clippings_"
+    },
+    {
+      "title": "Managing sources — the flow by which a reader chooses what this app is even about.",
+      "prefix": "sources_"
+    },
+    {
+      "title": "Adding and managing sources on Android — the flow by which a reader decides what this app is even about. `list_topics` and `sources_*` are reused where the web says the same thing.",
+      "prefix": "edit_"
+    },
+    {
+      "title": "Settings. The largest single surface, and the last big one to move.",
+      "prefix": "settings_"
+    }
+  ]
+}

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED FILE — do not edit. Source: i18n/strings/en.json (words) and
+  i18n/strings/_sections.json (grouping); generator: tools/i18n/generate.py.
+
+  ADDING A LANGUAGE
+  Drop i18n/strings/<bcp47>.json next to en.json, translate the values, run the
+  generator. That is the whole procedure — no Kotlin, no build change.
+  Locales.kt in :core:model is the list the app offers.
+
+  Android resolves each string separately and falls back to this file per key,
+  so a half-finished locale shows the half it has and English for the rest.
+  Never a blank, never a key name. Partial translations are therefore safe to
+  ship, which is what makes it possible to start thirty languages rather than
+  finish two.
+
+  WRITING THE COPY
+  The register is set in STATE.md and is not decoration: descriptive, never
+  scolding; shapes and counts, never FOMO or praise; and every total carries its
+  denominator — the reader's own chosen sources, never "all the news". A
+  translation that reads naturally but drops the denominator has changed what
+  the app claims, so keep it.
+-->
+<resources>
+
+    <!-- Onboarding: the first thing anyone sees. -->
+    <string name="onboarding_loading">Gathering today\'s stories…</string>
+    <string name="onboarding_headline">Read what\'s there, and notice what isn\'t.</string>
+    <string name="onboarding_blurb">A quiet news reader: what your sources actually sent you, and — just as plainly — what they left out. The lens flags loaded language, and with a dictionary downloaded it defines any word on a long-press. Everything runs on your phone by default.</string>
+    <string name="onboarding_quick_setup">Quick setup</string>
+    <string name="onboarding_advanced_setup">Advanced setup</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_done">Done</string>
+    <string name="onboarding_start_reading">Start reading</string>
+    <string name="onboarding_lens_question">How should the lens think?</string>
+    <string name="onboarding_reading_mode">Reading mode</string>
+    <string name="onboarding_mode_controls">Controls shown</string>
+    <string name="onboarding_mode_immersive">Immersive</string>
+    <string name="onboarding_mode_explainer">Controls shown keeps an obvious back button and the utility bar. Immersive hides them for a bare page; swipe right to go back. You can change this any time in Settings.</string>
+
+    <!-- "What's inside": the short tour of things a reader would otherwise never find. Shown once during onboarding, and kept in Settings so readers who onboarded before it existed still meet it. -->
+    <string name="tour_title">What\'s inside</string>
+    <string name="tour_loom_name">The Loom</string>
+    <string name="tour_loom_body">What your sources actually sent you, woven against what you actually read. Pull down on your stand, or tap the coloured bar above the stories.</string>
+    <string name="tour_flash_name">Nooz Flash</string>
+    <string name="tour_flash_body">The day\'s headlines cut to a line each, with a way back into the full piece. Off until you switch it on, in Settings.</string>
+    <string name="tour_cast_name">Nooz Cast</string>
+    <string name="tour_cast_body">An article read aloud in a voice that runs on your phone rather than a server. Also in Settings; it asks before downloading anything.</string>
+    <string name="tour_clippings_name">Clippings</string>
+    <string name="tour_clippings_body">Tap the bookmark while reading to keep a piece. Clippings holds them as torn scraps of the paper.</string>
+    <string name="tour_history_name">Today in History</string>
+    <string name="tour_history_body">A short dated column above the day\'s stories, from Wikipedia\'s own “on this day”. Off until you switch it on.</string>
+    <string name="tour_footer">Nothing here reaches for anything you didn\'t ask for. The three switches above stay off until you turn them on.</string>
+
+    <!-- Screen names. These are what TalkBack announces on arrival, so they are the names the reader already knows from the control they pressed — "Loom", not "LoomScreen". -->
+    <string name="screen_paper">Paper</string>
+    <string name="screen_sources_and_settings">Sources and settings</string>
+    <string name="screen_settings">Settings</string>
+    <string name="screen_loom">Loom</string>
+    <string name="screen_clippings">Clippings</string>
+    <string name="screen_lens_words">Lens word list</string>
+
+    <!-- The article list: the Paper's chrome, and the labels a screen reader announces on it. Left in English these would undo most of what the locales are for. -->
+    <string name="list_filter_region_topic">Filter by region and topic</string>
+    <string name="list_open_clippings">Open your clippings</string>
+    <string name="list_fetching">Fetching your sources</string>
+    <string name="list_fetch_now">Fetch your sources now</string>
+    <string name="list_settings">Settings</string>
+    <string name="list_nothing_unread">Nothing left unread</string>
+    <string name="list_nothing_unread_body">Every story in this list has been opened. Pinch out, or tap here, to see the whole list again.</string>
+    <string name="list_search">Search articles</string>
+    <string name="list_filter">Filter</string>
+    <string name="list_clear">Clear</string>
+    <string name="list_region">Region</string>
+    <string name="list_topics">Topics</string>
+    <!-- %1$s is a topic's label; %2$d is how many stories carry it. -->
+    <string name="list_topic_count">%1$s · %2$d</string>
+    <string name="list_read">Read</string>
+    <string name="list_unread">Unread</string>
+    <string name="list_showing_unread_only">Showing unread only, tap to show every story</string>
+    <string name="list_showing_all">Showing every story, tap to show unread only</string>
+    <string name="list_show_all_click">Show all articles</string>
+    <string name="list_open_date_picker">Open the date picker</string>
+    <string name="list_open_loom">Open the day loom</string>
+    <string name="list_open_sources">Open your sources</string>
+    <string name="list_add_sources">Add sources</string>
+    <string name="list_filter_region">Filter to %1$s</string>
+    <string name="list_toggle_topic">Toggle %1$s</string>
+
+    <!-- The reader. -->
+    <string name="reader_previous">‹ Previous</string>
+    <string name="reader_end_of_article">End of article</string>
+    <string name="reader_next">Next ›</string>
+    <string name="reader_loading">Loading article</string>
+    <string name="reader_full_story">Read the full story at the source ↗</string>
+    <string name="reader_back_to_stand">Back to the stand</string>
+    <string name="reader_open_settings">Open reader settings</string>
+    <string name="reader_lens_toggle">Lens: loaded-language highlighting</string>
+    <string name="reader_open_in_browser">Open in browser</string>
+    <string name="reader_share_clipping">Share as a newspaper clipping</string>
+    <!-- %1$d is whole minutes. Abbreviated on purpose — it sits beside the headline. -->
+    <string name="reader_minutes_short">%1$d min</string>
+    <string name="reader_reading_time">Estimated reading time %1$d minutes</string>
+    <!-- %1$d is 0-100. Spoken, never drawn. -->
+    <string name="reader_progress">About %1$d percent through the article</string>
+    <string name="reader_share_item">Share this item</string>
+    <string name="reader_fetching">Fetching the full article…</string>
+    <string name="reader_no_text">This source’s feed didn’t include the article text. Read the full piece at the source below.</string>
+    <string name="reader_read_at_source">Read at the source</string>
+    <string name="reader_no_link">This item’s feed didn’t include a usable link back to its source.</string>
+    <string name="reader_select_article">Select an article to read</string>
+    <string name="reader_quote">“%1$s”</string>
+
+    <!-- The language picker. -->
+    <string name="language_title">Language</string>
+    <string name="language_system_default">Match my phone</string>
+    <string name="language_explainer">Nooz\'s own text. Stories always stay in the language their publisher wrote them in.</string>
+    <!-- %1$s is a language's own name for itself; %2$d is how much of the app is translated into it, 0–100. Shown so nobody is surprised by a screen that is half in English. -->
+    <string name="language_partial">%1$s · %2$d%% translated</string>
+    <string name="language_complete">%1$s</string>
+
+    <!-- The Loom — the app's centrepiece, and the descriptions a screen reader speaks for it. These are assembled inside functions, where verifyI18n's call-site scanner cannot see them, so they stayed English in every locale until this tranche. -->
+    <string name="loom_title">Day loom.</string>
+    <string name="loom_flowed">%1$d stories flowed from your %2$s</string>
+    <string name="loom_flowed_named">%1$s: %2$s</string>
+    <string name="loom_and_more_topics">, and %1$d more topics</string>
+    <string name="loom_read_none">You read none of it</string>
+    <string name="loom_read_some">You read %1$d: %2$s</string>
+    <string name="loom_use_actions">Use actions for a single stream\'s counts.</string>
+    <string name="loom_nothing_flowed">Nothing flowed from your %1$s this day.</string>
+    <string name="loom_source_one">%1$d source</string>
+    <string name="loom_source_many">%1$d sources</string>
+    <string name="loom_stream_action">%1$s: %2$d flowed, %3$d read</string>
+    <string name="loom_topic_count">%1$s %2$d</string>
+    <string name="loom_selected">%1$s selected</string>
+    <string name="loom_nothing_selected">No stream selected</string>
+    <string name="loom_previous_day">Previous day</string>
+    <string name="loom_next_day">Next day</string>
+    <string name="loom_empty">Nothing flowed this day. The loom weaves once your sources do.</string>
+    <string name="loom_no_archive">Most sources are live RSS/Atom feeds with no way to ask for a past date; this shows what they’re serving right now, not an archive.</string>
+    <string name="loom_asking_gdelt">Asking GDELT…</string>
+    <string name="loom_ask_gdelt">Ask GDELT for this day</string>
+    <string name="loom_subtitle">What flowed from your sources, woven against what you actually read.</string>
+    <string name="loom_strip_open">Open the Loom — what flowed, woven against what you read</string>
+    <string name="loom_strip_label">Loom</string>
+    <string name="loom_bar_label">The day, by topic.</string>
+    <string name="loom_streams">Streams</string>
+    <string name="loom_where_reading">Where your reading came from</string>
+    <string name="loom_nothing_read_yet">You haven’t read anything yet — the strip fills in as you open stories.</string>
+    <string name="loom_nothing_to_weave">Nothing to weave yet</string>
+    <string name="loom_axis_source">SOURCE</string>
+    <string name="loom_axis_consumption">CONSUMPTION</string>
+    <string name="loom_inspector_read">%1$d flowed · %2$d read</string>
+    <string name="loom_inspector_none_read">%1$d flowed · none read</string>
+    <string name="loom_totals">%1$d flowed · %2$d read · %3$s</string>
+    <string name="loom_single_day">Single day</string>
+    <string name="loom_range">Range</string>
+    <string name="loom_open_date_picker">Open the date picker</string>
+    <string name="loom_ask_gdelt_again">Ask GDELT again for this day</string>
+    <string name="loom_fetch_gdelt">Fetch GDELT results for this day</string>
+    <string name="loom_show_view">Show the %1$s view</string>
+
+    <!-- The region globe, including the actions that replace its drag and pinch. -->
+    <string name="globe_aimed">Region globe, aimed at %1$s, covering %2$s.</string>
+    <string name="globe_band_world">the whole world</string>
+    <string name="globe_band_degrees">a band %1$d degrees wide</string>
+    <string name="globe_nothing_flowed">Nothing has flowed from here yet.</string>
+    <string name="globe_mix">%1$d stories: %2$s. Use actions to spin or change the band.</string>
+    <string name="globe_spin_west">Spin west</string>
+    <string name="globe_spin_east">Spin east</string>
+    <string name="globe_widen">Widen the band</string>
+    <string name="globe_narrow">Narrow the band</string>
+
+    <!-- The read-by-region map, which was a silent Canvas until D49. -->
+    <string name="heatstrip_title">Reading by region. Showing %1$s.</string>
+    <string name="heatstrip_empty">Nothing read yet today.</string>
+    <string name="heatstrip_read">%1$d %2$s read: %3$s</string>
+    <string name="heatstrip_story_one">story</string>
+    <string name="heatstrip_story_many">stories</string>
+
+    <!-- The Contrast ledger. -->
+    <string name="contrast_nothing_flowed">Nothing flowed this day</string>
+    <string name="contrast_reach">Reach</string>
+    <string name="contrast_by_topic">By topic</string>
+    <string name="contrast_widest_gap">Widest gap in %1$s: %2$d%% flowed, %3$d%% read.</string>
+    <string name="contrast_flowed">flowed</string>
+    <string name="contrast_read">read</string>
+    <string name="contrast_regions">Regions</string>
+    <string name="contrast_no_reads">No reads yet today. The map fills in as you read.</string>
+    <string name="contrast_share_pair">%1$d%% / %2$d%%</string>
+
+    <!-- The cross-section. -->
+    <string name="cross_coverage">Coverage</string>
+    <string name="cross_breadth_stream">Breadth: the stream</string>
+    <string name="cross_breadth_you">Breadth: you</string>
+    <string name="cross_over_under">Per-topic over/under</string>
+    <string name="cross_what_changed">What changed since the previous period</string>
+    <string name="cross_no_earlier">No earlier period yet to compare against.</string>
+    <string name="cross_steady">Your topic mix held steady.</string>
+    <string name="cross_section_ratio">%1$.2fx</string>
+    <string name="cross_section_explainer">your %1$s share of what you read ÷ its share of the stream; above 1x means you read more of this topic than it made up of the stream</string>
+
+    <!-- The web reader's own copy. Where the phrasing matches Android's, the same key is reused rather than duplicated — one set of words for two clients is the whole point. -->
+    <string name="stand_title">The Stand</string>
+    <string name="stand_subtitle">Browse the papers. Pick a pile to read that slice.</string>
+    <string name="stand_empty">The stand is empty</string>
+    <string name="stand_loom_edition">The Loom Edition</string>
+    <string name="stand_woven_from">Woven from your own sources</string>
+    <string name="stand_your_source">Your Source, Your News</string>
+    <string name="stand_setting_paper">Setting the paper…</string>
+    <string name="stand_turn_back">‹ Turn back</string>
+    <string name="stand_turn_page">Turn page ›</string>
+    <string name="stand_continue_reading">Continue reading →</string>
+    <string name="stand_no_full_text">The full text is not in this feed. Open the story to read it at the source.</string>
+    <string name="stand_no_full_text_yet">The full text is not in this feed yet. Open the story to read it at the source.</string>
+
+    <!-- Clippings. -->
+    <string name="clippings_empty">Nothing clipped yet</string>
+    <string name="clippings_empty_body">Tap the clip icon on any item to save it here — it stays even if you later remove or disable its source.</string>
+    <string name="clippings_remove">Remove clipping</string>
+    <string name="clippings_screen_title">CLIPPINGS</string>
+    <string name="clippings_none_yet">No clippings yet</string>
+    <string name="clippings_open_in_browser">Open article in browser</string>
+
+    <!-- Managing sources — the flow by which a reader chooses what this app is even about. -->
+    <string name="sources_title">Sources</string>
+    <string name="sources_add">Add a source</string>
+    <string name="sources_url_placeholder">https://example.com/feed.xml</string>
+    <string name="sources_url_label">Feed URL</string>
+    <string name="sources_add_button">Add</string>
+    <string name="sources_your_feeds">Your feeds</string>
+    <string name="sources_remove">Remove</string>
+    <string name="sources_checking">Checking…</string>
+    <string name="sources_not_checked">Not checked yet</string>
+    <string name="sources_starters">Starter sources</string>
+    <string name="sources_no_starters">No starter sources available.</string>
+    <string name="sources_starters_body">A short list of pre-checked, currently-live feeds — switch on any you like.</string>
+
+    <!-- Adding and managing sources on Android — the flow by which a reader decides what this app is even about. `list_topics` and `sources_*` are reused where the web says the same thing. -->
+    <string name="edit_edit">EDIT</string>
+    <string name="edit_done">DONE</string>
+    <string name="edit_all">All</string>
+    <string name="edit_news_apis">News APIs &amp; builders</string>
+    <string name="edit_search_sources">Search sources</string>
+    <string name="edit_get_free_key">Get a free key for %1$s</string>
+    <string name="edit_add_named">Add %1$s</string>
+    <string name="edit_source_failing">This source is failing to fetch</string>
+    <string name="edit_add_by_url">Add by URL</string>
+    <string name="edit_feed_or_site_url">Feed or site URL</string>
+    <string name="edit_could_not_add_url">Couldn’t add this URL</string>
+    <string name="edit_add_this_url">Add this URL</string>
+    <string name="edit_could_not_add">Couldn’t add: %1$s</string>
+    <string name="edit_added_named">Added “%1$s”.</string>
+    <string name="edit_pick_a_feed">This page declares more than one feed, pick one:</string>
+    <string name="edit_paste_hint">Paste a feed or a site URL — the app finds the feed; fetches only what you add.</string>
+    <string name="edit_globe_hint">Drag to spin · pinch to widen · ring shows the band’s topic mix</string>
+    <string name="edit_reset_to_global">Reset to Global</string>
+    <string name="edit_import_opml">Import OPML</string>
+    <string name="edit_export_opml">Export OPML</string>
+    <string name="edit_catalogue">Catalogue</string>
+    <string name="edit_catalogue_hint">Optionally point this at a catalogue.json to refresh starters and free-tier limits without an app update. Nothing is fetched unless you tap refresh; there is no default URL, since this build can’t verify one is live.</string>
+    <string name="edit_catalogue_placeholder">https://…/catalogue.json</string>
+    <string name="edit_catalogue_url">Catalogue URL</string>
+    <string name="edit_built_in_starters">Use built-in starters</string>
+    <string name="edit_could_not_refresh">Couldn’t refresh: %1$s</string>
+    <string name="edit_loaded_services">Loaded %1$d service definitions.</string>
+    <string name="edit_last_refreshed">Last refreshed %1$s.</string>
+
+    <!-- Settings. The largest single surface, and the last big one to move. -->
+    <string name="settings_back">Back</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_follow">Follow the phone’s light or dark setting</string>
+    <string name="settings_theme_white">White theme</string>
+    <string name="settings_theme_paper">Paper theme</string>
+    <string name="settings_theme_dark">Dark theme</string>
+    <string name="settings_font">Font</string>
+    <string name="settings_text_size">Text Size</string>
+    <string name="settings_paper_grain">Paper Grain</string>
+    <string name="settings_mark_read_as">Mark Read Articles As</string>
+    <string name="settings_while_you_read">While You Read</string>
+    <string name="settings_while_you_read_body">Every so often, a real line pulled from something you’ve already read.</string>
+    <string name="settings_today_in_history">Today In History</string>
+    <string name="settings_show_the_column">Show the column</string>
+    <string name="settings_today_in_history_body">A few dated lines above the day’s stories, from Wikipedia’s own “On this day” selection. This is the one thing Nooz fetches from outside the sources you added, so it stays off until you turn it on.</string>
+    <string name="settings_show_reading_time">Show Reading Time</string>
+    <string name="settings_highlight_loaded">Highlight loaded language</string>
+    <string name="settings_highlight_loaded_body">Underlines charged wording as you read; tap it for the evidence.</string>
+    <string name="settings_immersive">Immersive reading</string>
+    <string name="settings_immersive_body">Hides the back button and controls for a bare page. Off by default; swipe right or tap back to return.</string>
+    <string name="settings_more">More settings</string>
+    <string name="settings_more_body">Dictionary, reader intelligence and models, gestures, your data, about.</string>
+    <string name="settings_dictionary">Dictionary</string>
+    <string name="settings_dictionary_body">Download a dictionary, then long-press any word as you read for its meaning, Kindle-style.</string>
+    <string name="settings_crash_title">Nooz closed unexpectedly last time</string>
+    <string name="settings_crash_body">The report stayed on your device; nothing was sent anywhere.</string>
+    <string name="settings_copy">Copy</string>
+    <string name="settings_dismiss">Dismiss</string>
+    <string name="settings_reader_intelligence">Reader intelligence</string>
+    <string name="settings_byok_model">Bring-your-own-key: %1$s</string>
+    <string name="settings_flash_body">Today’s news compressed to 10 words or fewer. Runs on your device once you download a model below, or through your own key.</string>
+    <string name="settings_cast_body">The full article read aloud in a natural on-device voice, never the robotic system reader. Its own model, downloaded separately from Flash’s.</string>
+    <string name="settings_cast_model">Nooz Cast model</string>
+    <string name="settings_whats_inside_body">The Loom, Flash, Cast, Clippings — and where each one lives.</string>
+    <string name="settings_gestures">Gestures</string>
+    <string name="settings_gestures_body">Two-finger reader gestures. Defaults are on.</string>
+    <string name="settings_gesture_brightness">Two-finger drag → brightness</string>
+    <string name="settings_gesture_theme">Two-finger flick → theme</string>
+    <string name="settings_gesture_unread">Immersive pinch → unread</string>
+    <string name="settings_images">Images</string>
+    <string name="settings_show_feed_images">Show feed images</string>
+    <string name="settings_hide_flagged_images">Hide source-flagged images</string>
+    <string name="settings_advanced">Advanced</string>
+    <string name="settings_advanced_body">Loaded-language word list, feedback.</string>
+    <string name="settings_word_list">Loaded-language word list</string>
+    <string name="settings_word_list_body">Turn off individual default flags, or add your own words to watch for.</string>
+    <string name="settings_your_data">Your data</string>
+    <string name="settings_your_data_body">Export everything as open JSON: preferences, your region and topics, your sources, your clippings, and the coarse read log. Local only; API keys are never included.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_body">Nooz is a news reader whose subject is omission: what got left out. It’s made by mdhv.xyz, a small studio of focused, quiet apps.</string>
+    <string name="settings_visit_studio">Visit mdhv.xyz</string>
+    <string name="settings_view_source">View source on GitHub</string>
+    <string name="settings_contact">Contact us</string>
+    <string name="settings_more_from_studio">More from the studio</string>
+    <string name="settings_size_license">%1$s · %2$s</string>
+    <string name="settings_downloading_dictionary">Downloading dictionary</string>
+    <string name="settings_downloaded">Downloaded</string>
+    <string name="settings_download">Download</string>
+    <string name="settings_translation">Translation</string>
+    <string name="settings_translation_body">One language pair at a time. Downloaded once, then it works offline — what you look up is never sent anywhere.</string>
+    <string name="settings_remove">Remove</string>
+    <string name="settings_no_indic_pair">No Indian-language pair is available from this source yet.</string>
+    <string name="settings_downloading_named">Downloading %1$s</string>
+    <string name="settings_installed">Installed</string>
+    <string name="settings_open_all">Open all settings</string>
+    <string name="settings_open_word_list">Open the loaded-language word list</string>
+    <string name="settings_contact_email">Contact Nooz by email</string>
+
+    <!-- Uncategorised: give these a section in _sections.json. -->
+    <string name="bar_waiting">Waiting for stories</string>
+    <string name="empty_no_results">No results found</string>
+    <string name="search_clear">Clear search</string>
+    <string name="flash_coming_soon">Coming soon: today\'s news compressed to 10 words or fewer, once on-device intelligence is ready.</string>
+    <string name="flash_tap_to_compress">Tap to compress today\'s news to 10 words or fewer</string>
+    <string name="flash_compressing">Compressing today\'s news…</string>
+    <string name="flash_setup_link">Set up an on-device model or connect an API →</string>
+    <string name="flash_action_compress">Compress today\'s news</string>
+    <string name="flash_action_setup">Set up Nooz Flash</string>
+    <string name="cast_tap_to_hear">Tap to hear this article read aloud in a natural voice</string>
+    <string name="cast_narrating">Narrating the article…</string>
+    <string name="cast_setup_link">Set up an on-device narration model →</string>
+    <string name="cast_action_narrate">Narrate this article</string>
+    <string name="cast_action_setup">Set up Nooz Cast</string>
+    <string name="provenance_on_device">on-device</string>
+    <string name="provenance_cloud_urbana">cloud (via Urbana)</string>
+    <string name="history_retry_notice">%1$s Tap to try again.</string>
+    <string name="history_read_year">Read about %1$s on Wikipedia</string>
+    <string name="history_open_wikipedia">Open Wikipedia\'s On this day</string>
+    <string name="history_try_again">Try loading Today in History again</string>
+    <string name="framings_empty">No overlapping stories yet</string>
+    <string name="lens_looking_up">Looking up…</string>
+    <string name="lens_no_definition">No definition for this word in your dictionary.</string>
+    <string name="lens_span_action">%1$s (%2$d of %3$d). %4$s.</string>
+    <string name="lens_define_word">Define %1$s</string>
+    <string name="defuse_original">Original</string>
+    <string name="defuse_loading">Loading suggested rewrite</string>
+    <string name="defuse_proposed">Proposed</string>
+    <string name="defuse_revert">Revert</string>
+    <string name="defuse_needs_setup">No neutral rewrite yet. This needs an on-device model or your own key, from Settings › Reader intelligence.</string>
+    <string name="defuse_close">Close</string>
+    <string name="defuse_suggest">Suggest a neutral rewrite</string>
+    <string name="defuse_revert_suggestion">Revert suggestion</string>
+    <string name="defuse_unavailable">Rewrite unavailable</string>
+    <string name="defuse_loading_short">Suggestion loading</string>
+    <string name="defuse_view_suggestion">View suggestion</string>
+    <string name="word_list_title">WORD LIST</string>
+    <string name="word_list_search">Search words</string>
+    <string name="word_list_body">Words and phrases the reading lens underlines as loaded language or editorial hedging. Turn off any default you don\'t want flagged, or add your own below.</string>
+    <string name="word_list_default">Default</string>
+    <string name="word_list_custom">Custom</string>
+    <string name="word_list_add_hint">Word or phrase to add</string>
+    <string name="word_list_add">Add this word</string>
+    <string name="word_list_remove">Remove “%1$s”</string>
+    <string name="model_on_device_body">Nooz tries your device first, automatically: nothing to set up. Download a model below and it runs right on your device; until then (or unless you add a key below), the lens honestly reports \"unavailable\" instead of guessing.</string>
+    <string name="model_download_body">Real, open-source models verified by this app\'s own catalogue. Download them here: they won\'t run automatically (see On-device), but once downloaded they\'re on disk and ready.</string>
+    <string name="model_none_available">No models available.</string>
+    <string name="model_progress_percent">%1$d%%</string>
+    <string name="model_delete">Delete</string>
+    <string name="model_download">Download</string>
+    <string name="model_byok_body">Route defuse rewrites to your own OpenAI-compatible endpoint. Results are always marked cloud; your key stays on this device.</string>
+    <string name="model_save_key">Save key</string>
+    <string name="model_remove_key">Remove key</string>
+
+</resources>

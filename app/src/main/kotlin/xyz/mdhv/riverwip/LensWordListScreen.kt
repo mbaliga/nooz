@@ -1,5 +1,6 @@
 package xyz.mdhv.riverwip
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,12 +30,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.AppSearchBar
+import xyz.mdhv.riverwip.design.NoResultsState
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
@@ -56,78 +61,105 @@ fun LensWordListScreen(vm: SettingsViewModel, onBack: () -> Unit) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
+    // Search (this polish pass, 2026-07): filters both Default and Custom
+    // below as you type, case-insensitively, by substring — the same shared
+    // bar and matching idiom already used for Sources/the Stand, just docked
+    // to the top of this list instead of the bottom.
+    var query by rememberSaveable { mutableStateOf("") }
+    val q = query.trim().lowercase()
+    val filteredDefaultTerms = if (q.isEmpty()) {
+        BiasLexicon.terms
+    } else {
+        BiasLexicon.terms
+            .mapValues { (_, words) -> words.filter { it.lowercase().contains(q) } }
+            .filterValues { it.isNotEmpty() }
+    }
+    val filteredCustomTerms = settings.lensCustomTerms.sorted().filter { q.isEmpty() || it.lowercase().contains(q) }
+    val noMatches = q.isNotEmpty() && filteredDefaultTerms.isEmpty() && filteredCustomTerms.isEmpty()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("WORD LIST", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
+                title = { Text(stringResource(DesignR.string.word_list_title), style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(DesignR.string.settings_back))
                     }
                 },
             )
         },
     ) { padding ->
-        LazyColumn(
-            state = listState,
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .topFadingEdge(listState.canScrollBackward),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                horizontal = Tokens.Spacing.md,
-                vertical = Tokens.Spacing.md,
-            ),
+                .padding(padding),
         ) {
-            item {
-                Text(
-                    "Words and phrases the reading lens underlines as loaded language or editorial hedging. Turn off any default you don't want flagged, or add your own below.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = Tokens.Spacing.md),
-                )
-            }
-
-            item { SectionHeading("Default", modifier = Modifier.padding(bottom = Tokens.Spacing.xs)) }
-            for ((category, words) in BiasLexicon.terms) {
+            AppSearchBar(query = query, onQueryChange = { query = it }, placeholder = stringResource(DesignR.string.word_list_search))
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .topFadingEdge(listState.canScrollBackward),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                    horizontal = Tokens.Spacing.md,
+                    vertical = Tokens.Spacing.md,
+                ),
+            ) {
                 item {
                     Text(
-                        category.label,
-                        style = MaterialTheme.typography.labelLarge,
+                        stringResource(DesignR.string.word_list_body),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = Tokens.Spacing.sm, bottom = Tokens.Spacing.xxs),
+                        modifier = Modifier.padding(bottom = Tokens.Spacing.md),
                     )
                 }
-                items(words, key = { "default:$it" }) { word ->
-                    WordToggleRow(
-                        word = word,
-                        checked = word !in settings.lensDisabledDefaultTerms,
-                        onCheckedChange = { vm.setLensTermEnabled(word, it) },
-                    )
+
+                if (filteredDefaultTerms.isNotEmpty()) {
+                    item { SectionHeading(stringResource(DesignR.string.word_list_default), modifier = Modifier.padding(bottom = Tokens.Spacing.xs)) }
+                    for ((category, words) in filteredDefaultTerms) {
+                        item {
+                            Text(
+                                category.label,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = Tokens.Spacing.sm, bottom = Tokens.Spacing.xxs),
+                            )
+                        }
+                        items(words, key = { "default:$it" }) { word ->
+                            WordToggleRow(
+                                word = word,
+                                checked = word !in settings.lensDisabledDefaultTerms,
+                                onCheckedChange = { vm.setLensTermEnabled(word, it) },
+                            )
+                        }
+                    }
                 }
-            }
 
-            item {
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    modifier = Modifier.padding(vertical = Tokens.Spacing.md),
-                )
-                SectionHeading("Custom", modifier = Modifier.padding(bottom = Tokens.Spacing.xs))
-                AddCustomWordRow(onAdd = { vm.addLensCustomTerm(it) })
-            }
-
-            if (settings.lensCustomTerms.isEmpty()) {
                 item {
-                    Text(
-                        "No custom words yet.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = Tokens.Spacing.sm),
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier.padding(vertical = Tokens.Spacing.md),
                     )
+                    SectionHeading(stringResource(DesignR.string.word_list_custom), modifier = Modifier.padding(bottom = Tokens.Spacing.xs))
+                    AddCustomWordRow(onAdd = { vm.addLensCustomTerm(it) })
                 }
-            } else {
-                items(settings.lensCustomTerms.sorted(), key = { "custom:$it" }) { word ->
-                    CustomWordRow(word = word, onRemove = { vm.removeLensCustomTerm(word) })
+
+                if (noMatches) {
+                    item { NoResultsState(fill = false, modifier = Modifier.fillMaxWidth()) }
+                } else if (filteredCustomTerms.isEmpty()) {
+                    item {
+                        Text(
+                            if (q.isEmpty()) "No custom words yet." else "No custom words match \"$query\".",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = Tokens.Spacing.sm),
+                        )
+                    }
+                } else {
+                    items(filteredCustomTerms, key = { "custom:$it" }) { word ->
+                        CustomWordRow(word = word, onRemove = { vm.removeLensCustomTerm(word) })
+                    }
                 }
             }
         }
@@ -156,6 +188,8 @@ private fun WordToggleRow(word: String, checked: Boolean, onCheckedChange: (Bool
 /** Type-a-word-tap-add, the same idiom as EditScreen.kt's "Add by URL" (a plain text field + trailing Add icon, no modal). */
 @Composable
 private fun AddCustomWordRow(onAdd: (String) -> Unit) {
+    // Hoisted: a semantics block is not a composable scope.
+    val addHint = stringResource(DesignR.string.word_list_add_hint)
     var text by rememberSaveable { mutableStateOf("") }
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         BasicTextField(
@@ -167,7 +201,7 @@ private fun AddCustomWordRow(onAdd: (String) -> Unit) {
             singleLine = true,
             modifier = Modifier
                 .weight(1f)
-                .semantics { contentDescription = "Word or phrase to add" },
+                .semantics { contentDescription = addHint },
         )
         IconButton(
             onClick = {
@@ -177,7 +211,7 @@ private fun AddCustomWordRow(onAdd: (String) -> Unit) {
                 }
             },
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add this word")
+            Icon(Icons.Filled.Add, contentDescription = stringResource(DesignR.string.word_list_add))
         }
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -198,7 +232,7 @@ private fun CustomWordRow(word: String, onRemove: () -> Unit) {
         IconButton(onClick = onRemove) {
             Icon(
                 Icons.Filled.Close,
-                contentDescription = "Remove \"$word\"",
+                contentDescription = stringResource(DesignR.string.word_list_remove, word),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

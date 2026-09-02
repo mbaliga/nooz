@@ -20,3 +20,16 @@
 # now — a real "worked in testing, broke in the Play build" trap).
 -keep class ai.onnxruntime.** { *; }
 -dontwarn ai.onnxruntime.**
+
+# Same trap, this app's own code this time: LlamaCppEngine (Nooz Flash's
+# llama.cpp JNI bridge, core/inference/src/main/cpp/nooz_llama_jni.cpp)
+# declares `private external fun` natives that libnooz-llama.so resolves by
+# exact class + method name (JNI's implicit Java_pkg_Class_method binding,
+# no RegisterNatives table). Debug never runs R8 so this compiles and works
+# fine there either way — only a release build, with isMinifyEnabled=true,
+# would rename the class/methods and break native symbol resolution at
+# runtime with no build-time warning. `includedescriptorclasses` also keeps
+# the native methods' own parameter/return types (String) stable.
+-keepclasseswithmembernames,includedescriptorclasses class xyz.mdhv.riverwip.inference.local.llama.LlamaCppEngine {
+    native <methods>;
+}

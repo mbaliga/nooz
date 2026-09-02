@@ -1,6 +1,7 @@
 package xyz.mdhv.riverwip
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import android.app.Activity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,9 +44,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import kotlinx.coroutines.Dispatchers
@@ -53,6 +56,7 @@ import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -78,6 +82,7 @@ import xyz.mdhv.riverwip.data.repo.DictionaryRepository
 import xyz.mdhv.riverwip.data.repo.ModelCatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ModelDownloadState
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
+import xyz.mdhv.riverwip.data.repo.TranslationRepository
 import xyz.mdhv.riverwip.crash.CrashRecovery
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
@@ -91,15 +96,21 @@ import xyz.mdhv.riverwip.design.topFadingEdge
 import xyz.mdhv.riverwip.model.AppSettings
 import xyz.mdhv.riverwip.model.DictionaryOption
 import xyz.mdhv.riverwip.model.ImageStyle
+import xyz.mdhv.riverwip.model.Locales
+import xyz.mdhv.riverwip.model.LocaleCoverage
 import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.ReadMarkStyle
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.ReaderFont
 import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
+import xyz.mdhv.riverwip.model.TranslationOption
 
 class SettingsViewModel(
     private val repo: SettingsRepository,
     private val dictionaryRepo: DictionaryRepository,
+    private val translationRepo: TranslationRepository,
     private val dataExporter: DataExporter,
     private val byokStore: ByokConfigStore,
     private val modelCatalogueRepo: ModelCatalogueRepository,
@@ -122,7 +133,8 @@ class SettingsViewModel(
         modelCatalogueRepo.downloadable(models, kind)
 
     /** Cheap file-existence check — called straight from composition, no cached/stale copy to keep in sync. */
-    fun isModelDownloaded(model: CatalogueModel): Boolean = modelCatalogueRepo.isDownloaded(model)
+    fun isModelDownloaded(model: CatalogueModel): Boolean =
+        modelCatalogueRepo.isGroupDownloaded(modelCatalogueRepo.groupMembers(modelCatalogue.value, model))
 
     fun refreshModelCatalogue() {
         if (modelCatalogueRefreshing) return
@@ -139,14 +151,18 @@ class SettingsViewModel(
 
     fun downloadModel(model: CatalogueModel) {
         if (modelDownloadStates[model.id] is ModelDownloadState.Downloading) return
+        // The whole companion group (e.g. Cast's TTS model + its paired voice),
+        // so one tap yields a complete, loadable install — not just the .onnx.
+        val members = modelCatalogueRepo.groupMembers(modelCatalogue.value, model)
+        val neededBytes = members.filter { !modelCatalogueRepo.isDownloaded(it) }.sumOf { it.sizeBytes }
         val available = modelCatalogueRepo.availableStorageBytes()
-        if (!StorageBudget.canDownload(model.sizeBytes, available)) {
+        if (!StorageBudget.canDownload(neededBytes, available)) {
             modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Failed("Not enough free storage for this model."))
             return
         }
         modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Downloading(0f))
         viewModelScope.launch {
-            val result = modelCatalogueRepo.download(model) { progress ->
+            val result = modelCatalogueRepo.downloadGroup(members) { progress ->
                 modelDownloadStates = modelDownloadStates + (model.id to ModelDownloadState.Downloading(progress))
             }
             modelDownloadStates = modelDownloadStates + (model.id to
@@ -157,7 +173,7 @@ class SettingsViewModel(
     }
 
     fun deleteModel(model: CatalogueModel) {
-        modelCatalogueRepo.delete(model)
+        modelCatalogueRepo.deleteGroup(modelCatalogueRepo.groupMembers(modelCatalogue.value, model))
         modelDownloadStates = modelDownloadStates - model.id
     }
 
@@ -190,8 +206,10 @@ class SettingsViewModel(
     fun completeOnboarding() = viewModelScope.launch { repo.setOnboarded(true) }
     fun setNoozFlashEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozFlashEnabled(on) }
     fun setNoozCastEnabled(on: Boolean) = viewModelScope.launch { repo.setNoozCastEnabled(on) }
+    fun setTodayInHistoryEnabled(on: Boolean) = viewModelScope.launch { repo.setTodayInHistoryEnabled(on) }
     fun setPaperGrain(grain: PaperGrain) = viewModelScope.launch { repo.setPaperGrain(grain) }
     fun setReadMarkStyle(style: ReadMarkStyle) = viewModelScope.launch { repo.setReadMarkStyle(style) }
+    fun setReadingAsideStyle(style: ReadingAsideStyle) = viewModelScope.launch { repo.setReadingAsideStyle(style) }
     fun setUnreadPinchFilter(enabled: Boolean) = viewModelScope.launch { repo.setUnreadPinchFilter(enabled) }
     fun setShowFeedImages(on: Boolean) = viewModelScope.launch { repo.setShowFeedImages(on) }
     fun setHideNsfwImages(on: Boolean) = viewModelScope.launch { repo.setHideNsfwImages(on) }
@@ -223,19 +241,46 @@ class SettingsViewModel(
         }
     }
 
+    // Word-level translation (owner's ask): same one-at-a-time download shape
+    // as the dictionary above, over a bilingual pair instead of a definition set.
+    val translationOptions: List<TranslationOption> = translationRepo.options
+    val installedTranslationId: StateFlow<String?> =
+        translationRepo.observeInstalledId().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), null)
+
+    var downloadingTranslationId: String? by mutableStateOf(null)
+        private set
+    var translationError: String? by mutableStateOf(null)
+        private set
+
+    fun downloadTranslation(option: TranslationOption) {
+        if (downloadingTranslationId != null) return
+        downloadingTranslationId = option.id
+        translationError = null
+        viewModelScope.launch {
+            val result = translationRepo.download(option)
+            downloadingTranslationId = null
+            if (result.isFailure) {
+                translationError = result.exceptionOrNull()?.message ?: "Couldn't download that language."
+            }
+        }
+    }
+
+    fun removeTranslation() = viewModelScope.launch { translationRepo.remove() }
+
     /** Assemble the user's whole profile as JSON, for the export-to-file action (#9). */
     suspend fun exportJson(): String = dataExporter.exportJson(System.currentTimeMillis())
 
     class Factory(
         private val repo: SettingsRepository,
         private val dictionaryRepo: DictionaryRepository,
+        private val translationRepo: TranslationRepository,
         private val dataExporter: DataExporter,
         private val byokStore: ByokConfigStore,
         private val modelCatalogueRepo: ModelCatalogueRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            SettingsViewModel(repo, dictionaryRepo, dataExporter, byokStore, modelCatalogueRepo) as T
+            SettingsViewModel(repo, dictionaryRepo, translationRepo, dataExporter, byokStore, modelCatalogueRepo) as T
     }
 }
 
@@ -269,7 +314,7 @@ fun SettingsScreen(
                 title = { Text(if (compact) "READING" else "SETTINGS", style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 2.sp)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(DesignR.string.settings_back))
                     }
                 },
             )
@@ -319,36 +364,72 @@ fun SettingsBody(
     ) {
             if (!compact) CrashSection()
 
-            SectionHeading("Theme")
+            WhatsInsideSection()
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            LanguageSection()
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            SectionHeading(stringResource(DesignR.string.settings_theme))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
             ) {
+                // Auto comes first: it is the default, and it is the answer for
+                // a reader whose phone is already in dark mode (D34).
                 SwatchCircle(
-                    label = "White theme",
+                    label = stringResource(DesignR.string.settings_theme_follow),
+                    selected = settings.themeMode == ThemeMode.SYSTEM,
+                    background = Tokens.Palette.paperField,
+                    backgroundBrush = Brush.linearGradient(
+                        // A hard stop, not a blend: this swatch is two tints,
+                        // not a gradient the app could ever actually paint.
+                        0.0f to Tokens.Palette.paperField,
+                        0.5f to Tokens.Palette.paperField,
+                        0.5f to Color(0xFF262624),
+                        1.0f to Color(0xFF262624),
+                    ),
+                    glyph = null,
+                    letterColor = Tokens.Palette.paperInk,
+                    onClick = { vm.setTheme(ThemeMode.SYSTEM) },
+                )
+                SwatchCircle(
+                    label = stringResource(DesignR.string.settings_theme_white),
                     selected = settings.themeMode == ThemeMode.WHITE,
                     background = Color(0xFFFFFFFF),
                     letterColor = Tokens.Palette.paperInk,
                     onClick = { vm.setTheme(ThemeMode.WHITE) },
                 )
                 SwatchCircle(
-                    label = "Paper theme",
+                    label = stringResource(DesignR.string.settings_theme_paper),
                     selected = settings.themeMode == ThemeMode.PAPER,
                     background = Tokens.Palette.paperField,
                     letterColor = Tokens.Palette.paperInk,
                     onClick = { vm.setTheme(ThemeMode.PAPER) },
                 )
                 SwatchCircle(
-                    label = "Dark theme",
+                    label = stringResource(DesignR.string.settings_theme_dark),
                     selected = settings.themeMode == ThemeMode.DARK,
                     background = Color(0xFF262624),
                     letterColor = Color(0xFFECEAE6),
                     onClick = { vm.setTheme(ThemeMode.DARK) },
                 )
             }
+            // Says out loud what the split swatch means, and what picking a
+            // tint by hand costs: it stops following the phone.
+            Text(
+                when (settings.themeMode) {
+                    ThemeMode.SYSTEM -> "Following your phone — Paper by day, Dark at night."
+                    ThemeMode.WHITE -> "White, whatever your phone is set to."
+                    ThemeMode.PAPER -> "Paper, whatever your phone is set to."
+                    ThemeMode.DARK -> "Dark, whatever your phone is set to."
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Font")
+            SectionHeading(stringResource(DesignR.string.settings_font))
             // The owner's Settings mock: a list of the font names, each set in
             // its own face, a check on the chosen one (not colour swatches).
             Column(modifier = Modifier.selectableGroup()) {
@@ -373,7 +454,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Text Size")
+            SectionHeading(stringResource(DesignR.string.settings_text_size))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -404,7 +485,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Paper Grain")
+            SectionHeading(stringResource(DesignR.string.settings_paper_grain))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -435,7 +516,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading("Mark Read Articles As")
+            SectionHeading(stringResource(DesignR.string.settings_mark_read_as))
             Row(
                 modifier = Modifier.selectableGroup(),
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
@@ -467,6 +548,71 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
+            SectionHeading(stringResource(DesignR.string.settings_while_you_read))
+            Text(
+                stringResource(DesignR.string.settings_while_you_read_body),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(
+                modifier = Modifier.selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
+            ) {
+                for (style in ReadingAsideStyle.entries) {
+                    val chosen = settings.readingAsideStyle == style
+                    Text(
+                        style.label,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                        ),
+                        color = if (chosen) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier
+                            .selectable(
+                                selected = chosen,
+                                role = Role.RadioButton,
+                                onClick = { vm.setReadingAsideStyle(style) },
+                            )
+                            .minimumInteractiveComponentSize()
+                            .padding(vertical = Tokens.Spacing.xxs),
+                    )
+                }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            SectionHeading(stringResource(DesignR.string.settings_today_in_history))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = settings.todayInHistoryEnabled,
+                        onValueChange = { vm.setTodayInHistoryEnabled(it) },
+                        role = Role.Switch,
+                    )
+                    .padding(vertical = Tokens.Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(DesignR.string.settings_show_the_column),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    // Says where it fetches from, because this is the only
+                    // request Nooz makes to somewhere the reader didn't add.
+                    Text(
+                        stringResource(DesignR.string.settings_today_in_history_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = settings.todayInHistoryEnabled, onCheckedChange = null)
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -479,7 +625,7 @@ fun SettingsBody(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "Show Reading Time",
+                    stringResource(DesignR.string.settings_show_reading_time),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f),
@@ -501,12 +647,12 @@ fun SettingsBody(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Highlight loaded language",
+                        stringResource(DesignR.string.settings_highlight_loaded),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
-                        "Underlines charged wording as you read; tap it for the evidence.",
+                        stringResource(DesignR.string.settings_highlight_loaded_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -528,12 +674,12 @@ fun SettingsBody(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Immersive reading",
+                        stringResource(DesignR.string.settings_immersive),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
-                        "Hides the back button and controls for a bare page. Off by default; swipe right or tap back to return.",
+                        stringResource(DesignR.string.settings_immersive_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -547,23 +693,23 @@ fun SettingsBody(
             // single door (owner #2).
             if (compact) {
                 Text(
-                    "More settings",
+                    stringResource(DesignR.string.settings_more),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClickLabel = "Open all settings") { onOpenAll() }
+                        .clickable(onClickLabel = stringResource(DesignR.string.settings_open_all)) { onOpenAll() }
                         .padding(vertical = Tokens.Spacing.sm),
                 )
                 Text(
-                    "Dictionary, reader intelligence and models, gestures, your data, about.",
+                    stringResource(DesignR.string.settings_more_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else {
-                SectionHeading("Dictionary")
+                SectionHeading(stringResource(DesignR.string.settings_dictionary))
                 Text(
-                    "Download a dictionary, then long-press any word as you read for its meaning, Kindle-style.",
+                    stringResource(DesignR.string.settings_dictionary_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -578,6 +724,9 @@ fun SettingsBody(
                 vm.dictionaryError?.let { err ->
                     Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                TranslationSection(vm)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 IntelligenceSection(settings, vm)
@@ -622,10 +771,10 @@ private fun CrashSection() {
             .padding(Tokens.Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
     ) {
-        Text("Nooz closed unexpectedly last time", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(DesignR.string.settings_crash_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         Text(current.headline, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
         Text(
-            "The report stayed on your device; nothing was sent anywhere.",
+            stringResource(DesignR.string.settings_crash_body),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -643,11 +792,11 @@ private fun CrashSection() {
             TextButton(
                 onClick = { clipboard.setText(AnnotatedString(current.fullReport)) },
                 contentPadding = PaddingValues(0.dp),
-            ) { Text("Copy") }
+            ) { Text(stringResource(DesignR.string.settings_copy)) }
             TextButton(
                 onClick = { CrashRecovery.clear(context); report = null },
                 contentPadding = PaddingValues(0.dp),
-            ) { Text("Dismiss") }
+            ) { Text(stringResource(DesignR.string.settings_dismiss)) }
         }
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -674,10 +823,10 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
     // ever hid the shared model panel beneath them; that partial hide was
     // the confusing part, not a real need to save space on this one tab.
     Column(Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs)) {
-        SectionHeading("Reader intelligence")
+        SectionHeading(stringResource(DesignR.string.settings_reader_intelligence))
         if (config.isComplete) {
             Text(
-                "Bring-your-own-key: ${config.model}",
+                stringResource(DesignR.string.settings_byok_model, config.model),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -701,7 +850,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                "Today's news compressed to 10 words or fewer, with a tap to go deeper. On-device first; a bring-your-own key is the only fallback, never a general cloud broker.",
+                stringResource(DesignR.string.settings_flash_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -726,7 +875,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                "The full article read aloud in a natural on-device voice, never the robotic system reader. Its own model, downloaded separately from Flash's.",
+                stringResource(DesignR.string.settings_cast_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -754,7 +903,7 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
     // Cast has no on-device/BYOK trichotomy — a private anchor voice never
     // leaves the device — so its own model gets only the download list,
     // scoped to its own kind rather than Flash's LLM_GGUF default.
-    SectionHeading("Nooz Cast model", modifier = Modifier.padding(top = Tokens.Spacing.md))
+    SectionHeading(stringResource(DesignR.string.settings_cast_model), modifier = Modifier.padding(top = Tokens.Spacing.md))
     ModelDownloadList(
         ModelDownloadUi(
             models = vm.downloadableModels(catalogue, kind = "TTS_ONNX"),
@@ -767,6 +916,158 @@ private fun IntelligenceSection(settings: AppSettings, vm: SettingsViewModel) {
             error = vm.modelCatalogueError,
         ),
     )
+}
+
+/**
+ * The same "what's inside" tour onboarding ends on, kept permanently here
+ * (D36). Onboarding runs exactly once and has no replay, so without this every
+ * reader who installed before the tour existed — or who tapped Skip — would
+ * never learn that the Loom opens by pulling down on the stand, or that Flash
+ * and Cast exist at all. Collapsed by default: it is a reminder, not a wall,
+ * and the settings a returning reader actually came for should stay near the
+ * top.
+ */
+@Composable
+private fun WhatsInsideSection() {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            SectionHeading(stringResource(DesignR.string.tour_title))
+            Text(
+                stringResource(DesignR.string.settings_whats_inside_body),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = if (expanded) "Collapse what's inside" else "Expand what's inside",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (expanded) {
+        FeatureTourContent(modifier = Modifier.padding(bottom = Tokens.Spacing.xs))
+    }
+}
+
+/**
+ * The interface language.
+ *
+ * Every entry is labelled with the language's **own name for itself**. A picker
+ * written entirely in English is a picker for people who already have English,
+ * which is exactly the reader this list exists for.
+ *
+ * Each partial locale says how partial it is, from a count measured off the
+ * catalogues at build time rather than asserted here. Someone switching to a
+ * language that is a third done deserves to know that before the screen changes
+ * under them, not after.
+ *
+ * Only locales with something translated are offered. `Locales.ALL` is the list
+ * Nooz intends to support; `LocaleCoverage.SHIPPED` is what it actually has.
+ * Offering the difference would hand a reader their own language and then an
+ * English app.
+ */
+@Composable
+private fun LanguageSection() {
+    val context = LocalContext.current
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    var chosen by remember { mutableStateOf(AppLocale.current(context)) }
+
+    val offered = remember {
+        Locales.ALL.filter { it.tag in LocaleCoverage.SHIPPED }
+    }
+    val currentName = offered.firstOrNull { it.tag == chosen }?.endonym
+        ?: stringResource(DesignR.string.language_system_default)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            SectionHeading(stringResource(DesignR.string.language_title))
+            Text(
+                currentName,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+
+    if (!expanded) return
+
+    Text(
+        stringResource(DesignR.string.language_explainer),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(bottom = Tokens.Spacing.xs),
+    )
+
+    fun choose(tag: String) {
+        chosen = tag
+        if (AppLocale.set(context, tag)) (context as? Activity)?.recreate()
+    }
+
+    Column(modifier = Modifier.selectableGroup()) {
+        LanguageRow(
+            label = stringResource(DesignR.string.language_system_default),
+            selected = chosen == AppLocale.SYSTEM_DEFAULT,
+            onClick = { choose(AppLocale.SYSTEM_DEFAULT) },
+        )
+        for (locale in offered) {
+            val percent = LocaleCoverage.percentFor(locale.tag)
+            LanguageRow(
+                label = if (percent >= 100) {
+                    stringResource(DesignR.string.language_complete, locale.endonym)
+                } else {
+                    stringResource(DesignR.string.language_partial, locale.endonym, percent)
+                },
+                selected = chosen == locale.tag,
+                onClick = { choose(locale.tag) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguageRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            // selectable() rather than clickable(): it publishes the row's
+            // selected state to TalkBack, which a plain click target does not.
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
+    ) {
+        Text(
+            label,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        if (selected) {
+            Icon(
+                Icons.Filled.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+    }
 }
 
 /**
@@ -785,9 +1086,9 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            SectionHeading("Gestures")
+            SectionHeading(stringResource(DesignR.string.settings_gestures))
             Text(
-                "Two-finger reader gestures. Defaults are on.",
+                stringResource(DesignR.string.settings_gestures_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -800,19 +1101,19 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
     }
     if (expanded) {
         SettingSwitchRow(
-            title = "Two-finger drag → brightness",
+            title = stringResource(DesignR.string.settings_gesture_brightness),
             subtitle = "Slide two fingers up or down to dim or brighten the page.",
             checked = settings.twoFingerBrightness,
             onCheckedChange = { vm.setTwoFingerBrightness(it) },
         )
         SettingSwitchRow(
-            title = "Two-finger flick → theme",
+            title = stringResource(DesignR.string.settings_gesture_theme),
             subtitle = "Flick two fingers sideways to step the paper tint.",
             checked = settings.twoFingerThemeFlick,
             onCheckedChange = { vm.setTwoFingerThemeFlick(it) },
         )
         SettingSwitchRow(
-            title = "Immersive pinch → unread",
+            title = stringResource(DesignR.string.settings_gesture_unread),
             subtitle = "On the Stand's list: pinch in to show only unread, pinch out to show everything again.",
             checked = settings.unreadPinchFilter,
             onCheckedChange = { vm.setUnreadPinchFilter(it) },
@@ -831,9 +1132,9 @@ private fun GesturesSection(settings: AppSettings, vm: SettingsViewModel) {
  */
 @Composable
 private fun ImagesSection(settings: AppSettings, vm: SettingsViewModel) {
-    SectionHeading("Images")
+    SectionHeading(stringResource(DesignR.string.settings_images))
     SettingSwitchRow(
-        title = "Show feed images",
+        title = stringResource(DesignR.string.settings_show_feed_images),
         subtitle = "Article thumbnails and hero images, wherever a source's feed supplies one.",
         checked = settings.showFeedImages,
         onCheckedChange = { vm.setShowFeedImages(it) },
@@ -868,7 +1169,7 @@ private fun ImagesSection(settings: AppSettings, vm: SettingsViewModel) {
             }
         }
         SettingSwitchRow(
-            title = "Hide source-flagged images",
+            title = stringResource(DesignR.string.settings_hide_flagged_images),
             subtitle = "Hides an item's image only when its own feed declared it adult/explicit; never this app's own judgment, and never touches a source that declares nothing.",
             checked = settings.hideNsfwImages,
             onCheckedChange = { vm.setHideNsfwImages(it) },
@@ -893,9 +1194,9 @@ private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            SectionHeading("Advanced")
+            SectionHeading(stringResource(DesignR.string.settings_advanced))
             Text(
-                "Loaded-language word list, feedback.",
+                stringResource(DesignR.string.settings_advanced_body),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -910,18 +1211,18 @@ private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClickLabel = "Open the loaded-language word list", onClick = onOpenLensWordList)
+                .clickable(onClickLabel = stringResource(DesignR.string.settings_open_word_list), onClick = onOpenLensWordList)
                 .padding(vertical = Tokens.Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    "Loaded-language word list",
+                    stringResource(DesignR.string.settings_word_list),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Text(
-                    "Turn off individual default flags, or add your own words to watch for.",
+                    stringResource(DesignR.string.settings_word_list_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -941,24 +1242,29 @@ private fun AdvancedSection(onOpenLensWordList: () -> Unit) {
 private const val FEEDBACK_EMAIL = "nooz@asystemofcells.com"
 
 /**
- * Feedback (owner's ask): composes an email via whatever mail app is
- * installed. [LocalUriHandler]'s default Android implementation rethrows a
+ * A clickable row that opens a mailto: to [FEEDBACK_EMAIL] with the given
+ * subject. [LocalUriHandler]'s default Android implementation rethrows a
  * missing-mail-app failure as [IllegalArgumentException] (wrapping the
  * underlying `ActivityNotFoundException`) rather than silently no-op'ing —
  * caught here so a device with no mail client configured gets an honest
  * fallback (the address copied to the clipboard) instead of a crash.
+ *
+ * Shared by [AboutSection]'s stringResource(DesignR.string.settings_contact) (Play's News & Magazines policy
+ * requires a clearly labeled, easy-to-find contact section — the app's one
+ * contact address needs to live where that reads, not only buried in
+ * Advanced settings) and Advanced settings' own "Send feedback" row.
  */
 @Composable
-private fun FeedbackRow() {
+private fun ContactRow(label: String, subtitle: String, emailSubject: String) {
     val uriHandler = LocalUriHandler.current
     val clipboard = LocalClipboardManager.current
     var fallbackMessage by remember { mutableStateOf<String?>(null) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = "Send feedback by email") {
+            .clickable(onClickLabel = stringResource(DesignR.string.settings_contact_email)) {
                 try {
-                    uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=" + android.net.Uri.encode("Nooz feedback"))
+                    uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=" + android.net.Uri.encode(emailSubject))
                 } catch (_: Exception) {
                     clipboard.setText(AnnotatedString(FEEDBACK_EMAIL))
                     fallbackMessage = "No email app found; copied $FEEDBACK_EMAIL to your clipboard instead."
@@ -968,17 +1274,18 @@ private fun FeedbackRow() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text("Send feedback", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
-            Text(
-                "Opens an email to $FEEDBACK_EMAIL.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
     fallbackMessage?.let {
         Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+@Composable
+private fun FeedbackRow() {
+    ContactRow("Send feedback", "Opens an email to $FEEDBACK_EMAIL.", "Nooz feedback")
 }
 
 @Composable
@@ -1023,9 +1330,9 @@ private fun YourDataSection(vm: SettingsViewModel) {
         }
     }
 
-    SectionHeading("Your data")
+    SectionHeading(stringResource(DesignR.string.settings_your_data))
     Text(
-        "Export everything as open JSON: preferences, your region and topics, your sources, your clippings, and the coarse read log. Local only; API keys are never included.",
+        stringResource(DesignR.string.settings_your_data_body),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -1045,23 +1352,30 @@ private fun YourDataSection(vm: SettingsViewModel) {
 @Composable
 internal fun AboutSection() {
     val uriHandler = LocalUriHandler.current
-    SectionHeading("About")
+    SectionHeading(stringResource(DesignR.string.settings_about))
     Text(
-        "Nooz is a news reader whose subject is omission: what got left out. It's made by mdhv.xyz, a small studio of focused, quiet apps.",
+        stringResource(DesignR.string.settings_about_body),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onBackground,
     )
     TextButton(onClick = { uriHandler.openUri("https://mdhv.xyz") }, contentPadding = PaddingValues(0.dp)) {
-        Text("Visit mdhv.xyz")
+        Text(stringResource(DesignR.string.settings_visit_studio))
     }
     TextButton(
         onClick = { uriHandler.openUri("https://github.com/mbaliga/nooz") },
         contentPadding = PaddingValues(0.dp),
     ) {
-        Text("View source on GitHub")
+        Text(stringResource(DesignR.string.settings_view_source))
     }
+
+    // Google Play's News & Magazines policy requires a clearly labeled,
+    // easy-to-find in-app contact section -- this needs to be right here on
+    // the About tab, not several taps deep in Advanced settings.
+    SectionHeading(stringResource(DesignR.string.settings_contact))
+    ContactRow(FEEDBACK_EMAIL, "Questions, feedback, or a correction: email us directly.", "Nooz")
+
     Text(
-        "More from the studio",
+        stringResource(DesignR.string.settings_more_from_studio),
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -1132,26 +1446,143 @@ private fun DictionaryRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(option.name, style = MaterialTheme.typography.titleMedium)
             Text(
-                "${option.sizeHuman} · ${option.license}",
+                stringResource(DesignR.string.settings_size_license, option.sizeHuman, option.license),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         // Live region: the download status change is spoken, not silent.
+        // Resolved before `semantics { }`, which is not a composable scope.
+        val downloadingLabel = stringResource(DesignR.string.settings_downloading_dictionary)
         Box(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }, contentAlignment = Alignment.Center) {
             when {
                 downloading -> androidx.compose.material3.CircularProgressIndicator(
-                    modifier = Modifier.size(22.dp).semantics { contentDescription = "Downloading dictionary" },
+                    modifier = Modifier.size(22.dp).semantics { contentDescription = downloadingLabel },
                     strokeWidth = 2.dp,
                 )
                 downloaded -> Icon(
                     Icons.Filled.Check,
-                    contentDescription = "Downloaded",
+                    contentDescription = stringResource(DesignR.string.settings_downloaded),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
                 else -> androidx.compose.material3.TextButton(onClick = onDownload) {
-                    Text("Download")
+                    Text(stringResource(DesignR.string.settings_download))
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Word-level translation (owner's ask, 2026-08): reading in a second or third
+ * language, long-press a word and see it in your own — the way Kindle does.
+ *
+ * Collapsed by default and deliberately not a language *setting* but a
+ * *download*: these are 1–26 MB bilingual dictionaries, one installed at a
+ * time, and a reader should choose to spend that rather than discover it spent.
+ * Everything after the download is offline; a lookup never leaves the device.
+ */
+@Composable
+private fun TranslationSection(vm: SettingsViewModel) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val installedId by vm.installedTranslationId.collectAsStateWithLifecycle()
+    val installed = vm.translationOptions.firstOrNull { it.id == installedId }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            SectionHeading(stringResource(DesignR.string.settings_translation))
+            Text(
+                installed?.let { "${it.label} — long-press a word as you read." }
+                    ?: "Long-press a word and see it in another language.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = if (expanded) "Collapse translation" else "Expand translation",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+
+    if (expanded) {
+        Text(
+            stringResource(DesignR.string.settings_translation_body),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (installed != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(installed.label, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                TextButton(onClick = { vm.removeTranslation() }) { Text(stringResource(DesignR.string.settings_remove)) }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        }
+        vm.translationError?.let { err ->
+            Text(err, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        }
+        for (option in vm.translationOptions) {
+            TranslationRow(
+                option = option,
+                installed = installedId == option.id,
+                downloading = vm.downloadingTranslationId == option.id,
+                onDownload = { vm.downloadTranslation(option) },
+            )
+        }
+        // Recorded in the open rather than left to be discovered: the source
+        // publishes 650 pairs and none of them is an Indian language, which is
+        // a real gap for a catalogue that just gained feeds in eleven of them.
+        Text(
+            stringResource(DesignR.string.settings_no_indic_pair),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Tokens.Spacing.xs),
+        )
+    }
+}
+
+/** One downloadable language pair. Mirrors [DictionaryRow]'s shape. */
+@Composable
+private fun TranslationRow(
+    option: TranslationOption,
+    installed: Boolean,
+    downloading: Boolean,
+    onDownload: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = Tokens.Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(option.label, style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(DesignR.string.settings_size_license, option.approxSizeHuman, option.license),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        val downloadingLabel = stringResource(DesignR.string.settings_downloading_named, option.label)
+        Box(modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }, contentAlignment = Alignment.Center) {
+            when {
+                downloading -> androidx.compose.material3.CircularProgressIndicator(
+                    modifier = Modifier.size(22.dp).semantics { contentDescription = downloadingLabel },
+                    strokeWidth = 2.dp,
+                )
+                installed -> Icon(
+                    Icons.Filled.Check,
+                    contentDescription = stringResource(DesignR.string.settings_installed),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                )
+                else -> TextButton(onClick = onDownload) { Text(stringResource(DesignR.string.settings_download)) }
             }
         }
     }
@@ -1166,6 +1597,10 @@ private fun SwatchCircle(
     letterColor: Color,
     onClick: () -> Unit,
     fontFamily: FontFamily = HyleGroteskClassic,
+    /** Set instead of [background] to paint the swatch as more than one tint. */
+    backgroundBrush: Brush? = null,
+    /** The specimen letter. Null for the follow-the-phone swatch, whose two tints are the specimen. */
+    glyph: String? = "T",
 ) {
     val ring = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outlineVariant
     Box(modifier = Modifier.size(62.dp)) {
@@ -1174,17 +1609,22 @@ private fun SwatchCircle(
                 .size(56.dp)
                 .align(Alignment.Center)
                 .clip(CircleShape)
-                .background(background)
+                .then(
+                    if (backgroundBrush != null) Modifier.background(backgroundBrush)
+                    else Modifier.background(background),
+                )
                 .border(if (selected) Tokens.Border.thick else Tokens.Border.thin, ring, CircleShape)
                 .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
                 .semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                "T",
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
-                color = letterColor,
-            )
+            if (glyph != null) {
+                Text(
+                    glyph,
+                    style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
+                    color = letterColor,
+                )
+            }
         }
         if (selected) {
             Box(

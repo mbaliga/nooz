@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -34,10 +34,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -46,6 +48,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
@@ -62,6 +67,7 @@ import xyz.mdhv.riverwip.design.DayMixBar
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.design.R as DesignR
 import androidx.compose.foundation.layout.aspectRatio
 import xyz.mdhv.riverwip.feature.lens.LensAnnotatedParagraph
 import xyz.mdhv.riverwip.feature.lens.LensViewModel
@@ -69,6 +75,7 @@ import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.PaperGrain
+import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.Topic
 import kotlin.math.ceil
 
@@ -98,7 +105,7 @@ fun EndOfArticleRow(
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
             if (hasPrevious) {
                 Text(
-                    "‹ Previous",
+                    stringResource(DesignR.string.reader_previous),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable(onClick = onPrevious),
@@ -106,14 +113,14 @@ fun EndOfArticleRow(
             }
         }
         Text(
-            "End of article",
+            stringResource(DesignR.string.reader_end_of_article),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
             if (hasNext) {
                 Text(
-                    "Next ›",
+                    stringResource(DesignR.string.reader_next),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable(onClick = onNext),
@@ -146,6 +153,7 @@ fun ReaderDetailScreen(
     showFeedImages: Boolean,
     hideNsfwImages: Boolean,
     imageStyle: ImageStyle,
+    readingAsideStyle: ReadingAsideStyle,
     offsetX: Float,
     // 0f = full Paper, 1f = fully parked — the one value driving scale, shadow,
     // corner radius and (together with offsetX's sign) translation, read live
@@ -188,6 +196,23 @@ fun ReaderDetailScreen(
     // reader was at (the very bottom, having just reached the end) and open
     // the new article already scrolled past its own start.
     LaunchedEffect(item.id) { listState.scrollToItem(0) }
+
+    val readingAside by vm.readingAside.collectAsStateWithLifecycle()
+    // The reading-aside clock only counts while this screen is actually the
+    // one resumed and on screen -- backgrounding the app or navigating away
+    // (both move this lifecycle off RESUMED) pauses it, same as the web
+    // reader's own tab-visibility gate.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            vm.setReaderActive(event == Lifecycle.Event.ON_RESUME)
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            vm.setReaderActive(false)
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Box(Modifier.fillMaxSize()) {
         Box(
@@ -296,29 +321,48 @@ fun ReaderDetailScreen(
                 }
                 when (val s = state) {
                     is ArticleUiState.Loading -> item {
+                        val loading = stringResource(DesignR.string.reader_loading)
                         Box(Modifier.fillMaxWidth().padding(top = Tokens.Spacing.xxl), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator(
                                 modifier = Modifier.semantics {
-                                    contentDescription = "Loading article"
+                                    contentDescription = loading
                                     liveRegion = LiveRegionMode.Polite
                                 },
                             )
                         }
                     }
-                    is ArticleUiState.Loaded -> items(s.paragraphs) { para ->
-                        LensAnnotatedParagraph(
-                            itemId = item.id,
-                            text = para,
-                            vm = lensVm,
-                            style = MaterialTheme.typography.bodyLarge,
-                            // A touch more room than the list's base spacedBy
-                            // gap, stacked on top of it: at just Tokens.Spacing.md
-                            // between every item, paragraph breaks read as
-                            // barely more than an extra line — this widens the
-                            // gap specifically between paragraphs so they read
-                            // as distinct blocks (owner's #2, rendering quality).
-                            modifier = Modifier.padding(bottom = Tokens.Spacing.xs),
-                        )
+                    is ArticleUiState.Loaded -> {
+                        // The aside breaks up roughly the middle of the piece,
+                        // a stable, deterministic spot -- the way a real
+                        // pull-quote sets one off mid-column, not at a random
+                        // scroll position that would jump around on recompose.
+                        val asideAt = readingAside
+                            ?.takeIf { it.itemId == item.id }
+                            ?.let { s.paragraphs.size / 2 }
+                        itemsIndexed(s.paragraphs) { index, para ->
+                            Column {
+                                LensAnnotatedParagraph(
+                                    itemId = item.id,
+                                    text = para,
+                                    vm = lensVm,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    // A touch more room than the list's base spacedBy
+                                    // gap, stacked on top of it: at just Tokens.Spacing.md
+                                    // between every item, paragraph breaks read as
+                                    // barely more than an extra line — this widens the
+                                    // gap specifically between paragraphs so they read
+                                    // as distinct blocks (owner's #2, rendering quality).
+                                    modifier = Modifier.padding(bottom = Tokens.Spacing.xs),
+                                )
+                                if (index == asideAt) {
+                                    FoundQuoteAside(
+                                        readingAside!!,
+                                        readingAsideStyle,
+                                        modifier = Modifier.padding(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.sm),
+                                    )
+                                }
+                            }
+                        }
                     }
                     is ArticleUiState.Fallback -> item {
                         // Some feeds (aggregators like Google News especially)
@@ -334,7 +378,7 @@ fun ReaderDetailScreen(
                                 style = MaterialTheme.typography.bodyLarge,
                             )
                             Text(
-                                "Read the full story at the source ↗",
+                                stringResource(DesignR.string.reader_full_story),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier
@@ -428,7 +472,7 @@ fun ReaderDetailScreen(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to the stand",
+                            contentDescription = stringResource(DesignR.string.reader_back_to_stand),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -440,7 +484,7 @@ fun ReaderDetailScreen(
                     ) {
                         Icon(
                             Icons.Filled.Settings,
-                            contentDescription = "Open reader settings",
+                            contentDescription = stringResource(DesignR.string.reader_open_settings),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -505,7 +549,7 @@ internal fun ReaderUtilityBar(
                 ) {
                     Icon(
                         Icons.Filled.RemoveRedEye,
-                        contentDescription = "Lens: loaded-language highlighting",
+                        contentDescription = stringResource(DesignR.string.reader_lens_toggle),
                         tint = if (lensOn) {
                             MaterialTheme.colorScheme.onSecondaryContainer
                         } else {
@@ -516,7 +560,7 @@ internal fun ReaderUtilityBar(
                 }
             }
             IconButton(onClick = onOpenBrowser) {
-                Icon(Icons.Filled.Public, contentDescription = "Open in browser")
+                Icon(Icons.Filled.Public, contentDescription = stringResource(DesignR.string.reader_open_in_browser))
             }
             IconButton(onClick = onToggleClip) {
                 Icon(
@@ -526,7 +570,7 @@ internal fun ReaderUtilityBar(
                 )
             }
             IconButton(onClick = onShare) {
-                Icon(Icons.Filled.Share, contentDescription = "Share as a newspaper clipping")
+                Icon(Icons.Filled.Share, contentDescription = stringResource(DesignR.string.reader_share_clipping))
             }
             val s = state
             // Listen to the article itself (owner: "where is the play button to
@@ -543,13 +587,14 @@ internal fun ReaderUtilityBar(
             }
             if (showReadingTime && s is ArticleUiState.Loaded) {
                 val minutes = remember(s.paragraphs) { readingMinutes(s.paragraphs) }
+                val readingTime = stringResource(DesignR.string.reader_reading_time, minutes)
                 Text(
-                    "$minutes min",
+                    stringResource(DesignR.string.reader_minutes_short, minutes),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .padding(horizontal = Tokens.Spacing.sm)
-                        .semantics { contentDescription = "Estimated reading time $minutes minutes" },
+                        .semantics { contentDescription = readingTime },
                 )
             } else {
                 Spacer(Modifier.width(Tokens.Spacing.sm))
@@ -560,7 +605,7 @@ internal fun ReaderUtilityBar(
                     Modifier
                         .weight(1f)
                         .heightIn(min = 48.dp)
-                        .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },
+                        .clickable(onClickLabel = stringResource(DesignR.string.list_open_loom)) { onOpenLoom() },
                     contentAlignment = Alignment.Center,
                 ) {
                     DayMixBar(todayMix, Modifier.fillMaxWidth())
@@ -578,11 +623,12 @@ private fun ProgressDial(progress: Float) {
     val track = MaterialTheme.colorScheme.outlineVariant
     val ink = MaterialTheme.colorScheme.onSurfaceVariant
     val pct = (progress * 100).toInt()
+    val spokenProgress = stringResource(DesignR.string.reader_progress, pct)
     Canvas(
         Modifier
             .padding(start = Tokens.Spacing.xs, end = Tokens.Spacing.xxs)
             .size(20.dp)
-            .semantics { contentDescription = "About $pct percent through the article" },
+            .semantics { contentDescription = spokenProgress },
     ) {
         val stroke = 2.5.dp.toPx()
         val inset = stroke / 2f

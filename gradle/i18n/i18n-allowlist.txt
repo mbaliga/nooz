@@ -1,0 +1,19 @@
+# Files still carrying interface copy in Kotlin, and how much.
+#
+# This is the i18n ratchet's baseline, not a permission slip. verifyI18n fails
+# if a file exceeds its number, if a file with no entry here has any hardcoded
+# copy at all, or if a file drops below its number without the number being
+# lowered. So the list can only shrink, a new screen is enforced from its first
+# commit, and finishing a file means deleting its line.
+#
+# HONEST LIMIT: the scanner matches literals at text call sites -- Text("…"),
+# text =, contentDescription =, label =, title = and friends. Copy that reaches
+# the screen some other way (built in a buildString, held in a val, passed to a
+# project composable as a bare positional argument) is not counted here. The
+# numbers below are therefore a floor on the work remaining, not a total.
+#
+#   <path relative to the repo root> <count>
+#
+# EMPTY, and that is the point: every interface string in the scanned modules
+# now lives in strings.xml. A file appearing below again means copy went back
+# into Kotlin; the fix is to move it out, not to add a line here.

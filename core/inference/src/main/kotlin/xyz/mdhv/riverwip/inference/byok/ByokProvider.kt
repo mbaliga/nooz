@@ -14,6 +14,7 @@ import kotlinx.serialization.json.put
 import xyz.mdhv.riverwip.inference.DigestRequest
 import xyz.mdhv.riverwip.inference.DigestResult
 import xyz.mdhv.riverwip.inference.InferenceProvider
+import xyz.mdhv.riverwip.inference.PromptTemplates
 import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.inference.RewriteRequest
 import xyz.mdhv.riverwip.inference.RewriteResult
@@ -38,7 +39,7 @@ class ByokProvider(private val store: ByokConfigStore) : InferenceProvider {
     override suspend fun rewrite(request: RewriteRequest): RewriteResult {
         val cfg = store.load()
         if (!cfg.isComplete) return RewriteResult.Failed("No API key configured")
-        return when (val r = chatComplete(cfg, REWRITE_SYSTEM_PROMPT, rewriteUserPrompt(request))) {
+        return when (val r = chatComplete(cfg, PromptTemplates.REWRITE_SYSTEM, PromptTemplates.rewriteUser(request))) {
             is ChatOutcome.Success -> RewriteResult.Success(r.content, Provenance.CLOUD)
             is ChatOutcome.Failed -> RewriteResult.Failed(r.reason)
         }
@@ -48,7 +49,7 @@ class ByokProvider(private val store: ByokConfigStore) : InferenceProvider {
         val cfg = store.load()
         if (!cfg.isComplete) return DigestResult.Failed("No API key configured")
         if (request.headlines.isEmpty()) return DigestResult.Failed("Nothing flowed yet to compress")
-        return when (val r = chatComplete(cfg, DIGEST_SYSTEM_PROMPT, digestUserPrompt(request))) {
+        return when (val r = chatComplete(cfg, PromptTemplates.DIGEST_SYSTEM, PromptTemplates.digestUser(request))) {
             is ChatOutcome.Success -> DigestResult.Success(r.content, Provenance.CLOUD)
             is ChatOutcome.Failed -> DigestResult.Failed(r.reason)
         }
@@ -116,25 +117,5 @@ class ByokProvider(private val store: ByokConfigStore) : InferenceProvider {
             ?.jsonPrimitive?.content
     } catch (_: Exception) {
         null
-    }
-
-    private fun rewriteUserPrompt(request: RewriteRequest): String =
-        "Sentence:\n${request.fullSentence}\n\n" +
-            "Rewrite ONLY the phrase \"${request.spanText}\" to remove its charge, keeping every fact, " +
-            "number, name, and negation identical. Return the full sentence, nothing else."
-
-    private fun digestUserPrompt(request: DigestRequest): String =
-        "Today's headlines:\n" + request.headlines.joinToString("\n") { "- $it" }
-
-    companion object {
-        private const val REWRITE_SYSTEM_PROMPT =
-            "You neutralize loaded language in news sentences. Replace only the specified phrase with a plain, " +
-                "neutral wording. Never add, drop, or change any fact, number, named entity, or negation. " +
-                "Output only the rewritten sentence."
-
-        private const val DIGEST_SYSTEM_PROMPT =
-            "You compress a list of news headlines into one plain-language sentence of 10 words or fewer, " +
-                "capturing only what the headlines themselves state — never infer a connection, cause, or " +
-                "outcome the headlines don't already state. Output only that one sentence, nothing else."
     }
 }

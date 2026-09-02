@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
@@ -29,12 +30,16 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.design.Copy
 import xyz.mdhv.riverwip.design.toComposeColor
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.formatCompactCount
 
@@ -59,6 +64,30 @@ fun DayLoomCanvas(
     }
 
     val description = describeLoom(loom, enabledSourceCount)
+    // Resolved here, not inside `semantics { }`, which is not a composable
+    // scope. One label per stream, carrying that stream's numbers: the
+    // custom-action menu is read aloud in sequence, so the answer has to be
+    // *in* the item rather than behind selecting it.
+    val streamLabels = loom.bands.map { band ->
+        stringResource(
+            DesignR.string.loom_stream_action,
+            band.topic.placeholderLabel,
+            band.flowed,
+            band.read,
+        )
+    }
+    val nothingSelected = stringResource(DesignR.string.loom_nothing_selected)
+    val selectionLabel = selected?.let {
+        stringResource(
+            DesignR.string.loom_selected,
+            stringResource(
+                DesignR.string.loom_stream_action,
+                it.topic.placeholderLabel,
+                it.flowed,
+                it.read,
+            ),
+        )
+    } ?: nothingSelected
     val curtainColor = MaterialTheme.colorScheme.background
     val ghostColor = MaterialTheme.colorScheme.onSurfaceVariant
     val w = DayLoomLayout.W.toFloat()
@@ -72,7 +101,30 @@ fun DayLoomCanvas(
     ) {
     Box(
         modifier = modifier
-            .semantics(mergeDescendants = true) { contentDescription = description },
+            .semantics(mergeDescendants = true) {
+                contentDescription = description
+                // The Loom is the app's centrepiece and it was, to a screen
+                // reader, a single silent node: a Robolectric semantics dump
+                // showed its whole action list as
+                // [SetTextSubstitution, ShowTextSubstitution,
+                //  ClearTextSubstitution, GetTextLayoutResult] — no click,
+                // nothing custom — while its own description ended "Tap a
+                // stream for its counts." The app was instructing a gesture it
+                // would not accept, and the per-tube counts existed nowhere
+                // else in speech.
+                //
+                // One action per stream, carrying the numbers in the label
+                // itself: the custom-action menu is read aloud in sequence, so
+                // the answer has to be *in* the item rather than behind
+                // selecting it.
+                customActions = loom.bands.mapIndexed { index, band ->
+                    CustomAccessibilityAction(
+                        label = streamLabels[index],
+                        action = { selected = band; true },
+                    )
+                }
+                stateDescription = selectionLabel
+            },
     ) {
         Canvas(
             Modifier
@@ -137,10 +189,10 @@ fun DayLoomCanvas(
 
         Column(modifier = Modifier.align(BiasAlignment(-0.85f, 0.02f))) {
             Text(formatCompactCount(loom.totalFlowed), style = numberStyle, color = ink)
-            Text("SOURCE", style = captionStyle, color = dim)
+            Text(stringResource(DesignR.string.loom_axis_source), style = captionStyle, color = dim)
         }
         Column(modifier = Modifier.align(BiasAlignment(0.86f, 0.28f)), horizontalAlignment = Alignment.End) {
-            Text("CONSUMPTION", style = captionStyle, color = dim)
+            Text(stringResource(DesignR.string.loom_axis_consumption), style = captionStyle, color = dim)
             Text(formatCompactCount(loom.totalRead), style = numberStyle, color = ink)
         }
 
@@ -155,7 +207,11 @@ fun DayLoomCanvas(
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    "${sel.flowed} flowed" + if (sel.read > 0) " · ${sel.read} read" else " · none read",
+                    if (sel.read > 0) {
+                        stringResource(DesignR.string.loom_inspector_read, sel.flowed, sel.read)
+                    } else {
+                        stringResource(DesignR.string.loom_inspector_none_read, sel.flowed)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = dim,
                 )
@@ -164,7 +220,12 @@ fun DayLoomCanvas(
 
         // Denominator honesty (brief §1), verbatim register from the reference.
         Text(
-            "${loom.totalFlowed} flowed · ${loom.totalRead} read · ${Copy.fromSources(enabledSourceCount)}",
+            stringResource(
+                DesignR.string.loom_totals,
+                loom.totalFlowed,
+                loom.totalRead,
+                Copy.fromSources(enabledSourceCount),
+            ),
             style = MaterialTheme.typography.labelSmall,
             color = dim,
             modifier = Modifier.align(BiasAlignment(0f, 0.97f)),
@@ -258,14 +319,64 @@ private fun hitBand(loom: DayLoomLayout.Loom, x: Float, y: Float): DayLoomLayout
     return null
 }
 
+/** How many supply topics the spoken summary names before summarising the tail. */
+private const val SPOKEN_SUPPLY_TOPICS = 5
+
+/**
+ * What the Loom says out loud.
+ *
+ * `@Composable` so it can reach `stringResource`. Until this, the description
+ * was assembled from English literals inside a plain function — invisible to
+ * `verifyI18n`, which matches text call sites — so a blind reader who set the
+ * app to Tamil got a Tamil interface and then heard the app's centrepiece
+ * described in English. The one screen this app is really about.
+ */
+@Composable
 private fun describeLoom(loom: DayLoomLayout.Loom, enabledSourceCount: Int): String {
-    if (loom.totalFlowed == 0) return "Nothing flowed from your $enabledSourceCount sources this day."
+    val sources = stringResource(
+        if (enabledSourceCount == 1) DesignR.string.loom_source_one else DesignR.string.loom_source_many,
+        enabledSourceCount,
+    )
+    if (loom.totalFlowed == 0) {
+        return stringResource(DesignR.string.loom_nothing_flowed, sources)
+    }
+
+    // The supply side used to be a single grand total, because this only ever
+    // enumerated `bands.filter { it.consumed }` — topics with at least one read.
+    // A topic that flooded the feed and was never opened was therefore never
+    // named, which is precisely the omission this whole screen exists to show.
+    val bySupply = loom.bands.sortedByDescending { it.flowed }
+    val named = bySupply.take(SPOKEN_SUPPLY_TOPICS).filter { it.flowed > 0 }
+    val rest = bySupply.drop(SPOKEN_SUPPLY_TOPICS).count { it.flowed > 0 }
+
+    var flowedLine = stringResource(DesignR.string.loom_flowed, loom.totalFlowed, sources)
+    if (named.isNotEmpty()) {
+        val list = named
+            .map { band -> topicCount(band.topic.placeholderLabel, band.flowed) }
+            .joinToString(", ")
+        flowedLine = stringResource(DesignR.string.loom_flowed_named, flowedLine, list)
+        if (rest > 0) flowedLine += stringResource(DesignR.string.loom_and_more_topics, rest)
+    }
+
     val read = loom.bands.filter { it.consumed }.sortedByDescending { it.read }
     val readLine = if (read.isEmpty()) {
-        "none of it read"
+        stringResource(DesignR.string.loom_read_none)
     } else {
-        "${loom.totalRead} read: " + read.joinToString(", ") { "${it.topic.placeholderLabel} ${it.read}" }
+        stringResource(
+            DesignR.string.loom_read_some,
+            loom.totalRead,
+            read.map { band -> topicCount(band.topic.placeholderLabel, band.read) }.joinToString(", "),
+        )
     }
-    return "Day loom. ${loom.totalFlowed} stories flowed from your $enabledSourceCount sources; $readLine. " +
-        "Tap a stream for its counts."
+
+    // No longer "Tap a stream" — a screen reader cannot land a tap on one, and
+    // the custom actions are the route that actually exists for them.
+    val title = stringResource(DesignR.string.loom_title)
+    val useActions = stringResource(DesignR.string.loom_use_actions)
+    return "$title $flowedLine. $readLine. $useActions"
 }
+
+/** "Politics 40" — a topic and its number, in whatever order the locale wants. */
+@Composable
+private fun topicCount(label: String, count: Int): String =
+    stringResource(DesignR.string.loom_topic_count, label, count)

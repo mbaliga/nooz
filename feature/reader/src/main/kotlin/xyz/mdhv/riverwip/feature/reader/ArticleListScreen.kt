@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -35,6 +36,8 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -46,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +71,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -83,6 +88,8 @@ import xyz.mdhv.riverwip.design.R
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.topFadingEdge
+import xyz.mdhv.riverwip.design.R as DesignR
+import xyz.mdhv.riverwip.model.ArticleSearch
 import xyz.mdhv.riverwip.model.Diversifier
 import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.ReadMarkStyle
@@ -122,6 +129,7 @@ fun ArticleListScreen(
     vm: ReaderViewModel,
     noozFlashEnabled: Boolean,
     noozCastEnabled: Boolean,
+    todayInHistoryEnabled: Boolean,
     readMarkStyle: ReadMarkStyle,
     unreadPinchFilter: Boolean,
     showFeedImages: Boolean,
@@ -169,7 +177,24 @@ fun ArticleListScreen(
     var showUnreadOnly by rememberSaveable { mutableStateOf(false) }
     val unreadFiltered = if (showUnreadOnly) items.filter { it.id !in readIds } else items
     val q = searchQuery.trim()
-    val searched = if (q.isEmpty()) unreadFiltered else unreadFiltered.filter { it.title.contains(q, ignoreCase = true) }
+
+    // Body search (D37). Titles and summaries are matched here, in memory,
+    // because they exist for every item; bodies are matched by the FTS index in
+    // the view model, because they only exist for articles actually opened and
+    // matching them is a database query. Searching only one of the two would
+    // quietly answer a narrower question than the reader asked.
+    val bodyMatches by vm.bodySearchMatches.collectAsStateWithLifecycle()
+    LaunchedEffect(q) { vm.searchBodies(q) }
+    val terms = remember(q) { ArticleSearch.terms(q) }
+    val searched = if (terms.isEmpty()) {
+        unreadFiltered
+    } else {
+        unreadFiltered.filter { item ->
+            ArticleSearch.matchesPrefixes(item.title, terms) ||
+                item.summary?.let { ArticleSearch.matchesPrefixes(it, terms) } == true ||
+                item.id in bodyMatches
+        }
+    }
     val sorted = if (groupedBySource) searched.sortedBy { sourceTitles[it.sourceId]?.lowercase() ?: "" } else searched
     val displayedItems = if (diversified) remember(sorted) { Diversifier.spread(sorted) } else sorted
 
@@ -212,7 +237,7 @@ fun ArticleListScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .clickable(onClickLabel = "Open the date picker") { onOpenDatePicker() }
+                    .clickable(onClickLabel = stringResource(DesignR.string.list_open_date_picker)) { onOpenDatePicker() }
                     .semantics { role = Role.Button }
                     .minimumInteractiveComponentSize()
                     .padding(horizontal = Tokens.Spacing.xs),
@@ -230,7 +255,7 @@ fun ArticleListScreen(
                 .minimumInteractiveComponentSize() // >=48dp tap target; the thin bar centres inside
                 .padding(horizontal = Tokens.Spacing.md)
                 .height(barHeight)
-                .clickable(onClickLabel = "Open the day loom") { onOpenLoom() },
+                .clickable(onClickLabel = stringResource(DesignR.string.list_open_loom)) { onOpenLoom() },
         ) {
             if (todayReadMix.isEmpty() || isRefreshing) {
                 CandyCaneBar(Modifier.fillMaxSize())
@@ -256,7 +281,7 @@ fun ArticleListScreen(
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .clickable(onClickLabel = "Open your sources") { onOpenEdit() }
+                    .clickable(onClickLabel = stringResource(DesignR.string.list_open_sources)) { onOpenEdit() }
                     .semantics { role = Role.Button }
                     .padding(vertical = Tokens.Spacing.xxs),
             )
@@ -264,7 +289,7 @@ fun ArticleListScreen(
             IconButton(onClick = { showFilterSheet = true }) {
                 Icon(
                     Icons.Filled.FilterList,
-                    contentDescription = "Filter by region and topic",
+                    contentDescription = stringResource(DesignR.string.list_filter_region_topic),
                     tint = if (!filter.allTopics || filter.region != Region.GLOBAL) {
                         MaterialTheme.colorScheme.onBackground
                     } else {
@@ -286,24 +311,47 @@ fun ArticleListScreen(
                     tint = if (diversified) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            // The unread-only filter used to be reachable *only* by a two-finger
+            // pinch on the list — no button, no menu, no accessibility action.
+            // A function with no non-gesture route is a function a screen-reader
+            // or switch-access user does not have (WCAG 2.5.1, Level A). The
+            // pinch still works; it is no longer the only way in.
+            IconButton(onClick = { showUnreadOnly = !showUnreadOnly }) {
+                Icon(
+                    if (showUnreadOnly) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                    contentDescription = if (showUnreadOnly) {
+                        stringResource(DesignR.string.list_showing_unread_only)
+                    } else {
+                        stringResource(DesignR.string.list_showing_all)
+                    },
+                    tint = if (showUnreadOnly) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            }
             IconButton(onClick = onOpenClippings) {
-                Icon(Icons.Filled.Bookmarks, contentDescription = "Open your clippings")
+                Icon(Icons.Filled.Bookmarks, contentDescription = stringResource(DesignR.string.list_open_clippings))
             }
             if (isRefreshing) {
+                // Resolved before the semantics block, which is not a
+                // composable scope.
+                val fetching = stringResource(DesignR.string.list_fetching)
                 CircularProgressIndicator(
                     modifier = Modifier
                         .padding(end = Tokens.Spacing.sm)
                         .size(18.dp)
-                        .semantics { contentDescription = "Fetching your sources" },
+                        .semantics { contentDescription = fetching },
                     strokeWidth = 2.dp,
                 )
             } else {
                 IconButton(onClick = { vm.refresh() }, enabled = enabledCount > 0) {
-                    Icon(Icons.Filled.Refresh, contentDescription = "Fetch your sources now")
+                    Icon(Icons.Filled.Refresh, contentDescription = stringResource(DesignR.string.list_fetch_now))
                 }
             }
             IconButton(onClick = onOpenEditSettings) {
-                Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                Icon(Icons.Filled.Settings, contentDescription = stringResource(DesignR.string.list_settings))
             }
         }
 
@@ -364,22 +412,25 @@ fun ArticleListScreen(
                 )
             }
             unreadFiltered.isEmpty() -> {
+                // Resolved here rather than inline: `clickable`'s onClickLabel
+                // is a plain argument, not a composable scope.
+                val showAllLabel = stringResource(DesignR.string.list_show_all_click)
                 // showUnreadOnly filtered everything away — an honest, different
                 // state from "no sources"/"nothing flowed": there's plenty here,
                 // all of it read already.
                 Box(Modifier.weight(1f).fillMaxWidth().then(pinchModifier)) {
                     EmptyState(
-                        title = "Nothing left unread",
-                        body = "Every story in this list has been opened. Pinch out, or tap here, to see the whole list again.",
+                        title = stringResource(DesignR.string.list_nothing_unread),
+                        body = stringResource(DesignR.string.list_nothing_unread_body),
                         modifier = Modifier
                             .fillMaxSize()
-                            .clickable(onClickLabel = "Show all articles") { showUnreadOnly = false },
+                            .clickable(onClickLabel = showAllLabel) { showUnreadOnly = false },
                     )
                 }
             }
             displayedItems.isEmpty() -> {
                 // Unread items exist, but this search came up empty — distinct
-                // from the pinch-filter's "Nothing left unread" above.
+                // from the pinch-filter's stringResource(DesignR.string.list_nothing_unread) above.
                 Box(Modifier.weight(1f).fillMaxWidth().then(pinchModifier)) {
                     NoResultsState()
                 }
@@ -394,10 +445,23 @@ fun ArticleListScreen(
                         // floating over the bottom edge.
                         contentPadding = PaddingValues(top = Tokens.Spacing.xs, bottom = Tokens.Spacing.lg),
                     ) {
+                        // Today in History (owner's ask, 2026-08) stands above
+                        // the day's stories the way a printed paper's column
+                        // does, and scrolls away with them rather than pinning
+                        // itself over the news. Renders nothing when the
+                        // setting is off, so the list is untouched for anyone
+                        // who left it that way.
+                        if (todayInHistoryEnabled) {
+                            item(key = "today-in-history") { TodayInHistoryCard(vm = vm) }
+                        }
                         items(displayedItems, key = { it.id }) { item ->
                             ItemRow(
                                 item = item,
                                 sourceTitle = sourceTitles[item.sourceId],
+                                // Shown only when the match came from the body:
+                                // a result whose headline contains none of the
+                                // search terms otherwise just looks like a bug.
+                                matchSnippet = bodyMatches[item.id],
                                 read = item.id in readIds,
                                 readMarkStyle = readMarkStyle,
                                 showFeedImages = showFeedImages,
@@ -422,7 +486,7 @@ fun ArticleListScreen(
         // as well, same as we have in the sources") — the same shared bar,
         // hidden only when there's nothing yet to search through at all.
         if (items.isNotEmpty()) {
-            AppSearchBar(query = searchQuery, onQueryChange = { searchQuery = it }, placeholder = "Search articles")
+            AppSearchBar(query = searchQuery, onQueryChange = { searchQuery = it }, placeholder = stringResource(DesignR.string.list_search))
         }
     }
 
@@ -535,7 +599,7 @@ private fun EmptyStand(
                         .align(Alignment.CenterEnd)
                         .width(illustrationWidth)
                         .aspectRatio(NEEDLE_ILLUSTRATION_ASPECT_RATIO)
-                        .clickable(enabled = !isRefreshing, onClickLabel = "Add sources") { onAdd() }
+                        .clickable(enabled = !isRefreshing, onClickLabel = stringResource(DesignR.string.list_add_sources)) { onAdd() }
                         .semantics { role = Role.Button },
                 )
             }
@@ -550,7 +614,7 @@ private fun EmptyStand(
                 modifier = Modifier
                     .size(72.dp)
                     .background(MaterialTheme.colorScheme.onBackground, CircleShape)
-                    .clickable(enabled = !isRefreshing, onClickLabel = "Fetch now") { onRetry() }
+                    .clickable(enabled = !isRefreshing, onClickLabel = stringResource(DesignR.string.list_fetch_now)) { onRetry() }
                     .semantics { role = Role.Button },
                 contentAlignment = Alignment.Center,
             ) {
@@ -622,13 +686,13 @@ private fun RegionTopicFilterSheet(
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("Filter", style = MaterialTheme.typography.titleLarge, color = ink, modifier = Modifier.weight(1f))
+                Text(stringResource(DesignR.string.list_filter), style = MaterialTheme.typography.titleLarge, color = ink, modifier = Modifier.weight(1f))
                 if (filter.region != Region.GLOBAL || !filter.allTopics) {
-                    TextButton(onClick = onClearFilter) { Text("Clear") }
+                    TextButton(onClick = onClearFilter) { Text(stringResource(DesignR.string.list_clear)) }
                 }
             }
 
-            SectionHeading("Region")
+            SectionHeading(stringResource(DesignR.string.list_region))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
@@ -641,13 +705,13 @@ private fun RegionTopicFilterSheet(
                         fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
                         color = if (chosen) ink else muted,
                         modifier = Modifier
-                            .clickable(onClickLabel = "Filter to ${region.label}") { onSetRegion(region) }
+                            .clickable(onClickLabel = stringResource(DesignR.string.list_filter_region, region.label)) { onSetRegion(region) }
                             .padding(vertical = Tokens.Spacing.xxs),
                     )
                 }
             }
 
-            SectionHeading("Topics")
+            SectionHeading(stringResource(DesignR.string.list_topics))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs),
@@ -657,14 +721,14 @@ private fun RegionTopicFilterSheet(
                     val picked = topic.key in filter.topicKeys
                     val chosen = filter.allTopics || picked
                     Text(
-                        "${topic.placeholderLabel} · $count",
+                        stringResource(DesignR.string.list_topic_count, topic.placeholderLabel, count),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = if (picked) FontWeight.Bold else FontWeight.Normal,
                         color = if (chosen) ink else muted,
                         modifier = Modifier
                             .clickable(
                                 enabled = count > 0 || picked,
-                                onClickLabel = "Toggle ${topic.placeholderLabel}",
+                                onClickLabel = stringResource(DesignR.string.list_toggle_topic, topic.placeholderLabel),
                             ) { onToggleTopic(topic.key) }
                             .padding(vertical = Tokens.Spacing.xxs),
                     )
@@ -678,6 +742,8 @@ private fun RegionTopicFilterSheet(
 private fun ItemRow(
     item: Item,
     sourceTitle: String?,
+    /** An excerpt of the article body around the search hit, when it matched there. */
+    matchSnippet: String? = null,
     read: Boolean,
     readMarkStyle: ReadMarkStyle,
     showFeedImages: Boolean,
@@ -688,6 +754,9 @@ private fun ItemRow(
     // A read article marks itself in place (owner's ask) — no separate icon,
     // just the title itself dimmed or struck through, per the reader's own
     // Settings choice.
+    // Resolved outside the semantics block, which is not a composable scope.
+    val readLabel = stringResource(DesignR.string.list_read)
+    val unreadLabel = stringResource(DesignR.string.list_unread)
     val strike = read && readMarkStyle == ReadMarkStyle.STRIKETHROUGH
     val titleColor = if (read && readMarkStyle == ReadMarkStyle.GREYED) {
         MaterialTheme.colorScheme.onSurfaceVariant
@@ -698,6 +767,13 @@ private fun ItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
+            // Read/unread is the app's central state, and until now it was
+            // spent entirely on `strike` and `titleColor` above — a text
+            // decoration and a colour. Neither reaches the semantics API, so a
+            // read row and an unread row were byte-identical in speech, in an
+            // app whose stated purpose is showing consumption. stateDescription
+            // is the channel that carries it, and it costs one line.
+            .semantics { stateDescription = if (read) readLabel else unreadLabel }
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.md),
         horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
     ) {
@@ -733,6 +809,14 @@ private fun ItemRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
             )
+            if (matchSnippet != null) {
+                Text(
+                    matchSnippet,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                )
+            }
         }
     }
 }

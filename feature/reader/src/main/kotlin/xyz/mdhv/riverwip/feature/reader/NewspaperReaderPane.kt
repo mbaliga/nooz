@@ -34,6 +34,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.design.paperGrain
 import xyz.mdhv.riverwip.design.toComposeColor
@@ -210,9 +212,11 @@ fun NewspaperReaderPane(
                     Modifier.fillMaxWidth().padding(top = Tokens.Spacing.xxl),
                     contentAlignment = Alignment.Center,
                 ) {
+                    // Hoisted: a semantics block is not a composable scope.
+                    val loadingLabel = stringResource(DesignR.string.reader_loading)
                     CircularProgressIndicator(
                         modifier = Modifier.semantics {
-                            contentDescription = "Loading article"
+                            contentDescription = loadingLabel
                             liveRegion = LiveRegionMode.Polite
                         },
                     )
@@ -234,7 +238,7 @@ fun NewspaperReaderPane(
                         style = MaterialTheme.typography.bodyLarge,
                     )
                     Text(
-                        "Read the full story at the source ↗",
+                        stringResource(DesignR.string.reader_full_story),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier

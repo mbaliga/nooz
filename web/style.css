@@ -132,7 +132,14 @@
   --paper-field: #F7F6F3;
   --paper-raised: #FFFFFF;
   --paper-ink: #141414;
-  --paper-ink-dim: #8A8A86;
+  /* 4.60:1 on --paper-field, 4.97:1 on --paper-raised. Was #8A8A86, which is
+     3.21:1 — under the 4.5:1 WCAG AA needs for body text, and this token
+     carries the masthead edition line, every byline, the loom strip's labels
+     and the dek of a read story. Found by the axe-core suite (tests/axe.test.mjs)
+     on its first run, having been invisible to every review before it. Still
+     far lighter than --paper-ink at 17.05:1, so a read headline still reads as
+     dimmed — that distinction never needed to be this faint. */
+  --paper-ink-dim: #70706C;
   --paper-ink-faint: #C9C8C4;
   --paper-hairline: rgba(0, 0, 0, 0.12);
   --paper-hairline-strong: rgba(0, 0, 0, 0.2);
@@ -207,6 +214,39 @@ a {
   text-decoration: none;
 }
 
+/* Text for screen readers only: read aloud, never drawn. Used for facts the
+   page otherwise conveys with colour alone -- "Read." on a dimmed headline. */
+/* A heading (or region) focused programmatically after a route change, so the
+   change is announced. Nobody reached it by pressing Tab, so it does not get a
+   focus ring -- every element you can actually Tab to still does. */
+.nooz-focus-target:focus { outline: none; }
+
+.nooz-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* A headline that is also the story's control. It inherits the heading's type
+   entirely -- the newspaper look is unchanged -- but it is a real link, so it
+   is keyboard-reachable, appears in a screen reader's links list, and shows a
+   focus ring where the card used to show one. */
+.nooz-headline-link {
+  color: inherit;
+  text-decoration: none;
+}
+.nooz-headline-link:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: 3px;
+}
+
 /* -------------------------------------------------------------------------
    Document / typography
    ---------------------------------------------------------------------- */
@@ -252,7 +292,12 @@ h1, h2, h3, h4 {
 .nooz-app-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  /* svh (the smallest the viewport ever is, toolbar fully shown), not dvh:
+     dvh tracks the toolbar live, so a min-height keyed to it recomputes and
+     nudges layout on every collapse/expand as the page scrolls -- exactly
+     the kind of resize iPadOS fires on its own with no user interaction.
+     svh is the conservative floor and never moves. */
+  min-height: 100svh;
 }
 
 .nooz-topbar {
@@ -339,7 +384,14 @@ h1, h2, h3, h4 {
   .nooz-pane--sticky {
     position: sticky;
     top: calc(var(--space-lg) + 56px);
-    max-height: calc(100dvh - var(--space-lg) - 56px);
+    /* svh, not dvh, for the same reason as .nooz-app-shell above: this is a
+       max-height gating an internally-scrolling pane, and dvh would resize
+       that scroll area (and jump its own scroll position) on every toolbar
+       collapse/expand. svh is also the conservative choice for a max-height
+       specifically -- it's never larger than the real visible viewport, so
+       the pane can't get sized past the bottom of the screen the way lvh
+       (the toolbar-hidden, larger figure) could when the toolbar is shown. */
+    max-height: calc(100svh - var(--space-lg) - 56px);
     overflow-y: auto;
   }
 }
@@ -546,6 +598,8 @@ h1, h2, h3, h4 {
    ---------------------------------------------------------------------- */
 
 .nooz-button {
+  appearance: none;
+  -webkit-appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -876,7 +930,7 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  min-height: 100dvh;
+  min-height: 100svh; /* stable during toolbar collapse -- see .nooz-app-shell above */
   padding: var(--space-xxl) var(--space-lg);
   text-align: center;
 }
@@ -969,12 +1023,27 @@ h1, h2, h3, h4 {
   justify-content: flex-end;
 }
 .nooz-footer-link {
+  position: relative;
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   letter-spacing: 0.02em;
   color: var(--paper-ink-dim);
   padding: var(--space-xxs) var(--space-xs);
   border-radius: var(--radius-sm);
+}
+/* A source is failing -- a small alert dot rides the Sources tab, since that's
+   where you go to fix it. Replaces the old top-of-paper "Couldn't reach ..."
+   banner: the signal lives on the menu item that resolves it, out of the way. */
+.nooz-footer-badge {
+  position: absolute;
+  top: 1px;
+  right: -1px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--paper-signal-danger);
+  box-shadow: 0 0 0 2px var(--paper-field);
+  pointer-events: none;
 }
 .nooz-footer-link:hover { color: var(--paper-ink); }
 .nooz-footer-link[aria-current="page"] {
@@ -1219,26 +1288,6 @@ h1, h2, h3, h4 {
 .nooz-col-story .nooz-byline,
 .nooz-lead .nooz-byline { margin-top: var(--space-xs); }
 
-/* ---- Notice ------------------------------------------------------------ */
-.nooz-notice {
-  border: 1px solid var(--paper-signal-danger);
-  border-radius: var(--radius-sm);
-  padding: var(--space-sm) var(--space-md);
-  margin-bottom: var(--space-lg);
-}
-.nooz-notice-title {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--paper-signal-danger);
-}
-.nooz-notice-detail {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  color: var(--paper-ink-dim);
-  margin-top: var(--space-xxs);
-}
-
 /* ---- Reader ------------------------------------------------------------ */
 .nooz-reader-layout {
   max-width: 720px;
@@ -1321,6 +1370,53 @@ h1, h2, h3, h4 {
   font-family: var(--font-sans);
   font-size: 0.9375rem;
   color: var(--paper-ink-dim);
+}
+
+/* The found-quote/dateline aside (see foundQuote.js) -- a quiet editorial
+   break, not a card: no fill, no shadow, no rounded corners, just hairlines
+   and type, matching the rest of the paper. */
+.nooz-aside-quote {
+  display: block;
+  margin: var(--space-lg) 0;
+  text-align: center;
+}
+.nooz-aside-quote-rule {
+  margin: 0 auto var(--space-sm);
+  width: 15%;
+  border-top: 1px solid var(--paper-hairline-strong);
+}
+.nooz-aside-quote-rule + .nooz-aside-quote-text { margin-top: 0; }
+.nooz-aside-quote-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.3125rem;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 34em;
+}
+.nooz-aside-quote-attr {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+  margin: var(--space-xs) 0 0;
+}
+.nooz-aside-quote .nooz-aside-quote-rule:last-child {
+  margin: var(--space-sm) auto 0;
+}
+.nooz-aside-dateline {
+  display: block;
+  margin: var(--space-lg) 0;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-style: italic;
+  color: var(--paper-ink-dim);
+}
+.nooz-aside-dateline-tag {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--paper-ink);
 }
 .nooz-reader-source { margin-top: var(--space-xl); }
 .nooz-reader-source .nooz-divider { margin-bottom: var(--space-lg); }
@@ -1456,6 +1552,336 @@ h1, h2, h3, h4 {
   color: var(--paper-ink);
 }
 
+/* ---- Loom: mode tabs (Loom / Contrast) --------------------------------- */
+.nooz-loom-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.nooz-loom-tab {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-ink-dim);
+  padding: var(--space-xxs) var(--space-xs);
+  border-bottom: 2px solid transparent;
+}
+.nooz-loom-tab.is-active {
+  color: var(--paper-ink);
+  border-bottom-color: var(--paper-ink);
+}
+
+/* ---- Loom: the woven surface ------------------------------------------- */
+.nooz-weave {
+  display: flex;
+  justify-content: center;
+  border-bottom: none;
+}
+.nooz-loom-stage {
+  position: relative;
+  display: inline-block;
+}
+.nooz-loom-svg {
+  display: block;
+  height: min(70vh, 760px);
+  min-height: 360px;
+  width: auto;
+  max-width: 100%;
+}
+.nooz-loom-tube { transition: opacity 0.25s ease; }
+
+/* ---- The language picker -----------------------------------------------
+   Every entry is set in its own language, so the list has to survive scripts
+   with taller line boxes than Latin (Devanagari, Thai) and right-to-left runs
+   (Arabic, Urdu) without the rows jumping. `text-align: start` rather than
+   `left` is what lets an RTL entry align to its own reading edge. */
+.nooz-language-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--paper-hairline);
+}
+.nooz-language {
+  text-align: start;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--paper-hairline);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--paper-ink);
+}
+.nooz-language.is-active { font-weight: 600; }
+.nooz-language.is-active::after {
+  content: '✓';
+  margin-inline-start: var(--space-xs);
+}
+.nooz-language:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: -2px;
+}
+.nooz-settings-note {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--paper-ink-dim);
+}
+
+/* ---- Loom: the stream keys ---------------------------------------------
+   One button per tube, carrying that tube's counts. The <svg> is role="img",
+   which makes its whole subtree a single leaf in the accessibility tree, so the
+   drawing itself can never expose per-stream numbers however it is marked up --
+   these are the only place those numbers exist for a keyboard or a screen
+   reader.
+
+   Off-screen until focus lands inside, then it slides in as a legend: a sighted
+   keyboard user has to be able to see where the focus ring went, and a purely
+   visually-hidden control list makes focus appear to vanish into the page. */
+.nooz-loom-keys {
+  position: absolute;
+  left: 50%;
+  bottom: 2.25rem;
+  transform: translate(-50%, 0.75rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-md);
+  max-width: min(92vw, 30rem);
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-hairline-strong);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+.nooz-loom-keys:focus-within {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+.nooz-loom-keys-label {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-ink-dim);
+  margin-bottom: 2px;
+}
+.nooz-loom-key {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+  color: var(--paper-ink);
+  padding: 2px 6px;
+  border-left: 3px solid var(--key-colour, var(--paper-ink));
+}
+.nooz-loom-key[aria-pressed='true'] { background: rgba(0, 0, 0, 0.06); }
+.nooz-loom-key:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nooz-loom-keys { transition: none; }
+}
+.nooz-loom-ghost { fill: var(--paper-ink-dim); opacity: 0.35; }
+/* The curtain sweep: the loom reveals top-to-bottom, once per session. */
+.nooz-loom-stage.is-revealing .nooz-loom-svg {
+  animation: nooz-loom-reveal 1.2s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes nooz-loom-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.nooz-loom-num {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  /* A woven tube can be any topic colour behind this label -- a flat backing
+     chip guarantees the number reads regardless of what's under it, rather
+     than fighting for contrast against whichever hue happens to be there. */
+  background: var(--paper-field);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 6px var(--paper-field);
+}
+.nooz-loom-num--src { top: 2%; left: 2%; align-items: flex-start; }
+.nooz-loom-num--con { top: 2%; right: 2%; align-items: flex-end; text-align: right; }
+.nooz-loom-num-value {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(1.9rem, 8vw, 2.9rem);
+  line-height: 1;
+  color: var(--paper-ink);
+}
+.nooz-loom-num-caption {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  color: var(--paper-ink-dim);
+}
+.nooz-loom-inspect {
+  position: absolute;
+  top: 50%;
+  left: 1%;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  pointer-events: none;
+}
+.nooz-loom-inspect-name {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.nooz-loom-inspect-detail {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+}
+.nooz-loom-denom {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--paper-ink-dim);
+  pointer-events: none;
+}
+
+/* ---- Loom: the Contrast ledger ----------------------------------------- */
+.nooz-contrast {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+.nooz-contrast-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.nooz-contrast-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.nooz-contrast-note {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--paper-ink-dim);
+}
+/* Reach: one nested funnel bar -- the track is everything flowed, the inner
+   solid fill is what you read, so the bar simply shrinks through the omission. */
+.nooz-funnel {
+  position: relative;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--paper-hairline);
+}
+.nooz-funnel-read {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--paper-ink);
+}
+.nooz-funnel-legend { display: flex; gap: var(--space-lg); }
+.nooz-funnel-key { display: flex; align-items: center; gap: var(--space-xs); }
+.nooz-funnel-swatch { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.nooz-funnel-swatch.is-flowed { background: var(--paper-hairline-strong); }
+.nooz-funnel-swatch.is-read { background: var(--paper-ink); }
+.nooz-funnel-key-text { display: flex; flex-direction: column; }
+.nooz-funnel-key-label {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  color: var(--paper-ink-dim);
+}
+.nooz-funnel-key-count {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--paper-ink);
+}
+/* The sort lever. */
+.nooz-sort { display: flex; gap: var(--space-sm); }
+.nooz-sort-opt {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--paper-ink-dim);
+}
+.nooz-sort-opt.is-active { color: var(--paper-ink); font-weight: 700; }
+/* A dumbbell per topic: hollow ring = share of the stream, solid dot = share
+   of your reading, the line between them the gap (the omission at a glance). */
+.nooz-dumbbell {
+  --db-pad: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+.nooz-dumbbell-head { display: flex; align-items: center; gap: var(--space-xs); }
+.nooz-dumbbell-topicdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.nooz-dumbbell-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  color: var(--paper-ink);
+}
+.nooz-dumbbell-pct {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--paper-ink-dim);
+  flex-shrink: 0;
+}
+.nooz-dumbbell-track { position: relative; height: 16px; }
+.nooz-dumbbell-track::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: var(--db-pad);
+  right: var(--db-pad);
+  height: 1px;
+  background: var(--paper-hairline-strong);
+  transform: translateY(-50%);
+}
+.nooz-dumbbell-connector {
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+.nooz-dumbbell-dot {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+.nooz-dumbbell-dot--flowed { background: var(--paper-field); border: 1.5px solid; }
+.nooz-dot-legend {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xs);
+}
+.nooz-dot-key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--paper-ink-dim);
+}
+.nooz-dot-key-dot { width: 10px; height: 10px; border-radius: 50%; box-sizing: border-box; }
+.nooz-dot-key-dot.is-filled { background: var(--paper-ink); }
+.nooz-dot-key-dot.is-hollow { border: 1.5px solid var(--paper-ink); }
+
 /* ---- Settings ---------------------------------------------------------- */
 .nooz-choice-row {
   display: flex;
@@ -1550,10 +1976,20 @@ h1, h2, h3, h4 {
 .nooz-view {
   position: relative;
   overflow-x: clip;
+  isolation: isolate; /* contain the stage/drawer z-order below the footer */
 }
+/* The paper always rides ABOVE the drawer, like the app: an option view slides
+   in behind it and the paper shifts aside to reveal it -- it never slides over
+   the top of the newspaper. */
 .nooz-stage {
+  position: relative;
+  z-index: 2;
   transition: transform 0.35s ease;
-  will-change: transform;
+  /* No permanent will-change here: the transition itself already promotes a
+     layer for the drawer's slide animation while it's actually running. A
+     full-page layer left permanently composited is a documented WebKit
+     memory/repaint hazard, not a free win -- there's nothing about the Paper
+     sitting still that needs its own layer. */
 }
 .nooz-drawer {
   position: fixed;
@@ -1561,18 +1997,23 @@ h1, h2, h3, h4 {
   right: 0;
   bottom: var(--nooz-footer-h);
   width: min(440px, 92vw);
-  background: var(--paper-raised);
-  border-left: 1px solid var(--paper-hairline-strong);
+  /* Same tone as the page backdrop (not the raised-white of cards/inputs) and
+     no border -- a seam would read as an edge, i.e. as sitting beside the
+     paper rather than behind it. Flush colour is what sells "behind". */
+  background: var(--paper-field);
+  border: none;
   transform: translateX(101%);
   transition: transform 0.35s ease;
-  z-index: 30;
+  z-index: 1; /* behind the paper (stage), never over it */
   overflow-y: auto;
   overscroll-behavior: contain;
-  box-shadow: -14px 0 34px rgba(0, 0, 0, 0.10);
 }
 .has-drawer .nooz-drawer { transform: translateX(0); }
+/* Shift the paper aside to uncover the drawer behind it. Narrow screens shift
+   the full drawer width (it takes the screen); wider screens only need a peek. */
+.has-drawer .nooz-stage { transform: translateX(min(-88vw, -440px)); }
 @media (min-width: 1024px) {
-  .has-drawer .nooz-stage { transform: translateX(-220px); }
+  .has-drawer .nooz-stage { transform: translateX(-360px); }
 }
 .nooz-drawer-close {
   position: sticky;
@@ -1580,7 +2021,7 @@ h1, h2, h3, h4 {
   display: flex;
   justify-content: flex-end;
   padding: var(--space-xs) var(--space-sm);
-  background: var(--paper-raised);
+  background: var(--paper-field); /* flush with .nooz-drawer -- no seam at the top */
   z-index: 2;
 }
 .nooz-drawer-content { padding: 0 var(--space-lg) var(--space-xl); }
@@ -1678,49 +2119,65 @@ h1, h2, h3, h4 {
   margin-top: var(--space-xs);
 }
 
-/* ---- Loom strip (the coloured bar, in the Paper and the Reader) --------- */
-/* Tapping it slides it aside and opens the full Loom drawer -- whose own first
-   element is this same bar, so it reads as the strip expanding into the loom. */
+/* ---- Loom strip (a quiet hint, in the Paper and the Reader) ------------- */
+/* No card, no fill, no border -- it sits flush with the page so it reads as
+   part of the paper, not a control floating on top of it. Compact and
+   left-aligned rather than stretched full-bleed, so it stays a hint, not a
+   banner. Tapping it flies the strip itself to the Loom drawer (see
+   flyStripToLoom in loom.js), where it lands on -- and becomes -- the
+   drawer's own bar, timed with the paper sliding aside to reveal the drawer. */
 .nooz-loomstrip {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
+  max-width: 300px;
   width: 100%;
   text-align: left;
-  padding: var(--space-xs) var(--space-sm);
-  margin-bottom: var(--space-lg);
-  border: 1px solid var(--paper-hairline);
-  border-radius: 999px;
-  background: var(--paper-raised);
-  transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.15s ease;
+  padding: 2px 0;
+  margin: 0 0 var(--space-lg) auto; /* right-aligned: sits where the Loom drawer opens, so it reads as one piece */
+  border: none;
+  background: none;
+  /* No opacity. It was 0.82, and compounded with --paper-ink-faint text below
+     it put the Loom's only entry point on the Paper at 1.5:1 — quiet to the
+     point of invisible, on the very feature the owner flagged as undiscovered.
+     Even at 0.9 with the corrected ink it composited to 3.8:1, still under AA.
+     Restraint here is a design choice and it survives: the strip is still small,
+     tracked-out and right-aligned. Being unreadable was never the same thing as
+     being quiet, and opacity is the wrong tool for it — it washes out the text
+     and the bar together, and no contrast token can compensate for it. */
+  transition: opacity 0.15s ease;
 }
-.nooz-loomstrip:hover { box-shadow: 0 1px 0 var(--paper-hairline-strong); }
-.nooz-loomstrip:focus-visible { outline: 2px solid var(--paper-ink); outline-offset: 2px; }
+.nooz-loomstrip:hover,
+.nooz-loomstrip:focus-visible { opacity: 1; }
+.nooz-loomstrip:focus-visible { outline: 1px solid var(--paper-hairline-strong); outline-offset: 3px; }
 .nooz-loomstrip-label {
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 700;
+  font-size: 0.625rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  /* --paper-ink-faint is 1.55:1 and belongs on disabled controls and
+     hairlines, never on words anyone is meant to read. */
   color: var(--paper-ink-dim);
   flex-shrink: 0;
 }
-.nooz-loomstrip-bar { flex: 1; height: 14px; }
+.nooz-loomstrip-bar { flex: 1; height: 5px; border-radius: 999px; }
+.nooz-loomstrip-bar.nooz-loombar { background: var(--paper-hairline); }
 .nooz-loombar.is-empty { background: var(--paper-hairline); }
 .nooz-loomstrip-hint {
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--paper-ink-dim);
   flex-shrink: 0;
 }
-.nooz-loomstrip-chev {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  line-height: 1;
-  color: var(--paper-ink-faint);
-  flex-shrink: 0;
+/* The clone that flies from the Paper to the drawer on open (see
+   flyStripToLoom); the original stays in place but hidden until it re-renders. */
+.nooz-loomstrip-flight {
+  z-index: 40;
+  opacity: 1;
+  pointer-events: none;
+  max-width: none;
 }
-.nooz-loomstrip.is-launching { transform: translateX(44px); opacity: 0; }
 
 /* ---- Newspaper mode: full-size turning pages, complete articles -------- */
 /* Complete articles are set into fixed-size portrait pages. The front page
@@ -1738,7 +2195,12 @@ h1, h2, h3, h4 {
   overflow-y: hidden;
   perspective: 2400px;
   padding-bottom: var(--space-xs);
+  /* The blank margin either side of the book turns the page (see
+     attachMarginTurn in stand.js); the pointer hints as much. The book itself
+     reverts to the normal cursor -- its own headlines/links set their own. */
+  cursor: pointer;
 }
+.nooz-np-frame .nooz-book { cursor: auto; }
 .nooz-book {
   display: flex;
   align-items: stretch;
@@ -1887,6 +2349,8 @@ h1, h2, h3, h4 {
   font-size: 1.02rem;
   line-height: 1.12;
   margin: 1px 0 2px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .nooz-art-headline--lead { font-size: clamp(1.7rem, 3.6vw, 2.3rem); line-height: 1.03; }
 .nooz-art-head.is-read .nooz-art-headline { color: var(--paper-ink-dim); }
@@ -1903,6 +2367,14 @@ h1, h2, h3, h4 {
   text-align: justify;
   hyphens: auto;
   -webkit-hyphens: auto;
+  /* A long unbreakable token (a URL, a run-on string) in the real extracted
+     body would otherwise set this paragraph's min-content width wider than its
+     narrow column: every line then renders past the page edge and the inflated
+     scrollWidth trips the paginator's overflow() check early, stranding a
+     near-empty column. `anywhere` (not just `break-word`) shrinks the intrinsic
+     width so the box can't be forced wide. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .nooz-art-b--drop::first-letter {
   float: left;
@@ -2156,6 +2628,67 @@ h1, h2, h3, h4 {
   margin-top: var(--space-xs);
   background-image: repeating-linear-gradient(to bottom, var(--paper-ink-faint) 0 1px, transparent 1px 6px);
   opacity: 0.5;
+}
+
+/* ---- First-run onboarding: a brief, skippable walkthrough -------------- */
+.nooz-onboard {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper-field);
+}
+.nooz-onboard-card {
+  position: relative;
+  width: min(92vw, 440px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: center;
+  padding: var(--space-xl);
+}
+.nooz-onboard-skip {
+  position: absolute;
+  top: 0;
+  right: var(--space-lg);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--paper-ink-dim);
+  padding: var(--space-xs);
+}
+.nooz-onboard-skip:hover { color: var(--paper-ink); }
+.nooz-onboard-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-weight: 700;
+  color: var(--paper-ink);
+  margin-top: var(--space-xl);
+}
+.nooz-onboard-body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--paper-ink-dim);
+  max-width: 40ch;
+}
+.nooz-onboard-dots {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+}
+.nooz-onboard-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--paper-hairline-strong);
+}
+.nooz-onboard-dot.is-active { background: var(--paper-ink); }
+.nooz-onboard-next {
+  margin-top: var(--space-lg);
+  min-width: 160px;
 }
 
 /* ---- Focus chip on the Paper toolbar ----------------------------------- */

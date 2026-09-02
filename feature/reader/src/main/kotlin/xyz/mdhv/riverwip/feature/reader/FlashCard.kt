@@ -39,10 +39,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.DisplayFontFamily
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.SectionHeading
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.Provenance
@@ -94,7 +96,10 @@ private fun FlashCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
     // ask): "not configured" is knowable upfront (see ReaderViewModel's
     // own preflight check), so the icon should say so immediately rather
     // than waiting for the reader to tap and be told in text alone.
-    val notConfigured = (state as? FlashUiState.Unavailable)?.needsSetup == true
+    // Crossed-out bolt for anything the reader can't act on right now: an
+    // unconfigured provider, or Flash itself being "coming soon" in this build.
+    val notConfigured = state is FlashUiState.ComingSoon ||
+        (state as? FlashUiState.Unavailable)?.needsSetup == true
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
         Icon(
             if (notConfigured) Icons.Filled.FlashOff else Icons.Filled.FlashOn,
@@ -105,15 +110,21 @@ private fun FlashCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
         SectionHeading("Nooz Flash", color = MaterialTheme.colorScheme.onBackground)
     }
     when (val s = state) {
+        is FlashUiState.ComingSoon -> Text(
+            stringResource(DesignR.string.flash_coming_soon),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+        )
         is FlashUiState.Idle -> Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClickLabel = "Compress today's news") { vm.requestFlash() }
+                .clickable(onClickLabel = stringResource(DesignR.string.flash_action_compress)) { vm.requestFlash() }
                 .padding(top = Tokens.Spacing.xxs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "Tap to compress today's news to 10 words or fewer",
+                stringResource(DesignR.string.flash_tap_to_compress),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
@@ -126,7 +137,7 @@ private fun FlashCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
         ) {
             CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
             Text(
-                "Compressing today's news…",
+                stringResource(DesignR.string.flash_compressing),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -171,12 +182,12 @@ private fun FlashCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
             )
             if (s.needsSetup) {
                 Text(
-                    "Set up an on-device model or connect an API →",
+                    stringResource(DesignR.string.flash_setup_link),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
-                        .clickable(onClickLabel = "Set up Nooz Flash") { onOpenSetup() }
+                        .clickable(onClickLabel = stringResource(DesignR.string.flash_action_setup)) { onOpenSetup() }
                         .padding(top = Tokens.Spacing.xxs),
                 )
             }
@@ -207,12 +218,12 @@ private fun CastCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
         is CastUiState.Idle -> Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClickLabel = "Narrate this article") { vm.requestCast() }
+                .clickable(onClickLabel = stringResource(DesignR.string.cast_action_narrate)) { vm.requestCast() }
                 .padding(top = Tokens.Spacing.xxs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "Tap to hear this article read aloud in a natural voice",
+                stringResource(DesignR.string.cast_tap_to_hear),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
@@ -225,7 +236,7 @@ private fun CastCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
         ) {
             CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
             Text(
-                "Narrating the article…",
+                stringResource(DesignR.string.cast_narrating),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -237,7 +248,7 @@ private fun CastCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
         ) {
             // Always on-device (owner: "a private anchor voice should never
             // leave the device") — no cloud branch to show, unlike Flash's.
-            Text("on-device", style = MaterialTheme.typography.labelSmall, color = Tokens.Color.provenanceNative)
+            Text(stringResource(DesignR.string.provenance_on_device), style = MaterialTheme.typography.labelSmall, color = Tokens.Color.provenanceNative)
             Spacer(Modifier.weight(1f))
             PlayAudioFileButton(audioFile = s.audioFile)
         }
@@ -249,12 +260,12 @@ private fun CastCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
             )
             if (s.needsSetup) {
                 Text(
-                    "Set up an on-device narration model →",
+                    stringResource(DesignR.string.cast_setup_link),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
-                        .clickable(onClickLabel = "Set up Nooz Cast") { onOpenSetup() }
+                        .clickable(onClickLabel = stringResource(DesignR.string.cast_action_setup)) { onOpenSetup() }
                         .padding(top = Tokens.Spacing.xxs),
                 )
             }
@@ -360,9 +371,9 @@ private const val TTS_CHUNK_CHARS = 3_800
 
 /**
  * Plays a rendered Nooz Cast narration file on tap (its own "Ready" state) —
- * a real playback via [MediaPlayer], not a stub; what's not yet wired is the
- * synthesis step upstream ([xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider]'s
- * own doc comment explains the gap), not this control.
+ * real playback via [MediaPlayer] of a real synthesized file
+ * ([xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider]'s own doc
+ * comment covers the synthesis step upstream of this control).
  */
 @Composable
 private fun PlayAudioFileButton(audioFile: File, modifier: Modifier = Modifier) {

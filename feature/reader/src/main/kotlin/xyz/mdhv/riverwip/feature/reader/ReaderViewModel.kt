@@ -6,13 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import xyz.mdhv.riverwip.data.repo.ArticleRepository
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
@@ -20,6 +24,7 @@ import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
 import xyz.mdhv.riverwip.data.repo.SettingsRepository
 import xyz.mdhv.riverwip.data.repo.SourceRepository
+import xyz.mdhv.riverwip.data.repo.TodayInHistoryRepository
 import xyz.mdhv.riverwip.data.repo.WeeklyAggregateRepository
 import xyz.mdhv.riverwip.inference.DigestRequest
 import xyz.mdhv.riverwip.inference.DigestResult
@@ -28,9 +33,11 @@ import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.inference.SynthesisRequest
 import xyz.mdhv.riverwip.inference.SynthesisResult
 import xyz.mdhv.riverwip.inference.TtsProvider
+import xyz.mdhv.riverwip.model.ArticleSearch
 import xyz.mdhv.riverwip.model.Classifier
 import xyz.mdhv.riverwip.model.DayLoomLayout
 import xyz.mdhv.riverwip.model.DwellBucket
+import xyz.mdhv.riverwip.model.HistoricalEvent
 import xyz.mdhv.riverwip.model.Item
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
@@ -51,6 +58,14 @@ sealed interface ArticleUiState {
 sealed interface FlashUiState {
     data object Idle : FlashUiState
     data object Loading : FlashUiState
+    /**
+     * Presented while Nooz Flash is "coming soon": the on-device LLM runtime
+     * that powers the digest isn't wired in this build, and no download can
+     * change that, so the card invites neither a tap nor a model download.
+     * Gated by [FLASH_COMING_SOON]; when that flips, Flash never enters this
+     * state and falls straight back to its ordinary Idle → Loading → Ready flow.
+     */
+    data object ComingSoon : FlashUiState
     /** [headlines] is what was actually compressed — "go deeper" is just showing this list, not a second generation. */
     data class Ready(val flash: String, val provenance: Provenance, val headlines: List<String>) : FlashUiState
     /**
@@ -60,6 +75,19 @@ sealed interface FlashUiState {
      * worth showing verbatim (e.g. a BYOK endpoint returning HTTP 401).
      */
     data class Unavailable(val reason: String, val needsSetup: Boolean = false) : FlashUiState
+}
+
+/**
+ * Today in History's state (owner's ask, 2026-08). Deliberately has no
+ * "needsSetup" case unlike [FlashUiState]/[CastUiState]: there is nothing to
+ * configure or download, so the only ways this ends are a column or an
+ * honest line about not having reached Wikipedia.
+ */
+sealed interface HistoryUiState {
+    data object Idle : HistoryUiState
+    data object Loading : HistoryUiState
+    data class Ready(val events: List<HistoricalEvent>) : HistoryUiState
+    data class Unavailable(val reason: String) : HistoryUiState
 }
 
 /**
@@ -91,8 +119,31 @@ sealed interface CastUiState {
  */
 private const val FLASH_NOT_CONFIGURED_REASON = "Nooz Flash won't work until a model or API key is configured."
 
+/**
+ * Nooz Flash's on-device LLM runtime is wired
+ * ([xyz.mdhv.riverwip.inference.local.LocalLlamaProvider] now runs a real,
+ * vendored llama.cpp build — see `core/inference/src/main/cpp`) so Flash is
+ * back to its ordinary tap-to-compress flow: [FlashUiState.ComingSoon] is
+ * unreachable with this flag false, kept only so a future regression (the
+ * runtime needing to come back out, say) has a one-line way back to the
+ * honest "coming soon" state instead of a silent per-tap failure.
+ */
+private const val FLASH_COMING_SOON = false
+
 /** Cast's own gate — Kokoro is a wholly different, independently-downloaded model class from whatever LLM [ReaderViewModel.flashState] uses. */
 private const val CAST_NOT_CONFIGURED_REASON = "Nooz Cast won't work until the on-device narration model is downloaded."
+
+/** How often the reading-aside clock below checks in, and how long a real reading stretch must run before the next pick (matches the web reader's identical cadence). */
+private const val READING_CLOCK_TICK_MS = 5_000L
+private const val READING_ASIDE_INTERVAL_MS = 6 * 60 * 1_000L
+
+/**
+ * Debounce before a body search hits the FTS index (D37). The caller is a text
+ * field, so without this every keystroke is a database query — and the early
+ * keystrokes are the most expensive, since a one- or two-letter prefix matches
+ * a large share of the corpus.
+ */
+private const val SEARCH_DEBOUNCE_MS = 220L
 
 /** Outcome of the last manual/auto refresh, so the reader can report it honestly (brief §3: nothing silent). */
 data class RefreshResult(
@@ -112,6 +163,7 @@ class ReaderViewModel(
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     private val clippingRepository: ClippingRepository,
     private val settingsRepository: SettingsRepository,
+    private val todayInHistoryRepository: TodayInHistoryRepository,
     private val flashRouter: InferenceRouter,
     private val ttsProvider: TtsProvider,
     private val clock: () -> Long = { System.currentTimeMillis() },
@@ -125,6 +177,53 @@ class ReaderViewModel(
     val readIds: StateFlow<Set<String>> = readEventRepository.observeAll()
         .map { events -> events.map { it.itemId }.toSet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptySet())
+
+    /**
+     * Snippets from article *bodies* matching the current search, keyed by item
+     * id (D37).
+     *
+     * The Stand's search used to be a substring match on the headline alone,
+     * which only ever worked if the reader remembered words from the headline —
+     * and fuzzy recall almost never does. What survives is usually a phrase from
+     * the middle of a piece. Those bodies live in the `article_text` FTS index,
+     * which is a database query, so unlike the title filter it cannot be done
+     * inline in composition.
+     *
+     * The value is the snippet rather than a bare id so the list can show *why*
+     * a story matched — without that, a result whose headline contains none of
+     * the search terms just looks like a bug.
+     */
+    private val _bodySearchMatches = MutableStateFlow<Map<String, String>>(emptyMap())
+    val bodySearchMatches: StateFlow<Map<String, String>> = _bodySearchMatches.asStateFlow()
+
+    private var bodySearchJob: Job? = null
+
+    /**
+     * Runs a body search, debounced, cancelling whatever was in flight — the
+     * caller is a text field, so this is invoked on every keystroke.
+     */
+    fun searchBodies(raw: String) {
+        bodySearchJob?.cancel()
+        val match = ArticleSearch.toMatchQuery(raw)
+        if (match == null) {
+            // No query. Deliberately clears rather than leaving stale hits
+            // behind, which would keep matches on screen after the box is
+            // emptied.
+            _bodySearchMatches.value = emptyMap()
+            return
+        }
+        val terms = ArticleSearch.terms(raw)
+        bodySearchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            // A malformed MATCH throws rather than returning nothing; the query
+            // builder makes that structurally unreachable, but a search box is
+            // the wrong place to find out it was wrong.
+            val hits = runCatching { articleRepository.searchBodies(match) }.getOrDefault(emptyList())
+            _bodySearchMatches.value = hits.mapNotNull { hit ->
+                ArticleSearch.snippet(hit.body, terms)?.let { hit.itemId to it }
+            }.toMap()
+        }
+    }
 
     /** Save or unsave the article as a Nooz-paper clipping. */
     fun toggleClip(item: Item) {
@@ -244,7 +343,9 @@ class ReaderViewModel(
         DayLoomLayout.dayMix(counts)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), emptyList())
 
-    private val _flashState = MutableStateFlow<FlashUiState>(FlashUiState.Idle)
+    private val _flashState = MutableStateFlow<FlashUiState>(
+        if (FLASH_COMING_SOON) FlashUiState.ComingSoon else FlashUiState.Idle,
+    )
 
     /**
      * Nooz Flash (owner's #6): today's flowed headlines — matching the standing
@@ -257,6 +358,9 @@ class ReaderViewModel(
     val flashState: StateFlow<FlashUiState> = _flashState
 
     fun requestFlash() {
+        // Coming soon: with no on-device runtime the digest can only fail, so
+        // the tap is a no-op (the card shows no tap invitation while gated).
+        if (FLASH_COMING_SOON) return
         if (_flashState.value is FlashUiState.Loading) return
         viewModelScope.launch {
             _flashState.value = FlashUiState.Loading
@@ -319,6 +423,75 @@ class ReaderViewModel(
         is ArticleUiState.Loading -> null
     }
 
+    private val _historyState = MutableStateFlow<HistoryUiState>(HistoryUiState.Idle)
+
+    /**
+     * Today in History (owner's ask, 2026-08): a few dated lines above the
+     * day's stories. Only ever populated by [loadTodayInHistory], which the
+     * card itself calls when the setting is on, so a reader who leaves the
+     * feature off never causes the fetch at all.
+     */
+    val historyState: StateFlow<HistoryUiState> = _historyState
+
+    /**
+     * Idempotent by design: the Stand's list recomposes constantly (every
+     * scroll, filter, refresh), and the card asks on each first composition,
+     * so anything past the first call while a result is already in hand must
+     * be a no-op or this would hammer Wikipedia. The repository caches per
+     * calendar day underneath this too, so even a process restart re-reads
+     * from disk rather than refetching.
+     */
+    fun loadTodayInHistory() {
+        if (_historyState.value !is HistoryUiState.Idle) return
+        fetchTodayInHistory()
+    }
+
+    /**
+     * An explicit retry, from tapping the card's own failure line. Needed
+     * because [loadTodayInHistory]'s guard deliberately won't re-run itself
+     * after a failure: someone who was offline when the Stand first opened
+     * would otherwise be stuck with that line until the app restarted.
+     */
+    fun retryTodayInHistory() {
+        if (_historyState.value is HistoryUiState.Loading) return
+        fetchTodayInHistory()
+    }
+
+    private fun fetchTodayInHistory() {
+        _historyState.value = HistoryUiState.Loading
+        viewModelScope.launch {
+            _historyState.value = todayInHistoryRepository.column()
+                .fold(
+                    onSuccess = { events ->
+                        if (events.isEmpty()) {
+                            HistoryUiState.Unavailable("Nothing recorded for today's date.")
+                        } else {
+                            HistoryUiState.Ready(events)
+                        }
+                    },
+                    onFailure = { HistoryUiState.Unavailable("Couldn't reach Wikipedia for today's date.") },
+                )
+        }
+    }
+
+    private val _readingAside = MutableStateFlow<FoundQuote?>(null)
+
+    /** The current found-quote/dateline pick (see [FoundQuote]), or null. Set by the reading clock below; cleared only by a later pick. */
+    val readingAside: StateFlow<FoundQuote?> = _readingAside
+
+    // Gates the reading clock below to whenever the reader screen is actually
+    // the one on screen and resumed -- set from ReaderDetailScreen's own
+    // lifecycle observer. A transient in-memory flag only, never persisted
+    // (this app deliberately never stores precise reading duration -- see
+    // ReadEventRepository's own doc comment).
+    @Volatile
+    private var readerActive = false
+    private var readingClockMs = 0L
+
+    fun setReaderActive(active: Boolean) {
+        readerActive = active
+    }
+
     private val _isRefreshing = MutableStateFlow(false)
     /** True while a fetch is in flight, so the UI can show progress instead of a bare empty state. */
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
@@ -343,7 +516,7 @@ class ReaderViewModel(
         // being Idle so this can never clobber a real request already in
         // flight (or its result) if one somehow won the race.
         viewModelScope.launch {
-            if (!flashRouter.hasAvailableProvider() && _flashState.value == FlashUiState.Idle) {
+            if (!FLASH_COMING_SOON && !flashRouter.hasAvailableProvider() && _flashState.value == FlashUiState.Idle) {
                 _flashState.value = FlashUiState.Unavailable(FLASH_NOT_CONFIGURED_REASON, needsSetup = true)
             }
         }
@@ -352,6 +525,24 @@ class ReaderViewModel(
         viewModelScope.launch {
             if (!ttsProvider.isAvailable() && _castState.value == CastUiState.Idle) {
                 _castState.value = CastUiState.Unavailable(CAST_NOT_CONFIGURED_REASON, needsSetup = true)
+            }
+        }
+        // The reading-aside clock (owner's ask, matching the web reader): every
+        // few minutes of actual reading -- gated on readerActive, so time spent
+        // elsewhere in the app or with the screen off never counts -- pick a
+        // real line from whatever article is currently open.
+        viewModelScope.launch {
+            while (isActive) {
+                delay(READING_CLOCK_TICK_MS)
+                if (!readerActive) continue
+                readingClockMs += READING_CLOCK_TICK_MS
+                if (readingClockMs < READING_ASIDE_INTERVAL_MS) continue
+                readingClockMs = 0L
+                val item = selectedItem ?: continue
+                val loaded = _articleState.value as? ArticleUiState.Loaded ?: continue
+                pickFoundQuote(item.id, sourceTitles.value[item.sourceId], loaded.paragraphs)?.let {
+                    _readingAside.value = it
+                }
             }
         }
     }
@@ -456,6 +647,7 @@ class ReaderViewModel(
         private val weeklyAggregateRepository: WeeklyAggregateRepository,
         private val clippingRepository: ClippingRepository,
         private val settingsRepository: SettingsRepository,
+        private val todayInHistoryRepository: TodayInHistoryRepository,
         private val flashRouter: InferenceRouter,
         private val ttsProvider: TtsProvider,
     ) : ViewModelProvider.Factory {
@@ -469,6 +661,7 @@ class ReaderViewModel(
                 weeklyAggregateRepository,
                 clippingRepository,
                 settingsRepository,
+                todayInHistoryRepository,
                 flashRouter,
                 ttsProvider,
             ) as T

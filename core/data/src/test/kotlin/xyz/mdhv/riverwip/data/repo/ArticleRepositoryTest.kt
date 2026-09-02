@@ -8,6 +8,9 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import xyz.mdhv.riverwip.data.cache.FullTextCache
+import xyz.mdhv.riverwip.data.db.ArticleTextDao
+import xyz.mdhv.riverwip.data.db.ArticleTextEntity
+import xyz.mdhv.riverwip.data.db.ArticleTextHit
 import xyz.mdhv.riverwip.data.db.ItemDao
 import xyz.mdhv.riverwip.data.db.ItemEntity
 import xyz.mdhv.riverwip.data.net.HttpClient
@@ -26,6 +29,26 @@ private class FakeItemDaoForArticles : ItemDao {
     override suspend fun allOnce(): List<ItemEntity> = store.value
     override suspend fun pruneOlderThan(beforeMillis: Long): Int = 0
     override suspend fun count(): Int = store.value.size
+}
+
+/**
+ * In-memory stand-in for the FTS index. `search` is a substring scan rather
+ * than real FTS — the actual MATCH semantics are pinned against real SQLite in
+ * RiverDatabaseMigrationTest; what this fake exists to check is that the
+ * repository *keeps the index in step* with the cache.
+ */
+private class FakeArticleTextDao : ArticleTextDao {
+    val rows = mutableListOf<ArticleTextEntity>()
+    override suspend fun insert(entity: ArticleTextEntity) { rows.add(entity) }
+    override suspend fun deleteFor(itemId: String) { rows.removeAll { it.itemId == itemId } }
+    override suspend fun search(match: String, limit: Int): List<ArticleTextHit> =
+        rows.filter { it.body.contains(match.trim('*'), ignoreCase = true) }
+            .take(limit)
+            .map { ArticleTextHit(it.itemId, it.body) }
+    override suspend fun isIndexed(itemId: String): Boolean = rows.any { it.itemId == itemId }
+    override suspend fun indexedItemIds(): List<String> = rows.map { it.itemId }
+    override suspend fun count(): Int = rows.size
+    override suspend fun pruneOrphans(): Int = 0
 }
 
 private class FakeArticleFetcher(private val response: HttpClient.Response? = null, private val throwOn: Exception? = null) : ArticleFetcher {
@@ -55,7 +78,7 @@ class ArticleRepositoryTest {
         val cache = FullTextCache(dir, maxBytes = 10_000_000)
         cache.put("i1", "cached paragraph one\n\ncached paragraph two")
         val itemDao = FakeItemDaoForArticles()
-        val repo = ArticleRepository(itemDao, FakeArticleFetcher(throwOn = IllegalStateException("should not fetch")), cache)
+        val repo = ArticleRepository(itemDao, FakeArticleFetcher(throwOn = IllegalStateException("should not fetch")), cache, FakeArticleTextDao())
         val result = repo.textFor("i1", "https://ex.com/a")
         assertTrue(result!!.fromCache)
         assertEquals(2, result.paragraphs.size)
@@ -66,7 +89,7 @@ class ArticleRepositoryTest {
         val cache = FullTextCache(dir, maxBytes = 10_000_000)
         val itemDao = FakeItemDaoForArticles()
         itemDao.store.value = listOf(ItemEntity("i1", "s1", "https://ex.com/a", "Test Story", null, 0L, 0L, null, false, "[]", 0L))
-        val repo = ArticleRepository(itemDao, FakeArticleFetcher(fakeResponse(200, articleHtml)), cache)
+        val repo = ArticleRepository(itemDao, FakeArticleFetcher(fakeResponse(200, articleHtml)), cache, FakeArticleTextDao())
         val result = repo.textFor("i1", "https://ex.com/a")
         assertTrue(result != null && !result.fromCache)
         assertEquals(2, result!!.paragraphs.size)
@@ -78,7 +101,7 @@ class ArticleRepositoryTest {
     @Test fun httpFailureReturnsNullAndDoesNotCache() = runTest {
         dir = Files.createTempDirectory("article-repo-test").toFile()
         val cache = FullTextCache(dir, maxBytes = 10_000_000)
-        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(fakeResponse(404, "not found")), cache)
+        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(fakeResponse(404, "not found")), cache, FakeArticleTextDao())
         assertNull(repo.textFor("i1", "https://ex.com/a"))
         assertTrue(!cache.contains("i1"))
     }
@@ -86,14 +109,45 @@ class ArticleRepositoryTest {
     @Test fun networkExceptionReturnsNull() = runTest {
         dir = Files.createTempDirectory("article-repo-test").toFile()
         val cache = FullTextCache(dir, maxBytes = 10_000_000)
-        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(throwOn = java.io.IOException("timeout")), cache)
+        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(throwOn = java.io.IOException("timeout")), cache, FakeArticleTextDao())
         assertNull(repo.textFor("i1", "https://ex.com/a"))
     }
 
     @Test fun extractionYieldingNothingReturnsNull() = runTest {
         dir = Files.createTempDirectory("article-repo-test").toFile()
         val cache = FullTextCache(dir, maxBytes = 10_000_000)
-        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(fakeResponse(200, "<html><body>too short</body></html>")), cache)
+        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(fakeResponse(200, "<html><body>too short</body></html>")), cache, FakeArticleTextDao())
         assertNull(repo.textFor("i1", "https://ex.com/a"))
     }
+
+    @Test fun extractingAnArticleAlsoIndexesItForSearch() = runTest {
+        dir = Files.createTempDirectory("article-repo-index").toFile()
+        val cache = FullTextCache(dir, maxBytes = 10_000_000)
+        val textDao = FakeArticleTextDao()
+        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(fakeResponse(200, articleHtml)), cache, textDao)
+
+        repo.textFor("i1", "https://ex.com/a")
+
+        assertEquals(listOf("i1"), textDao.indexedItemIds())
+        assertTrue("the indexed body is the extracted prose", textDao.rows.single().body.contains("first substantial paragraph"))
+    }
+
+    @Test fun openingAnArticleCachedBeforeTheIndexExistedBackfillsIt() = runTest {
+        // The existing 200MB cache predates the index and has no batch
+        // migration; opening an article is what pulls it in.
+        dir = Files.createTempDirectory("article-repo-backfill").toFile()
+        val cache = FullTextCache(dir, maxBytes = 10_000_000)
+        cache.put("old", "a paragraph about the monsoon")
+        val textDao = FakeArticleTextDao()
+        val repo = ArticleRepository(FakeItemDaoForArticles(), FakeArticleFetcher(throwOn = IllegalStateException("should not fetch")), cache, textDao)
+
+        assertEquals(0, textDao.count())
+        repo.textFor("old", "https://ex.com/a")
+        assertEquals(listOf("old"), textDao.indexedItemIds())
+
+        // ...and opening it again does not index a second copy.
+        repo.textFor("old", "https://ex.com/a")
+        assertEquals(1, textDao.count())
+    }
+
 }

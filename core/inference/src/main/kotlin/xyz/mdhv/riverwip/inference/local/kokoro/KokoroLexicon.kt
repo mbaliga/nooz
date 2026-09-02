@@ -1,6 +1,7 @@
 package xyz.mdhv.riverwip.inference.local.kokoro
 
 import android.content.Context
+import java.io.IOException
 import java.util.zip.GZIPInputStream
 
 /**
@@ -25,14 +26,24 @@ class KokoroLexicon(private val context: Context) {
 
     private fun load(): Map<String, String> {
         val map = HashMap<String, String>(200_000)
-        context.assets.open(ASSET_NAME).use { raw ->
-            GZIPInputStream(raw).bufferedReader(Charsets.UTF_8).useLines { lines ->
-                for (line in lines) {
-                    val tab = line.indexOf('\t')
-                    if (tab <= 0) continue
-                    map[line.substring(0, tab)] = line.substring(tab + 1)
+        // AssetManager.open() throws with just the bare asset name as its
+        // message on a miss (e.g. a build that dropped the packaged asset) --
+        // on its own that surfaces straight up to the Cast card as an
+        // unexplained filename (see LocalKokoroTtsProvider.synthesize's
+        // runCatching), so a genuine failure here gets a message that says
+        // what actually happened instead.
+        try {
+            context.assets.open(ASSET_NAME).use { raw ->
+                GZIPInputStream(raw).bufferedReader(Charsets.UTF_8).useLines { lines ->
+                    for (line in lines) {
+                        val tab = line.indexOf('\t')
+                        if (tab <= 0) continue
+                        map[line.substring(0, tab)] = line.substring(tab + 1)
+                    }
                 }
             }
+        } catch (e: IOException) {
+            throw IOException("Nooz Cast's pronunciation dictionary didn't load ($ASSET_NAME) -- try reinstalling the app", e)
         }
         return map
     }

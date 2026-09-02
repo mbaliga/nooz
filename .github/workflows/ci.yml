@@ -26,6 +26,44 @@ jobs:
       - name: Pure-JVM core unit tests
         run: ./gradlew :core:model:test --stacktrace
 
+  # The web reader had no CI at all until now — its 6,300 lines of JS shipped
+  # unexercised, which is how a topic classifier that could not match any
+  # non-Latin script survived unnoticed.
+  #
+  # Deliberately no install step: these tests use node's built-in test runner
+  # and import only local modules, so there is nothing to install. `npm ci`
+  # would in fact fail here — web/package.json has no package-lock.json.
+  web-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # The accessibility tests render the real view modules into a real DOM
+      # (linkedom), so the dependencies have to be present -- `npm test` alone
+      # used to be enough only because the first test file imported nothing.
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
+      - name: Web reader unit tests
+        run: npm test
+        working-directory: web
+
+      # Accessibility checked by a real browser rather than by reading source.
+      # axe-core catches roughly a third of real barriers -- it is not a
+      # substitute for a person with a screen reader, and this repo does not
+      # claim it is. But the third it catches is the third that regresses
+      # silently: contrast that drifts below 4.5:1 after a palette tweak, an
+      # icon button that loses its name, a heading level skipped. Its first run
+      # found the entire palette's secondary ink at 3.21:1.
+      - name: Install Chromium for the accessibility suite
+        run: npx playwright install --with-deps chromium
+        working-directory: web
+      - name: Web reader accessibility (axe-core)
+        run: npm run test:a11y
+        working-directory: web
+
   # Full Android build: assemble both flavors, unit tests, lint.
   android:
     runs-on: ubuntu-latest
@@ -38,14 +76,30 @@ jobs:
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Unit tests (all modules + both flavors)
-        # Non-flavored modules expose `testDebugUnitTest`; flavored modules
-        # (app, :core:inference, :feature:lens) expose the per-flavor tasks.
-        # Requesting all three covers every module's unit tests.
-        run: ./gradlew testDebugUnitTest testFossDebugUnitTest testFullDebugUnitTest --stacktrace
+      # `unitTests` discovers each module's own test task rather than naming
+      # them. The previous list -- testDebugUnitTest testFossDebugUnitTest
+      # testFullDebugUnitTest -- reads like "all of them" and was not: those are
+      # Android variant tasks, and :core:model is a plain kotlin.jvm module
+      # whose task is `test`. Its 215 tests, the largest suite in the repo, had
+      # never run here. The build was green because everything asked for passed.
+      - name: Unit tests (every module)
+        run: ./gradlew unitTests --stacktrace
 
       - name: Lint (foss)
         run: ./gradlew lintFossDebug --stacktrace
+
+      # The i18n ratchet. Not Lint's HardcodedText -- that check reads layout
+      # XML, and this app has none, so it passes a codebase where every visible
+      # word is a Kotlin literal.
+      - name: Interface copy is translatable
+        run: ./gradlew verifyI18n --stacktrace
+
+      # strings.xml, locales_config.xml, LocaleCoverage.kt and the web
+      # catalogues are all generated from i18n/strings/. Editing a generated
+      # file by hand would work locally and be silently reverted by the next
+      # run of the generator, so the build refuses to let the two diverge.
+      - name: Translations are regenerated from their source
+        run: python3 tools/i18n/generate.py --check
 
       - name: Assemble (both flavors)
         run: ./gradlew assembleFossDebug assembleFullDebug --stacktrace

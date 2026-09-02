@@ -7,6 +7,32 @@
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+// Classes that already carry their own fixed aspect-ratio in style.css (a
+// deliberate crop, not a "whatever this image's real shape is" placeholder).
+// frameImage sets an inline aspect-ratio once a src's real dimensions are
+// known so layout doesn't collapse mid-decode -- an inline style would
+// outrank and override one of these, so they're excluded from that.
+const FIXED_ASPECT_CLASSES = ['nooz-art-photo--col'];
+
+// Every <img> this module has ever built, keyed by src, so a rebuilt frame
+// for a src already on the page can reuse the exact node instead of a fresh
+// one. Moving an already-decoded <img> into a new parent is a plain DOM
+// move; creating a brand new <img> element for a src the browser already has
+// bytes for still re-decodes on WebKit even though Chrome keeps the decoded
+// bitmap hot across it -- this is what turns "the article view rebuilt itself
+// in the background" into a visible flash on an iPad and nothing at all on a
+// desktop browser. Capped and FIFO-evicted so a long reading session doesn't
+// hold onto every image it's ever shown forever.
+const IMAGE_CACHE_CAP = 40;
+const imageCache = new Map(); // src -> { img, w, h }
+
+function cacheSet(src, entry) {
+  imageCache.set(src, entry);
+  while (imageCache.size > IMAGE_CACHE_CAP) {
+    imageCache.delete(imageCache.keys().next().value);
+  }
+}
+
 /**
  * Wrap an image URL in a .nooz-img frame (relative-positioned so the halftone
  * dot overlay and, optionally, the style chip can sit over it). Returns null
@@ -20,18 +46,67 @@ export function frameImage(src, opts = {}) {
   const frame = document.createElement('figure');
   frame.className = 'nooz-img' + (opts.className ? ' ' + opts.className : '');
 
-  const img = document.createElement('img');
-  img.loading = 'lazy';
-  img.alt = '';
-  img.src = src;
-  // A broken image collapses the whole frame rather than leaving a torn box.
-  img.addEventListener('error', () => frame.remove());
+  let entry = imageCache.get(src);
+  let img;
+  let isFreshNode = false;
+
+  if (!entry) {
+    img = document.createElement('img');
+    img.alt = '';
+    img.src = src;
+    entry = { img, w: 0, h: 0 };
+    cacheSet(src, entry);
+    isFreshNode = true;
+  } else if (entry.img.isConnected) {
+    // Same src wanted twice on screen at once (a stale frame mid-transition,
+    // say) -- clone rather than steal the node still in use elsewhere.
+    // cloneNode(false) doesn't carry listeners, so this copy needs its own.
+    img = entry.img.cloneNode(false);
+    entry.img = img;
+    isFreshNode = true;
+  } else {
+    // Already decoded and not on screen anywhere right now: adopt the exact
+    // node. This is the reuse that actually kills the flicker.
+    img = entry.img;
+  }
+
+  if (isFreshNode) {
+    img.addEventListener('load', () => {
+      entry.w = img.naturalWidth;
+      entry.h = img.naturalHeight;
+      const f = img.closest('.nooz-img');
+      if (f && entry.w && entry.h && !hasFixedAspect(f)) {
+        f.style.aspectRatio = entry.w + ' / ' + entry.h;
+      }
+    });
+    // A broken image collapses the whole frame rather than leaving a torn
+    // box, and drops out of the cache so a later retry starts clean.
+    img.addEventListener('error', () => {
+      imageCache.delete(src);
+      const f = img.closest('.nooz-img');
+      if (f) f.remove();
+    });
+  }
+
+  img.loading = opts.prominent ? 'eager' : 'lazy';
+  if (opts.prominent) img.decoding = 'async';
+
   frame.appendChild(img);
+  // Dimensions already known from a previous load: reserve the space now so
+  // this frame never collapses to zero height while the (reused or fresh)
+  // node decodes.
+  if (entry.w && entry.h && !hasFixedAspect(frame)) {
+    frame.style.aspectRatio = entry.w + ' / ' + entry.h;
+  }
 
   if (opts.prominent) {
     frame.appendChild(buildStyleChip(opts.currentStyle || 'halftone', opts.onStyle));
   }
   return frame;
+}
+
+function hasFixedAspect(frame) {
+  return FIXED_ASPECT_CLASSES.some((c) => frame.classList.contains(c));
 }
 
 /** Rewrap any <img> already inside a sanitized body so it gets the same skin. */

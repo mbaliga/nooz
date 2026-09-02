@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import xyz.mdhv.riverwip.model.GlobeModel
@@ -47,14 +50,32 @@ fun GlobeCanvas(
     val sphere = MaterialTheme.colorScheme.surfaceVariant
     val rim = MaterialTheme.colorScheme.outlineVariant
     val guide = MaterialTheme.colorScheme.onSurfaceVariant
+    // Resolved before `semantics { }`, which is not a composable scope.
+    val spokenDescription = describeGlobe(region, bandHalf, ringMix)
+    val spinWest = stringResource(R.string.globe_spin_west)
+    val spinEast = stringResource(R.string.globe_spin_east)
+    val widen = stringResource(R.string.globe_widen)
+    val narrow = stringResource(R.string.globe_narrow)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .semantics {
-                contentDescription =
-                    "Region globe, aimed at ${region.label}. Drag to spin, pinch to widen the band."
+            .semantics(mergeDescendants = true) {
+                contentDescription = spokenDescription
+                // The globe used to say "Drag to spin, pinch to widen the
+                // band" to a reader who can make neither gesture, and the
+                // topic-mix ring — the only place the aimed region's actual
+                // numbers are drawn — existed nowhere in speech at all. The
+                // region chips beneath cover picking a sector, but nothing
+                // covered the band width, so one of the two things this
+                // control does had no non-gesture route.
+                customActions = listOf(
+                    CustomAccessibilityAction(spinWest) { onSpin(-SPIN_STEP, 0.0); true },
+                    CustomAccessibilityAction(spinEast) { onSpin(SPIN_STEP, 0.0); true },
+                    CustomAccessibilityAction(widen) { onZoomBand(WIDEN_STEP); true },
+                    CustomAccessibilityAction(narrow) { onZoomBand(1.0 / WIDEN_STEP); true },
+                )
             }
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
@@ -119,3 +140,51 @@ fun GlobeCanvas(
         }
     }
 }
+
+/**
+ * One step of a spin or a zoom, for a reader driving this by custom action
+ * rather than by finger. Sized so a few repeats visibly move the selection:
+ * an action menu is read aloud one item at a time, so an increment that needs
+ * twenty invocations to do anything is the same as no increment.
+ */
+private const val SPIN_STEP = 22.0
+private const val WIDEN_STEP = 1.35
+
+/**
+ * What the globe says out loud.
+ *
+ * The ring is the only place the aimed region's topic mix is drawn, so it has
+ * to be spoken here or it does not exist for a screen-reader user. Named in
+ * descending order and capped, because this is read in one breath before
+ * anything else on the screen.
+ *
+ * `@Composable` so it can reach `stringResource`: assembled from literals in a
+ * plain function it was English in every locale, and invisible to `verifyI18n`,
+ * which matches text call sites rather than string construction.
+ */
+@Composable
+private fun describeGlobe(region: Region, bandHalf: Double, ringMix: Map<Topic, Int>): String {
+    val total = ringMix.values.sum()
+    val band = if (bandHalf >= GlobeModel.GLOBAL_BAND_THRESHOLD) {
+        stringResource(R.string.globe_band_world)
+    } else {
+        stringResource(R.string.globe_band_degrees, (bandHalf * 2).toInt())
+    }
+    val head = stringResource(R.string.globe_aimed, region.label, band)
+    if (total == 0) return head + " " + stringResource(R.string.globe_nothing_flowed)
+
+    val named = ringMix.entries
+        .filter { it.value > 0 }
+        .sortedByDescending { it.value }
+        .take(SPOKEN_RING_TOPICS)
+    val rest = ringMix.entries.count { it.value > 0 } - named.size
+    // `map` is inline and so is a composable scope; `joinToString`'s transform
+    // is not, which is why the pieces are resolved before being joined.
+    var mix = named
+        .map { stringResource(R.string.loom_topic_count, it.key.placeholderLabel, it.value) }
+        .joinToString(", ")
+    if (rest > 0) mix += stringResource(R.string.loom_and_more_topics, rest)
+    return head + " " + stringResource(R.string.globe_mix, total, mix)
+}
+
+private const val SPOKEN_RING_TOPICS = 4

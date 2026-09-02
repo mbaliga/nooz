@@ -1,23 +1,64 @@
 package xyz.mdhv.riverwip.model
 
 /**
- * App-level display preferences (owner's Settings mocks, 2026-07). The theme is
- * one of three literal surface tints — White, Paper, Dark — per the owner's
- * three-theme reference image (not light/system/dark). The struck-through
- * "Show Article Progress" row remains deliberately unimplemented.
+ * App-level display preferences (owner's Settings mocks, 2026-07). The three
+ * literal surface tints — White, Paper, Dark — are the owner's own three-theme
+ * reference image. [SYSTEM] was added on top of them in 2026-08 (see D34) after
+ * a Galaxy S26+ reader reported unreadable text in dark mode: every tint here
+ * was *manual*, so a phone in dark mode still got the light Paper app while the
+ * system bars — which did follow the OS — drew their light-mode icons over it.
+ * The tints themselves are unchanged; this only adds the option to let the
+ * phone pick between two of them.
+ *
+ * The struck-through "Show Article Progress" row remains deliberately
+ * unimplemented.
  */
 enum class ThemeMode(val key: String) {
-    WHITE("white"), PAPER("paper"), DARK("dark");
+    /** Follow the phone: Paper by day, the charcoal Dark tint by night. */
+    SYSTEM("system"),
+    WHITE("white"),
+    PAPER("paper"),
+    DARK("dark");
 
-    /** One two-finger flick in the reader = the next tint. */
-    fun next(): ThemeMode = entries[(ordinal + 1) % entries.size]
+    /**
+     * The literal tint this mode actually paints, given the phone's current
+     * night setting. Every consumer resolves through here rather than reading
+     * [ThemeMode] directly, so "which surface am I on" has exactly one answer —
+     * the bug above came from the app and the system bars answering it
+     * differently.
+     */
+    fun resolve(systemDark: Boolean): ThemeMode = when (this) {
+        SYSTEM -> if (systemDark) DARK else PAPER
+        else -> this
+    }
+
+    /** Whether the resolved surface is a dark one — drives system-bar icon contrast. */
+    fun isDarkSurface(systemDark: Boolean): Boolean = resolve(systemDark) == DARK
+
+    /**
+     * One two-finger flick in the reader = the next tint. Deliberately cycles
+     * the three literal tints only: a flick is a request for a *particular*
+     * surface, so landing on "follow the phone" mid-read would hand the tint
+     * back to the OS instead of changing it. Flicking while on [SYSTEM] steps
+     * off onto an explicit tint that differs from whatever is on screen, which
+     * is why it needs to know what the phone currently resolves to.
+     */
+    fun next(systemDark: Boolean = false): ThemeMode = when (this) {
+        SYSTEM -> if (systemDark) WHITE else DARK
+        WHITE -> PAPER
+        PAPER -> DARK
+        DARK -> WHITE
+    }
 
     companion object {
         fun fromKey(key: String?): ThemeMode = when (key) {
             "white" -> WHITE
             "dark" -> DARK
-            // "light"/"system" are legacy keys from the first theme iteration;
-            // both were paper-toned in practice.
+            "paper" -> PAPER
+            // "system" was a key from the first theme iteration that resolved
+            // paper-toned in practice; it now means what it always said it
+            // meant. "light" stays a paper-toned legacy alias.
+            "system" -> SYSTEM
             else -> PAPER
         }
     }
@@ -118,9 +159,34 @@ enum class ImageStyle(val key: String, val label: String) {
     }
 }
 
+/**
+ * The reading aside (owner's ask): every so often while actually reading, a
+ * real sentence pulled from the article open, never fabricated -- an
+ * editorial break like a newspaper's own pull-quote, not a reward. Two
+ * presentations, mirroring the web reader's identical Settings choice: a
+ * small pull-quote block (the default), or a single wire-style dateline line.
+ */
+enum class ReadingAsideStyle(val key: String, val label: String) {
+    QUOTE("quote", "Found quote"),
+    DATELINE("dateline", "Dateline aside");
+
+    companion object {
+        private val byKey = entries.associateBy(ReadingAsideStyle::key)
+        fun fromKey(key: String?): ReadingAsideStyle = byKey[key] ?: QUOTE
+    }
+}
+
 data class AppSettings(
-    /** The middle tint carries the check in the owner's mock — Paper is the default. */
-    val themeMode: ThemeMode = ThemeMode.PAPER,
+    /**
+     * Follow the phone by default (D34). The owner's mock checks the middle
+     * tint, and [ThemeMode.SYSTEM] still lands on exactly that tint on a
+     * light-mode phone — so a Paper default is what almost every new reader
+     * sees. What changes is the reader whose phone is already in dark mode:
+     * they now open into the Dark tint instead of a light app they never asked
+     * for. Only new installs are affected; an existing reader's persisted
+     * choice is read straight back out of DataStore and left alone.
+     */
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
     val showReadingTime: Boolean = true,
     val textScale: TextScale = TextScale.PEANUT,
@@ -161,6 +227,18 @@ data class AppSettings(
      * every reader-intelligence tool.
      */
     val noozCastEnabled: Boolean = false,
+    /**
+     * Today in History (owner's ask, 2026-08): a short dated column above the
+     * day's stories, from Wikipedia's own curated "On this day" set. The app's
+     * usual omission question, asked across time instead of across sources.
+     *
+     * Off by default, and for a sharper reason than the tools above: it is the
+     * only fetch this app makes to a destination the reader didn't add
+     * themselves (see the manifest's "no other egress" note, and
+     * `TodayInHistoryRepository`'s own doc comment). Turning it on is a
+     * decision the reader makes, never a default they'd have to discover.
+     */
+    val todayInHistoryEnabled: Boolean = false,
     val paperGrain: PaperGrain = PaperGrain.NONE,
     /** How a read article marks itself in the list (owner's ask). */
     val readMarkStyle: ReadMarkStyle = ReadMarkStyle.GREYED,
@@ -199,6 +277,8 @@ data class AppSettings(
     val lensDisabledDefaultTerms: Set<String> = emptySet(),
     /** Advanced settings: a reader's own added words/phrases, detected the same way as any default term. */
     val lensCustomTerms: Set<String> = emptySet(),
+    /** How the reading aside presents itself (owner's ask) -- see [ReadingAsideStyle]. */
+    val readingAsideStyle: ReadingAsideStyle = ReadingAsideStyle.QUOTE,
 )
 
 /**

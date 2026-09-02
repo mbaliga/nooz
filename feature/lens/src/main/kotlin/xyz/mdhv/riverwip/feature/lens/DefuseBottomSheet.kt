@@ -13,11 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import xyz.mdhv.riverwip.design.Copy
+import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.Provenance
 import xyz.mdhv.riverwip.model.AffectSpanDetector
@@ -47,7 +49,9 @@ fun DefuseBottomSheet(
             modifier = Modifier.padding(Tokens.Spacing.md).semantics { liveRegion = LiveRegionMode.Polite },
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
         ) {
-            Text("Original", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            // Hoisted: a semantics block is not a composable scope.
+            val loadingLabel = stringResource(DesignR.string.defuse_loading)
+            Text(stringResource(DesignR.string.defuse_original), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(originalText, style = MaterialTheme.typography.bodyLarge)
             Text(span.evidence, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
@@ -61,41 +65,45 @@ fun DefuseBottomSheet(
                     CircularProgressIndicator(
                         modifier = Modifier
                             .padding(top = Tokens.Spacing.sm)
-                            .semantics { contentDescription = "Loading suggested rewrite" },
+                            .semantics { contentDescription = loadingLabel },
                     )
                 }
                 is AffectSpanUiState.Accepted -> {
                     Text(
-                        "Proposed",
+                        stringResource(DesignR.string.defuse_proposed),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = Tokens.Spacing.xs),
                     )
                     Text(state.rewrittenText, style = MaterialTheme.typography.bodyLarge)
-                    val provenanceLabel = if (state.provenance == Provenance.NATIVE) "on-device" else "cloud (via Urbana)"
+                    val provenanceLabel = if (state.provenance == Provenance.NATIVE) {
+                        stringResource(DesignR.string.provenance_on_device)
+                    } else {
+                        stringResource(DesignR.string.provenance_cloud_urbana)
+                    }
                     val provenanceColor = if (state.provenance == Provenance.NATIVE) Tokens.Color.provenanceNative else Tokens.Color.provenanceCloud
                     Text(provenanceLabel, style = MaterialTheme.typography.labelSmall, color = provenanceColor)
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
-                        TextButton(onClick = { vm.revert(itemId, span); onDismissRequest() }) { Text("Revert") }
+                        TextButton(onClick = { vm.revert(itemId, span); onDismissRequest() }) { Text(stringResource(DesignR.string.defuse_revert)) }
                     }
                 }
                 is AffectSpanUiState.Rejected -> {
                     // Not an error the reader caused — a capability that isn't
                     // set up yet. Muted, not alarming red (owner).
                     Text(
-                        "No neutral rewrite yet. This needs an on-device model or your own key, from Settings › Reader intelligence.",
+                        stringResource(DesignR.string.defuse_needs_setup),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = Tokens.Spacing.xs),
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
-                        TextButton(onClick = onDismissRequest) { Text("Close") }
+                        TextButton(onClick = onDismissRequest) { Text(stringResource(DesignR.string.defuse_close)) }
                     }
                 }
                 else -> {
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
-                        Button(onClick = { vm.requestDefuse(itemId, span, fullSentence) }) { Text("Suggest a neutral rewrite") }
-                        TextButton(onClick = { vm.dismiss(itemId, span); onDismissRequest() }) { Text("Dismiss") }
+                        Button(onClick = { vm.requestDefuse(itemId, span, fullSentence) }) { Text(stringResource(DesignR.string.defuse_suggest)) }
+                        TextButton(onClick = { vm.dismiss(itemId, span); onDismissRequest() }) { Text(stringResource(DesignR.string.settings_dismiss)) }
                     }
                 }
             }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The launcher icon proper. Until now this app shipped only a flat
+  mipmap/ic_launcher.png, which every device it runs on (minSdk 31, well past
+  adaptive icons landing in API 26) would wrap in a system-drawn plate before
+  drawing, shrinking the artwork onto a background the app never chose. That
+  is the icon looking washed out and small on a home screen.
+
+  Declaring the layers explicitly hands the launcher what it actually wants:
+  the paper as the foreground, the artwork's own black as the background,
+  masked to whatever shape the device uses.
+
+  `monochrome` is the Android 13+ themed-icon layer: a filled silhouette of
+  the paper, since a themed icon is tinted flat and the artwork's own black
+  linework would otherwise disappear into the tint.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome" />
+</adaptive-icon>
