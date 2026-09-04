@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  334 of 334 strings translated.
 -->
 <resources>
 
@@ -171,10 +171,14 @@
     <string name="edit_edit">편집</string>
     <string name="edit_done">완료</string>
     <string name="edit_all">전체</string>
+    <string name="edit_selected">선택됨</string>
+    <string name="edit_nothing_selected_title">아직 선택된 것이 없습니다</string>
+    <string name="edit_nothing_selected_body">아래에서 출처를 눌러 켜거나, URL로 하나 추가하세요 — 추가한 것은 모두 여기에 표시됩니다.</string>
     <string name="edit_news_apis">뉴스 API와 빌더</string>
     <string name="edit_search_sources">출처 찾기</string>
     <string name="edit_get_free_key">%1$s의 무료 키 받기</string>
     <string name="edit_add_named">%1$s 추가</string>
+    <string name="edit_remove_named">%1$s 제거</string>
     <string name="edit_source_failing">이 출처에서 가져오지 못하고 있습니다</string>
     <string name="edit_add_by_url">주소로 추가</string>
     <string name="edit_feed_or_site_url">피드 또는 사이트 주소</string>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  334 of 334 strings translated.
 -->
 <resources>
 
@@ -171,10 +171,14 @@
     <string name="edit_edit">EDITAR</string>
     <string name="edit_done">LISTO</string>
     <string name="edit_all">Todas</string>
+    <string name="edit_selected">Seleccionadas</string>
+    <string name="edit_nothing_selected_title">Nada seleccionado todavía</string>
+    <string name="edit_nothing_selected_body">Toca una fuente de abajo para activarla, o añade una por URL — todo lo que añadas aparecerá aquí.</string>
     <string name="edit_news_apis">APIs de noticias y constructores</string>
     <string name="edit_search_sources">Buscar fuentes</string>
     <string name="edit_get_free_key">Consigue una clave gratuita para %1$s</string>
     <string name="edit_add_named">Añadir %1$s</string>
+    <string name="edit_remove_named">Quitar %1$s</string>
     <string name="edit_source_failing">Esta fuente no se está pudiendo consultar</string>
     <string name="edit_add_by_url">Añadir por URL</string>
     <string name="edit_feed_or_site_url">URL del canal o del sitio</string>

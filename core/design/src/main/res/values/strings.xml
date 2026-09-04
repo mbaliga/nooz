@@ -241,10 +241,14 @@
     <string name="edit_edit">EDIT</string>
     <string name="edit_done">DONE</string>
     <string name="edit_all">All</string>
+    <string name="edit_selected">Selected</string>
+    <string name="edit_nothing_selected_title">Nothing selected yet</string>
+    <string name="edit_nothing_selected_body">Tap a source below to turn it on, or add one by URL — everything you add shows up here.</string>
     <string name="edit_news_apis">News APIs &amp; builders</string>
     <string name="edit_search_sources">Search sources</string>
     <string name="edit_get_free_key">Get a free key for %1$s</string>
     <string name="edit_add_named">Add %1$s</string>
+    <string name="edit_remove_named">Remove %1$s</string>
     <string name="edit_source_failing">This source is failing to fetch</string>
     <string name="edit_add_by_url">Add by URL</string>
     <string name="edit_feed_or_site_url">Feed or site URL</string>

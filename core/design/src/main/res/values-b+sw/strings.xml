@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  334 of 334 strings translated.
 -->
 <resources>
 
@@ -171,10 +171,14 @@
     <string name="edit_edit">HARIRI</string>
     <string name="edit_done">IMEKAMILIKA</string>
     <string name="edit_all">Zote</string>
+    <string name="edit_selected">Iliyochaguliwa</string>
+    <string name="edit_nothing_selected_title">Bado hakuna kilichochaguliwa</string>
+    <string name="edit_nothing_selected_body">Gusa chanzo hapa chini ili kukiwasha, au ongeza kimoja kwa URL — chochote unachoongeza kitaonekana hapa.</string>
     <string name="edit_news_apis">API za habari na wajenzi</string>
     <string name="edit_search_sources">Tafuta vyanzo</string>
     <string name="edit_get_free_key">Pata ufunguo bila malipo kwa %1$s</string>
     <string name="edit_add_named">Ongeza %1$s</string>
+    <string name="edit_remove_named">Ondoa %1$s</string>
     <string name="edit_source_failing">Chanzo hiki kinashindwa kuletwa</string>
     <string name="edit_add_by_url">Ongeza kwa URL</string>
     <string name="edit_feed_or_site_url">URL ya mpasho au tovuti</string>

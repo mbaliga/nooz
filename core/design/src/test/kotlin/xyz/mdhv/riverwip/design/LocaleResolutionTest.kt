@@ -119,6 +119,18 @@ class LocaleResolutionTest {
         assertTrue("and the frame is Tamil: $define", !define.startsWith("Define"))
     }
 
+    @Test @Config(qualifiers = "b+mr") fun theSelectedFilterResolves() {
+        // The "Selected" filter chip and its remove label are new (owner
+        // report: sources someone had turned on were unfindable afterward).
+        // edit_remove_named is exactly the class of string this file exists
+        // to catch -- an onClickLabel only a screen reader ever speaks, with
+        // a name interpolated into it.
+        assertEquals("निवडलेले", context.getString(R.string.edit_selected))
+        val remove = context.getString(R.string.edit_remove_named, "BBC")
+        assertTrue("the source name is interpolated, not dropped: $remove", remove.contains("BBC"))
+        assertTrue("and the frame is Marathi: $remove", !remove.startsWith("Remove"))
+    }
+
     @Test @Config(qualifiers = "b+bn") fun everyShippedLocaleDiffersFromEnglish() {
         // A weak assertion on purpose: it cannot check the Bengali is *good*,
         // only that resolution reached it at all rather than falling through.

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  334 of 334 strings translated.
 -->
 <resources>
 
@@ -171,10 +171,14 @@
     <string name="edit_edit">தொகுப்பு</string>
     <string name="edit_done">முடிந்தது</string>
     <string name="edit_all">அனைத்தும்</string>
+    <string name="edit_selected">தேர்ந்தெடுத்தவை</string>
+    <string name="edit_nothing_selected_title">இன்னும் எதுவும் தேர்ந்தெடுக்கப்படவில்லை</string>
+    <string name="edit_nothing_selected_body">கீழே ஒரு ஆதாரத்தை இயக்க தட்டவும், அல்லது URL மூலம் ஒன்றைச் சேர்க்கவும் — நீங்கள் சேர்ப்பவை அனைத்தும் இங்கே தோன்றும்.</string>
     <string name="edit_news_apis">செய்தி API-களும் கட்டமைப்பாளர்களும்</string>
     <string name="edit_search_sources">ஆதாரங்களைத் தேடு</string>
     <string name="edit_get_free_key">%1$s-க்கு இலவசச் சாவி பெறுங்கள்</string>
     <string name="edit_add_named">%1$s ஐச் சேர்</string>
+    <string name="edit_remove_named">%1$s நீக்கு</string>
     <string name="edit_source_failing">இந்த ஆதாரத்திலிருந்து பெற முடியவில்லை</string>
     <string name="edit_add_by_url">URL மூலம் சேர்</string>
     <string name="edit_feed_or_site_url">ஊட்டம் அல்லது தள URL</string>

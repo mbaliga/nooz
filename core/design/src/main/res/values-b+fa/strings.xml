@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  334 of 334 strings translated.
 -->
 <resources>
 
@@ -171,10 +171,14 @@
     <string name="edit_edit">ویرایش</string>
     <string name="edit_done">انجام شد</string>
     <string name="edit_all">همه</string>
+    <string name="edit_selected">برگزیده</string>
+    <string name="edit_nothing_selected_title">هنوز چیزی برگزیده نشده</string>
+    <string name="edit_nothing_selected_body">برای روشن‌کردن منبعی در پایین بزنید، یا با نشانی وب یکی بیفزایید — هر چه بیفزایید همین‌جا نمایان می‌شود.</string>
     <string name="edit_news_apis">رابط‌های خبری و سازنده‌ها</string>
     <string name="edit_search_sources">جست‌وجوی منبع‌ها</string>
     <string name="edit_get_free_key">کلید رایگان برای %1$s بگیرید</string>
     <string name="edit_add_named">افزودن %1$s</string>
+    <string name="edit_remove_named">برداشتن %1$s</string>
     <string name="edit_source_failing">گرفتن از این منبع ناکام می‌ماند</string>
     <string name="edit_add_by_url">افزودن با نشانی</string>
     <string name="edit_feed_or_site_url">نشانی خوراک یا سایت</string>

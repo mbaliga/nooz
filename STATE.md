@@ -2043,6 +2043,38 @@ respect as the CI-caught log above.
   across the build, all passing.
   29 locales complete at 330 strings; Kashmiri 119/330 (36%, up from 31%).
 
+- **D60 — Selected sources were unfindable once scattered across regions
+  (2026-09-04).** Owner report, with a screenshot: a source turned on from one
+  region tab has no way back into view once you're browsing a different one —
+  the check-circle that marks it "added" only ever appears next to the row you
+  found it under, and nothing lists what's on independent of where it lives in
+  the catalogue.
+  Added a "Selected" filter chip (owner's own sketch) to `EditScreen`'s
+  Sources tab, exclusive with the region chips the same way "All" already is.
+  It surfaces every added source, not only the ones the built-in catalogue
+  happens to know about — a source typed in by URL, matching no starter, used
+  to have no home anywhere in this screen at all; picking "Selected" was the
+  first time it could be found or removed again. `SelectedEntry` pairs each
+  added `Source` with either its real starter `ServiceDef` (so its region
+  still shows) or one built from its own fields for the unmatched case; the
+  synthetic def is never round-tripped back through `toSourceOrNull` to derive
+  an id — the real `Source.id` already known from the DB is what removal uses,
+  so a hash mismatch there can duplicate rather than delete cannot happen.
+  Found and fixed in the same file: `StarterRow`'s remove label was
+  `"Remove ${def.title}"` sitting in an `if (added) "…" else stringResource(…)`
+  expression — a shape `verifyI18n`'s `\bonClickLabel\s*=\s*"` regex can't see,
+  since the quote isn't the token right after `=`. This is a live gap in the
+  guard beyond the `label`/`@Preview` exemptions D59 closed: any conditional or
+  concatenated expression assigning to a matched attribute is invisible to it,
+  which is one of the "zero means zero of what it scans" limits already on
+  record. Fixed by hand this time rather than by widening the regex again —
+  that's a real parser, not a two-line addition, and out of scope for a UI bug
+  fix.
+  Two things this screen still cannot do, left for whoever hits them next:
+  disable a source without removing it (`SourceRepository.setEnabled` exists,
+  has no caller) and see why an unhealthy source is failing beyond the warning
+  icon already there.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

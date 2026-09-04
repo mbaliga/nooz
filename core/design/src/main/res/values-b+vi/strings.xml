@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  334 of 334 strings translated.
 -->
 <resources>
 
@@ -171,10 +171,14 @@
     <string name="edit_edit">SỬA</string>
     <string name="edit_done">XONG</string>
     <string name="edit_all">Tất cả</string>
+    <string name="edit_selected">Đã chọn</string>
+    <string name="edit_nothing_selected_title">Chưa chọn gì cả</string>
+    <string name="edit_nothing_selected_body">Chạm vào một nguồn bên dưới để bật, hoặc thêm một nguồn bằng URL — mọi thứ bạn thêm sẽ hiện ở đây.</string>
     <string name="edit_news_apis">API tin tức &amp; bộ dựng</string>
     <string name="edit_search_sources">Tìm nguồn</string>
     <string name="edit_get_free_key">Lấy khoá miễn phí cho %1$s</string>
     <string name="edit_add_named">Thêm %1$s</string>
+    <string name="edit_remove_named">Gỡ %1$s</string>
     <string name="edit_source_failing">Nguồn này đang không lấy được</string>
     <string name="edit_add_by_url">Thêm bằng URL</string>
     <string name="edit_feed_or_site_url">URL dòng tin hoặc trang</string>

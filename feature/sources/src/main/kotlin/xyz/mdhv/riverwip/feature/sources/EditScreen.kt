@@ -62,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import xyz.mdhv.riverwip.design.AppSearchBar
+import xyz.mdhv.riverwip.design.EmptyState
 import xyz.mdhv.riverwip.design.GlobeCanvas
 import xyz.mdhv.riverwip.design.NoResultsState
 import xyz.mdhv.riverwip.design.NoozWordmark
@@ -76,6 +77,7 @@ import xyz.mdhv.riverwip.model.HealthStatus
 import xyz.mdhv.riverwip.model.ReaderFilter
 import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.ServiceDef
+import xyz.mdhv.riverwip.model.Source
 import xyz.mdhv.riverwip.model.Topic
 import xyz.mdhv.riverwip.model.toSourceOrNull
 
@@ -244,6 +246,11 @@ private fun SourcesTab(vm: SourcesViewModel) {
 
     var query by rememberSaveable { mutableStateOf("") }
     var regionFilter by rememberSaveable { mutableStateOf<String?>(null) }
+    // "Selected" (owner report: sources someone had turned on, scattered
+    // across regions, were unfindable afterward — nothing showed just what
+    // was already on). Exclusive with regionFilter, same one-active-at-a-time
+    // idiom the region chips already use.
+    var selectedOnly by rememberSaveable { mutableStateOf(false) }
 
     val addedIds = remember(sources) { sources.map { it.id }.toSet() }
     val regions = remember(startersByRegion) { startersByRegion.keys.sorted() }
@@ -257,22 +264,53 @@ private fun SourcesTab(vm: SourcesViewModel) {
     // nothing, and every hit was equal so an incidental URL match could outrank
     // an exact masthead.
     val regionScoped = flatStarters.filter { (region, _) -> regionFilter == null || region == regionFilter }
-    val filteredStarters = SourceSearch.rank(regionScoped, query) { it.second }
-    val filteredBuilders = if (regionFilter != null) emptyList() else SourceSearch.rank(builders, query) { it }
+    val filteredStarters = if (selectedOnly) emptyList() else SourceSearch.rank(regionScoped, query) { it.second }
+    val filteredBuilders = if (selectedOnly || regionFilter != null) emptyList() else SourceSearch.rank(builders, query) { it }
+
+    // Every added source paired with the region it came from, for "Selected".
+    // A source typed in by hand rather than picked from a starter has no
+    // catalogue entry to look up — it gets a def built from its own fields so
+    // it still renders and searches like any other row, rather than being the
+    // one kind of source this screen can never show back to you.
+    val starterByAddedId = remember(flatStarters) {
+        flatStarters.mapNotNull { (region, def) -> def.toSourceOrNull(addedAt = 0L)?.id?.let { it to (region to def) } }.toMap()
+    }
+    val selectedRows = remember(sources, starterByAddedId) {
+        sources.map { source ->
+            val matched = starterByAddedId[source.id]
+            if (matched != null) {
+                val (region, def) = matched
+                SelectedEntry(source, region, def) { vm.toggleStarter(def) }
+            } else {
+                SelectedEntry(source, null, source.asServiceDef()) { vm.remove(source.id) }
+            }
+        }
+    }
+    val filteredSelected = if (selectedOnly) SourceSearch.rank(selectedRows, query) { it.def } else emptyList()
 
     Column(Modifier.fillMaxSize()) {
-        // Region filter chips — narrow the (now large) list by sector.
+        // Selected / region filter chips — narrow the (now large) list by
+        // sector, or cut straight to what's already turned on.
         Row(
             Modifier
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
             horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs),
         ) {
-            FilterChip(selected = regionFilter == null, onClick = { regionFilter = null }, label = { Text(stringResource(DesignR.string.edit_all)) })
+            FilterChip(
+                selected = selectedOnly,
+                onClick = { selectedOnly = !selectedOnly; regionFilter = null },
+                label = { Text(stringResource(DesignR.string.edit_selected)) },
+            )
+            FilterChip(
+                selected = !selectedOnly && regionFilter == null,
+                onClick = { selectedOnly = false; regionFilter = null },
+                label = { Text(stringResource(DesignR.string.edit_all)) },
+            )
             for (r in regions) {
                 FilterChip(
-                    selected = regionFilter == r,
-                    onClick = { regionFilter = if (regionFilter == r) null else r },
+                    selected = !selectedOnly && regionFilter == r,
+                    onClick = { selectedOnly = false; regionFilter = if (regionFilter == r) null else r },
                     label = { Text(r.replaceFirstChar { it.uppercase() }) },
                 )
             }
@@ -287,31 +325,60 @@ private fun SourcesTab(vm: SourcesViewModel) {
                 .verticalScroll(listScroll)
                 .padding(horizontal = Tokens.Spacing.md),
         ) {
-            if (filteredStarters.isEmpty() && filteredBuilders.isEmpty()) {
-                // A literal no-results case (a search/region filter that came up
-                // empty) — the owner's illustration + quote treatment, not the
-                // "why is this empty" EmptyState. stringResource(DesignR.string.edit_add_by_url) is still right
-                // below, so the way out stays visible either way.
-                NoResultsState(fill = false, modifier = Modifier.fillMaxWidth())
-            }
-            for ((region, def) in filteredStarters) {
-                val id = remember(def) { def.toSourceOrNull(addedAt = 0L)?.id }
-                StarterRow(
-                    def = def,
-                    region = if (regionFilter == null) region else null,
-                    added = id != null && id in addedIds,
-                    unhealthy = id != null && (health[id]?.status == HealthStatus.FAILING || health[id]?.status == HealthStatus.RATE_LIMITED),
-                    onToggle = { vm.toggleStarter(def) },
-                )
-            }
+            if (selectedOnly) {
+                if (sources.isEmpty()) {
+                    // Distinct from NoResultsState below: nothing is wrong with
+                    // the search, there is simply nothing on yet. fill = false:
+                    // this sits inside the same verticalScroll column as
+                    // everything below it (same reason NoResultsState takes
+                    // fill = false there) -- EmptyState's default fillMaxSize()
+                    // would ask an unbounded scrolling parent for infinite
+                    // height and crash.
+                    EmptyState(
+                        title = stringResource(DesignR.string.edit_nothing_selected_title),
+                        body = stringResource(DesignR.string.edit_nothing_selected_body),
+                        fill = false,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                } else if (filteredSelected.isEmpty()) {
+                    NoResultsState(fill = false, modifier = Modifier.fillMaxWidth())
+                }
+                for (entry in filteredSelected) {
+                    StarterRow(
+                        def = entry.def,
+                        region = entry.region,
+                        added = true,
+                        unhealthy = health[entry.source.id]?.status.let { it == HealthStatus.FAILING || it == HealthStatus.RATE_LIMITED },
+                        onToggle = entry.onToggle,
+                    )
+                }
+            } else {
+                if (filteredStarters.isEmpty() && filteredBuilders.isEmpty()) {
+                    // A literal no-results case (a search/region filter that came
+                    // up empty) — the owner's illustration + quote treatment, not
+                    // the "why is this empty" EmptyState. stringResource(DesignR.string.edit_add_by_url)
+                    // is still right below, so the way out stays visible either way.
+                    NoResultsState(fill = false, modifier = Modifier.fillMaxWidth())
+                }
+                for ((region, def) in filteredStarters) {
+                    val id = remember(def) { def.toSourceOrNull(addedAt = 0L)?.id }
+                    StarterRow(
+                        def = def,
+                        region = if (regionFilter == null) region else null,
+                        added = id != null && id in addedIds,
+                        unhealthy = id != null && (health[id]?.status == HealthStatus.FAILING || health[id]?.status == HealthStatus.RATE_LIMITED),
+                        onToggle = { vm.toggleStarter(def) },
+                    )
+                }
 
-            if (filteredBuilders.isNotEmpty()) {
-                SectionHeading(
-                    stringResource(DesignR.string.edit_news_apis),
-                    modifier = Modifier.padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
-                )
-                for (b in filteredBuilders) {
-                    BuilderRow(def = b, onAdd = { vm.addByUrl(it) })
+                if (filteredBuilders.isNotEmpty()) {
+                    SectionHeading(
+                        stringResource(DesignR.string.edit_news_apis),
+                        modifier = Modifier.padding(top = Tokens.Spacing.lg, bottom = Tokens.Spacing.xs),
+                    )
+                    for (b in filteredBuilders) {
+                        BuilderRow(def = b, onAdd = { vm.addByUrl(it) })
+                    }
                 }
             }
 
@@ -407,7 +474,14 @@ private fun StarterRow(def: ServiceDef, region: String?, added: Boolean, unhealt
         modifier = Modifier
             .fillMaxWidth()
             .bleedHorizontal(Tokens.Spacing.md)
-            .clickable(onClickLabel = if (added) "Remove ${def.title}" else stringResource(DesignR.string.edit_add_named, def.title), onClick = onToggle)
+            .clickable(
+                onClickLabel = if (added) {
+                    stringResource(DesignR.string.edit_remove_named, def.title)
+                } else {
+                    stringResource(DesignR.string.edit_add_named, def.title)
+                },
+                onClick = onToggle,
+            )
             .padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -453,6 +527,28 @@ private fun StarterRow(def: ServiceDef, region: String?, added: Boolean, unhealt
         }
     }
 }
+
+/**
+ * One row of the "Selected" filter: a source that's actually added, together
+ * with whatever [region]/[def] it takes for [StarterRow] to render and
+ * [SourceSearch] to search it, and the one action a Selected row ever offers
+ * — turn it back off, exactly the way it was turned on.
+ */
+private data class SelectedEntry(
+    val source: Source,
+    val region: String?,
+    val def: ServiceDef,
+    val onToggle: () -> Unit,
+)
+
+/**
+ * A stand-in [ServiceDef] for a source with no catalogue entry — added by
+ * pasting a URL, so nothing in [xyz.mdhv.riverwip.model.Starters] ever
+ * produced it. Built only so [StarterRow] and [SourceSearch] have a def to
+ * read; [ServiceDef.toSourceOrNull] is never called on it, so it doesn't need
+ * to round-trip back to this exact [Source.id] the way a real starter's does.
+ */
+private fun Source.asServiceDef(): ServiceDef = ServiceDef(id = id, kind = kind.key, title = title, tier = tier.key, url = url)
 
 @Composable
 private fun AddByUrlSection(vm: SourcesViewModel) {

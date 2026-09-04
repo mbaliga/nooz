@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  119 of 330 strings translated.
+  121 of 334 strings translated.
 -->
 <resources>
 
@@ -51,6 +51,8 @@
     <string name="edit_edit">ترمیم</string>
     <string name="edit_done">مکمل</string>
     <string name="edit_all">سٲری</string>
+    <string name="edit_selected">ژٲرتھ</string>
+    <string name="edit_remove_named">%1$s ہٹاویو</string>
     <string name="settings_back">واپس</string>
     <string name="settings_theme">تھیم</string>
     <string name="settings_theme_follow">فونُک روشن یا کالٕہ ترتیب استعمال کریو</string>

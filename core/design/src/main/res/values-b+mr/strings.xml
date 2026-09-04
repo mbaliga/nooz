@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  334 of 334 strings translated.
 -->
 <resources>
 
@@ -171,10 +171,14 @@
     <string name="edit_edit">संपादन</string>
     <string name="edit_done">झाले</string>
     <string name="edit_all">सर्व</string>
+    <string name="edit_selected">निवडलेले</string>
+    <string name="edit_nothing_selected_title">अजून काहीही निवडलेले नाही</string>
+    <string name="edit_nothing_selected_body">खालचा एखादा स्रोत चालू करण्यासाठी टॅप करा, किंवा URL ने एक जोडा — तुम्ही जोडलेले सर्व इथे दिसेल.</string>
     <string name="edit_news_apis">बातमी API आणि बिल्डर</string>
     <string name="edit_search_sources">स्रोत शोधा</string>
     <string name="edit_get_free_key">%1$s साठी मोफत की मिळवा</string>
     <string name="edit_add_named">%1$s जोडा</string>
+    <string name="edit_remove_named">%1$s काढून टाका</string>
     <string name="edit_source_failing">हा स्रोत आणण्यात अपयशी ठरत आहे</string>
     <string name="edit_add_by_url">URL ने जोडा</string>
     <string name="edit_feed_or_site_url">फीड किंवा साइटचा URL</string>
