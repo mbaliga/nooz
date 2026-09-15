@@ -73,7 +73,16 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      # Explicit packages, not the action's default: v3's default input is
+      # literally 'tools platform-tools', and Google has pulled the legacy
+      # standalone 'tools' package from the SDK repository entirely, so the
+      # default install now fails outright ("Failed to find package 'tools'",
+      # exit code 1) before the job ever reaches Gradle. platform-tools plus
+      # this project's own compileSdk (35) is everything the build needs;
+      # AGP's own SDK auto-download can fetch anything else on demand.
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools build-tools;35.0.0 platforms;android-35'
       - uses: gradle/actions/setup-gradle@v4
 
       # `unitTests` discovers each module's own test task rather than naming

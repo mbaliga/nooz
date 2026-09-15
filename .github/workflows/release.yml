@@ -20,7 +20,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      # Explicit packages, not the action's default: v3's default input is
+      # literally 'tools platform-tools', and Google has pulled the legacy
+      # standalone 'tools' package from the SDK repository entirely, so the
+      # default install now fails outright ("Failed to find package 'tools'",
+      # exit code 1) before the job ever reaches Gradle — see ci.yml's android
+      # job for the same fix, applied here too since this job hit it first.
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools build-tools;35.0.0 platforms;android-35'
       - uses: gradle/actions/setup-gradle@v4
 
       # Decoded to the runner's own temp dir, never written into the checkout

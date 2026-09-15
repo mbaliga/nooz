@@ -2138,6 +2138,26 @@ respect as the CI-caught log above.
   repo's `unitTests` aggregate task; `assembleDebug` (foss + full) still
   builds clean.
 
+- **D62 — CI's `android` job and the Release workflow were both broken by an
+  upstream package removal, unrelated to any app code (2026-09-15).**
+  Discovered chasing down why a manually-dispatched Release run (building the
+  versionCode 6/0.4.1 AAB) failed, and confirmed the same failure on this very
+  push's own CI run: `android-actions/setup-android@v3`'s default `packages`
+  input is literally `'tools platform-tools'`, and Google has removed the
+  legacy standalone `tools` package from the SDK repository entirely, so the
+  action's own default install now fails outright (`Failed to find package
+  'tools'`, exit 1) before the job ever reaches Gradle — `core-tests` and
+  `web-tests` on the same run stayed green throughout, confirming this was
+  never about the D61 code change, only the SDK setup step every Android job
+  shares. Fixed in both `.github/workflows/ci.yml` and `release.yml` by
+  passing an explicit `packages:` input (`platform-tools build-tools;35.0.0
+  platforms;android-35`, matching this project's own `compileSdk`) instead of
+  the action's broken default — confirmed against the action's own `v3`
+  source (`action.yml`'s default, and `dist/index.js`'s per-package
+  `sdkmanager` install loop) rather than guessed from the error text alone.
+  Not verified by a live rerun in this pass (no way to execute a GitHub-hosted
+  Action from this sandbox) — the next CI run on `main` is the real signal.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
