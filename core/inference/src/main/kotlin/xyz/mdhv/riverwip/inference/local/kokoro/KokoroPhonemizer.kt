@@ -87,7 +87,8 @@ class KokoroPhonemizer(private val lexicon: KokoroLexicon) {
             if (isSentenceEnd) lastSentenceBreak = current.length
         }
 
-        for (token in TOKEN_PATTERN.findAll(normalized)) {
+        val tokens = TOKEN_PATTERN.findAll(normalized).toList()
+        for ((index, token) in tokens.withIndex()) {
             when {
                 token.groups["space"] != null -> append(" ")
                 token.groups["number"] != null -> {
@@ -100,7 +101,16 @@ class KokoroPhonemizer(private val lexicon: KokoroLexicon) {
                 token.groups["word"] != null -> append(phonemesForWord(token.value))
                 token.groups["punct"] != null -> {
                     val c = token.value[0]
-                    if (KokoroVocab.supports(c)) {
+                    if (c == '-' && isDigitRangeDash(tokens, index)) {
+                        // A range/score with no space either side ("3-5",
+                        // "pages 12-14", "won 3-1"): Kokoro's vocab has no '-'
+                        // token at all, so dropping it the way any other
+                        // unsupported punctuation is dropped would run the two
+                        // numbers together with no audible separator at all
+                        // ("three five") -- speaking the implied "to" instead
+                        // keeps the range relationship audible.
+                        append(phonemesForWord("to"))
+                    } else if (KokoroVocab.supports(c)) {
                         // Ordinary orthography has no space before closing
                         // punctuation ("dog.", not "dog ."); opening marks
                         // (an opening paren/curly-quote) keep the default
@@ -113,6 +123,21 @@ class KokoroPhonemizer(private val lexicon: KokoroLexicon) {
         }
         emit(current.toString())
         return chunks
+    }
+
+    /**
+     * True only when [tokens]\[index\] is a bare '-' with a `number` token
+     * immediately on each side and nothing (no space, no skipped character)
+     * between them — "3-5", not "well - actually" (spaces both sides) or
+     * "COVID-19" (a `word` on the left, not a `number`), both of which stay
+     * on the ordinary silently-dropped path since a dash there isn't a range.
+     */
+    private fun isDigitRangeDash(tokens: List<MatchResult>, index: Int): Boolean {
+        val token = tokens[index]
+        val prev = tokens.getOrNull(index - 1) ?: return false
+        val next = tokens.getOrNull(index + 1) ?: return false
+        return prev.groups["number"] != null && next.groups["number"] != null &&
+            prev.range.last + 1 == token.range.first && token.range.last + 1 == next.range.first
     }
 
     private fun phonemesForWord(word: String): String {

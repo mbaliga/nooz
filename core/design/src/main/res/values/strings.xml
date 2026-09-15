@@ -355,6 +355,7 @@
     <string name="cast_setup_link">Set up an on-device narration model →</string>
     <string name="cast_action_narrate">Narrate this article</string>
     <string name="cast_action_setup">Set up Nooz Cast</string>
+    <string name="cast_partial_narration">Part of this article couldn\'t be narrated.</string>
     <string name="provenance_on_device">on-device</string>
     <string name="provenance_cloud_urbana">cloud (via Urbana)</string>
     <string name="history_retry_notice">%1$s Tap to try again.</string>

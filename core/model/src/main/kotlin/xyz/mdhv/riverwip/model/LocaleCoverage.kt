@@ -9,7 +9,7 @@ package xyz.mdhv.riverwip.model
  */
 object LocaleCoverage {
     /** Strings in the base catalogue — the denominator. */
-    const val TOTAL = 334
+    const val TOTAL = 335
 
     /** BCP 47 tag -> strings translated. Absent means none, so English. */
     val TRANSLATED: Map<String, Int> = mapOf(
@@ -17,7 +17,7 @@ object LocaleCoverage {
     "as" to 334,
     "bn" to 334,
     "de" to 334,
-    "en" to 334,
+    "en" to 335,
     "es" to 334,
     "fa" to 334,
     "fr" to 334,

@@ -29,7 +29,7 @@ import xyz.mdhv.riverwip.data.repo.ModelDownloadState
 import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.design.Tokens
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
-import xyz.mdhv.riverwip.inference.local.StorageBudget
+import xyz.mdhv.riverwip.model.StorageBudget
 
 /** Which of the lens's three intelligence paths the reader is looking at. */
 enum class ModelPath { ON_DEVICE, DOWNLOAD, BYOK }

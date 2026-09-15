@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import xyz.mdhv.riverwip.data.net.HttpClient
+import xyz.mdhv.riverwip.model.ChecksumVerifier
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -151,6 +152,20 @@ class ModelCatalogueRepository(
                 val dir = modelsDir()
                 val tmp = File(dir, "${model.id}.download")
                 downloadWithProgress(url, tmp, model.sizeBytes, onProgress)
+                // A network hiccup that truncates the stream, or a corrupted
+                // mirror, previously landed the partial/wrong bytes at the
+                // real filename anyway — isDownloaded()/isGroupDownloaded()
+                // are exists()-only, so the app would then treat a broken
+                // download as a complete, ready-to-use install. Verified only
+                // when the catalogue actually publishes a hash: some entries
+                // don't carry one (see the catalogue's own honesty rules),
+                // and those keep the previous, unverified behavior rather
+                // than being blocked from downloading at all.
+                val expectedSha256 = model.sha256
+                if (!expectedSha256.isNullOrBlank() && !ChecksumVerifier.verify(tmp, expectedSha256)) {
+                    tmp.delete()
+                    error("Downloaded file for ${model.name} didn't match its expected checksum — try again")
+                }
                 val dest = fileFor(model)
                 if (dest.exists()) dest.delete()
                 if (!tmp.renameTo(dest)) {

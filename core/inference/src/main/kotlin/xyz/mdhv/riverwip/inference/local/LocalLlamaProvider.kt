@@ -2,6 +2,8 @@ package xyz.mdhv.riverwip.inference.local
 
 import android.content.Context
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import xyz.mdhv.riverwip.inference.DigestRequest
 import xyz.mdhv.riverwip.inference.DigestResult
 import xyz.mdhv.riverwip.inference.InferenceProvider
@@ -44,10 +46,17 @@ class LocalLlamaProvider(
 
     fun hasModelOnDisk(): Boolean = selectedModel() != null
 
-    override suspend fun isAvailable(): Boolean = hasModelOnDisk()
+    // File.listFiles() is a blocking syscall, and isAvailable()/rewrite()/
+    // digest() are all called directly from ReaderViewModel's viewModelScope
+    // (Dispatchers.Main.immediate) with no dispatcher switch upstream —
+    // isAvailable() runs on every ReaderViewModel init and every InferenceRouter
+    // availability check, so without this it's a real, if small, blocking
+    // disk read on the UI thread on every one of those, not just this
+    // provider's own rewrite()/digest() calls.
+    override suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) { hasModelOnDisk() }
 
     override suspend fun rewrite(request: RewriteRequest): RewriteResult {
-        val model = selectedModel() ?: return RewriteResult.Failed(NOT_ON_DISK)
+        val model = withContext(Dispatchers.IO) { selectedModel() } ?: return RewriteResult.Failed(NOT_ON_DISK)
         val reply = runCompletion(model, PromptTemplates.REWRITE_SYSTEM, PromptTemplates.rewriteUser(request), MAX_REWRITE_TOKENS)
         if (reply.isNullOrBlank()) return RewriteResult.Failed(GENERATION_FAILED)
         return RewriteResult.Success(reply, Provenance.NATIVE)
@@ -55,7 +64,7 @@ class LocalLlamaProvider(
 
     override suspend fun digest(request: DigestRequest): DigestResult {
         if (request.headlines.isEmpty()) return DigestResult.Failed("Nothing flowed yet to compress")
-        val model = selectedModel() ?: return DigestResult.Failed(NOT_ON_DISK)
+        val model = withContext(Dispatchers.IO) { selectedModel() } ?: return DigestResult.Failed(NOT_ON_DISK)
         val reply = runCompletion(model, PromptTemplates.DIGEST_SYSTEM, PromptTemplates.digestUser(request), MAX_DIGEST_TOKENS)
         if (reply.isNullOrBlank()) return DigestResult.Failed(GENERATION_FAILED)
         return DigestResult.Success(reply, Provenance.NATIVE)

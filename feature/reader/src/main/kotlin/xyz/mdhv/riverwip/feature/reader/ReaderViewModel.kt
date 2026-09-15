@@ -100,8 +100,15 @@ sealed interface HistoryUiState {
 sealed interface CastUiState {
     data object Idle : CastUiState
     data object Loading : CastUiState
-    /** [audioFile] is the rendered narration — always [Provenance.NATIVE]; Cast has no cloud path to mark otherwise (owner: "a private anchor voice should never leave the device"). */
-    data class Ready(val audioFile: File, val provenance: Provenance) : CastUiState
+    /**
+     * [audioFile] is the rendered narration — always [Provenance.NATIVE];
+     * Cast has no cloud path to mark otherwise (owner: "a private anchor
+     * voice should never leave the device"). [skippedChunks] mirrors
+     * [xyz.mdhv.riverwip.inference.SynthesisResult.Success.skippedChunks] — a
+     * still-successful narration that's missing a piece of the article,
+     * which is otherwise indistinguishable from a complete one.
+     */
+    data class Ready(val audioFile: File, val provenance: Provenance, val skippedChunks: Int = 0) : CastUiState
     /**
      * The provider ran but declined or errored — never silent (brief §3).
      * [needsSetup] distinguishes "the narration model isn't downloaded yet"
@@ -398,19 +405,34 @@ class ReaderViewModel(
 
     fun requestCast() {
         if (_castState.value is CastUiState.Loading) return
+        // Captured now, not re-read after the suspend points below: Cast
+        // narrates "whichever article is open" at the moment of the tap, and
+        // requestCast()/synthesize() can take long enough (loading a 173k-word
+        // lexicon, an 86MB ONNX session, a full forward pass) for the reader
+        // to have opened a different article before either finishes. Without
+        // this, a stale result would land in the one shared _castState and be
+        // shown as if it belonged to whatever article happens to be open when
+        // the coroutine resumes rather than the one that was open when Cast
+        // was actually tapped.
+        val requestedItemId = selectedItem?.id
         viewModelScope.launch {
             _castState.value = CastUiState.Loading
             if (!ttsProvider.isAvailable()) {
-                _castState.value = CastUiState.Unavailable(CAST_NOT_CONFIGURED_REASON, needsSetup = true)
+                if (selectedItem?.id == requestedItemId) {
+                    _castState.value = CastUiState.Unavailable(CAST_NOT_CONFIGURED_REASON, needsSetup = true)
+                }
                 return@launch
             }
             val body = currentArticleBody()
+            if (selectedItem?.id != requestedItemId) return@launch
             if (body.isNullOrBlank()) {
                 _castState.value = CastUiState.Unavailable("Open an article to narrate it.")
                 return@launch
             }
-            _castState.value = when (val result = ttsProvider.synthesize(SynthesisRequest(body))) {
-                is SynthesisResult.Success -> CastUiState.Ready(result.audioFile, result.provenance)
+            val result = ttsProvider.synthesize(SynthesisRequest(body))
+            if (selectedItem?.id != requestedItemId) return@launch
+            _castState.value = when (result) {
+                is SynthesisResult.Success -> CastUiState.Ready(result.audioFile, result.provenance, result.skippedChunks)
                 is SynthesisResult.Failed -> CastUiState.Unavailable(result.reason)
             }
         }
@@ -597,6 +619,18 @@ class ReaderViewModel(
         openedAtRest = rest
         selectedItem = item
         _articleState.value = ArticleUiState.Loading
+        // castState's own doc comment says Cast narrates "whichever article
+        // is currently open" — a Ready/Loading result belongs to whatever
+        // article was open when it was requested, not necessarily this new
+        // one, so it's reset rather than left showing (or about to show) the
+        // previous article's narration under the newly-opened headline. A
+        // genuine Unavailable (not downloaded/configured) is left alone: that
+        // gate is true regardless of which article is open, not a per-article
+        // result to discard. requestCast()'s own id check discards any
+        // in-flight request that resolves after this point.
+        if (_castState.value !is CastUiState.Unavailable) {
+            _castState.value = CastUiState.Idle
+        }
         viewModelScope.launch {
             if (!rest) readEventRepository.record(item.id, DwellBucket.GLANCE, viaRiver)
             val text = articleRepository.textFor(item.id, item.canonicalUrl)

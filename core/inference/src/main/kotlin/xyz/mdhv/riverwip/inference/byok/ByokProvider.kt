@@ -34,7 +34,12 @@ class ByokProvider(private val store: ByokConfigStore) : InferenceProvider {
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
-    override suspend fun isAvailable(): Boolean = store.isConfigured
+    // store.isConfigured reads SharedPreferences, which blocks the calling
+    // thread if called before Android's own async first-load of the prefs
+    // file has finished — same reasoning as LocalLlamaProvider/
+    // LocalKokoroTtsProvider's identical isAvailable() fix, applied here too
+    // rather than leaving this the one provider still doing it inline.
+    override suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) { store.isConfigured }
 
     override suspend fun rewrite(request: RewriteRequest): RewriteResult {
         val cfg = store.load()

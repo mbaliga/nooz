@@ -2155,8 +2155,196 @@ respect as the CI-caught log above.
   the action's broken default — confirmed against the action's own `v3`
   source (`action.yml`'s default, and `dist/index.js`'s per-package
   `sdkmanager` install loop) rather than guessed from the error text alone.
-  Not verified by a live rerun in this pass (no way to execute a GitHub-hosted
-  Action from this sandbox) — the next CI run on `main` is the real signal.
+  Verified by a live rerun, not just reasoning about the fix: re-dispatched
+  Release run #12 on the fixed commit and it went green end to end, producing
+  a real signed AAB (`versionCode 6`/`0.4.1`) — confirmed genuinely signed
+  with the release key (`META-INF/NOOZ-REL.RSA`, not a debug cert) and
+  handed to the owner.
+
+- **D63 — Nooz Cast and Nooz Flash audited for completeness; twelve real bugs
+  found and fixed (2026-09-15).** Owner's ask: make sure Cast and Flash are
+  "fully functional... completely built and feature-complete." Both were
+  already real, non-stubbed pipelines (D31's llama.cpp binding, Kokoro's
+  actual ONNX inference) — the question was whether they were *correct*, not
+  whether they were fake. Four independent review passes (Cast's audio
+  pipeline, Flash's routing/native engine, the reader's UI state machines,
+  and DI/settings/wiring), each finding put through adversarial verification
+  from three separate angles (does the code really do this, can a real user
+  actually trigger it, does it matter) before being trusted. Thirteen claims
+  came out of the first pass; twelve survived verification. What follows is
+  every one that did, plus the one that correctly didn't.
+  **Cast (Kokoro TTS):**
+  - `LocalKokoroTtsProvider.synthesizeChunk` indexed the voice-style table by
+    the raw phoneme-token count instead of `count - 1` (Kokoro's own
+    reference implementation, both `kokoro-onnx` and `hexgrad/kokoro`,
+    confirmed independently: `min(length, len(voice)) - 1`). Every ordinary
+    chunk played with the style vector trained for one token more than what
+    was actually being synthesized — silent, systematic, never touching a
+    boundary the `coerceIn` clamp would catch, since
+    `KokoroVocab.MAX_PHONEME_CHARS` is deliberately kept below the voice
+    pack's row count. Fixed: index by `(tokenIds.size - 1)`.
+  - A chunk that failed ONNX inference (a still-possible pathological input —
+    see the rejected finding below) was dropped via `runCatching { … }
+    .getOrNull() ?: continue` with the count never recorded anywhere, so a
+    narration missing a whole section of the article still returned
+    `SynthesisResult.Success` — the sealed interface has no partial-failure
+    case, and `Failed` ("never silent," its own doc comment says) never
+    fires for a partial one. `SynthesisResult.Success` and `CastUiState.Ready`
+    both gained a `skippedChunks: Int = 0` field, threaded through from the
+    actual per-chunk loop; the Cast card now shows a one-line note ("Part of
+    this article couldn't be narrated") when it's nonzero — new
+    `cast_partial_narration` string, English-only for now (every locale falls
+    back to English for a key it doesn't have; that's the sanctioned way to
+    add one, not a shortcut).
+  - `KokoroPhonemizer` had no representation for a numeric range: Kokoro's
+    vocabulary has no `-` token at all, so "3-5", "pages 12-14", "won 3-1"
+    all silently dropped the dash and ran the two numbers together with zero
+    audible separator ("three five"). Fixed narrowly: a bare `-` with a
+    `number` token immediately adjacent on both sides (no space, no skipped
+    character — so not "well - actually," not "COVID-19," where the left
+    neighbor is a `word`) is now spoken as "to" instead of dropped. Doesn't
+    generalize to every hyphenated-digit pattern (a phone number reads no
+    better than before), logged as an honest limit rather than chased further.
+  - **Correctly rejected, not fixed:** `KokoroPhonemizer.append()` never caps
+    a single oversized word-fragment against `MAX_PHONEME_CHARS` before
+    appending it, which is real, but every verifier independently failed to
+    construct a realistic trigger — it needs an unbroken 400-500+ character
+    run of plain Latin letters with no space/digit/punctuation anywhere,
+    which neither `ArticleExtractor` (Jsoup) nor `Html.strip` (a literal-space
+    tag replacement) can produce from real HTML, and doesn't occur in real
+    prose. Already gracefully degraded besides: it's exactly the "pathological
+    single word" case the per-chunk skip-and-continue above (already fixed to
+    be non-silent) exists to survive.
+  **Flash (on-device LLM) — two native (C++/JNI) bugs, one Kotlin leak:**
+  - `nooz_llama_jni.cpp`'s `nativeProcessUserPrompt` computed
+    `stop_generation_position` as `current_position + user_prompt_size +
+    n_predict` — but `current_position` on the line above had *already* had
+    `user_prompt_size` folded into it, so the prompt's own token count was
+    counted twice. Generation ran for `user_prompt_size + n_predict` tokens
+    instead of the requested `n_predict`, silently blowing through every
+    caller's own cap — Flash's digest `MAX_DIGEST_TOKENS = 48` "hard cutoff
+    backstop" (the comment's own words) could run 2-4x over on a normal
+    headline list. Fixed: `stop_generation_position = current_position +
+    n_predict`.
+  - The same function also advanced `current_position` by the *pre*-
+    truncation prompt size when a too-long prompt got truncated to fit the
+    context window, even though only the truncated (shorter) vector was
+    actually decoded into the KV cache — desyncing the tracked position from
+    the cache's real contents. Fixed to advance by the actual decoded count
+    (`user_tokens.size()` after the resize). Adversarial verification
+    surfaced a genuine nuance here worth recording: one verifier traced the
+    vendored llama.cpp source itself (pinned commit, per D31) and found that
+    in the realistic trigger case, an earlier, already-graceful decode-
+    capacity failure fires first and returns before this line ever executes
+    — so the *practical* symptom today is an honest "Flash unavailable," not
+    garbled output. Fixed anyway: the arithmetic is wrong regardless of
+    whether today's other guards happen to intercept it first, and a
+    "correct only because something else already catches it" line is exactly
+    the kind of latent bug that resurfaces the moment the other guard changes.
+  - `LlamaCppEngine.ensureModel()` leaked the native model when `nativeLoad()`
+    succeeded but the immediately-following `nativePrepare()` then failed (the
+    JNI file's own comment already named the trigger: "an OOM allocating the
+    KV cache") — `loadedModelPath` stayed null so Kotlin believed nothing was
+    loaded, while the native `g_model` allocation (hundreds of MB to
+    low-digit GB, per this app's own catalogue entries) stayed resident.
+    `nativeLoad()` already self-heals this on its *next* call for any reason,
+    but nothing guarantees a next call happens in the same process lifetime.
+    Fixed: `ensureModel()` now calls `nativeUnload()` before returning
+    `false` on a `nativePrepare()` failure, freeing it immediately rather
+    than leaving it to a maybe-next call.
+  - `LocalLlamaProvider`/`LocalKokoroTtsProvider`/`ByokProvider`'s
+    `isAvailable()` each did a blocking check (`File.listFiles()`,
+    `File.exists()`, a `SharedPreferences` read that can block on Android's
+    own async first-load) with no dispatcher switch, called directly from
+    `ReaderViewModel`'s `viewModelScope` (`Dispatchers.Main.immediate`) on
+    every `ViewModel` init and every Cast/Flash tap. Individually cheap, but
+    a real, avoidable blocking-I/O-on-Main pattern repeated identically
+    across all three on-device/cloud providers rather than an isolated
+    one-off — fixed in all three (`withContext(Dispatchers.IO) { … }`)
+    for consistency rather than patching only the one the first pass happened
+    to name.
+  **The reader's UI state machines:**
+  - `CastUiState` was never reset when `openItem()` opened a different
+    article — its own doc comment says Cast narrates "whichever article is
+    currently open," but nothing enforced that. Once `Ready` for article A,
+    the card kept showing/playing A's narration under article B's headline
+    indefinitely (the `Ready` branch has no re-narrate affordance, only
+    `Idle` does), reachable through completely ordinary navigation on both
+    the phone's Stand and the tablet's simultaneous two-pane layout — Cast
+    became usable exactly once per app session. A second, subtler race sat
+    underneath it: `requestCast()`'s own suspend points (loading the lexicon,
+    opening an 86MB ONNX session) are slow enough that the reader can
+    navigate to a different article before either finishes, landing a stale
+    result in the one shared state. Fixed together: `openItem()` resets
+    `_castState` to `Idle` (leaving a genuine `Unavailable` alone — that gate
+    is true regardless of which article is open, not a per-article result to
+    discard), and `requestCast()` captures the target article's id up front
+    and checks it's still selected before committing the availability check,
+    the loaded body, and the synthesis result — a stale in-flight request now
+    discards itself instead of landing on whatever's open when it resolves.
+  - `FlashCard.kt`'s `PlayAudioFileButton` (Cast's rendered-WAV playback)
+    only flipped a boolean on natural playback completion — never called
+    `release()` — so letting a narration finish on its own and tapping Play
+    again created a second `MediaPlayer` without releasing the first, one
+    leaked native player per "let it finish, then replay" cycle. Fixed: the
+    completion (and a new error) listener now release the player and clear
+    the reference.
+  - The same button's `setDataSource()`/`prepare()` ran unguarded against a
+    cache-directory file the OS is free to reclaim at any time — tapping Play
+    on a stale `Ready` state after eviction crashed the app. Fixed: wrapped
+    in `runCatching`, failing back to the untapped state (button stays
+    tappable) rather than crashing.
+  - Three independent playback controls — Cast's `PlayAudioFileButton`, and
+    two separate uses of the OS-TTS `PlayTextButton` (Flash's flash line, the
+    reader's own per-article "listen") — each kept fully local play/stop
+    state with no coordination, so any combination could be started at once
+    and audibly overlap. Fixed with a small shared `AudioPlaybackCoordinator`
+    (a token-keyed "who's currently playing" singleton, not a full
+    `AudioManager` focus-request integration — narrower than the OS's real
+    audio-focus API, but sufficient for this app's own three call sites all
+    living in one process) that stops whichever control was previously
+    playing before a new one starts.
+  **Wiring/DI, checked but not changed:** `SettingsScreen.kt`'s
+  `IntelligenceSection` doc comment ("on-device model execution isn't wired
+  in this build yet") is genuinely stale relative to D31/D32 — but verified
+  it's *only* the doc comment; the actual user-facing strings and logic
+  correctly reflect the real, wired runtime, so it was left alone as a
+  code-comment-only correction rather than reported as a user-visible defect.
+  `flash_coming_soon`'s string resource is confirmed genuinely unreachable
+  dead code with `FLASH_COMING_SOON = false` (intentional, per D26/D31's own
+  history) — not a bug.
+  **`ModelCatalogueRepository.download()` never verified a downloaded file
+  against the catalogue's own `sha256`/expected size** — `ChecksumVerifier`
+  already existed (`isDownloaded()`/`isGroupDownloaded()` are `exists()`-only)
+  with a doc comment that already said it was meant for exactly this, just
+  never wired in. Fixed: `download()` now verifies against
+  `CatalogueModel.sha256` when the catalogue publishes one (an entry without
+  one keeps the previous, unverified behavior rather than being blocked
+  outright), deleting and failing on a mismatch instead of quietly installing
+  a truncated or corrupted file as "ready." Moved `ChecksumVerifier`/
+  `StorageBudget` from `:core:inference` to `:core:model` while wiring this
+  up — `:core:data` (where the repository lives) and `:core:inference` are
+  sibling modules with no dependency between them either direction, and
+  `:core:model` is the shared foundation both already depend on, so this
+  needed no new cross-module edge; `app`'s two other callers
+  (`ModelChoicePanel.kt`, `SettingsScreen.kt`) just changed which package they
+  import from. `ModelManagerTest.kt` moved with it, verified still green.
+  **Honest limits.** The ONNX-session-dependent half of the Cast fixes (the
+  style-row index, the skip-counting) has no unit test: `KokoroLexicon`
+  requires a real Android `Context` (`context.assets.open(...)`) that this
+  sandbox's plain-JVM test setup can't provide without adding Robolectric
+  just for this, and the style-row/ONNX path needs the real 86MB model this
+  sandbox doesn't have either — same "can compile, can't listen to real
+  output" caveat `LocalKokoroTtsProvider`'s own doc comment already carries.
+  Verification here is the full Gradle build succeeding (`unitTests` green
+  across every module, `lintFossDebug` clean, `assembleDebug` — including a
+  real `buildCMakeRelease[arm64-v8a]` native compile of the JNI fix — green)
+  plus each fix independently traced against upstream reference source by
+  the audit's own adversarial verifiers, not a device listening test. The
+  `AudioPlaybackCoordinator` is a same-process, in-app "one thing plays at a
+  time" convention, not Android's real `AudioManager` audio-focus API —
+  sufficient for this app's three call sites, not a general answer to another
+  app or a phone call also wanting focus.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

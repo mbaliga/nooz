@@ -1,16 +1,19 @@
-package xyz.mdhv.riverwip.inference.local
+package xyz.mdhv.riverwip.model
 
 import java.io.File
 import java.security.MessageDigest
 
 /**
  * Local model manager utilities (brief §5: checksum verification, storage
- * budget display). The catalogue itself — which models exist, their verified
- * download URL, size — now lives in `:core:data`'s `ModelCatalogueRepository`,
- * reading the constellation's shared `ai-catalogue/models.json` (real,
- * live-probed mirrors) rather than a hardcoded, permanently-unverified pair of
- * placeholder entries. This object stays here as pure, Android-free utilities
- * both that repository and [LocalLlamaProvider] can use.
+ * budget display). Lives in `:core:model` rather than `:core:inference` (where
+ * it started) or `:core:data` (which downloads the files these check)
+ * specifically because both of those need it — `ModelCatalogueRepository`
+ * (`:core:data`) verifies a download against the catalogue's own expected
+ * checksum right after fetching it, and
+ * [xyz.mdhv.riverwip.inference.local.LocalLlamaProvider] can use the same
+ * utility — and `:core:model` is the one module both already depend on, so
+ * putting it here needs no new cross-module edge either way. Pure,
+ * Android-free, JVM-testable on its own.
  */
 object ChecksumVerifier {
     fun sha256Hex(file: File): String {

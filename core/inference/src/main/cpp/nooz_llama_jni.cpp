@@ -291,8 +291,21 @@ Java_xyz_mdhv_riverwip_inference_local_llama_LlamaCppEngine_nativeProcessUserPro
         return 2;
     }
 
-    current_position += user_prompt_size;
-    stop_generation_position = current_position + user_prompt_size + n_predict;
+    // user_tokens.size() here, not user_prompt_size above: when the prompt
+    // was too long and got truncated (the resize() above), user_prompt_size
+    // still holds the *pre*-truncation count, but decode_tokens_in_batches()
+    // only actually decoded the (shorter) post-truncation vector into the KV
+    // cache. Advancing current_position by the untruncated count would
+    // desync it from what's really there — later decode calls would read/
+    // write at positions past what was actually decoded.
+    const int decoded_user_tokens = (int) user_tokens.size();
+    current_position += decoded_user_tokens;
+    // current_position already has decoded_user_tokens folded in (the line
+    // above) -- adding it again here would let generation run for
+    // (decoded_user_tokens + n_predict) tokens instead of the requested
+    // n_predict, defeating callers' own length caps (e.g. Flash's digest
+    // MAX_DIGEST_TOKENS) by however long the prompt itself was.
+    stop_generation_position = current_position + n_predict;
     return 0;
 }
 

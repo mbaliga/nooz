@@ -11,8 +11,18 @@ import java.io.File
 data class SynthesisRequest(val text: String, val voiceId: String = "af_heart")
 
 sealed interface SynthesisResult {
-    /** [audioFile] is a rendered on-device waveform — always [Provenance.NATIVE]; Cast has no cloud path to mark otherwise. */
-    data class Success(val audioFile: File, val provenance: Provenance) : SynthesisResult
+    /**
+     * [audioFile] is a rendered on-device waveform — always [Provenance.NATIVE];
+     * Cast has no cloud path to mark otherwise. [skippedChunks] counts pieces
+     * of the article that failed to synthesize and were left out of
+     * [audioFile] rather than aborting the whole narration (a single
+     * pathological chunk shouldn't discard everything already narrated
+     * successfully) — 0 on the ordinary, fully-narrated path. A caller that
+     * cares whether the article is only partially voiced checks this rather
+     * than assuming success means complete, since "the provider ran but
+     * declined or errored" (see [Failed]) never fires for a partial failure.
+     */
+    data class Success(val audioFile: File, val provenance: Provenance, val skippedChunks: Int = 0) : SynthesisResult
     /** The provider ran but declined or errored — never silent (brief §3). */
     data class Failed(val reason: String) : SynthesisResult
 }

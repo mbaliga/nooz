@@ -47,7 +47,16 @@ internal class LlamaCppEngine private constructor(context: Context) {
         if (loadedModelPath != null) nativeUnload()
         loadedModelPath = null
         if (nativeLoad(modelPath) != 0) return false
-        if (nativePrepare() != 0) return false
+        if (nativePrepare() != 0) {
+            // nativeLoad() above already succeeded — g_model is resident
+            // native memory nothing else references once this returns false
+            // (loadedModelPath is staying null). nativeUnload() frees it
+            // immediately rather than leaving it to whenever some later
+            // nativeLoad() call happens to reclaim it as a side effect (or
+            // never, if the on-device path isn't touched again this session).
+            nativeUnload()
+            return false
+        }
         loadedModelPath = modelPath
         return true
     }

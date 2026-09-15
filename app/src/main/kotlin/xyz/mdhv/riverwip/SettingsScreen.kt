@@ -86,7 +86,7 @@ import xyz.mdhv.riverwip.data.repo.TranslationRepository
 import xyz.mdhv.riverwip.crash.CrashRecovery
 import xyz.mdhv.riverwip.inference.byok.ByokConfig
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
-import xyz.mdhv.riverwip.inference.local.StorageBudget
+import xyz.mdhv.riverwip.model.StorageBudget
 import xyz.mdhv.riverwip.design.HyleGroteskClassic
 import xyz.mdhv.riverwip.design.HyleGroteskPlus
 import xyz.mdhv.riverwip.design.HylePrint

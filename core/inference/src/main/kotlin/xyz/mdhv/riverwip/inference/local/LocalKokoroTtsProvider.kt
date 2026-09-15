@@ -58,7 +58,12 @@ class LocalKokoroTtsProvider(
     private fun modelFile(): File = File(modelDir, MODEL_FILE_NAME)
     private fun voiceFile(): File = File(modelDir, DEFAULT_VOICE_FILE_NAME)
 
-    override suspend fun isAvailable(): Boolean = hasModelOnDisk()
+    // hasModelOnDisk() is a blocking File.exists() check, and isAvailable()
+    // is called directly from ReaderViewModel's viewModelScope
+    // (Dispatchers.Main.immediate, no dispatcher switch upstream) on every
+    // ViewModel init and every requestCast() tap — see LocalLlamaProvider's
+    // identical fix/comment for the same reasoning on Flash's side.
+    override suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) { hasModelOnDisk() }
 
     /**
      * Everything below is genuinely heavy — decompressing/hashing a 173k-word
@@ -83,14 +88,22 @@ class LocalKokoroTtsProvider(
 
         val env = OrtEnvironment.getEnvironment()
         val audioPieces = mutableListOf<FloatArray>()
+        var skippedChunks = 0
         // A long article can be dozens of chunks; one chunk hitting an ONNX
         // error (a still-possible edge case even with KokoroPhonemizer's own
         // 510-char cap, e.g. a pathological single "word" longer than the
         // whole context window) shouldn't throw away every chunk already
         // narrated successfully — only isolated per-chunk failure does that.
+        // The count is still tracked (not just swallowed) so a partially-
+        // narrated result can say so rather than looking indistinguishable
+        // from a complete one (brief §3: never silent).
         env.createSession(modelFile().absolutePath).use { session ->
             for (chunk in chunks) {
-                val samples = runCatching { synthesizeChunk(env, session, chunk, voiceRows) }.getOrNull() ?: continue
+                val samples = runCatching { synthesizeChunk(env, session, chunk, voiceRows) }.getOrNull()
+                if (samples == null) {
+                    skippedChunks++
+                    continue
+                }
                 if (audioPieces.isNotEmpty()) audioPieces += FloatArray(CHUNK_GAP_SAMPLES)
                 audioPieces += samples
             }
@@ -111,7 +124,7 @@ class LocalKokoroTtsProvider(
         // it open would corrupt playback rather than just replace the file.
         val outFile = File(context.cacheDir, "nooz_cast_narration_${System.currentTimeMillis()}.wav")
         KokoroAudio.writeWav(combined, outFile)
-        return SynthesisResult.Success(outFile, Provenance.NATIVE)
+        return SynthesisResult.Success(outFile, Provenance.NATIVE, skippedChunks)
     }
 
     private fun synthesizeChunk(
@@ -122,7 +135,12 @@ class LocalKokoroTtsProvider(
     ): FloatArray? {
         val tokenIds = KokoroVocab.tokenize(chunk.phonemes)
         if (tokenIds.isEmpty()) return null
-        val styleRow = voiceRows[tokenIds.size.coerceIn(0, voiceRows.size - 1)]
+        // One style row per phoneme count, indexed by (count - 1) -- Kokoro's
+        // own reference implementation (kokoro-onnx's `_style_for`) uses
+        // `min(length, len(voice)) - 1`, not the raw count. Off by one here
+        // silently picked the row trained for one token more than what's
+        // actually being synthesized, on every chunk.
+        val styleRow = voiceRows[(tokenIds.size - 1).coerceIn(0, voiceRows.size - 1)]
         val padded = LongArray(tokenIds.size + 2)
         padded[0] = KokoroVocab.PAD.toLong()
         for (i in tokenIds.indices) padded[i + 1] = tokenIds[i].toLong()

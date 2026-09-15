@@ -269,6 +269,7 @@
   "cast_setup_link": "Set up an on-device narration model →",
   "cast_action_narrate": "Narrate this article",
   "cast_action_setup": "Set up Nooz Cast",
+  "cast_partial_narration": "Part of this article couldn't be narrated.",
   "provenance_on_device": "on-device",
   "provenance_cloud_urbana": "cloud (via Urbana)",
   "reader_select_article": "Select an article to read",

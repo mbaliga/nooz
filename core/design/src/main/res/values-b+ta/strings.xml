@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 334 strings translated.
+  334 of 335 strings translated.
 -->
 <resources>
 

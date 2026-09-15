@@ -1,4 +1,4 @@
-package xyz.mdhv.riverwip.inference.local
+package xyz.mdhv.riverwip.model
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

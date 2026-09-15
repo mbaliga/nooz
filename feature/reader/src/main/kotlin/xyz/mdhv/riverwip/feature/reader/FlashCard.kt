@@ -241,16 +241,29 @@ private fun CastCardBody(vm: ReaderViewModel, onOpenSetup: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        is CastUiState.Ready -> Row(
-            modifier = Modifier.padding(top = Tokens.Spacing.xxs),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
-        ) {
-            // Always on-device (owner: "a private anchor voice should never
-            // leave the device") — no cloud branch to show, unlike Flash's.
-            Text(stringResource(DesignR.string.provenance_on_device), style = MaterialTheme.typography.labelSmall, color = Tokens.Color.provenanceNative)
-            Spacer(Modifier.weight(1f))
-            PlayAudioFileButton(audioFile = s.audioFile)
+        is CastUiState.Ready -> Column(Modifier.padding(top = Tokens.Spacing.xxs)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
+            ) {
+                // Always on-device (owner: "a private anchor voice should
+                // never leave the device") — no cloud branch to show, unlike
+                // Flash's.
+                Text(stringResource(DesignR.string.provenance_on_device), style = MaterialTheme.typography.labelSmall, color = Tokens.Color.provenanceNative)
+                Spacer(Modifier.weight(1f))
+                PlayAudioFileButton(audioFile = s.audioFile)
+            }
+            // A skipped chunk still produces a playable file (brief §3: a
+            // narration cut short is still narration) — but silently, unless
+            // said here, it's indistinguishable from a complete one.
+            if (s.skippedChunks > 0) {
+                Text(
+                    stringResource(DesignR.string.cast_partial_narration),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = Tokens.Spacing.xxs),
+                )
+            }
         }
         is CastUiState.Unavailable -> Column(Modifier.padding(top = Tokens.Spacing.xxs)) {
             Text(
@@ -312,6 +325,38 @@ fun NoozBroadcastCard(
 }
 
 /**
+ * Ensures at most one of the app's audio controls is ever audible at once.
+ * Three independent call sites — Flash's "Play the flash aloud",
+ * the reader's own per-article "listen" (both [PlayTextButton], OS TTS), and
+ * Nooz Cast's rendered-WAV narration ([PlayAudioFileButton]) — each keep
+ * fully local playback state with no shared coordination, so starting any one
+ * used to leave whichever other was already playing running underneath it,
+ * audibly overlapping. Keyed by an opaque per-composable-instance token
+ * (`remember { Any() }`) rather than by the stop lambda itself, since a fresh
+ * lambda is created on every recomposition and wouldn't compare equal to the
+ * one already registered.
+ */
+private object AudioPlaybackCoordinator {
+    private var activeToken: Any? = null
+    private var activeStop: (() -> Unit)? = null
+
+    /** Stops whatever else is currently playing (if anything else), then registers [stop] as the new active player. */
+    fun requestStart(token: Any, stop: () -> Unit) {
+        if (activeToken !== token) activeStop?.invoke()
+        activeToken = token
+        activeStop = stop
+    }
+
+    /** Called when [token]'s own player stops (tapped again, finished naturally, or disposed) — a no-op if something else has since taken over. */
+    fun release(token: Any) {
+        if (activeToken === token) {
+            activeToken = null
+            activeStop = null
+        }
+    }
+}
+
+/**
  * Reads [text] aloud on tap via the device's own text-to-speech engine —
  * entirely on-device, no network. Shared by Nooz Flash's own "Play" (a ten-word
  * line) and the reader's per-article "listen" control (the full body text) —
@@ -321,6 +366,7 @@ fun NoozBroadcastCard(
 @Composable
 fun PlayTextButton(text: String, playLabel: String, modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val token = remember { Any() }
     var engine by remember { mutableStateOf<TextToSpeech?>(null) }
     var speaking by remember { mutableStateOf(false) }
 
@@ -328,11 +374,12 @@ fun PlayTextButton(text: String, playLabel: String, modifier: Modifier = Modifie
         val instance = TextToSpeech(context) { }
         instance.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
             override fun onStart(utteranceId: String?) { speaking = true }
-            override fun onDone(utteranceId: String?) { speaking = false }
-            override fun onError(utteranceId: String?) { speaking = false }
+            override fun onDone(utteranceId: String?) { speaking = false; AudioPlaybackCoordinator.release(token) }
+            override fun onError(utteranceId: String?) { speaking = false; AudioPlaybackCoordinator.release(token) }
         })
         engine = instance
         onDispose {
+            AudioPlaybackCoordinator.release(token)
             instance.stop()
             instance.shutdown()
             engine = null
@@ -346,7 +393,9 @@ fun PlayTextButton(text: String, playLabel: String, modifier: Modifier = Modifie
             if (speaking) {
                 tts.stop()
                 speaking = false
+                AudioPlaybackCoordinator.release(token)
             } else {
+                AudioPlaybackCoordinator.requestStart(token) { tts.stop(); speaking = false }
                 tts.setLanguage(Locale.getDefault())
                 // TextToSpeech.speak has a per-call length ceiling on some OEM
                 // engines (historically ~4000 chars); QUEUE_ADD across chunks
@@ -373,15 +422,20 @@ private const val TTS_CHUNK_CHARS = 3_800
  * Plays a rendered Nooz Cast narration file on tap (its own "Ready" state) —
  * real playback via [MediaPlayer] of a real synthesized file
  * ([xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider]'s own doc
- * comment covers the synthesis step upstream of this control).
+ * comment covers the synthesis step upstream of this control). [audioFile]
+ * lives in the cache directory, which the OS is free to reclaim at any time —
+ * setDataSource/prepare are wrapped rather than trusted, so a file reclaimed
+ * out from under a stale "Ready" state fails cleanly instead of crashing.
  */
 @Composable
 private fun PlayAudioFileButton(audioFile: File, modifier: Modifier = Modifier) {
+    val token = remember { Any() }
     var player by remember { mutableStateOf<MediaPlayer?>(null) }
     var playing by remember { mutableStateOf(false) }
 
     DisposableEffect(audioFile) {
         onDispose {
+            AudioPlaybackCoordinator.release(token)
             player?.release()
             player = null
         }
@@ -396,14 +450,41 @@ private fun PlayAudioFileButton(audioFile: File, modifier: Modifier = Modifier) 
                 current.release()
                 player = null
                 playing = false
+                AudioPlaybackCoordinator.release(token)
             } else {
-                player = MediaPlayer().apply {
-                    setDataSource(audioFile.absolutePath)
-                    setOnCompletionListener { playing = false }
-                    prepare()
-                    start()
+                runCatching {
+                    MediaPlayer().apply {
+                        setDataSource(audioFile.absolutePath)
+                        setOnCompletionListener {
+                            it.release()
+                            player = null
+                            playing = false
+                            AudioPlaybackCoordinator.release(token)
+                        }
+                        setOnErrorListener { mp, _, _ ->
+                            mp.release()
+                            player = null
+                            playing = false
+                            AudioPlaybackCoordinator.release(token)
+                            true
+                        }
+                        prepare()
+                    }
+                }.onSuccess { newPlayer ->
+                    AudioPlaybackCoordinator.requestStart(token) {
+                        newPlayer.stop()
+                        newPlayer.release()
+                        player = null
+                        playing = false
+                    }
+                    newPlayer.start()
+                    player = newPlayer
+                    playing = true
                 }
-                playing = true
+                // A reclaimed cache file, a corrupt WAV, or any other
+                // setDataSource/prepare failure leaves player/playing exactly
+                // as they were (null/false) rather than crashing the reader —
+                // the button is simply tappable again, not stuck.
             }
         },
     ) {
