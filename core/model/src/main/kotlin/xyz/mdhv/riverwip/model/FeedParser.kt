@@ -89,7 +89,7 @@ object FeedParser {
             link = link,
             author = author,
             publishedAtMillis = parseDate(date),
-            summary = summaryRaw?.let { Html.strip(it).ifBlank { null } },
+            summary = summaryRaw?.let { Html.strip(it).let(Html::stripTrailingBoilerplate).ifBlank { null } },
             categories = categories,
             imageUrl = rssImageUrl(item, summaryRaw),
             declaredNsfw = declaredNsfw(item),
@@ -136,7 +136,7 @@ object FeedParser {
             link = link,
             author = author,
             publishedAtMillis = parseDate(date),
-            summary = summaryRaw?.let { Html.strip(it).ifBlank { null } },
+            summary = summaryRaw?.let { Html.strip(it).let(Html::stripTrailingBoilerplate).ifBlank { null } },
             categories = categories,
             imageUrl = atomImageUrl(entry, summaryRaw),
             declaredNsfw = declaredNsfw(entry),
@@ -190,7 +190,7 @@ object FeedParser {
         (o[key] as? kotlinx.serialization.json.JsonPrimitive)?.content?.ifBlank { null }
 
     private fun parseMastodonStatus(o: JsonObject): ParsedItem? {
-        val content = str(o, "content")?.let { Html.strip(it) }?.ifBlank { null }
+        val content = str(o, "content")?.let { Html.strip(it).let(Html::stripTrailingBoilerplate) }?.ifBlank { null }
         val url = str(o, "url") ?: str(o, "uri") ?: return null
         val account = (o["account"] as? JsonObject)?.let { str(it, "acct") ?: str(it, "display_name") }
         val created = str(o, "created_at")

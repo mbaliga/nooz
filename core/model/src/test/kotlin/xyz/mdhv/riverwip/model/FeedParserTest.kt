@@ -270,6 +270,54 @@ class FeedParserTest {
         assertFalse(FeedParser.parse(body).items[0].declaredNsfw)
     }
 
+    @Test fun rssSummaryDropsTrailingSyndicationFooter() {
+        val body = """
+            <rss version="2.0"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link>
+                <description>&lt;p&gt;The city council voted 5-2 to approve the budget. The post City council approves budget appeared first on The Daily Record.&lt;/p&gt;</description>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        assertEquals("The city council voted 5-2 to approve the budget.", FeedParser.parse(body).items[0].summary)
+    }
+
+    @Test fun rssSummaryThatIsNothingButBoilerplateBecomesNull() {
+        val body = """
+            <rss version="2.0"><channel><title>t</title>
+              <item><title>a</title><link>https://ex.com/a</link>
+                <description>&lt;p&gt;The post Foo Bar appeared first on Example News.&lt;/p&gt;</description>
+              </item>
+            </channel></rss>
+        """.trimIndent()
+        assertEquals(null, FeedParser.parse(body).items[0].summary)
+    }
+
+    @Test fun atomSummaryDropsTrailingContinueReadingLabel() {
+        val body = """
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title>t</title>
+              <entry>
+                <title>a</title>
+                <link rel="alternate" href="https://ex.com/a"/>
+                <summary>The storm is expected to clear by Tuesday. Continue reading →</summary>
+              </entry>
+            </feed>
+        """.trimIndent()
+        assertEquals("The storm is expected to clear by Tuesday.", FeedParser.parse(body).items[0].summary)
+    }
+
+    @Test fun mastodonContentDropsTrailingAdvertisementLabel() {
+        val body = """
+            [
+              {"id":"1","url":"https://m.social/@x/1",
+               "content":"<p>Breaking: a health outbreak reported across three counties this week. Sponsored</p>",
+               "created_at":"2024-10-02T13:00:00.000Z","account":{"acct":"x@m.social"}}
+            ]
+        """.trimIndent()
+        val summary = FeedParser.parse(body, contentType = "application/json").items[0].summary
+        assertEquals("Breaking: a health outbreak reported across three counties this week.", summary)
+    }
+
     @Test fun atomFallsBackToImgInSummaryHtml() {
         val body = """
             <feed xmlns="http://www.w3.org/2005/Atom">

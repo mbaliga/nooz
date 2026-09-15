@@ -16,6 +16,14 @@ export function installDom() {
   globalThis.Element = window.Element;
   globalThis.HTMLElement = window.HTMLElement;
   globalThis.DocumentFragment = window.DocumentFragment;
+  // sanitize.js and feeds.js both parse untrusted strings via the bare global
+  // DOMParser (never window.DOMParser), so it has to be installed here too.
+  globalThis.DOMParser = window.DOMParser;
+  // linkedom doesn't stand up window.location on its own. sanitize.js resolves
+  // relative hrefs/srcs against it (new URL(href, window.location.href)) — with
+  // it undefined that throw was silently swallowed by the caller's try/catch,
+  // producing a link with no href at all instead of a resolved one.
+  if (!window.location) window.location = { href: 'https://nooz.example/' };
   globalThis.getComputedStyle = () => ({ getPropertyValue: () => '' });
   globalThis.requestAnimationFrame = (fn) => { fn(0); return 0; };
   globalThis.cancelAnimationFrame = () => {};

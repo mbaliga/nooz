@@ -2075,6 +2075,69 @@ respect as the CI-caught log above.
   has no caller) and see why an unhealthy source is failing beyond the warning
   icon already there.
 
+- **D61 — Articles still carried syndication/ad boilerplate after sanitizing
+  (2026-09-15).** Owner report, with a screenshot: "links coming through or
+  some sort of ads... the article itself isn't fully clean." `sanitize.js`
+  (web) and jsoup's `ArticleExtractor` (Android) were both already doing real
+  XSS-safety and link-density work, but neither had any notion that a
+  WordPress "The post X appeared first on Y." footer, a "Continue reading →"
+  link's own label, a bare "Advertisement" marker, an excerpt's `[…]`
+  truncation bracket, or a bare trailing tracking URL is filler rather than
+  the writer's own last sentence — all of it is perfectly safe, reasonably
+  short, low-link-density markup, so it sailed through untouched, often as a
+  real clickable link.
+  Root cause was upstream of extraction, not a gap in it: most articles never
+  reach full-text extraction at all (`ArticleUiState.Fallback` on Android, raw
+  feed HTML on web) and even the ones that do inherit the feed's own
+  `content:encoded`/`content` field, which both clients prefer over the
+  shorter `description`/`summary` specifically because it's fuller — and
+  "fuller" is exactly where a feed generator's auto-appended plumbing lives.
+  Fixed with one new boilerplate-fragment stripper per platform —
+  `Html.stripTrailingBoilerplate` (`core/model`) and
+  `web/js/articleBoilerplate.js` (a deliberate parallel implementation, not a
+  shared runtime) — wired into every place the two clients *produce* a
+  summary or cleaned body, rather than every place one is rendered: Android's
+  `FeedParser` (RSS/Atom/Mastodon summaries) and `ArticleExtractor`
+  (`elementText`/`isGoodParagraph`, so a boilerplate-only paragraph never even
+  scores into a container and a glued-on fragment is trimmed off a real one);
+  web's `feeds.js` summaries and `sanitize.js`'s `cleanNode`/new
+  `trimTrailingBoilerplate` (covers both a feed's raw `content:encoded` HTML
+  and whatever the server-side Readability pass leaves behind, since
+  everything HTML-shaped funnels through `sanitizeHtml`/`cleanChildren`).
+  Every pattern is anchored to the true end of the string (`$`), on purpose:
+  substring-anywhere matching would risk eating real prose that merely
+  contains "sponsored" or "read more" mid-sentence, which is worse than the
+  bug being fixed. `sanitize.js`'s own inert-`DOMParser` parsing (documented
+  in its header as the reason nothing executes while parsing untrusted HTML)
+  was left untouched — `cleanChildren` was extracted as a separately callable
+  function instead, so the security-motivated parse step is never bypassed
+  just to make the new cleaning pass testable.
+  **Honest limit, not a bug:** a genuine citation that happens to end a
+  paragraph with a bare, unlabeled URL is indistinguishable from a tracking
+  link with no label, and this deliberately cannot tell them apart — both get
+  removed. In a link-rendered reader a bare trailing URL is overwhelmingly
+  feed plumbing rather than something a reader taps from a phone, so the
+  trade favors removing it. Covered by its own test on both platforms rather
+  than left to be rediscovered as a regression.
+  **A second, narrower limit, found writing the tests rather than the fix:**
+  this repo's pinned `linkedom` (0.18.13, latest available) has a real bug in
+  `DOMParser.parseFromString(html, 'text/html')` for a bare fragment with no
+  `<html>` wrapper — `.body` comes back empty and `.documentElement` silently
+  keeps only the first top-level element, dropping every sibling. Real
+  browsers don't have this bug; `sanitize.test.mjs` builds fixtures via
+  `innerHTML=` on a throwaway, never-attached element instead (a different,
+  correct parse path in the same library version, and not a security
+  regression since these are the test file's own literal strings, never
+  untrusted input) and marks the one test that specifically exercises the
+  public string entry point as `test.todo()` with that explanation attached,
+  rather than deleting the gap silently or leaving it red.
+  Verified: 11 new `web/tests/articleBoilerplate.test.mjs` cases plus 2 new
+  `sanitize.test.mjs` cases, all green (`npm test`: 61 passed, 1 honest
+  `test.todo`, 0 failed); `HtmlTest.kt` (new, 11 cases), `FeedParserTest.kt`
+  (+4 cases) and `ArticleExtractorTest.kt` (+2 cases) all green under the
+  repo's `unitTests` aggregate task; `assembleDebug` (foss + full) still
+  builds clean.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).

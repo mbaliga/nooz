@@ -180,6 +180,36 @@ class ArticleExtractorTest {
         assertTrue(result.paragraphs[1].contains("Voters in six states"))
     }
 
+    @Test fun trimsATrailingContinueReadingLinkGluedOntoARealParagraph() {
+        // The link itself is short, so link-density alone never flags this
+        // paragraph -- the boilerplate fragment has to be recognized and cut
+        // from the paragraph's own text instead.
+        val html = """
+            <html><body><article>
+              <h1>Test</h1>
+              <p>The government announced a sweeping new policy on Wednesday that will affect thousands of workers. <a href="/x">Continue reading →</a></p>
+              <p>Officials said the plan would be phased in over five years starting next spring with the first measures.</p>
+            </article></body></html>
+        """.trimIndent()
+        val result = ArticleExtractor.extract(html)
+        assertEquals(2, result.paragraphs.size)
+        assertTrue(result.paragraphs[0].endsWith("thousands of workers."))
+        assertTrue(result.paragraphs.none { it.contains("Continue reading") })
+    }
+
+    @Test fun rejectsAParagraphThatIsNothingButASyndicationFooter() {
+        val html = """
+            <html><body><article>
+              <h1>Test</h1>
+              <p>The city council voted 5-2 to approve the new budget after a lengthy debate on Tuesday night.</p>
+              <p>The post City council approves budget appeared first on The Daily Record.</p>
+            </article></body></html>
+        """.trimIndent()
+        val result = ArticleExtractor.extract(html)
+        assertEquals(1, result.paragraphs.size)
+        assertTrue(result.paragraphs[0].contains("city council voted"))
+    }
+
     @Test fun ordinaryProseWithComparisonsIsNotMistakenForMarkup() {
         // The markup guard must not swallow real writing that happens to use
         // angle brackets, which is why it matches known tag names only.

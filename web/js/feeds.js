@@ -1,4 +1,6 @@
 // feeds.js -- fetch and parse RSS 2.0 / Atom / RDF (RSS 1.0) feeds.
+
+import { stripTrailingBoilerplate } from './articleBoilerplate.js';
 //
 // fetchFeed() calls /api/feed?url=..., a same-origin serverless function
 // (see api/feed.js) that fetches source.url server-side and re-serves it.
@@ -140,7 +142,7 @@ function parseRssItem(sourceId, item) {
     link,
     author: author ? stripHtml(author) : null,
     publishedAt: parseDate(date) ?? Date.now(),
-    summary: stripHtml(summarySource),
+    summary: stripTrailingBoilerplate(stripHtml(summarySource)) || null,
     contentHtml: contentHtml || null,
     image: extractImage(item, contentHtml),
     category: extractCategory(item),
@@ -176,7 +178,7 @@ function parseAtomEntry(sourceId, entry) {
     link,
     author: author ? stripHtml(author) : null,
     publishedAt: parseDate(date) ?? Date.now(),
-    summary: stripHtml(summarySource),
+    summary: stripTrailingBoilerplate(stripHtml(summarySource)) || null,
     contentHtml: contentHtml || null,
     image: extractImage(entry, contentHtml),
     category: extractCategory(entry),

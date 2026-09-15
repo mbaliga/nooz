@@ -2,6 +2,7 @@ package xyz.mdhv.riverwip.data.extract
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import xyz.mdhv.riverwip.model.Html
 
 /**
  * Lightweight Readability-style full-text extraction (brief §P3: used when feeds
@@ -172,9 +173,17 @@ object ArticleExtractor {
             el.tagName().equals("li", ignoreCase = true) && el.select("p").isNotEmpty()
         }
 
-    /** Plain text for most elements; `<li>` gets a leading bullet so list content still reads as a list. */
+    /**
+     * Plain text for most elements; `<li>` gets a leading bullet so list
+     * content still reads as a list. Also trims a trailing "Continue reading
+     * →"/syndication-footer fragment glued onto an otherwise-real paragraph
+     * (see [Html.stripTrailingBoilerplate]) — link-density scoring alone
+     * doesn't catch these, since the fragment is often plain text with no
+     * link at all, or a single short link inside a long, genuinely good
+     * paragraph that scores well below [MAX_LINK_DENSITY] regardless.
+     */
     private fun elementText(el: Element): String {
-        val text = el.text().trim()
+        val text = Html.stripTrailingBoilerplate(el.text().trim())
         return if (el.tagName().equals("li", ignoreCase = true)) "•  $text" else text
     }
 
@@ -185,6 +194,11 @@ object ArticleExtractor {
         // drop the whole candidate rather than trying to clean the tag out of
         // it, since what's left is invariably the widget's own labels.
         if (EMBEDDED_MARKUP.containsMatchIn(text)) return false
+        // A paragraph that is nothing BUT a syndication/ad fragment ("The
+        // post ... appeared first on ...", a bare "Advertisement" label) —
+        // reject outright so it never counts toward a container's score,
+        // not just have its (already empty) text trimmed after the fact.
+        if (Html.stripTrailingBoilerplate(text).isBlank()) return false
         return linkDensity(p) < MAX_LINK_DENSITY
     }
 
