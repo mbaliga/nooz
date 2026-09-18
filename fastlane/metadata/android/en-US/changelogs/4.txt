@@ -1,0 +1,6 @@
+The paper theme is now the default, with system and dark still available in
+Settings.
+
+Reading view handles feeds that only publish a summary by extracting the full
+text on device. Source list shows each stream's own denominator, so every total
+says what it is counted from.
