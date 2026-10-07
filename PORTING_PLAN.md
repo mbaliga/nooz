@@ -323,3 +323,64 @@ the build files of `core/{data,inference,design}` and `feature/{sources,reader,r
 `fastlane/README.md`; `third_party/{fonts,data}/README.md`; `i18n/lexicon/README.md`;
 `scripts/capture_screenshots.sh`; `web/{package.json,manifest.webmanifest,index.html}`; `web/api/article.js`;
 `web/js/{app,db,router,images,newspaperShare,lens}.js`.
+
+## Owner rulings and the proposed line (added 2026-10-07)
+
+Status: PLAN. Nothing here is built, run on a device, signed or submitted. The program-level plan is Personal-Tracker `PORTING_PROGRAM.md` ([PR #10](https://github.com/mbaliga/Personal-Tracker/pull/10)), which holds the owner's rulings and section 5A, the proposed port / no-port line. The cells, estimates and open questions above are this repo's original plan and are unedited. Where the owner has since answered a question, the answer is below. Section 5A is a proposal; the owner has not yet confirmed it.
+
+### Where nooz sits in the proposed line (program section 5A.3, a proposal)
+
+| Target       | Verdict | Weeks and flags |
+| ------------ | ------- | --------------- |
+| Ubuntu Touch | port    | 5w g r          |
+| Linux        | port    | 8w              |
+| iOS/iPadOS   | port    | 12w g           |
+| macOS        | port    | 3w g            |
+| Windows      | port    | 3w g            |
+
+Key: `follows` means it ports only as far as the products that depend on it; `exists` means the program reads it as already running there, unverified (finish, verify and sign); flags: `g` gated on a prerequisite, `r` re-estimate or floor, `o` its own program, `s` scope note. The program's P4, P8, P12 and P13 gate whole columns or repos and are not flagged per cell. A port verdict counts the deliverable in the line; where this repo's plan calls a deliverable a reframe (program rule R12) it keeps that label. Tests cited in the reason: (a) the owner said it is needed there; (b) its job is really done on that OS by real users; (c) that OS is where it is sold or its audience is; it has no reason to exist if (x) its surface is absent or untouchable, (y) the capability is forbidden or impossible, or (z) the only form is a thin wrapper or a different product nobody asked for. P-numbers and OQ-numbers refer to the program plan (Personal-Tracker `PORTING_PROGRAM.md`, sections 5A.5 and 8).
+
+Reason: Reading news is a phone and a desktop job, and its pure-JVM core is the cleanest CMP candidate. UT is a port gated on S-UT1: background fetch is absent there as it is on iOS and desktops, and the app says so. Its iOS, macOS and Windows builds need the llama.cpp per-OS pin (program P7). nooz is licence-RESERVED, so direct downloads only until OQ-12 is ruled (program P13).
+
+### Owner rulings that apply here
+
+- **OQ-17 toolchain (2026-10-06):** "B: staged pin (Recommended)": Kotlin 2.1.20 and Compose Multiplatform 1.8.2 for the first wave, 2.4.x deferred.
+- **OQ-38 iOS pin (2026-10-07):** "Move iOS to Kotlin 2.2.21 + CMP 1.9.3 (Recommended)", with the first iOS proof on an explicitly selected Xcode 26.x. The program plan reads this as moving a repo that ships an iOS target as a whole (a Gradle build has one Kotlin version); that reading is not researched, and the bump cost for repos pinned lower is in no figure. nooz is one of the lower pins the program names (Kotlin 2.0.21).
+- **Ubuntu Touch scope (2026-10-06):** "Native only, no substitutes" for Android-only products. The program marks only the web-reader click alternative in this plan's Ubuntu Touch cell (step U-A) as a substitute the ruling excludes. The primary shape, QML pages over a headless JVM core (steps U1 to U4, 5 weeks), is native and is the shape the proposed line counts. **OQ-21:** "No, native ports only" (Waydroid is not accepted, which answers the second half of this plan's open question 4). **Ubuntu Touch keys:** "App-private file allowed" (an app-private file with the weaker guarantee shown in the UI); this plan's thin client holds no BYOK key on Ubuntu Touch, so the ruling matters only if that changes.
+- **Ubuntu Touch device:** the owner owns one and says it is a OnePlus 6; research reads it as 20.04-only while the program plan targets 24.04. On 2026-10-07 the owner chose "OnePlus 6 pre-spike now, decide later" (OQ-37): a labelled "S-UT1 (focal)" headless-JVM pre-spike, no 24.04 flashing, a 24.04 device decision afterwards. Every Ubuntu Touch device gate stays NDV until then.
+- **OQ-31 Mac (2026-10-06 and 2026-10-07):** "Buy a Mac", and on 2026-10-07 an Apple-silicon Mac mini, not yet bought; no Apple device gate is called checkable before then.
+- **Apple (OQ-2, 2026-10-06):** "Whatever let's me sell apps on the app store": the paid Developer Program and the App Store are the target channel. TestFlight is not used until the exception to I-1 (OQ-32, drafted as PROPOSED-1, not approved) is approved.
+- **OQ-20 CI (2026-10-06):** "Linux-only CI when private (Recommended)": this repo is public, so the ruling does not limit its macOS and Windows lanes; going private would stop them. Actions artifact storage is still exhausted (program rule R6).
+- **OQ-5 hardware (2026-10-06):** the owner's answer changes which of their other machines can serve as device gates, so a gate this plan names on specific hardware may be moved or dropped. Which machine carries which device gate is not decided (OQ-33).
+- **OQ-22 key custody (2026-10-06):** "OS keystore, weaker fallback shown (Recommended)": Keychain, Credential Manager (DPAPI), Secret Service, a passphrase-protected file or an app-private file on Ubuntu Touch, each with the weaker guarantee stated in the UI.
+- **Repo-specific:** the Ubuntu Touch deliverable keeps this plan's own label, a thin client over the JVM core (program rule R12), and is never called a port of the Android app.
+- **Directives (2026-10-06):** "Draft amendments for approval": program directives I-1 to I-12 and rules R1 to R12 are unchanged; PROPOSED-1 to PROPOSED-4 in Personal-Tracker `DECISIONS.md` are drafts awaiting the owner.
+
+### Prerequisites and open questions that touch this repo (program sections 5A.5 and 8)
+
+Prerequisites (program-level; not costed here):
+
+- program P3: S-UT1: one headless jlinked-JVM-in-a-click spike driven from QML (not run)
+- program P4: A device that can run the 24.04 Ubuntu Touch the program plan targets (the owner's OnePlus 6 is read as 20.04-only)
+- program P7: The native-engines pin (F8): one llama.cpp and stable-diffusion.cpp commit with per-OS builds
+- program P8: An Apple-silicon Mac (OQ-31: a Mac mini chosen on 2026-10-07, not yet bought)
+- program P12: The iOS toolchain pin (OQ-38, ruled 2026-10-07): Kotlin 2.2.21 with Compose Multiplatform 1.9.3 for the iOS targets, proven on an explicitly selected Xcode 26.x; nooz is one of the lower pins the program names (Kotlin 2.0.21) and, on the program plan's reading, its Android and desktop builds would move with the iOS pin; the bump cost is in no figure
+- program P13: OQ-12: nooz is licence-RESERVED, direct downloads only until the owner rules
+
+Owner questions in the program register that concern this repo (status as of 2026-10-07):
+
+- OQ-2 (ruled): Apple Developer Program and the delivery route
+- OQ-5 (ruled): Hardware stance
+- OQ-7 (open): Repo-local gates, clause (d): whether other apps may use asom off Android (D25(b)); this plan's step L7 and open question 16
+- OQ-12 (open): Licences for repos without a LICENSE
+- OQ-17 (ruled): Toolchain pins: the pin is ruled; the "Also" approvals (converting shared modules to kotlin("multiplatform"), asom's no-KMP rule staying asom-local) are unanswered
+- OQ-20 (ruled): CI minutes, storage and repo visibility
+- OQ-21 (ruled): Waydroid as the Ubuntu Touch answer
+- OQ-22 (ruled): Secret custody per platform
+- OQ-31 (ruled): CI for App Store builds; which Mac
+- OQ-32 (open): Exception to I-1 for TestFlight and App Store crash reports
+- OQ-33 (open): Hardware details still open
+- OQ-37 (answered in part): A second Ubuntu Touch device
+- OQ-38 (ruled): iOS toolchain pin
+
+When the owner confirms or changes the line, this repo's original cells above stay as the engineering detail; only the verdicts and re-costs in program section 5A change.
