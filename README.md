@@ -57,6 +57,6 @@ pass (adversarially reviewed and fixed) plus F-Droid/Play metadata skeleton
 and screenshot script done, with baseline profiles logged as a deliberate,
 undone gap (no device/emulator available to generate or verify one).
 
-## License
-**RESERVED** — see [`LICENSE.RESERVED`](LICENSE.RESERVED). F-Droid eligibility for
-`foss` is gated on this choice.
+## Licence
+
+Source-available, free for noncommercial use under the [PolyForm Noncommercial License 1.0.0](LICENSE). If you make money with it, you need a commercial licence: see [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md).
