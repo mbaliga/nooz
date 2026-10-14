@@ -73,7 +73,13 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
+        with:
+          # The action's default packages input requests the legacy 'tools'
+          # package, which Google's SDK repository no longer serves (sdkmanager
+          # exits 1 at SDK setup before Gradle ever runs). Only platform-tools
+          # here; the build installs the platform/build-tools it needs itself.
+          packages: platform-tools
       - uses: gradle/actions/setup-gradle@v4
 
       # `unitTests` discovers each module's own test task rather than naming

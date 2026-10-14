@@ -15,6 +15,8 @@ Living build state. Updated every session (brief §0).
   sibling session's shared **ai-catalogue/** (open models + free-tier data).
   P7's a11y pass, F-Droid/Play metadata skeleton, and screenshot script are in;
   baseline profiles remain an honestly-logged gap (see P7 section below).
+- **Platforms:** a multi-platform porting plan is written, nothing built: see
+  [`PORTING_PLAN.md`](PORTING_PLAN.md) (proposed D60).
 
 ---
 
@@ -31,6 +33,7 @@ Living build state. Updated every session (brief §0).
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
 | P7 | Hardening & release prep | ◑ a11y pass done (+ adversarially reviewed/fixed); F-Droid/Play metadata skeleton + screenshot script done; **baseline profiles honestly not attempted** (see below) |
+| Platforms | Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) | PLAN only, nothing built or run on any target: see [`PORTING_PLAN.md`](PORTING_PLAN.md) (D60 proposed) |
 
 ### Strategy: analytical cores first, then UI
 The brief's load-bearing, correctness-critical logic is pure and lives in
@@ -2042,6 +2045,12 @@ respect as the CI-caught log above.
   can see is the copy that needs a test rather than a glance. 13 tests, 321
   across the build, all passing.
   29 locales complete at 330 strings; Kashmiri 119/330 (36%, up from 31%).
+- **D60 — PROPOSED, not ruled: a multi-platform porting plan (2026-10-06).**
+  `PORTING_PLAN.md` plans Ubuntu Touch, Linux, iOS/iPadOS, macOS and Windows, in
+  that order; nothing is built or run. Why: the owner asked for those platforms
+  and `:core:model` is already Android-free (D2). The licence stays RESERVED
+  (direct downloads only, none suggested) and `ai-catalogue/` is untouched. No
+  module is converted until the owner answers the plan's §8 questions.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

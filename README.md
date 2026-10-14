@@ -57,6 +57,9 @@ pass (adversarially reviewed and fixed) plus F-Droid/Play metadata skeleton
 and screenshot script done, with baseline profiles logged as a deliberate,
 undone gap (no device/emulator available to generate or verify one).
 
+Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) is planned,
+not built: see [`PORTING_PLAN.md`](PORTING_PLAN.md).
+
 ## License
 **RESERVED** — see [`LICENSE.RESERVED`](LICENSE.RESERVED). F-Droid eligibility for
 `foss` is gated on this choice.
