@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 355 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">উৎস যোগ কৰক</string>
     <string name="list_filter_region">%1$s লৈ ছেকক</string>
     <string name="list_toggle_topic">%1$s সলনি কৰক</string>
+    <string name="widget_loading">ল’ড হৈ আছে…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s লৈকে</string>
+    <string name="widget_error">Nooz-এ এই মুহূৰ্তত নিজৰ ডেটা পঢ়িব নোৱাৰিলে। খুলিবলৈ টেপ কৰক।</string>
+    <string name="widget_no_sources">এতিয়ালৈকে কোনো উৎস বাছনি কৰা হোৱা নাই। আপোনাৰ উৎস বাছিবলৈ টেপ কৰক।</string>
+    <string name="widget_and_more">আৰু %1$d টা</string>
+    <string name="widget_week_of">%1$sৰ সপ্তাহ</string>
+    <string name="widget_open_cross_section">%1$s খোলে, য’ত প্ৰতিটো সংখ্যাই নিজৰ নিয়ম দেখুৱায়</string>
+    <string name="widget_open_stand">ষ্টেণ্ড খোলে</string>
+    <string name="widget_river_name">এই সপ্তাহ: বৈ গ’ল আৰু পঢ়া</string>
+    <string name="widget_river_description">এই সপ্তাহত আপোনাৰ উৎসৰ পৰা যি বৈ গ’ল আৰু আপুনি যি পঢ়িলে, বিষয় অনুসৰি, এখন ছবিত।</string>
+    <string name="widget_river_alt">%1$sৰ সপ্তাহ, আপোনাৰ %2$sৰ পৰা: %3$d টা বাতৰি বৈ গ’ল আৰু আপুনি %4$d টা পঢ়িলে। বিষয় অনুসৰি, বৈ যোৱাৰ অংশ আৰু পঢ়াৰ অংশ: %5$s।</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% বৈ গ’ল, %3$d%% পঢ়া</string>
+    <string name="widget_river_legend_head">প্ৰতিটো বিষয়: বৈ যোৱাৰ অংশ / পঢ়াৰ অংশ</string>
+    <string name="widget_river_empty">আপোনাৰ %1$sৰ পৰা এতিয়ালৈকে একো বৈ যোৱা নাই।</string>
+    <string name="widget_headlines_name">আপোনাৰ উৎসৰ শিৰোনাম</string>
+    <string name="widget_headlines_description">আপুনি বাছি লোৱা উৎসৰ আটাইতকৈ নতুন বাতৰি, নতুনটো আগত, স্পষ্ট সামৰণিৰ সৈতে।</string>
+    <string name="widget_headlines_end">শেষ · আপোনাৰ %2$sৰ পৰা আটাইতকৈ নতুন %1$d টা</string>
+    <string name="widget_headlines_empty">আপোনাৰ %1$sৰ পৰা এতিয়ালৈকে একো অহা নাই।</string>
+    <string name="widget_history_description">ষ্টেণ্ডৰ “আজিৰ দিনটোত ইতিহাসত” স্তম্ভ, Nooz-এ সেইটো ল’ড কৰাৰ পিছত। স্তম্ভ বন্ধ থাকিলে একো নেদেখুৱায়।</string>
+    <string name="widget_history_off">“আজিৰ দিনটোত ইতিহাসত” স্তম্ভ বন্ধ আছে। ছেটিংছত অন কৰিবলৈ টেপ কৰক।</string>
+    <string name="widget_history_not_loaded">ষ্টেণ্ডে ল’ড কৰাৰ পিছত আজিৰ স্তম্ভ ইয়াত দেখা যাব।</string>
+    <string name="widget_history_earlier">%1$sৰ। ষ্টেণ্ডে ল’ড কৰিলে আজিৰটো দেখা যাব।</string>
+    <string name="widget_health_name">উৎসৰ অৱস্থা</string>
+    <string name="widget_health_description">আপোনাৰ প্ৰতিটো উৎস ঠিকমতে আহিছে নে নাই, সংখ্যা আৰু সহজ কথাত।</string>
+    <string name="widget_health_summary">আপোনাৰ %2$sৰ ভিতৰত %1$d টা: শেষ আনয়ন সফল, ৪৮ ঘণ্টাৰ ভিতৰত</string>
+    <string name="widget_health_ok">শেষ আনয়ন সফল, ৪৮ ঘণ্টাৰ ভিতৰত</string>
+    <string name="widget_health_failing">শেষ আনয়ন বিফল</string>
+    <string name="widget_health_rate_limited">Nooz-ক লাহে লাহে আহিবলৈ ক’লে</string>
+    <string name="widget_health_stale">৪৮ ঘণ্টাত কোনো আনয়ন নাই</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">শেষ চেষ্টা %1$s</string>
+    <string name="widget_clippings_description">আপুনি কাটি ৰখা লেখা, শেহতীয়াকৈ কটাটো আগত।</string>
+    <string name="widget_clippings_count_one">%1$d টা কটা টুকুৰা</string>
+    <string name="widget_clippings_count_many">%1$d টা কটা টুকুৰা</string>
+    <string name="widget_clipped_on">%1$s তাৰিখে কটা</string>
+    <string name="widget_coverage_name">পৰিসৰ আৰু বহলতা</string>
+    <string name="widget_coverage_description">ক্ৰছ-ছেকচনৰ পৰা এই সপ্তাহৰ পৰিসৰ আৰু বহলতা, প্ৰতিটো নিজৰ নিয়মৰ সৈতে।</string>
+    <string name="widget_coverage_opened">আপোনাৰ %3$sৰ পৰা বৈ অহা %2$d টা বাতৰিৰ ভিতৰত আপুনি %1$d টা খুলিলে।</string>
+    <string name="widget_coverage_rule">পৰিসৰ: খোলা বাতৰি ÷ বৈ অহা বাতৰি। বহলতা: বিষয়ৰ কাৰ্যকৰী সংখ্যা, অৰ্থাৎ শ্বেনন এনট্ৰপিৰ ঘাতত e।</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 355 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">ਸਰੋਤ ਜੋੜੋ</string>
     <string name="list_filter_region">%1$s ਉੱਤੇ ਛਾਣੋ</string>
     <string name="list_toggle_topic">%1$s ਬਦਲੋ</string>
+    <string name="widget_loading">ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s ਤੱਕ</string>
+    <string name="widget_error">Nooz ਇਸ ਵੇਲੇ ਆਪਣਾ ਡਾਟਾ ਨਹੀਂ ਪੜ੍ਹ ਸਕਿਆ। ਖੋਲ੍ਹਣ ਲਈ ਟੈਪ ਕਰੋ।</string>
+    <string name="widget_no_sources">ਹਾਲੇ ਕੋਈ ਸਰੋਤ ਨਹੀਂ ਚੁਣਿਆ। ਆਪਣੇ ਸਰੋਤ ਚੁਣਨ ਲਈ ਟੈਪ ਕਰੋ।</string>
+    <string name="widget_and_more">ਅਤੇ %1$d ਹੋਰ</string>
+    <string name="widget_week_of">%1$s ਵਾਲਾ ਹਫ਼ਤਾ</string>
+    <string name="widget_open_cross_section">%1$s ਖੋਲ੍ਹਦਾ ਹੈ, ਜਿੱਥੇ ਹਰ ਅੰਕੜਾ ਆਪਣਾ ਨਿਯਮ ਦਿਖਾਉਂਦਾ ਹੈ</string>
+    <string name="widget_open_stand">ਸਟੈਂਡ ਖੋਲ੍ਹਦਾ ਹੈ</string>
+    <string name="widget_river_name">ਇਸ ਹਫ਼ਤੇ: ਜੋ ਵਹਿਆ ਅਤੇ ਜੋ ਪੜ੍ਹਿਆ</string>
+    <string name="widget_river_description">ਇਸ ਹਫ਼ਤੇ ਤੁਹਾਡੇ ਸਰੋਤਾਂ ਤੋਂ ਜੋ ਵਹਿਆ ਅਤੇ ਤੁਸੀਂ ਜੋ ਪੜ੍ਹਿਆ, ਵਿਸ਼ੇ ਮੁਤਾਬਕ, ਇੱਕ ਤਸਵੀਰ ਵਿੱਚ।</string>
+    <string name="widget_river_alt">%1$s ਵਾਲਾ ਹਫ਼ਤਾ, ਤੁਹਾਡੇ %2$s ਤੋਂ: %3$d ਖ਼ਬਰਾਂ ਵਹੀਆਂ ਅਤੇ ਤੁਸੀਂ %4$d ਪੜ੍ਹੀਆਂ। ਵਿਸ਼ੇ ਮੁਤਾਬਕ, ਵਹੇ ਦਾ ਹਿੱਸਾ ਅਤੇ ਪੜ੍ਹੇ ਦਾ ਹਿੱਸਾ: %5$s।</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% ਵਹੀਆਂ, %3$d%% ਪੜ੍ਹੀਆਂ</string>
+    <string name="widget_river_legend_head">ਹਰ ਵਿਸ਼ਾ: ਵਹੇ ਦਾ ਹਿੱਸਾ / ਪੜ੍ਹੇ ਦਾ ਹਿੱਸਾ</string>
+    <string name="widget_river_empty">ਤੁਹਾਡੇ %1$s ਤੋਂ ਹਾਲੇ ਕੁਝ ਨਹੀਂ ਵਹਿਆ।</string>
+    <string name="widget_headlines_name">ਤੁਹਾਡੇ ਸਰੋਤਾਂ ਦੀਆਂ ਸੁਰਖ਼ੀਆਂ</string>
+    <string name="widget_headlines_description">ਤੁਹਾਡੇ ਚੁਣੇ ਸਰੋਤਾਂ ਦੀਆਂ ਸਭ ਤੋਂ ਨਵੀਆਂ ਖ਼ਬਰਾਂ, ਨਵੀਆਂ ਪਹਿਲਾਂ, ਸਾਫ਼ ਅੰਤ ਨਾਲ।</string>
+    <string name="widget_headlines_end">ਅੰਤ · ਤੁਹਾਡੇ %2$s ਤੋਂ ਸਭ ਤੋਂ ਨਵੀਆਂ %1$d</string>
+    <string name="widget_headlines_empty">ਤੁਹਾਡੇ %1$s ਤੋਂ ਹਾਲੇ ਕੁਝ ਨਹੀਂ ਆਇਆ।</string>
+    <string name="widget_history_description">ਸਟੈਂਡ ਦਾ “ਅੱਜ ਇਤਿਹਾਸ ਵਿੱਚ” ਕਾਲਮ, ਜਦੋਂ Nooz ਉਸਨੂੰ ਲੋਡ ਕਰ ਲਵੇ। ਕਾਲਮ ਬੰਦ ਹੋਵੇ ਤਾਂ ਕੁਝ ਨਹੀਂ ਦਿਖਾਉਂਦਾ।</string>
+    <string name="widget_history_off">“ਅੱਜ ਇਤਿਹਾਸ ਵਿੱਚ” ਕਾਲਮ ਬੰਦ ਹੈ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਚਾਲੂ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।</string>
+    <string name="widget_history_not_loaded">ਸਟੈਂਡ ਦੇ ਲੋਡ ਕਰਨ ਤੋਂ ਬਾਅਦ ਅੱਜ ਦਾ ਕਾਲਮ ਇੱਥੇ ਦਿਖੇਗਾ।</string>
+    <string name="widget_history_earlier">%1$s ਦਾ। ਸਟੈਂਡ ਦੇ ਲੋਡ ਕਰਨ ’ਤੇ ਅੱਜ ਦਾ ਦਿਖੇਗਾ।</string>
+    <string name="widget_health_name">ਸਰੋਤਾਂ ਦੀ ਸਿਹਤ</string>
+    <string name="widget_health_description">ਤੁਹਾਡਾ ਹਰ ਸਰੋਤ ਠੀਕ ਤਰ੍ਹਾਂ ਆ ਰਿਹਾ ਹੈ ਜਾਂ ਨਹੀਂ, ਗਿਣਤੀ ਅਤੇ ਸਾਦੇ ਸ਼ਬਦਾਂ ਵਿੱਚ।</string>
+    <string name="widget_health_summary">ਤੁਹਾਡੇ %2$s ਵਿੱਚੋਂ %1$d: ਆਖ਼ਰੀ ਲਿਆਉਣਾ ਸਫਲ, 48 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ</string>
+    <string name="widget_health_ok">ਆਖ਼ਰੀ ਲਿਆਉਣਾ ਸਫਲ, 48 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ</string>
+    <string name="widget_health_failing">ਆਖ਼ਰੀ ਲਿਆਉਣਾ ਅਸਫਲ</string>
+    <string name="widget_health_rate_limited">Nooz ਨੂੰ ਹੌਲੀ ਹੋਣ ਲਈ ਕਿਹਾ</string>
+    <string name="widget_health_stale">48 ਘੰਟਿਆਂ ਤੋਂ ਕੋਈ ਲਿਆਉਣਾ ਨਹੀਂ</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">ਆਖ਼ਰੀ ਕੋਸ਼ਿਸ਼ %1$s</string>
+    <string name="widget_clippings_description">ਤੁਹਾਡੀਆਂ ਕੱਟੀਆਂ ਲਿਖਤਾਂ, ਸਭ ਤੋਂ ਹਾਲ ਹੀ ਵਿੱਚ ਕੱਟੀ ਪਹਿਲਾਂ।</string>
+    <string name="widget_clippings_count_one">%1$d ਕਤਰਨ</string>
+    <string name="widget_clippings_count_many">%1$d ਕਤਰਨਾਂ</string>
+    <string name="widget_clipped_on">%1$s ਨੂੰ ਕੱਟਿਆ</string>
+    <string name="widget_coverage_name">ਦਾਇਰਾ ਅਤੇ ਚੌੜਾਈ</string>
+    <string name="widget_coverage_description">ਕਰਾਸ-ਸੈਕਸ਼ਨ ਤੋਂ ਇਸ ਹਫ਼ਤੇ ਦਾ ਦਾਇਰਾ ਅਤੇ ਚੌੜਾਈ, ਹਰ ਇੱਕ ਆਪਣੇ ਨਿਯਮ ਨਾਲ।</string>
+    <string name="widget_coverage_opened">ਤੁਸੀਂ ਆਪਣੇ %3$s ਤੋਂ ਵਹੀਆਂ %2$d ਖ਼ਬਰਾਂ ਵਿੱਚੋਂ %1$d ਖੋਲ੍ਹੀਆਂ।</string>
+    <string name="widget_coverage_rule">ਦਾਇਰਾ: ਖੋਲ੍ਹੀਆਂ ਖ਼ਬਰਾਂ ÷ ਵਹੀਆਂ ਖ਼ਬਰਾਂ। ਚੌੜਾਈ: ਵਿਸ਼ਿਆਂ ਦੀ ਪ੍ਰਭਾਵੀ ਗਿਣਤੀ, ਯਾਨੀ e ਦੀ ਘਾਤ ਸ਼ੈਨਨ ਐਂਟਰੋਪੀ।</string>
 </resources>

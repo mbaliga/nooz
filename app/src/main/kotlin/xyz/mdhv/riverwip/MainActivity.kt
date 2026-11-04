@@ -1,6 +1,7 @@
 package xyz.mdhv.riverwip
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -16,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,6 +48,9 @@ import xyz.mdhv.riverwip.feature.river.LoomViewModel
 import xyz.mdhv.riverwip.feature.sources.EditScreen
 import xyz.mdhv.riverwip.feature.sources.EditTab
 import xyz.mdhv.riverwip.feature.sources.SourcesViewModel
+import xyz.mdhv.riverwip.widget.WidgetDestination
+import xyz.mdhv.riverwip.widget.WidgetLinks
+import xyz.mdhv.riverwip.widget.WidgetRequest
 
 class MainActivity : ComponentActivity() {
     // The reader's chosen interface language, applied before any resource is
@@ -53,10 +59,26 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(AppLocale.wrap(newBase))
     }
 
+    /** Where a home-screen widget tap asked to go, until the shell has gone there. */
+    private var widgetRequest by mutableStateOf<WidgetRequest?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setContent { RiverApp() }
+        // Only on a fresh start: after a rotation the intent is the same one,
+        // already acted on. WidgetLinks.parse also ignores a relaunch from
+        // Recents, which hands back the tap that first started the task.
+        if (savedInstanceState == null) widgetRequest = WidgetLinks.parse(intent)
+        setContent {
+            RiverApp(widgetRequest = widgetRequest, onWidgetRequestHandled = { widgetRequest = null })
+        }
+    }
+
+    /** A widget tap while Nooz is already open arrives here (the tap's intent is single-top). */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        WidgetLinks.parse(intent)?.let { widgetRequest = it }
     }
 }
 
@@ -76,7 +98,7 @@ private const val SPLASH_MILLIS = 1_100L
  * slides in-app window brightness (no permission needed — window-level only).
  */
 @Composable
-fun RiverApp() {
+fun RiverApp(widgetRequest: WidgetRequest? = null, onWidgetRequestHandled: () -> Unit = {}) {
     val context = LocalContext.current
     val container = (context.applicationContext as RiverApplication).container
     val settingsVm: SettingsViewModel = viewModel(
@@ -240,6 +262,48 @@ fun RiverApp() {
             // Sources ("the current sources thing"), the settings cog opens
             // Settings; Edit shows both inline now, not behind a separate gear.
             var editStartTab by rememberSaveable { mutableStateOf(EditTab.SOURCES) }
+            // Edit keeps its own tab once open, so a widget that asks for a
+            // particular tab opens a fresh Edit rather than the one on screen.
+            var editEntry by rememberSaveable { mutableIntStateOf(0) }
+
+            // A home-screen widget tap (docs/widgets.md). Handled only here,
+            // past the splash and onboarding, so a tap during first run waits
+            // for the shell rather than skipping onboarding. A number's tap
+            // lands where that number's rule is explained.
+            LaunchedEffect(widgetRequest) {
+                val request = widgetRequest ?: return@LaunchedEffect
+                when (request.destination) {
+                    WidgetDestination.STAND -> screen = Screen.STAND
+                    WidgetDestination.ITEM, WidgetDestination.CLIPPING -> {
+                        val item = request.itemId?.let { container.itemRepository.byId(it) }
+                        if (item != null) {
+                            readerVm.openItem(item)
+                            screen = Screen.STAND
+                        } else {
+                            // Aged out of retention: a clipping still has its
+                            // shelf; a headline has only the Stand.
+                            screen = if (request.destination == WidgetDestination.CLIPPING) Screen.CLIPPINGS else Screen.STAND
+                        }
+                    }
+                    WidgetDestination.CROSS_SECTION -> {
+                        editStartTab = EditTab.REGION_TOPICS
+                        editEntry++
+                        screen = Screen.EDIT
+                    }
+                    WidgetDestination.SOURCES -> {
+                        editStartTab = EditTab.SOURCES
+                        editEntry++
+                        screen = Screen.EDIT
+                    }
+                    WidgetDestination.SETTINGS -> {
+                        editStartTab = EditTab.SETTINGS
+                        editEntry++
+                        screen = Screen.EDIT
+                    }
+                    WidgetDestination.CLIPPINGS -> screen = Screen.CLIPPINGS
+                }
+                onWidgetRequestHandled()
+            }
 
             // The native back gesture must navigate, never exit mid-flow — the
             // single activity would otherwise just pop and quit (the reported
@@ -366,7 +430,7 @@ fun RiverApp() {
                         },
                     )
                 }
-                Screen.EDIT -> EditScreen(
+                Screen.EDIT -> key(editEntry) { EditScreen(
                     vm = sourcesVm,
                     onDone = {
                         screen = Screen.STAND
@@ -387,7 +451,7 @@ fun RiverApp() {
                         )
                     },
                     aboutTab = { AboutTab() },
-                )
+                ) }
                 Screen.SETTINGS -> SettingsScreen(
                     vm = settingsVm,
                     onBack = { screen = Screen.STAND },

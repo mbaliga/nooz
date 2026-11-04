@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 355 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">ذرائع شامل کریں</string>
     <string name="list_filter_region">%1$s پر چھانٹیں</string>
     <string name="list_toggle_topic">%1$s بدلیں</string>
+    <string name="widget_loading">لوڈ ہو رہا ہے…</string>
+    <string name="widget_pair">%1$s، %2$s</string>
+    <string name="widget_as_of">%1$s تک</string>
+    <string name="widget_error">Nooz اس وقت اپنا ڈیٹا نہیں پڑھ سکا۔ کھولنے کے لیے تھپتھپائیں۔</string>
+    <string name="widget_no_sources">ابھی کوئی ذریعہ منتخب نہیں کیا گیا۔ اپنے ذرائع چننے کے لیے تھپتھپائیں۔</string>
+    <string name="widget_and_more">اور %1$d مزید</string>
+    <string name="widget_week_of">%1$s کا ہفتہ</string>
+    <string name="widget_open_cross_section">%1$s کھولتا ہے، جہاں ہر عدد اپنا اصول دکھاتا ہے</string>
+    <string name="widget_open_stand">اسٹینڈ کھولتا ہے</string>
+    <string name="widget_river_name">اس ہفتے: جو بہا اور جو پڑھا</string>
+    <string name="widget_river_description">اس ہفتے آپ کے ذرائع سے جو بہا اور آپ نے جو پڑھا، موضوع وار، ایک تصویر میں۔</string>
+    <string name="widget_river_alt">%1$s کا ہفتہ، آپ کے %2$s سے: %3$d خبریں بہیں اور آپ نے %4$d پڑھیں۔ موضوع وار، بہنے والی خبروں کا حصہ اور پڑھی گئی خبروں کا حصہ: %5$s۔</string>
+    <string name="widget_river_alt_topic">%1$s: %2$d%% بہیں، %3$d%% پڑھیں</string>
+    <string name="widget_river_legend_head">ہر موضوع: بہنے والی خبروں کا حصہ / پڑھی گئی خبروں کا حصہ</string>
+    <string name="widget_river_empty">آپ کے %1$s سے ابھی کچھ نہیں بہا۔</string>
+    <string name="widget_headlines_name">آپ کے ذرائع کی سرخیاں</string>
+    <string name="widget_headlines_description">آپ کے چنے ہوئے ذرائع کی تازہ ترین خبریں، نئی پہلے، ایک واضح اختتام کے ساتھ۔</string>
+    <string name="widget_headlines_end">اختتام · آپ کے %2$s سے تازہ ترین %1$d</string>
+    <string name="widget_headlines_empty">آپ کے %1$s سے ابھی کچھ نہیں آیا۔</string>
+    <string name="widget_history_description">اسٹینڈ کا «آج تاریخ میں» کالم، جب Nooz اسے لوڈ کر لے۔ کالم بند ہو تو کچھ نہیں دکھاتا۔</string>
+    <string name="widget_history_off">«آج تاریخ میں» کالم بند ہے۔ ترتیبات میں اسے آن کرنے کے لیے تھپتھپائیں۔</string>
+    <string name="widget_history_not_loaded">آج کا کالم یہاں تب آئے گا جب اسٹینڈ اسے لوڈ کر لے۔</string>
+    <string name="widget_history_earlier">%1$s کا۔ آج کا کالم تب آئے گا جب اسٹینڈ اسے لوڈ کرے۔</string>
+    <string name="widget_health_name">ذرائع کی صحت</string>
+    <string name="widget_health_description">آپ کا ہر ذریعہ ٹھیک سے حاصل ہو رہا ہے یا نہیں، گنتی اور سادہ لفظوں میں۔</string>
+    <string name="widget_health_summary">آپ کے %2$s میں سے %1$d: آخری حصول کامیاب، 48 گھنٹوں کے اندر</string>
+    <string name="widget_health_ok">آخری حصول کامیاب، 48 گھنٹوں کے اندر</string>
+    <string name="widget_health_failing">آخری حصول ناکام</string>
+    <string name="widget_health_rate_limited">Nooz سے آہستہ ہونے کو کہا</string>
+    <string name="widget_health_stale">48 گھنٹوں سے کوئی حصول نہیں</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">آخری کوشش %1$s</string>
+    <string name="widget_clippings_description">آپ کے کاٹے ہوئے مضامین، تازہ ترین کاٹا ہوا پہلے۔</string>
+    <string name="widget_clippings_count_one">%1$d تراشہ</string>
+    <string name="widget_clippings_count_many">%1$d تراشے</string>
+    <string name="widget_clipped_on">%1$s کو کاٹا گیا</string>
+    <string name="widget_coverage_name">احاطہ اور وسعت</string>
+    <string name="widget_coverage_description">کراس سیکشن سے اس ہفتے کا احاطہ اور وسعت، ہر ایک اپنے اصول کے ساتھ۔</string>
+    <string name="widget_coverage_opened">آپ نے اپنے %3$s سے بہنے والی %2$d خبروں میں سے %1$d کھولیں۔</string>
+    <string name="widget_coverage_rule">احاطہ: کھولی گئی خبریں ÷ بہنے والی خبریں۔ وسعت: موضوعات کی مؤثر تعداد، یعنی شینن اینٹروپی کی طاقت پر e۔</string>
 </resources>

@@ -17,13 +17,15 @@ class RiverWorkerFactory(
     private val itemRepository: ItemRepository,
     private val weeklyAggregateRepository: WeeklyAggregateRepository,
     private val articleRepository: ArticleRepository,
+    /** Runs at the end of every fetch, success or not; the app redraws its home-screen widgets here. */
+    private val afterFetch: suspend () -> Unit = {},
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters,
     ): ListenableWorker? = when (workerClassName) {
-        FetchWorker::class.java.name -> FetchWorker(appContext, workerParameters, itemRepository, weeklyAggregateRepository, articleRepository)
+        FetchWorker::class.java.name -> FetchWorker(appContext, workerParameters, itemRepository, weeklyAggregateRepository, articleRepository, afterFetch)
         else -> null
     }
 }

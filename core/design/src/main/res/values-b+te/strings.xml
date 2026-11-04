@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 355 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">మూలాలను జోడించు</string>
     <string name="list_filter_region">%1$s కు వడపోయి</string>
     <string name="list_toggle_topic">%1$s మార్చు</string>
+    <string name="widget_loading">లోడ్ అవుతోంది…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s నాటికి</string>
+    <string name="widget_error">Nooz ఇప్పుడు తన డేటాను చదవలేకపోయింది. తెరవడానికి నొక్కండి.</string>
+    <string name="widget_no_sources">ఇంకా మూలాలు ఎంచుకోలేదు. మీవి ఎంచుకోవడానికి నొక్కండి.</string>
+    <string name="widget_and_more">మరో %1$d</string>
+    <string name="widget_week_of">%1$s వారం</string>
+    <string name="widget_open_cross_section">%1$s ను తెరుస్తుంది, అక్కడ ప్రతి సంఖ్య తన నియమాన్ని చూపిస్తుంది</string>
+    <string name="widget_open_stand">స్టాండ్‌ను తెరుస్తుంది</string>
+    <string name="widget_river_name">ఈ వారం: ప్రవహించినది, చదివినది</string>
+    <string name="widget_river_description">ఈ వారం మీ మూలాల నుంచి ప్రవహించినది, మీరు చదివినది, అంశాల వారీగా, ఒకే చిత్రంలో.</string>
+    <string name="widget_river_alt">%1$s వారం, మీ %2$s నుంచి: %3$d కథనాలు ప్రవహించాయి, మీరు %4$d చదివారు. అంశాల వారీగా, ప్రవహించినదానిలో వాటా, చదివినదానిలో వాటా: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% ప్రవహించాయి, %3$d%% చదివారు</string>
+    <string name="widget_river_legend_head">ప్రతి అంశం: ప్రవహించినదానిలో వాటా / చదివినదానిలో వాటా</string>
+    <string name="widget_river_empty">మీ %1$s నుంచి ఇంకా ఏమీ ప్రవహించలేదు.</string>
+    <string name="widget_headlines_name">మీ మూలాల శీర్షికలు</string>
+    <string name="widget_headlines_description">మీరు ఎంచుకున్న మూలాల తాజా కథనాలు, తాజావి ముందు, స్పష్టమైన ముగింపుతో.</string>
+    <string name="widget_headlines_end">ముగింపు · మీ %2$s నుంచి తాజా %1$d</string>
+    <string name="widget_headlines_empty">మీ %1$s నుంచి ఇంకా ఏమీ రాలేదు.</string>
+    <string name="widget_history_description">స్టాండ్‌లోని “ఈ రోజు చరిత్రలో” కాలమ్, Nooz దాన్ని లోడ్ చేశాక. కాలమ్ ఆఫ్‌లో ఉన్నప్పుడు ఏమీ చూపదు.</string>
+    <string name="widget_history_off">“ఈ రోజు చరిత్రలో” కాలమ్ ఆఫ్‌లో ఉంది. సెట్టింగ్‌లలో ఆన్ చేయడానికి నొక్కండి.</string>
+    <string name="widget_history_not_loaded">స్టాండ్ లోడ్ చేశాక ఈ రోజు కాలమ్ ఇక్కడ కనిపిస్తుంది.</string>
+    <string name="widget_history_earlier">%1$s నాటిది. స్టాండ్ లోడ్ చేసినప్పుడు ఈ రోజుది కనిపిస్తుంది.</string>
+    <string name="widget_health_name">మూలాల ఆరోగ్యం</string>
+    <string name="widget_health_description">మీ ప్రతి మూలం సజావుగా అందుతోందా లేదా, సంఖ్యల్లో, సరళమైన మాటల్లో.</string>
+    <string name="widget_health_summary">మీ %2$s నుంచి %1$d: చివరి తీసుకురావడం విజయవంతం, 48 గంటల్లోపు</string>
+    <string name="widget_health_ok">చివరి తీసుకురావడం విజయవంతం, 48 గంటల్లోపు</string>
+    <string name="widget_health_failing">చివరి తీసుకురావడం విఫలమైంది</string>
+    <string name="widget_health_rate_limited">Nooz ను నెమ్మదించమని కోరింది</string>
+    <string name="widget_health_stale">48 గంటలుగా తీసుకురావడం లేదు</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">చివరి ప్రయత్నం %1$s</string>
+    <string name="widget_clippings_description">మీరు కత్తిరించిన రచనలు, ఇటీవల కత్తిరించినవి ముందు.</string>
+    <string name="widget_clippings_count_one">%1$d కత్తిరింపు</string>
+    <string name="widget_clippings_count_many">%1$d కత్తిరింపులు</string>
+    <string name="widget_clipped_on">%1$s న కత్తిరించారు</string>
+    <string name="widget_coverage_name">పరిధి మరియు వెడల్పు</string>
+    <string name="widget_coverage_description">క్రాస్-సెక్షన్ నుంచి ఈ వారపు పరిధి, వెడల్పు, ఒక్కొక్కటి దాని నియమంతో.</string>
+    <string name="widget_coverage_opened">మీ %3$s నుంచి ప్రవహించిన %2$d కథనాల్లో మీరు %1$d తెరిచారు.</string>
+    <string name="widget_coverage_rule">పరిధి: తెరిచిన కథనాలు ÷ ప్రవహించిన కథనాలు. వెడల్పు: అంశాల ప్రభావవంతమైన సంఖ్య, అంటే షానన్ ఎంట్రోపీ ఘాతంలో e.</string>
 </resources>

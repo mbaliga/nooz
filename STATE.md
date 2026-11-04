@@ -16,7 +16,7 @@ Living build state. Updated every session (brief §0).
   P7's a11y pass, F-Droid/Play metadata skeleton, and screenshot script are in;
   baseline profiles remain an honestly-logged gap (see P7 section below).
 - **Platforms:** a multi-platform porting plan is written, nothing built: see
-  [`PORTING_PLAN.md`](PORTING_PLAN.md) (proposed D60).
+  [`PORTING_PLAN.md`](PORTING_PLAN.md) (proposed D65).
 
 ---
 
@@ -2045,7 +2045,7 @@ respect as the CI-caught log above.
   can see is the copy that needs a test rather than a glance. 13 tests, 321
   across the build, all passing.
   29 locales complete at 330 strings; Kashmiri 119/330 (36%, up from 31%).
-- **D60 — PROPOSED, not ruled: a multi-platform porting plan (2026-10-06).**
+- **D65 — PROPOSED, not ruled: a multi-platform porting plan (2026-10-06).**
   `PORTING_PLAN.md` plans Ubuntu Touch, Linux, iOS/iPadOS, macOS and Windows, in
   that order; nothing is built or run. Why: the owner asked for those platforms
   and `:core:model` is already Android-free (D2). The licence stays RESERVED
@@ -2372,6 +2372,54 @@ respect as the CI-caught log above.
   weights snap; whether they carry ligatures is unchecked; new strings are
   English-only until translated; the Robolectric suites could not run in the
   build sandbox (Maven Central 429), so CI is their first run.
+- **D66 — Home-screen widgets, six of them, usable by any launcher (2026-11-04).**
+  Owner: widgets for every app, at least five each, in several sizes, *"usable by
+  Android launchers"*. So they are plain App Widgets (`AppWidgetProvider` +
+  `RemoteViews`, no Glance, no new dependency): Flowed and read this week (the
+  picture; internally "the river"), Headlines from your sources, Today in History,
+  Source health, Clippings, Coverage and breadth. Each has tiny/small/medium/large
+  layouts from three shared templates (list, stat, image), chosen by the launcher
+  from a size map. Full detail and the owner-verify list are in `docs/widgets.md`.
+  The refusals hold on the home screen: newest-first by publication time only;
+  the headlines list ends with a mark naming how many it showed and from whose
+  sources; no unread counts or progress bars (coverage is a plain record); the
+  picture and coverage numbers tap through to the cross-section where their rules
+  are, and the coverage widget prints only numbers the cross-section shows, rounded
+  the way it rounds them; health is a shape plus words that are themselves the rule
+  ("No fetch in 48 hours"), because Edit › Sources explains no health rule; topic
+  colour only in the large picture, where a legend names every band, and neutral
+  grey elsewhere. No network from a widget: Today in History shows only the column
+  the Stand already cached, dated at every size, and no Wikipedia text where the
+  credit cannot fit. Source-declared explicit items never reach a home screen.
+  **Not named "river" in the product**: metaphorical naming is reserved (§RESERVED),
+  and the strategy note that seeded "This week's river" is still a proposal, so the
+  widget uses the app's existing words.
+  Sizes are added up, not chosen: each breakpoint is the height its layout needs
+  with every line at its most, at the reader's font scale (`WidgetSizing`), and
+  `WidgetLayoutBudgetTest` pins the layout XML to that budget, so the launcher
+  never picks a layout that clips the end mark or the "as of" time.
+  Updates are pushed: the fetch worker calls an `afterFetch` hook (new optional
+  parameter on `RiverData.create`/`RiverWorkerFactory`/`FetchWorker`), Room's
+  invalidation tracker covers in-app writes (debounced), and one windowed
+  (10-minute) non-waking alarm handles midnight and the UTC week turn; "as of"
+  stamps always carry their date. Reads go through a new read-only `WidgetDao` with
+  bounded queries; no schema change. Widget taps go through a non-exported
+  activity alias, and MainActivity honours a widget request only from it (and not
+  on a relaunch from Recents), so no other app can open an article and record a
+  read. Providers redraw only their own placed widgets. TalkBack hears each
+  widget's whole content, not just its name.
+  Rules live in `:core:model` (`HomeWidgets.kt`, `HomeWidgetsTest`); the DAO's SQL is
+  tested against a real in-memory Room database (3); taps, spoken descriptions and
+  the layout budget in `:app` (`WidgetLinksTest`, `WidgetSpeechTest`,
+  `WidgetLayoutBudgetTest`, each in both flavours). The widget strings are translated
+  into the 28 complete locales in build sessions (native review welcome, as for
+  earlier tranches); Kashmiri falls back per key: 119/370.
+  **Open for the owner:** the Clippings widget lists clipped headlines item by item;
+  the strategy's "counts only" option would need a new setting (or a configure
+  activity, which would have to be exported), so it is not built. Say whether to
+  add the setting, and whether counts-only should be the default.
+  **Not verified:** anything on a device. No launcher has drawn these yet; the
+  owner-verify list in `docs/widgets.md` is the open work.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,

@@ -69,6 +69,9 @@ object AppLocale {
             .edit()
             .putString(KEY_TAG, tag)
             .apply()
+        // Below API 33 no configuration change tells the process, so the
+        // home-screen widgets are asked to redraw in the new language here.
+        xyz.mdhv.riverwip.widget.WidgetUpdater.request(context)
         return true
     }
 

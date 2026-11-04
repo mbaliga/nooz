@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Resizable from 2x1 upward. Each size class has its own layout, and its
+  breakpoint is the height that layout needs (WidgetSizing in :core:model);
+  below the smallest, the widget is one tappable summary line. minWidth and
+  minHeight are the default layout's breakpoint. updatePeriodMillis is 0: Nooz pushes updates when its data
+  changes, and schedules one inexact alarm at the next date boundary.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_health_description"
+    android:initialLayout="@layout/widget_loading"
+    android:minWidth="250dp"
+    android:minHeight="214dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:previewImage="@drawable/widget_preview_image_list"
+    android:previewLayout="@layout/widget_preview_health"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

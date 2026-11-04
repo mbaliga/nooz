@@ -78,6 +78,22 @@
     {
       "title": "Reading settings: typography, alignment, page turn, rotation lock and offline.",
       "prefix": "reading_"
+    },
+    {
+      "title": "Home-screen widgets. A home screen is a public surface the reader glances at without deciding to, so the house register holds hardest here: every total names its denominator (your sources, never all the news), lists end, and nothing counts what the reader has not done yet.",
+      "prefix": "widget_",
+      "notes": {
+        "widget_pair": "Joins two phrases a screen reader speaks together, e.g. a headline and its source and time. Use your language's own list comma.",
+        "widget_river_alt": "Alt text for the river picture, spoken by TalkBack. %1$s is a date; %2$s is a source count such as “12 sources”; %3$d stories flowed; %4$d were read; %5$s is the per-topic list built from widget_river_alt_topic.",
+        "widget_river_alt_topic": "%1$s is a topic's working label (kept in English, RESERVED); %2$d and %3$d are percentages.",
+        "widget_headlines_end": "The end-of-list mark. %1$d is how many headlines the widget shows (at most five); %2$s is a source count such as “12 sources”.",
+        "widget_health_summary": "%1$d sources whose last fetch succeeded within 48 hours, out of %2$s, a count such as “12 sources”. The words are the rule itself: the screen a tap opens does not explain source health, so keep the 48 hours and the success.",
+        "widget_health_count": "One state's count beside a summary: %1$s is a state's words (e.g. “No fetch in 48 hours”), %2$d its number of sources. Use your language's own colon.",
+        "widget_coverage_rule": "The formulas behind the two numbers. Keep the division sign and Shannon's name.",
+        "widget_river_name": "The picture widget's name, in the picker and on the widget. Literal on purpose: metaphorical naming is reserved to the owner (STATE.md §RESERVED), so do not call it a river or a stream.",
+        "widget_open_cross_section": "What a tap does, spoken by TalkBack. %1$s is the screen as the app labels it, e.g. “EDIT › Region & Topics”; it is inserted as shown, untranslated where the app shows it untranslated.",
+        "widget_health_stale": "A source state, shown beside its source and in counts. These words are the state's rule (no successful or unsuccessful fetch has run for 48 hours), not a label for one."
+      }
     }
   ]
 }

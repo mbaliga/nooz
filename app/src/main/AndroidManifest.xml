@@ -69,5 +69,121 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          Widget taps arrive through this alias of MainActivity. It is not
+          exported, so only Nooz's own PendingIntents can start it, and
+          MainActivity acts on a widget request only when it came this way
+          (WidgetLinks.parse): opening an article records a read, which no
+          other app should be able to do.
+        -->
+        <activity-alias
+            android:name=".widget.WidgetTap"
+            android:exported="false"
+            android:targetActivity=".MainActivity" />
+
+        <!--
+          Home-screen widgets (docs/widgets.md). Widget providers have to be
+          exported so any launcher can bind them; they draw only what is already
+          on the device and make no network request, and redraw only their own
+          placed widgets whatever ids a broadcast names. Every tap is an
+          explicit, immutable intent to the alias above. updatePeriodMillis is
+          0 throughout: the app pushes a redraw when the data changes. TIME_SET,
+          TIMEZONE_CHANGED and LOCALE_CHANGED redraw dates and words.
+        -->
+        <receiver
+            android:name=".widget.RiverWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_river_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_river" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.HeadlinesWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_headlines_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_headlines" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.HistoryWidgetProvider"
+            android:exported="true"
+            android:label="@string/tour_history_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_history" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.SourceHealthWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_health_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_health" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.ClippingsWidgetProvider"
+            android:exported="true"
+            android:label="@string/screen_clippings">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_clippings" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.CoverageWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_coverage_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_coverage" />
+        </receiver>
+
+        <!-- The widgets' own date-boundary alarm. Not exported. -->
+        <receiver
+            android:name=".widget.WidgetRefreshReceiver"
+            android:exported="false" />
     </application>
 </manifest>

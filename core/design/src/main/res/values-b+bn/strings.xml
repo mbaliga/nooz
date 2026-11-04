@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 355 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">উৎস যোগ করুন</string>
     <string name="list_filter_region">%1$s-এ ছাঁকুন</string>
     <string name="list_toggle_topic">%1$s বদলান</string>
+    <string name="widget_loading">লোড হচ্ছে…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s পর্যন্ত</string>
+    <string name="widget_error">Nooz এই মুহূর্তে নিজের ডেটা পড়তে পারেনি। খুলতে ট্যাপ করুন।</string>
+    <string name="widget_no_sources">এখনও কোনো উৎস বেছে নেওয়া হয়নি। আপনার উৎস বেছে নিতে ট্যাপ করুন।</string>
+    <string name="widget_and_more">এবং আরও %1$d টি</string>
+    <string name="widget_week_of">%1$s-এর সপ্তাহ</string>
+    <string name="widget_open_cross_section">%1$s খোলে, যেখানে প্রতিটি সংখ্যা তার নিয়ম দেখায়</string>
+    <string name="widget_open_stand">স্ট্যান্ড খোলে</string>
+    <string name="widget_river_name">এই সপ্তাহ: বয়েছে আর পড়া</string>
+    <string name="widget_river_description">এই সপ্তাহে আপনার উৎস থেকে যা বয়েছে আর আপনি যা পড়েছেন, বিষয় অনুযায়ী, একটি ছবিতে।</string>
+    <string name="widget_river_alt">%1$s-এর সপ্তাহ, আপনার %2$s থেকে: %3$d টি খবর বয়েছে আর আপনি পড়েছেন %4$d টি। বিষয় অনুযায়ী, যা বয়েছে তার অংশ আর যা পড়েছেন তার অংশ: %5$s।</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% বয়েছে, %3$d%% পড়া</string>
+    <string name="widget_river_legend_head">প্রতিটি বিষয়: যা বয়েছে তার অংশ / যা পড়েছেন তার অংশ</string>
+    <string name="widget_river_empty">আপনার %1$s থেকে এখনও কিছু বয়নি।</string>
+    <string name="widget_headlines_name">আপনার উৎসের শিরোনাম</string>
+    <string name="widget_headlines_description">আপনার বেছে নেওয়া উৎসের সবচেয়ে নতুন খবর, নতুনটি আগে, স্পষ্ট শেষসহ।</string>
+    <string name="widget_headlines_end">শেষ · আপনার %2$s থেকে সবচেয়ে নতুন %1$d টি</string>
+    <string name="widget_headlines_empty">আপনার %1$s থেকে এখনও কিছু আসেনি।</string>
+    <string name="widget_history_description">স্ট্যান্ডের “আজকের দিনে ইতিহাস” কলাম, Nooz সেটি লোড করার পরে। কলাম বন্ধ থাকলে কিছুই দেখায় না।</string>
+    <string name="widget_history_off">“আজকের দিনে ইতিহাস” কলাম বন্ধ আছে। সেটিংসে চালু করতে ট্যাপ করুন।</string>
+    <string name="widget_history_not_loaded">স্ট্যান্ড লোড করার পরে আজকের কলাম এখানে দেখা যাবে।</string>
+    <string name="widget_history_earlier">%1$s-এর। স্ট্যান্ড লোড করলে আজকেরটি দেখা যাবে।</string>
+    <string name="widget_health_name">উৎসের অবস্থা</string>
+    <string name="widget_health_description">আপনার প্রতিটি উৎস ঠিকভাবে আনা যাচ্ছে কি না, সংখ্যা আর সহজ কথায়।</string>
+    <string name="widget_health_summary">আপনার %2$s-এর মধ্যে %1$d টি: শেষ আনা সফল, ৪৮ ঘণ্টার মধ্যে</string>
+    <string name="widget_health_ok">শেষ আনা সফল, ৪৮ ঘণ্টার মধ্যে</string>
+    <string name="widget_health_failing">শেষ আনা ব্যর্থ</string>
+    <string name="widget_health_rate_limited">Nooz-কে ধীরে চলতে বলেছে</string>
+    <string name="widget_health_stale">৪৮ ঘণ্টায় কোনো আনা হয়নি</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">শেষ চেষ্টা %1$s</string>
+    <string name="widget_clippings_description">আপনার কেটে রাখা লেখা, সবচেয়ে সম্প্রতি কাটা আগে।</string>
+    <string name="widget_clippings_count_one">%1$d টি কাটিং</string>
+    <string name="widget_clippings_count_many">%1$d টি কাটিং</string>
+    <string name="widget_clipped_on">%1$s তারিখে কাটা</string>
+    <string name="widget_coverage_name">পরিধি ও বিস্তার</string>
+    <string name="widget_coverage_description">ক্রস-সেকশন থেকে এই সপ্তাহের পরিধি ও বিস্তার, প্রতিটি তার নিয়মসহ।</string>
+    <string name="widget_coverage_opened">আপনার %3$s থেকে বয়ে আসা %2$d টি খবরের মধ্যে আপনি %1$d টি খুলেছেন।</string>
+    <string name="widget_coverage_rule">পরিধি: খোলা খবর ÷ বয়ে আসা খবর। বিস্তার: বিষয়ের কার্যকর সংখ্যা, অর্থাৎ শ্যানন এনট্রপির ঘাতে e।</string>
 </resources>

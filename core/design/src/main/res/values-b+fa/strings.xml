@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 355 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">افزودن منبع</string>
     <string name="list_filter_region">پالایش به %1$s</string>
     <string name="list_toggle_topic">تغییر %1$s</string>
+    <string name="widget_loading">در حال بارگیری…</string>
+    <string name="widget_pair">%1$s، %2$s</string>
+    <string name="widget_as_of">تا %1$s</string>
+    <string name="widget_error">Nooz الان نتوانست داده‌های خودش را بخواند. برای باز کردنش ضربه بزنید.</string>
+    <string name="widget_no_sources">هنوز منبعی انتخاب نشده. برای انتخاب منبع‌هایتان ضربه بزنید.</string>
+    <string name="widget_and_more">و %1$d مورد دیگر</string>
+    <string name="widget_week_of">هفتهٔ %1$s</string>
+    <string name="widget_open_cross_section">%1$s را باز می‌کند، جایی که هر عدد قاعده‌اش را نشان می‌دهد</string>
+    <string name="widget_open_stand">دکه را باز می‌کند</string>
+    <string name="widget_river_name">جاری‌شده و خوانده‌شده، این هفته</string>
+    <string name="widget_river_description">آنچه این هفته از منبع‌هایتان جاری شد در برابر آنچه خواندید، به تفکیک موضوع، در یک تصویر.</string>
+    <string name="widget_river_alt">هفتهٔ %1$s، از %2$s شما: %3$d خبر جاری شد و %4$d را خواندید. به تفکیک موضوع، سهم آنچه جاری شد و سهم آنچه خواندید: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s: %2$d٪ جاری، %3$d٪ خوانده</string>
+    <string name="widget_river_legend_head">هر موضوع: سهم آنچه جاری شد / سهم آنچه خواندید</string>
+    <string name="widget_river_empty">هنوز چیزی از %1$s شما جاری نشده است.</string>
+    <string name="widget_headlines_name">سرخط‌ها از منبع‌های شما</string>
+    <string name="widget_headlines_description">تازه‌ترین خبرها از منبع‌هایی که انتخاب کردید، تازه‌ترین اول، با پایانی روشن.</string>
+    <string name="widget_headlines_end">پایان · %1$d خبر تازه از %2$s شما</string>
+    <string name="widget_headlines_empty">هنوز چیزی از %1$s شما نرسیده است.</string>
+    <string name="widget_history_description">ستون «امروز در تاریخ» دکه، وقتی Nooz آن را بارگیری کرده باشد. تا وقتی ستون خاموش است چیزی نشان نمی‌دهد.</string>
+    <string name="widget_history_off">ستون «امروز در تاریخ» خاموش است. برای روشن کردنش در تنظیمات ضربه بزنید.</string>
+    <string name="widget_history_not_loaded">ستون امروز وقتی دکه آن را بارگیری کند اینجا می‌آید.</string>
+    <string name="widget_history_earlier">مربوط به %1$s. ستون امروز وقتی دکه بارگیری‌اش کند می‌آید.</string>
+    <string name="widget_health_name">سلامت منبع‌ها</string>
+    <string name="widget_health_description">اینکه هر منبع شما بی‌مشکل دریافت می‌شود یا نه، با عدد و واژه‌های ساده.</string>
+    <string name="widget_health_summary">%1$d از %2$s شما: آخرین دریافت موفق، در ۴۸ ساعت گذشته</string>
+    <string name="widget_health_ok">آخرین دریافت موفق، در ۴۸ ساعت گذشته</string>
+    <string name="widget_health_failing">آخرین دریافت ناموفق</string>
+    <string name="widget_health_rate_limited">از Nooz خواسته آهسته‌تر بیاید</string>
+    <string name="widget_health_stale">۴۸ ساعت است دریافتی نبوده</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">آخرین تلاش %1$s</string>
+    <string name="widget_clippings_description">مطالبی که بریده‌اید، تازه‌ترین بریده اول.</string>
+    <string name="widget_clippings_count_one">%1$d بریده</string>
+    <string name="widget_clippings_count_many">%1$d بریده</string>
+    <string name="widget_clipped_on">بریده‌شده در %1$s</string>
+    <string name="widget_coverage_name">پوشش و پهنا</string>
+    <string name="widget_coverage_description">پوشش و پهنای این هفته از برش، هر کدام با قاعده‌اش.</string>
+    <string name="widget_coverage_opened">%1$d خبر از %2$d خبری را که از %3$s شما جاری شد باز کردید.</string>
+    <string name="widget_coverage_rule">پوشش: خبرهای بازشده ÷ خبرهای جاری‌شده. پهنا: تعداد مؤثر موضوع‌ها، یعنی e به توان آنتروپی شانون.</string>
 </resources>
