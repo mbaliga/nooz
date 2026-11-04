@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">Tambahkan sumber</string>
     <string name="list_filter_region">Saring ke %1$s</string>
     <string name="list_toggle_topic">Alihkan %1$s</string>
+    <string name="widget_loading">Memuat…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">Per %1$s</string>
+    <string name="widget_error">Nooz tidak dapat membaca datanya sendiri saat ini. Ketuk untuk membukanya.</string>
+    <string name="widget_no_sources">Belum ada sumber yang dipilih. Ketuk untuk memilih sumber Anda.</string>
+    <string name="widget_and_more">dan %1$d lainnya</string>
+    <string name="widget_week_of">Pekan %1$s</string>
+    <string name="widget_open_cross_section">Membuka %1$s, tempat setiap angka menunjukkan aturannya</string>
+    <string name="widget_open_stand">Membuka Lapak</string>
+    <string name="widget_river_name">Yang mengalir dan dibaca, pekan ini</string>
+    <string name="widget_river_description">Apa yang mengalir dari sumber Anda pekan ini dibandingkan dengan yang Anda baca, per topik, dalam satu gambar.</string>
+    <string name="widget_river_alt">Pekan %1$s, dari %2$s Anda: %3$d berita mengalir dan Anda membaca %4$d. Per topik, porsi yang mengalir dan porsi yang Anda baca: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% mengalir, %3$d%% dibaca</string>
+    <string name="widget_river_legend_head">Setiap topik: porsi yang mengalir / porsi yang Anda baca</string>
+    <string name="widget_river_empty">Belum ada yang mengalir dari %1$s Anda.</string>
+    <string name="widget_headlines_name">Berita utama dari sumber Anda</string>
+    <string name="widget_headlines_description">Berita terbaru dari sumber yang Anda pilih, yang terbaru lebih dulu, dengan akhir yang jelas.</string>
+    <string name="widget_headlines_end">Selesai · %1$d terbaru dari %2$s Anda</string>
+    <string name="widget_headlines_empty">Belum ada yang tiba dari %1$s Anda.</string>
+    <string name="widget_history_description">Kolom Hari ini dalam sejarah dari Lapak, setelah Nooz memuatnya. Tidak menampilkan apa pun selama kolom dimatikan.</string>
+    <string name="widget_history_off">Kolom Hari ini dalam sejarah dimatikan. Ketuk untuk menyalakannya di Pengaturan.</string>
+    <string name="widget_history_not_loaded">Kolom hari ini muncul di sini setelah Lapak memuatnya.</string>
+    <string name="widget_history_earlier">Dari %1$s. Kolom hari ini muncul setelah Lapak memuatnya.</string>
+    <string name="widget_health_name">Kesehatan sumber</string>
+    <string name="widget_health_description">Apakah setiap sumber Anda diambil dengan lancar, dalam angka dan kata-kata sederhana.</string>
+    <string name="widget_health_summary">%1$d dari %2$s Anda: pengambilan terakhir berhasil, dalam 48 jam</string>
+    <string name="widget_health_ok">Pengambilan terakhir berhasil, dalam 48 jam</string>
+    <string name="widget_health_failing">Pengambilan terakhir gagal</string>
+    <string name="widget_health_rate_limited">Meminta Nooz memperlambat</string>
+    <string name="widget_health_stale">Tidak ada pengambilan dalam 48 jam</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Terakhir dicoba %1$s</string>
+    <string name="widget_clippings_description">Tulisan yang Anda gunting, yang terakhir digunting lebih dulu.</string>
+    <string name="widget_clippings_count_one">%1$d guntingan</string>
+    <string name="widget_clippings_count_many">%1$d guntingan</string>
+    <string name="widget_clipped_on">Digunting %1$s</string>
+    <string name="widget_coverage_name">Cakupan dan keluasan</string>
+    <string name="widget_coverage_description">Cakupan dan keluasan pekan ini dari penampang, masing-masing dengan aturannya.</string>
+    <string name="widget_coverage_opened">Anda membuka %1$d dari %2$d berita yang mengalir dari %3$s Anda.</string>
+    <string name="widget_coverage_rule">Cakupan: berita yang dibuka ÷ berita yang mengalir. Keluasan: jumlah efektif topik, e pangkat entropi Shannon.</string>
 </resources>

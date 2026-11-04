@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">Añadir fuentes</string>
     <string name="list_filter_region">Filtrar a %1$s</string>
     <string name="list_toggle_topic">Alternar %1$s</string>
+    <string name="widget_loading">Cargando…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">Actualizado: %1$s</string>
+    <string name="widget_error">Nooz no pudo leer sus propios datos ahora mismo. Toca para abrirla.</string>
+    <string name="widget_no_sources">Aún no has elegido fuentes. Toca para elegir las tuyas.</string>
+    <string name="widget_and_more">y %1$d más</string>
+    <string name="widget_week_of">Semana del %1$s</string>
+    <string name="widget_open_cross_section">Abre %1$s, donde cada número muestra su regla</string>
+    <string name="widget_open_stand">Abre el Quiosco</string>
+    <string name="widget_river_name">Lo que llegó y lo leído, esta semana</string>
+    <string name="widget_river_description">Lo que llegó de tus fuentes esta semana frente a lo que leíste, por tema, en una sola imagen.</string>
+    <string name="widget_river_alt">Semana del %1$s, de tus %2$s: llegaron %3$d historias y leíste %4$d. Por tema, parte de lo que llegó y parte de lo que leíste: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d %% llegado, %3$d %% leído</string>
+    <string name="widget_river_legend_head">Cada tema: parte de lo que llegó / parte de lo que leíste</string>
+    <string name="widget_river_empty">Todavía no ha fluido nada desde tus %1$s.</string>
+    <string name="widget_headlines_name">Titulares de tus fuentes</string>
+    <string name="widget_headlines_description">Las historias más recientes de las fuentes que elegiste, las más nuevas primero, con un final claro.</string>
+    <string name="widget_headlines_end">Fin · las %1$d más recientes de tus %2$s</string>
+    <string name="widget_headlines_empty">Aún no ha llegado nada de tus %1$s.</string>
+    <string name="widget_history_description">La columna Hoy en la historia del Quiosco, cuando Nooz la ha cargado. No muestra nada mientras la columna está desactivada.</string>
+    <string name="widget_history_off">La columna Hoy en la historia está desactivada. Toca para activarla en Ajustes.</string>
+    <string name="widget_history_not_loaded">La columna de hoy aparece aquí cuando el Quiosco la ha cargado.</string>
+    <string name="widget_history_earlier">Del %1$s. La de hoy aparece cuando el Quiosco la carga.</string>
+    <string name="widget_health_name">Estado de las fuentes</string>
+    <string name="widget_health_description">Si cada una de tus fuentes se descarga bien, en cifras y palabras claras.</string>
+    <string name="widget_health_summary">%1$d de tus %2$s: última descarga correcta, en las últimas 48 horas</string>
+    <string name="widget_health_ok">Última descarga correcta, en las últimas 48 horas</string>
+    <string name="widget_health_failing">Falló la última descarga</string>
+    <string name="widget_health_rate_limited">Pidió a Nooz ir más despacio</string>
+    <string name="widget_health_stale">Sin descargas en 48 horas</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Último intento %1$s</string>
+    <string name="widget_clippings_description">Los artículos que recortaste, los recortados más recientemente primero.</string>
+    <string name="widget_clippings_count_one">%1$d recorte</string>
+    <string name="widget_clippings_count_many">%1$d recortes</string>
+    <string name="widget_clipped_on">Recortado el %1$s</string>
+    <string name="widget_coverage_name">Cobertura y amplitud</string>
+    <string name="widget_coverage_description">La cobertura y la amplitud de esta semana del corte transversal, cada una con su regla.</string>
+    <string name="widget_coverage_opened">Abriste %1$d de las %2$d historias que llegaron de tus %3$s.</string>
+    <string name="widget_coverage_rule">Cobertura: historias abiertas ÷ historias que llegaron. Amplitud: el número efectivo de temas, e elevado a la entropía de Shannon.</string>
 </resources>

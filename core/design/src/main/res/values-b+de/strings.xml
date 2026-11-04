@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">Quellen hinzufügen</string>
     <string name="list_filter_region">Auf %1$s filtern</string>
     <string name="list_toggle_topic">%1$s umschalten</string>
+    <string name="widget_loading">Wird geladen…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">Stand %1$s</string>
+    <string name="widget_error">Nooz konnte seine eigenen Daten gerade nicht lesen. Tippe, um die App zu öffnen.</string>
+    <string name="widget_no_sources">Noch keine Quellen gewählt. Tippe, um deine zu wählen.</string>
+    <string name="widget_and_more">und %1$d weitere</string>
+    <string name="widget_week_of">Woche vom %1$s</string>
+    <string name="widget_open_cross_section">Öffnet %1$s, wo jede Zahl ihre Regel zeigt</string>
+    <string name="widget_open_stand">Öffnet den Kiosk</string>
+    <string name="widget_river_name">Gekommen und gelesen, diese Woche</string>
+    <string name="widget_river_description">Was diese Woche aus deinen Quellen kam, gegen das, was du gelesen hast, nach Thema, in einem Bild.</string>
+    <string name="widget_river_alt">Woche vom %1$s, aus deinen %2$s: %3$d Meldungen kamen, du hast %4$d gelesen. Nach Thema, Anteil am Zufluss und Anteil an deiner Lektüre: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d %% gekommen, %3$d %% gelesen</string>
+    <string name="widget_river_legend_head">Jedes Thema: Anteil am Zufluss / Anteil an deiner Lektüre</string>
+    <string name="widget_river_empty">Aus deinen %1$s ist noch nichts gekommen.</string>
+    <string name="widget_headlines_name">Schlagzeilen aus deinen Quellen</string>
+    <string name="widget_headlines_description">Die neuesten Meldungen aus den Quellen, die du gewählt hast, neueste zuerst, mit einem klaren Ende.</string>
+    <string name="widget_headlines_end">Ende · die neuesten %1$d aus deinen %2$s</string>
+    <string name="widget_headlines_empty">Aus deinen %1$s ist noch nichts angekommen.</string>
+    <string name="widget_history_description">Die Spalte „Heute in der Geschichte“ vom Kiosk, sobald Nooz sie geladen hat. Zeigt nichts, solange die Spalte aus ist.</string>
+    <string name="widget_history_off">Die Spalte „Heute in der Geschichte“ ist aus. Tippe, um sie in den Einstellungen einzuschalten.</string>
+    <string name="widget_history_not_loaded">Die heutige Spalte erscheint hier, sobald der Kiosk sie geladen hat.</string>
+    <string name="widget_history_earlier">Vom %1$s. Die heutige erscheint, sobald der Kiosk sie lädt.</string>
+    <string name="widget_health_name">Zustand der Quellen</string>
+    <string name="widget_health_description">Ob jede deiner Quellen sauber abgerufen wird, als Zahlen und in klaren Worten.</string>
+    <string name="widget_health_summary">%1$d von deinen %2$s: letzter Abruf erfolgreich, innerhalb von 48 Stunden</string>
+    <string name="widget_health_ok">Letzter Abruf erfolgreich, innerhalb von 48 Stunden</string>
+    <string name="widget_health_failing">Letzter Abruf fehlgeschlagen</string>
+    <string name="widget_health_rate_limited">Hat Nooz gebeten, langsamer zu werden</string>
+    <string name="widget_health_stale">Seit 48 Stunden kein Abruf</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Zuletzt versucht %1$s</string>
+    <string name="widget_clippings_description">Die Texte, die du ausgeschnitten hast, zuletzt ausgeschnittene zuerst.</string>
+    <string name="widget_clippings_count_one">%1$d Ausschnitt</string>
+    <string name="widget_clippings_count_many">%1$d Ausschnitte</string>
+    <string name="widget_clipped_on">Ausgeschnitten am %1$s</string>
+    <string name="widget_coverage_name">Abdeckung und Breite</string>
+    <string name="widget_coverage_description">Abdeckung und Breite dieser Woche aus dem Querschnitt, jeweils mit ihrer Regel.</string>
+    <string name="widget_coverage_opened">Du hast %1$d der %2$d Meldungen geöffnet, die aus deinen %3$s kamen.</string>
+    <string name="widget_coverage_rule">Abdeckung: geöffnete Meldungen ÷ gekommene Meldungen. Breite: die effektive Zahl der Themen, e hoch die Shannon-Entropie.</string>
 </resources>

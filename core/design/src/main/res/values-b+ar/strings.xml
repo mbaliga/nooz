@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">أضف مصادر</string>
     <string name="list_filter_region">رشِّح إلى %1$s</string>
     <string name="list_toggle_topic">بدِّل %1$s</string>
+    <string name="widget_loading">جارٍ التحميل…</string>
+    <string name="widget_pair">%1$s، %2$s</string>
+    <string name="widget_as_of">حتى %1$s</string>
+    <string name="widget_error">تعذّر على Nooz قراءة بياناته الآن. انقر لفتحه.</string>
+    <string name="widget_no_sources">لم تختر مصادر بعد. انقر لتختار مصادرك.</string>
+    <string name="widget_and_more">و%1$d أخرى</string>
+    <string name="widget_week_of">أسبوع %1$s</string>
+    <string name="widget_open_cross_section">يفتح %1$s، حيث يُظهر كل رقم قاعدته</string>
+    <string name="widget_open_stand">يفتح الكشك</string>
+    <string name="widget_river_name">ما وصل وما قُرئ، هذا الأسبوع</string>
+    <string name="widget_river_description">ما وصلك من مصادرك هذا الأسبوع مقابل ما قرأته، حسب الموضوع، في صورة واحدة.</string>
+    <string name="widget_river_alt">أسبوع %1$s، من %2$s: وصل %3$d خبرًا وقرأت %4$d. حسب الموضوع، حصة ما وصل وحصة ما قرأت: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s: وصل %2$d٪، قُرئ %3$d٪</string>
+    <string name="widget_river_legend_head">كل موضوع: حصة ما وصل / حصة ما قرأت</string>
+    <string name="widget_river_empty">لم يصل شيء من %1$s بعد.</string>
+    <string name="widget_headlines_name">عناوين من مصادرك</string>
+    <string name="widget_headlines_description">أحدث الأخبار من المصادر التي اخترتها، الأحدث أولًا، مع نهاية واضحة.</string>
+    <string name="widget_headlines_end">النهاية · أحدث %1$d من %2$s</string>
+    <string name="widget_headlines_empty">لم يرد شيء من %1$s بعد.</string>
+    <string name="widget_history_description">عمود «اليوم في التاريخ» من الكشك، بعد أن يحمّله Nooz. لا يعرض شيئًا ما دام العمود متوقفًا.</string>
+    <string name="widget_history_off">عمود «اليوم في التاريخ» متوقف. انقر لتشغيله من الإعدادات.</string>
+    <string name="widget_history_not_loaded">يظهر عمود اليوم هنا بعد أن يحمّله الكشك.</string>
+    <string name="widget_history_earlier">من %1$s. يظهر عمود اليوم بعد أن يحمّله الكشك.</string>
+    <string name="widget_health_name">حالة المصادر</string>
+    <string name="widget_health_description">هل يُجلب كل مصدر من مصادرك بلا مشكلات، بالأرقام وبكلمات واضحة.</string>
+    <string name="widget_health_summary">%1$d من %2$s: نجح آخر جلب، خلال 48 ساعة</string>
+    <string name="widget_health_ok">نجح آخر جلب، خلال 48 ساعة</string>
+    <string name="widget_health_failing">فشل آخر جلب</string>
+    <string name="widget_health_rate_limited">طلب من Nooz أن يبطئ</string>
+    <string name="widget_health_stale">لا جلب منذ 48 ساعة</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">آخر محاولة %1$s</string>
+    <string name="widget_clippings_description">القطع التي قصصتها، الأحدث قصًّا أولًا.</string>
+    <string name="widget_clippings_count_one">قصاصة واحدة</string>
+    <string name="widget_clippings_count_many">القصاصات: %1$d</string>
+    <string name="widget_clipped_on">قُصّت في %1$s</string>
+    <string name="widget_coverage_name">التغطية والاتساع</string>
+    <string name="widget_coverage_description">تغطية هذا الأسبوع واتساعه من المقطع العرضي، كلٌّ مع قاعدته.</string>
+    <string name="widget_coverage_opened">فتحت %1$d من أصل %2$d خبرًا وصلت من %3$s.</string>
+    <string name="widget_coverage_rule">التغطية: الأخبار المفتوحة ÷ الأخبار التي وصلت. الاتساع: العدد الفعلي للموضوعات، أي e مرفوعًا إلى قوة إنتروبيا شانون.</string>
 </resources>

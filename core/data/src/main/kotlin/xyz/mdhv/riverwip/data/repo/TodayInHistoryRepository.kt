@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -110,12 +113,34 @@ class TodayInHistoryRepository(
         val prefs: Preferences = runCatching { context.todayInHistoryDataStore.data.firstOrNull() }
             .getOrNull() ?: return null
         if (prefs[Keys.CACHED_DATE] != date.toString()) return null
+        return decode(prefs)?.events
+    }
+
+    /** The day a column was last stored for, and everything stored for it. */
+    data class CachedColumn(val date: LocalDate, val events: List<HistoricalEvent>)
+
+    /**
+     * Whatever column is cached, for whichever date it was cached for, and
+     * never a fetch. The home-screen widget reads this: it shows the column
+     * the reader's own Stand already loaded, dated, and has no way to reach
+     * Wikipedia itself.
+     */
+    fun observeCachedColumn(): Flow<CachedColumn?> =
+        context.todayInHistoryDataStore.data
+            .map { decode(it) }
+            .catch { emit(null) }
+
+    suspend fun cachedColumn(): CachedColumn? = observeCachedColumn().firstOrNull()
+
+    private fun decode(prefs: Preferences): CachedColumn? {
+        val date = prefs[Keys.CACHED_DATE]?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: return null
         val raw = prefs[Keys.CACHED_EVENTS] ?: return null
         // A cache that no longer parses (a shape change across an app update)
         // reads as absent and refetches, rather than failing the whole card.
-        return runCatching {
+        val events = runCatching {
             json.decodeFromString(eventListSerializer, raw).map { HistoricalEvent(it.year, it.text, it.url) }
-        }.getOrNull()?.takeIf { it.isNotEmpty() }
+        }.getOrNull()?.takeIf { it.isNotEmpty() } ?: return null
+        return CachedColumn(date, events)
     }
 
     private suspend fun store(date: LocalDate, events: List<HistoricalEvent>) {

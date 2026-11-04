@@ -37,6 +37,7 @@ abstract class RiverDatabase : RoomDatabase() {
     abstract fun weeklyAggregateDao(): WeeklyAggregateDao
     abstract fun clippingDao(): ClippingDao
     abstract fun articleTextDao(): ArticleTextDao
+    abstract fun widgetDao(): WidgetDao
 
     companion object {
         /**

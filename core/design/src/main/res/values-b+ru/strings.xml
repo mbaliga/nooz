@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">Добавить источники</string>
     <string name="list_filter_region">Отфильтровать по «%1$s»</string>
     <string name="list_toggle_topic">Переключить «%1$s»</string>
+    <string name="widget_loading">Загрузка…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">По состоянию на %1$s</string>
+    <string name="widget_error">Nooz не удалось прочитать собственные данные. Нажмите, чтобы открыть приложение.</string>
+    <string name="widget_no_sources">Источники ещё не выбраны. Нажмите, чтобы выбрать свои.</string>
+    <string name="widget_and_more">и ещё %1$d</string>
+    <string name="widget_week_of">Неделя с %1$s</string>
+    <string name="widget_open_cross_section">Открывает %1$s, где у каждого числа указано его правило</string>
+    <string name="widget_open_stand">Открывает Витрину</string>
+    <string name="widget_river_name">Пришло и прочитано за эту неделю</string>
+    <string name="widget_river_description">Что пришло из ваших источников на этой неделе и что вы прочитали, по темам, одной картинкой.</string>
+    <string name="widget_river_alt">Неделя с %1$s, из ваших %2$s: пришло новостей — %3$d, прочитано — %4$d. По темам, доля пришедшего и доля прочитанного: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s: пришло %2$d%%, прочитано %3$d%%</string>
+    <string name="widget_river_legend_head">Каждая тема: доля пришедшего / доля прочитанного</string>
+    <string name="widget_river_empty">Из ваших %1$s пока ничего не пришло.</string>
+    <string name="widget_headlines_name">Заголовки из ваших источников</string>
+    <string name="widget_headlines_description">Самые свежие новости из выбранных вами источников, сначала новые, с явным концом.</string>
+    <string name="widget_headlines_end">Конец · самые свежие (%1$d) из ваших %2$s</string>
+    <string name="widget_headlines_empty">Из ваших %1$s пока ничего не поступило.</string>
+    <string name="widget_history_description">Колонка «Сегодня в истории» с Витрины, когда Nooz её загрузит. Ничего не показывает, пока колонка выключена.</string>
+    <string name="widget_history_off">Колонка «Сегодня в истории» выключена. Нажмите, чтобы включить её в Настройках.</string>
+    <string name="widget_history_not_loaded">Сегодняшняя колонка появится здесь, когда Витрина её загрузит.</string>
+    <string name="widget_history_earlier">За %1$s. Сегодняшняя появится, когда Витрина её загрузит.</string>
+    <string name="widget_health_name">Состояние источников</string>
+    <string name="widget_health_description">Загружается ли каждый из ваших источников без ошибок: числами и простыми словами.</string>
+    <string name="widget_health_summary">Последняя загрузка успешна в пределах 48 часов: %1$d из ваших %2$s</string>
+    <string name="widget_health_ok">Последняя загрузка успешна, в пределах 48 часов</string>
+    <string name="widget_health_failing">Последняя загрузка не удалась</string>
+    <string name="widget_health_rate_limited">Попросил Nooz обращаться реже</string>
+    <string name="widget_health_stale">Нет загрузок 48 часов</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Последняя попытка %1$s</string>
+    <string name="widget_clippings_description">Материалы, которые вы вырезали, сначала самые недавние.</string>
+    <string name="widget_clippings_count_one">%1$d вырезка</string>
+    <string name="widget_clippings_count_many">Вырезки: %1$d</string>
+    <string name="widget_clipped_on">Вырезано %1$s</string>
+    <string name="widget_coverage_name">Охват и широта</string>
+    <string name="widget_coverage_description">Охват и широта этой недели из среза, каждая со своим правилом.</string>
+    <string name="widget_coverage_opened">Открыто %1$d из %2$d новостей, пришедших из ваших %3$s.</string>
+    <string name="widget_coverage_rule">Охват: открытые новости ÷ пришедшие новости. Широта: эффективное число тем, e в степени энтропии Шеннона.</string>
 </resources>

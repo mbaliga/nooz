@@ -8,6 +8,7 @@ import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
 import xyz.mdhv.riverwip.data.repo.DataExporter
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
+import xyz.mdhv.riverwip.data.repo.HomeWidgetRepository
 import xyz.mdhv.riverwip.data.repo.TranslationRepository
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ModelCatalogueRepository
@@ -23,6 +24,7 @@ import xyz.mdhv.riverwip.inference.ProviderFactory
 import xyz.mdhv.riverwip.inference.TtsProvider
 import xyz.mdhv.riverwip.inference.byok.ByokConfigStore
 import xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider
+import xyz.mdhv.riverwip.widget.WidgetUpdater
 
 /**
  * The manual DI composition root (house style: constructor injection, no
@@ -41,7 +43,9 @@ import xyz.mdhv.riverwip.inference.local.LocalKokoroTtsProvider
  */
 class AppContainer(appContext: Context) {
 
-    private val data: RiverData = RiverData.create(appContext)
+    // Every background fetch ends by redrawing the home-screen widgets, inside
+    // the worker, so the redraw cannot be lost to the process going away.
+    private val data: RiverData = RiverData.create(appContext, afterFetch = { WidgetUpdater.updateAll(appContext) })
 
     val sourceRepository: SourceRepository = data.sourceRepository
     val itemRepository: ItemRepository = data.itemRepository
@@ -55,6 +59,12 @@ class AppContainer(appContext: Context) {
     val settingsRepository: SettingsRepository = data.settingsRepository
     val todayInHistoryRepository: TodayInHistoryRepository = data.todayInHistoryRepository
     val dataExporter: DataExporter = data.dataExporter
+
+    /** Bounded, read-only queries behind the home-screen widgets. */
+    val homeWidgetRepository: HomeWidgetRepository = data.homeWidgetRepository
+
+    /** Room's change signal for the widgets' tables; see [RiverData.addChangeListener]. Off the main thread only. */
+    fun addDataChangeListener(listener: () -> Unit) = data.addChangeListener(listener)
 
     private val inferenceProviders: List<InferenceProvider> =
         ProviderFactory.build(appContext, File(appContext.filesDir, "models"))

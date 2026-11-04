@@ -1,6 +1,8 @@
 package xyz.mdhv.riverwip.data
 
 import android.content.Context
+import androidx.annotation.WorkerThread
+import androidx.room.InvalidationTracker
 import java.io.File
 import xyz.mdhv.riverwip.data.cache.FullTextCache
 import xyz.mdhv.riverwip.data.db.RiverDatabase
@@ -11,6 +13,7 @@ import xyz.mdhv.riverwip.data.repo.CatalogueRepository
 import xyz.mdhv.riverwip.data.repo.ClippingRepository
 import xyz.mdhv.riverwip.data.repo.DataExporter
 import xyz.mdhv.riverwip.data.repo.DictionaryRepository
+import xyz.mdhv.riverwip.data.repo.HomeWidgetRepository
 import xyz.mdhv.riverwip.data.repo.HttpArticleFetcher
 import xyz.mdhv.riverwip.data.repo.ItemRepository
 import xyz.mdhv.riverwip.data.repo.ReadEventRepository
@@ -41,14 +44,42 @@ class RiverData private constructor(
     val settingsRepository: SettingsRepository,
     val todayInHistoryRepository: TodayInHistoryRepository,
     val dataExporter: DataExporter,
+    /** Bounded, read-only queries for the home-screen widgets. */
+    val homeWidgetRepository: HomeWidgetRepository,
     /** For `Configuration.Provider` on the Application — see `RiverApplication`. */
     val workerFactory: RiverWorkerFactory,
+    private val db: RiverDatabase,
 ) {
+    /**
+     * Calls [listener] after any committed write to a table the home-screen
+     * widgets draw from, whichever code path made it: the fetch worker, a pull
+     * to refresh, a read, a clipping, a source switched on or off. This is
+     * Room's own invalidation signal, so it costs no query; the listener
+     * decides what to re-read. Must be called off the main thread, as Room's
+     * tracker touches the database when an observer is added.
+     */
+    @WorkerThread
+    fun addChangeListener(listener: () -> Unit) {
+        db.invalidationTracker.addObserver(
+            object : InvalidationTracker.Observer(WIDGET_TABLES) {
+                override fun onInvalidated(tables: Set<String>) = listener()
+            },
+        )
+    }
+
     companion object {
+        /** The tables a home-screen widget draws from. */
+        private val WIDGET_TABLES = arrayOf("sources", "items", "read_events", "weekly_aggregates", "clippings")
+
         /** Full-text cache budget (brief §4: "user-visible storage budget"). Working default; a settings screen can raise/lower it later. */
         const val DEFAULT_FULL_TEXT_CACHE_BYTES: Long = 200L * 1024 * 1024
 
-        fun create(context: Context): RiverData {
+        /**
+         * @param afterFetch runs at the end of every background fetch, success
+         *   or not, while the worker still holds the process. The app redraws
+         *   its home-screen widgets there.
+         */
+        fun create(context: Context, afterFetch: suspend () -> Unit = {}): RiverData {
             val appContext = context.applicationContext
             val db = RiverDatabase.build(appContext)
             val http = HttpClient()
@@ -88,7 +119,9 @@ class RiverData private constructor(
                     clippingRepository = clippingRepository,
                     readEventRepository = readEventRepository,
                 ),
-                workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository, articleRepository),
+                homeWidgetRepository = HomeWidgetRepository(db.widgetDao()),
+                workerFactory = RiverWorkerFactory(itemRepository, weeklyAggregateRepository, articleRepository, afterFetch),
+                db = db,
             )
         }
     }

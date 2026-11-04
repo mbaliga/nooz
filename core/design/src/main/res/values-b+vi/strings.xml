@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">Thêm nguồn</string>
     <string name="list_filter_region">Lọc theo %1$s</string>
     <string name="list_toggle_topic">Bật tắt %1$s</string>
+    <string name="widget_loading">Đang tải…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">Tính đến %1$s</string>
+    <string name="widget_error">Nooz không đọc được dữ liệu của chính mình lúc này. Chạm để mở ứng dụng.</string>
+    <string name="widget_no_sources">Bạn chưa chọn nguồn nào. Chạm để chọn nguồn của bạn.</string>
+    <string name="widget_and_more">và %1$d mục khác</string>
+    <string name="widget_week_of">Tuần %1$s</string>
+    <string name="widget_open_cross_section">Mở %1$s, nơi mỗi con số cho thấy quy tắc của nó</string>
+    <string name="widget_open_stand">Mở Sạp báo</string>
+    <string name="widget_river_name">Đã chảy và đã đọc, tuần này</string>
+    <string name="widget_river_description">Những gì đã chảy từ các nguồn của bạn tuần này so với những gì bạn đã đọc, theo chủ đề, trong một hình.</string>
+    <string name="widget_river_alt">Tuần %1$s, từ %2$s của bạn: %3$d tin đã chảy và bạn đã đọc %4$d. Theo chủ đề, tỷ lệ đã chảy và tỷ lệ bạn đã đọc: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% đã chảy, %3$d%% đã đọc</string>
+    <string name="widget_river_legend_head">Mỗi chủ đề: tỷ lệ đã chảy / tỷ lệ bạn đã đọc</string>
+    <string name="widget_river_empty">Chưa có gì chảy từ %1$s của bạn.</string>
+    <string name="widget_headlines_name">Tiêu đề từ các nguồn của bạn</string>
+    <string name="widget_headlines_description">Tin mới nhất từ những nguồn bạn đã chọn, mới nhất trước, có điểm kết thúc rõ ràng.</string>
+    <string name="widget_headlines_end">Hết · %1$d tin mới nhất từ %2$s của bạn</string>
+    <string name="widget_headlines_empty">Chưa có gì đến từ %1$s của bạn.</string>
+    <string name="widget_history_description">Cột Ngày này trong lịch sử của Sạp báo, khi Nooz đã tải. Không hiển thị gì khi cột đang tắt.</string>
+    <string name="widget_history_off">Cột Ngày này trong lịch sử đang tắt. Chạm để bật trong Cài đặt.</string>
+    <string name="widget_history_not_loaded">Cột hôm nay xuất hiện ở đây khi Sạp báo đã tải.</string>
+    <string name="widget_history_earlier">Của ngày %1$s. Cột hôm nay xuất hiện khi Sạp báo tải.</string>
+    <string name="widget_health_name">Tình trạng nguồn</string>
+    <string name="widget_health_description">Từng nguồn của bạn có được tải về suôn sẻ không, bằng con số và lời lẽ đơn giản.</string>
+    <string name="widget_health_summary">%1$d trong %2$s của bạn: lần tải gần nhất thành công, trong 48 giờ</string>
+    <string name="widget_health_ok">Lần tải gần nhất thành công, trong 48 giờ</string>
+    <string name="widget_health_failing">Lần tải gần nhất thất bại</string>
+    <string name="widget_health_rate_limited">Đã yêu cầu Nooz chậm lại</string>
+    <string name="widget_health_stale">Không có lần tải nào trong 48 giờ</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Lần thử cuối %1$s</string>
+    <string name="widget_clippings_description">Những bài bạn đã cắt, bài cắt gần nhất trước.</string>
+    <string name="widget_clippings_count_one">%1$d mẩu cắt</string>
+    <string name="widget_clippings_count_many">%1$d mẩu cắt</string>
+    <string name="widget_clipped_on">Cắt ngày %1$s</string>
+    <string name="widget_coverage_name">Độ phủ và độ rộng</string>
+    <string name="widget_coverage_description">Độ phủ và độ rộng tuần này từ mặt cắt, mỗi thứ kèm quy tắc của nó.</string>
+    <string name="widget_coverage_opened">Bạn đã mở %1$d trong số %2$d tin đã chảy từ %3$s của bạn.</string>
+    <string name="widget_coverage_rule">Độ phủ: số tin đã mở ÷ số tin đã chảy. Độ rộng: số chủ đề hiệu dụng, e mũ entropy Shannon.</string>
 </resources>

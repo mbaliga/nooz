@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">स्रोत जोडा</string>
     <string name="list_filter_region">%1$s वर गाळा</string>
     <string name="list_toggle_topic">%1$s बदला</string>
+    <string name="widget_loading">लोड होत आहे…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s पर्यंत</string>
+    <string name="widget_error">Nooz ला आत्ता स्वतःचा डेटा वाचता आला नाही. उघडण्यासाठी टॅप करा.</string>
+    <string name="widget_no_sources">अजून कोणतेही स्रोत निवडलेले नाहीत. तुमचे स्रोत निवडण्यासाठी टॅप करा.</string>
+    <string name="widget_and_more">आणि आणखी %1$d</string>
+    <string name="widget_week_of">%1$s चा आठवडा</string>
+    <string name="widget_open_cross_section">%1$s उघडते, जिथे प्रत्येक आकडा त्याचा नियम दाखवतो</string>
+    <string name="widget_open_stand">स्टँड उघडते</string>
+    <string name="widget_river_name">या आठवड्यात: जे वाहिले आणि जे वाचले</string>
+    <string name="widget_river_description">या आठवड्यात तुमच्या स्रोतांकडून जे वाहिले आणि तुम्ही जे वाचले, विषयानुसार, एका चित्रात.</string>
+    <string name="widget_river_alt">%1$s चा आठवडा, तुमच्या %2$s कडून: %3$d बातम्या वाहिल्या आणि तुम्ही %4$d वाचल्या. विषयानुसार, वाहिलेल्याचा वाटा आणि वाचलेल्याचा वाटा: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% वाहिल्या, %3$d%% वाचल्या</string>
+    <string name="widget_river_legend_head">प्रत्येक विषय: वाहिलेल्याचा वाटा / वाचलेल्याचा वाटा</string>
+    <string name="widget_river_empty">तुमच्या %1$s कडून अजून काहीही वाहिलेले नाही.</string>
+    <string name="widget_headlines_name">तुमच्या स्रोतांचे मथळे</string>
+    <string name="widget_headlines_description">तुम्ही निवडलेल्या स्रोतांच्या सर्वात नव्या बातम्या, नवी आधी, स्पष्ट शेवटासह.</string>
+    <string name="widget_headlines_end">शेवट · तुमच्या %2$s कडून सर्वात नव्या %1$d</string>
+    <string name="widget_headlines_empty">तुमच्या %1$s कडून अजून काहीही आलेले नाही.</string>
+    <string name="widget_history_description">स्टँडवरील “आज इतिहासात” स्तंभ, Nooz ने तो लोड केल्यावर. स्तंभ बंद असताना काहीही दाखवत नाही.</string>
+    <string name="widget_history_off">“आज इतिहासात” स्तंभ बंद आहे. सेटिंग्जमध्ये तो सुरू करण्यासाठी टॅप करा.</string>
+    <string name="widget_history_not_loaded">स्टँडने लोड केल्यावर आजचा स्तंभ इथे दिसेल.</string>
+    <string name="widget_history_earlier">%1$s चा. स्टँडने लोड केल्यावर आजचा दिसेल.</string>
+    <string name="widget_health_name">स्रोतांची स्थिती</string>
+    <string name="widget_health_description">तुमचा प्रत्येक स्रोत नीट मिळत आहे की नाही, आकड्यांत आणि साध्या शब्दांत.</string>
+    <string name="widget_health_summary">तुमच्या %2$s पैकी %1$d: शेवटची मिळवणी यशस्वी, 48 तासांत</string>
+    <string name="widget_health_ok">शेवटची मिळवणी यशस्वी, 48 तासांत</string>
+    <string name="widget_health_failing">शेवटची मिळवणी अयशस्वी</string>
+    <string name="widget_health_rate_limited">Nooz ला सावकाश येण्यास सांगितले</string>
+    <string name="widget_health_stale">48 तासांत एकही मिळवणी नाही</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">शेवटचा प्रयत्न %1$s</string>
+    <string name="widget_clippings_description">तुम्ही कापलेले लेख, सर्वात अलीकडे कापलेले आधी.</string>
+    <string name="widget_clippings_count_one">%1$d कात्रण</string>
+    <string name="widget_clippings_count_many">%1$d कात्रणे</string>
+    <string name="widget_clipped_on">%1$s रोजी कापले</string>
+    <string name="widget_coverage_name">व्याप्ती आणि विस्तार</string>
+    <string name="widget_coverage_description">क्रॉस-सेक्शनमधून या आठवड्याची व्याप्ती आणि विस्तार, प्रत्येकी त्याच्या नियमासह.</string>
+    <string name="widget_coverage_opened">तुमच्या %3$s कडून वाहिलेल्या %2$d बातम्यांपैकी तुम्ही %1$d उघडल्या.</string>
+    <string name="widget_coverage_rule">व्याप्ती: उघडलेल्या बातम्या ÷ वाहिलेल्या बातम्या. विस्तार: विषयांची प्रभावी संख्या, म्हणजे e चा घात शॅनन एन्ट्रॉपी.</string>
 </resources>

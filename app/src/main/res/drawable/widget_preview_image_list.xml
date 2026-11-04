@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- previewImage for the list widgets, for launchers that do not draw previewLayout. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="144dp"
+    android:viewportWidth="250"
+    android:viewportHeight="180">
+    <path android:fillColor="@color/widget_surface" android:pathData="M16,0 L234,0 Q250,0 250,16 L250,164 Q250,180 234,180 L16,180 Q0,180 0,164 L0,16 Q0,0 16,0 Z" />
+    <path android:fillColor="@color/widget_skeleton_strong" android:pathData="M12,12 L110,12 L110,20 L12,20 Z" />
+    <path android:fillColor="@color/widget_skeleton_strong" android:pathData="M12,40 L238,40 L238,50 L12,50 Z" />
+    <path android:fillColor="@color/widget_skeleton" android:pathData="M12,56 L108,56 L108,64 L12,64 Z" />
+    <path android:fillColor="@color/widget_skeleton_strong" android:pathData="M12,88 L238,88 L238,98 L12,98 Z" />
+    <path android:fillColor="@color/widget_skeleton" android:pathData="M12,104 L84,104 L84,112 L12,112 Z" />
+    <path android:fillColor="@color/widget_skeleton_strong" android:pathData="M12,136 L238,136 L238,146 L12,146 Z" />
+    <path android:fillColor="@color/widget_skeleton" android:pathData="M12,152 L108,152 L108,160 L12,160 Z" />
+</vector>

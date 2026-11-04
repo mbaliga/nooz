@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">स्रोत जोड़ू</string>
     <string name="list_filter_region">%1$s पर छानू</string>
     <string name="list_toggle_topic">%1$s बदलू</string>
+    <string name="widget_loading">लोड भ\' रहल अछि…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s धरि</string>
+    <string name="widget_error">Nooz एखन अपन डेटा नहि पढ़ि सकल। खोलबाक लेल टैप करू।</string>
+    <string name="widget_no_sources">एखन धरि कोनो स्रोत नहि चुनल गेल। अपन स्रोत चुनबाक लेल टैप करू।</string>
+    <string name="widget_and_more">आ %1$d आओर</string>
+    <string name="widget_week_of">%1$s बला सप्ताह</string>
+    <string name="widget_open_cross_section">%1$s खोलैत अछि, जतय सभ संख्या अपन नियम देखबैत अछि</string>
+    <string name="widget_open_stand">स्टैंड खोलैत अछि</string>
+    <string name="widget_river_name">एहि सप्ताह: जे बहल आ जे पढ़ल</string>
+    <string name="widget_river_description">एहि सप्ताह अहाँक स्रोत सँ जे बहल आ अहाँ जे पढ़लहुँ, विषय अनुसार, एकटा चित्र मे।</string>
+    <string name="widget_river_alt">%1$s बला सप्ताह, अहाँक %2$s सँ: %3$d खबरि बहल आ अहाँ %4$d पढ़लहुँ। विषय अनुसार, बहलक हिस्सा आ पढ़लक हिस्सा: %5$s।</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% बहल, %3$d%% पढ़ल</string>
+    <string name="widget_river_legend_head">सभ विषय: बहलक हिस्सा / पढ़लक हिस्सा</string>
+    <string name="widget_river_empty">अहाँक %1$s सँ एखन धरि किछु नहि बहल।</string>
+    <string name="widget_headlines_name">अहाँक स्रोतक सुर्खी</string>
+    <string name="widget_headlines_description">अहाँक चुनल स्रोतक सभ सँ नव खबरि, नव पहिने, स्पष्ट अंतक संग।</string>
+    <string name="widget_headlines_end">अंत · अहाँक %2$s सँ सभ सँ नव %1$d</string>
+    <string name="widget_headlines_empty">अहाँक %1$s सँ एखन धरि किछु नहि आयल।</string>
+    <string name="widget_history_description">स्टैंडक “आइ इतिहास मे” स्तंभ, जखन Nooz ओकरा लोड क\' लेत। स्तंभ बंद रहला पर किछु नहि देखबैत अछि।</string>
+    <string name="widget_history_off">“आइ इतिहास मे” स्तंभ बंद अछि। सेटिंग मे चालू करबाक लेल टैप करू।</string>
+    <string name="widget_history_not_loaded">आजुक स्तंभ स्टैंडक लोड केलाक बाद एतय देखायत।</string>
+    <string name="widget_history_earlier">%1$s क। आजुक स्तंभ स्टैंडक लोड केला पर देखायत।</string>
+    <string name="widget_health_name">स्रोतक स्वास्थ्य</string>
+    <string name="widget_health_description">अहाँक सभ स्रोत ठीक सँ आबि रहल अछि कि नहि, गिनती आ सोझ शब्द मे।</string>
+    <string name="widget_health_summary">अहाँक %2$s मे सँ %1$d: अंतिम आनब सफल, 48 घंटाक भीतर</string>
+    <string name="widget_health_ok">अंतिम आनब सफल, 48 घंटाक भीतर</string>
+    <string name="widget_health_failing">अंतिम आनब विफल</string>
+    <string name="widget_health_rate_limited">Nooz केँ धीमा होबय लेल कहलक</string>
+    <string name="widget_health_stale">48 घंटा सँ कोनो आनब नहि</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">अंतिम प्रयास %1$s</string>
+    <string name="widget_clippings_description">अहाँक काटल रचना सभ, सभ सँ हालक काटल पहिने।</string>
+    <string name="widget_clippings_count_one">%1$d कतरनि</string>
+    <string name="widget_clippings_count_many">%1$d कतरनि</string>
+    <string name="widget_clipped_on">%1$s केँ काटल</string>
+    <string name="widget_coverage_name">दायरा आ चाकरि</string>
+    <string name="widget_coverage_description">क्रॉस-सेक्शन सँ एहि सप्ताहक दायरा आ चाकरि, सभ अपन नियमक संग।</string>
+    <string name="widget_coverage_opened">अहाँ अपन %3$s सँ बहल %2$d खबरि मे सँ %1$d खोललहुँ।</string>
+    <string name="widget_coverage_rule">दायरा: खोलल खबरि ÷ बहल खबरि। चाकरि: विषयक प्रभावी संख्या, अर्थात e क घात शैनन एन्ट्रॉपी।</string>
 </resources>

@@ -336,6 +336,58 @@
     <string name="settings_open_word_list">Open the loaded-language word list</string>
     <string name="settings_contact_email">Contact Nooz by email</string>
 
+    <!-- Home-screen widgets. A home screen is a public surface the reader glances at without deciding to, so the house register holds hardest here: every total names its denominator (your sources, never all the news), lists end, and nothing counts what the reader has not done yet. -->
+    <string name="widget_loading">Loading…</string>
+    <!-- Joins two phrases a screen reader speaks together, e.g. a headline and its source and time. Use your language's own list comma. -->
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">As of %1$s</string>
+    <string name="widget_error">Nooz couldn\'t read its own data just now. Tap to open it.</string>
+    <string name="widget_no_sources">No sources chosen yet. Tap to choose yours.</string>
+    <string name="widget_and_more">and %1$d more</string>
+    <string name="widget_week_of">Week of %1$s</string>
+    <!-- What a tap does, spoken by TalkBack. %1$s is the screen as the app labels it, e.g. “EDIT › Region & Topics”; it is inserted as shown, untranslated where the app shows it untranslated. -->
+    <string name="widget_open_cross_section">Opens %1$s, where each number shows its rule</string>
+    <string name="widget_open_stand">Opens the Stand</string>
+    <!-- The picture widget's name, in the picker and on the widget. Literal on purpose: metaphorical naming is reserved to the owner (STATE.md §RESERVED), so do not call it a river or a stream. -->
+    <string name="widget_river_name">Flowed and read, this week</string>
+    <string name="widget_river_description">What flowed from your sources this week against what you read, by topic, drawn as one picture.</string>
+    <!-- Alt text for the river picture, spoken by TalkBack. %1$s is a date; %2$s is a source count such as “12 sources”; %3$d stories flowed; %4$d were read; %5$s is the per-topic list built from widget_river_alt_topic. -->
+    <string name="widget_river_alt">Week of %1$s, from your %2$s: %3$d stories flowed and you read %4$d. By topic, share of what flowed and share of what you read: %5$s.</string>
+    <!-- %1$s is a topic's working label (kept in English, RESERVED); %2$d and %3$d are percentages. -->
+    <string name="widget_river_alt_topic">%1$s %2$d%% flowed, %3$d%% read</string>
+    <string name="widget_river_legend_head">Each topic: share of what flowed / share of what you read</string>
+    <string name="widget_river_empty">Nothing has flowed from your %1$s yet.</string>
+    <string name="widget_headlines_name">Headlines from your sources</string>
+    <string name="widget_headlines_description">The newest stories from the sources you chose, newest first, with a clear end.</string>
+    <!-- The end-of-list mark. %1$d is how many headlines the widget shows (at most five); %2$s is a source count such as “12 sources”. -->
+    <string name="widget_headlines_end">End · the newest %1$d from your %2$s</string>
+    <string name="widget_headlines_empty">Nothing has arrived from your %1$s yet.</string>
+    <string name="widget_history_description">The Stand\'s Today in History column, once Nooz has loaded it. Shows nothing while the column is off.</string>
+    <string name="widget_history_off">The Today in History column is off. Tap to turn it on in Settings.</string>
+    <string name="widget_history_not_loaded">Today\'s column appears here once the Stand has loaded it.</string>
+    <string name="widget_history_earlier">From %1$s. Today\'s appears once the Stand loads it.</string>
+    <string name="widget_health_name">Source health</string>
+    <string name="widget_health_description">Whether each of your sources is fetching cleanly, as counts and plain words.</string>
+    <!-- %1$d sources whose last fetch succeeded within 48 hours, out of %2$s, a count such as “12 sources”. The words are the rule itself: the screen a tap opens does not explain source health, so keep the 48 hours and the success. -->
+    <string name="widget_health_summary">%1$d of your %2$s: last fetch succeeded, within 48 hours</string>
+    <string name="widget_health_ok">Last fetch succeeded, within 48 hours</string>
+    <string name="widget_health_failing">Last fetch failed</string>
+    <string name="widget_health_rate_limited">Asked Nooz to slow down</string>
+    <!-- A source state, shown beside its source and in counts. These words are the state's rule (no successful or unsuccessful fetch has run for 48 hours), not a label for one. -->
+    <string name="widget_health_stale">No fetch in 48 hours</string>
+    <!-- One state's count beside a summary: %1$s is a state's words (e.g. “No fetch in 48 hours”), %2$d its number of sources. Use your language's own colon. -->
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Last tried %1$s</string>
+    <string name="widget_clippings_description">The pieces you clipped, most recently clipped first.</string>
+    <string name="widget_clippings_count_one">%1$d clipping</string>
+    <string name="widget_clippings_count_many">%1$d clippings</string>
+    <string name="widget_clipped_on">Clipped %1$s</string>
+    <string name="widget_coverage_name">Coverage and breadth</string>
+    <string name="widget_coverage_description">This week\'s coverage and breadth from the cross-section, each with its rule.</string>
+    <string name="widget_coverage_opened">You opened %1$d of the %2$d stories that flowed from your %3$s.</string>
+    <!-- The formulas behind the two numbers. Keep the division sign and Shannon's name. -->
+    <string name="widget_coverage_rule">Coverage: stories opened ÷ stories that flowed. Breadth: the effective number of topics, e to the power of the Shannon entropy.</string>
+
     <!-- Uncategorised: give these a section in _sections.json. -->
     <string name="bar_waiting">Waiting for stories</string>
     <string name="empty_no_results">No results found</string>

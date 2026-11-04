@@ -1,10 +1,12 @@
 package xyz.mdhv.riverwip
 
 import android.app.Application
+import android.os.LocaleList
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import xyz.mdhv.riverwip.crash.CrashRecovery
 import xyz.mdhv.riverwip.data.work.FetchScheduler
+import xyz.mdhv.riverwip.widget.WidgetUpdater
 
 /**
  * Application / composition root.
@@ -35,5 +37,28 @@ class RiverApplication : Application() {
         container = AppContainer(this)
         WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(container.workerFactory).build())
         FetchScheduler.schedule(this)
+        // Home-screen widgets redraw when their data changes, not on a timer.
+        WidgetUpdater.start(this)
+        lastLocales = resources.configuration.locales
+        lastFontScale = resources.configuration.fontScale
+    }
+
+    private var lastLocales: LocaleList? = null
+    private var lastFontScale: Float = 1f
+
+    /**
+     * A new interface language (the per-app choice on API 33+, or the phone's
+     * own) or a new font size reaches the widgets here: the words change, and
+     * a font size moves every widget's size breakpoints. A rotation or a theme
+     * change does not redraw them, since the launcher resolves their day and
+     * night colours itself.
+     */
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (newConfig.locales != lastLocales || newConfig.fontScale != lastFontScale) {
+            lastLocales = newConfig.locales
+            lastFontScale = newConfig.fontScale
+            WidgetUpdater.request(this)
+        }
     }
 }

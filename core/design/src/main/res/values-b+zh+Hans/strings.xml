@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">添加来源</string>
     <string name="list_filter_region">筛选到 %1$s</string>
     <string name="list_toggle_topic">切换 %1$s</string>
+    <string name="widget_loading">正在加载…</string>
+    <string name="widget_pair">%1$s，%2$s</string>
+    <string name="widget_as_of">截至 %1$s</string>
+    <string name="widget_error">Nooz 暂时无法读取自己的数据。轻触打开应用。</string>
+    <string name="widget_no_sources">还没有选择来源。轻触选择你的来源。</string>
+    <string name="widget_and_more">另有 %1$d 条</string>
+    <string name="widget_week_of">%1$s 这一周</string>
+    <string name="widget_open_cross_section">打开%1$s，每个数字都会显示它的规则</string>
+    <string name="widget_open_stand">打开报摊</string>
+    <string name="widget_river_name">本周送来的与读了的</string>
+    <string name="widget_river_description">本周你的来源送来了什么、你读了什么，按话题画成一张图。</string>
+    <string name="widget_river_alt">%1$s 这一周，来自你的%2$s：送来 %3$d 条，你读了 %4$d 条。按话题，送来的占比和你读的占比：%5$s。</string>
+    <string name="widget_river_alt_topic">%1$s 送来 %2$d%%，读了 %3$d%%</string>
+    <string name="widget_river_legend_head">每个话题：送来的占比 / 你读的占比</string>
+    <string name="widget_river_empty">你的%1$s还没有送来任何内容。</string>
+    <string name="widget_headlines_name">你的来源的头条</string>
+    <string name="widget_headlines_description">你选择的来源的最新报道，最新的在前，有明确的结尾。</string>
+    <string name="widget_headlines_end">结束 · 你的%2$s中最新的 %1$d 条</string>
+    <string name="widget_headlines_empty">你的%1$s还没有送达任何内容。</string>
+    <string name="widget_history_description">报摊上的“历史上的今天”专栏，在 Nooz 加载后显示。专栏关闭时不显示任何内容。</string>
+    <string name="widget_history_off">“历史上的今天”专栏已关闭。轻触前往设置开启。</string>
+    <string name="widget_history_not_loaded">报摊加载今天的专栏后，会显示在这里。</string>
+    <string name="widget_history_earlier">这是 %1$s 的。今天的专栏会在报摊加载后显示。</string>
+    <string name="widget_health_name">来源状态</string>
+    <string name="widget_health_description">你的每个来源是否正常获取，用数字和直白的话说明。</string>
+    <string name="widget_health_summary">你的%2$s中有 %1$d 个：上次获取成功，在 48 小时内</string>
+    <string name="widget_health_ok">上次获取成功，在 48 小时内</string>
+    <string name="widget_health_failing">上次获取失败</string>
+    <string name="widget_health_rate_limited">要求 Nooz 放慢速度</string>
+    <string name="widget_health_stale">48 小时内没有获取</string>
+    <string name="widget_health_count">%1$s：%2$d</string>
+    <string name="widget_health_last_tried">上次尝试 %1$s</string>
+    <string name="widget_clippings_description">你剪下的文章，最近剪下的在前。</string>
+    <string name="widget_clippings_count_one">%1$d 份剪报</string>
+    <string name="widget_clippings_count_many">%1$d 份剪报</string>
+    <string name="widget_clipped_on">剪于 %1$s</string>
+    <string name="widget_coverage_name">覆盖与广度</string>
+    <string name="widget_coverage_description">来自截面的本周覆盖与广度，各附其规则。</string>
+    <string name="widget_coverage_opened">你的%3$s送来的 %2$d 条中，你打开了 %1$d 条。</string>
+    <string name="widget_coverage_rule">覆盖：打开的条数 ÷ 送来的条数。广度：有效话题数，即 e 的香农熵次方。</string>
 </resources>

@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  330 of 330 strings translated.
+  370 of 370 strings translated.
 -->
 <resources>
 
@@ -341,4 +341,44 @@
     <string name="list_add_sources">Ongeza vyanzo</string>
     <string name="list_filter_region">Chuja hadi %1$s</string>
     <string name="list_toggle_topic">Washa au zima %1$s</string>
+    <string name="widget_loading">Inapakia…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">Kufikia %1$s</string>
+    <string name="widget_error">Nooz imeshindwa kusoma data yake sasa hivi. Gusa ili kuifungua.</string>
+    <string name="widget_no_sources">Bado hujachagua vyanzo. Gusa ili kuchagua vyako.</string>
+    <string name="widget_and_more">na %1$d zaidi</string>
+    <string name="widget_week_of">Wiki ya %1$s</string>
+    <string name="widget_open_cross_section">Hufungua %1$s, ambapo kila nambari huonyesha kanuni yake</string>
+    <string name="widget_open_stand">Hufungua Kibanda</string>
+    <string name="widget_river_name">Kilichotiririka na kilichosomwa, wiki hii</string>
+    <string name="widget_river_description">Kilichotiririka kutoka vyanzo vyako wiki hii dhidi ya ulichosoma, kwa mada, katika picha moja.</string>
+    <string name="widget_river_alt">Wiki ya %1$s, kutoka %2$s vyako: habari %3$d zilitiririka na ulisoma %4$d. Kwa mada, sehemu ya kilichotiririka na sehemu ya ulichosoma: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% zilitiririka, %3$d%% zilisomwa</string>
+    <string name="widget_river_legend_head">Kila mada: sehemu ya kilichotiririka / sehemu ya ulichosoma</string>
+    <string name="widget_river_empty">Bado hakuna kilichotiririka kutoka %1$s vyako.</string>
+    <string name="widget_headlines_name">Vichwa vya habari kutoka vyanzo vyako</string>
+    <string name="widget_headlines_description">Habari mpya zaidi kutoka vyanzo ulivyochagua, mpya kwanza, zenye mwisho ulio wazi.</string>
+    <string name="widget_headlines_end">Mwisho · %1$d mpya zaidi kutoka %2$s vyako</string>
+    <string name="widget_headlines_empty">Bado hakuna kilichofika kutoka %1$s vyako.</string>
+    <string name="widget_history_description">Safu ya Leo katika historia ya Kibanda, mara Nooz itakapoipakia. Haionyeshi chochote safu ikiwa imezimwa.</string>
+    <string name="widget_history_off">Safu ya Leo katika historia imezimwa. Gusa ili kuiwasha kwenye Mipangilio.</string>
+    <string name="widget_history_not_loaded">Safu ya leo huonekana hapa mara Kibanda kitakapoipakia.</string>
+    <string name="widget_history_earlier">Ya %1$s. Ya leo huonekana mara Kibanda kitakapoipakia.</string>
+    <string name="widget_health_name">Afya ya vyanzo</string>
+    <string name="widget_health_description">Kama kila chanzo chako kinapakuliwa bila tatizo, kwa hesabu na maneno rahisi.</string>
+    <string name="widget_health_summary">%1$d kati ya %2$s vyako: upakuaji wa mwisho ulifanikiwa, ndani ya saa 48</string>
+    <string name="widget_health_ok">Upakuaji wa mwisho ulifanikiwa, ndani ya saa 48</string>
+    <string name="widget_health_failing">Upakuaji wa mwisho ulishindwa</string>
+    <string name="widget_health_rate_limited">Kiliomba Nooz ipunguze kasi</string>
+    <string name="widget_health_stale">Hakuna upakuaji kwa saa 48</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Jaribio la mwisho %1$s</string>
+    <string name="widget_clippings_description">Makala ulizokata, iliyokatwa karibuni kwanza.</string>
+    <string name="widget_clippings_count_one">Kipande %1$d</string>
+    <string name="widget_clippings_count_many">Vipande %1$d</string>
+    <string name="widget_clipped_on">Kilikatwa %1$s</string>
+    <string name="widget_coverage_name">Ufikiaji na upana</string>
+    <string name="widget_coverage_description">Ufikiaji na upana wa wiki hii kutoka kwenye mkato wa ndani, kila kimoja na kanuni yake.</string>
+    <string name="widget_coverage_opened">Ulifungua %1$d kati ya habari %2$d zilizotiririka kutoka %3$s vyako.</string>
+    <string name="widget_coverage_rule">Ufikiaji: habari zilizofunguliwa ÷ habari zilizotiririka. Upana: idadi halisi ya mada, e kwa kipeo cha entropia ya Shannon.</string>
 </resources>
