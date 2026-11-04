@@ -2042,6 +2042,49 @@ respect as the CI-caught log above.
   can see is the copy that needs a test rather than a glance. 13 tests, 321
   across the build, all passing.
   29 locales complete at 330 strings; Kashmiri 119/330 (36%, up from 31%).
+- **D60 — The owner's revised icon, and one master for every copy of it
+  (2026-11-04).** The owner supplied revised artwork: the same newspaper, now
+  with the circled ASOC mark at its top-right corner, on a black rounded plate
+  (1100px). It is committed verbatim as `tools/icon/master.png`, and
+  `tools/icon/generate.py` derives every icon file from it: the 15 launcher
+  mipmaps, the store `icon.png`, and the web reader's icons.
+  **Why a generator.** Both earlier swaps were done by hand: D32's pixel art,
+  then twenty minutes later the current newspaper (`205f1fc`, which STATE
+  never recorded). Both left the web reader behind: from 2026-08-12 the
+  Android app showed the newspaper while
+  the web reader's favicon, manifest and home-screen icon still showed the
+  original serif wordmark (and its `icon-192.png` was really 512px). With one
+  master and one command, the copies can't drift apart.
+  **Same geometry as D32, now computed.** A flood fill from the canvas edge
+  separates the drawing from its plate. That cleans the plate's compression
+  noise (levels 1–6 of 255) to true black while keeping the dark linework
+  inside the paper part of the drawing. The drawing is then scaled about the
+  artwork's own centre so its furthest pixel lands 35.5dp out, just inside the
+  36dp circle mask. That furthest pixel is now the mark rather than a paper
+  corner, so the paper is ~5% smaller on the launcher than in D32 (55dp wide,
+  was 58dp). The alternative was clipping the mark on every circle-masked
+  launcher, Pixel's default included. The monochrome layer keeps `205f1fc`'s
+  luminance-as-alpha knockout: D32's filled silhouette was a featureless slab
+  once the artwork became a plain rectangle.
+  **At launcher sizes the mark is a dot:** ~5px across on the xxxhdpi
+  foreground, ~10px in the 512px store icon. That is the artwork's own
+  proportion (the mark is ~2% of the canvas), recorded here rather than changed.
+  **Web reader.** It gains a `maskable` icon (the web's adaptive icon, fitted to
+  its 40% safe zone with the same margin) and a full-square 180px
+  `apple-touch-icon` for iOS to round. `vercel.json` serves `web/icons/` as
+  `immutable` for a year, so replacing the files in place would have left
+  returning browsers on the old icon until 2027. Instead each filename carries
+  a hash of its pixels, and the generator rewrites `manifest.webmanifest` and
+  `index.html` to match.
+  The store icon is now a 32-bit PNG (fully opaque), the format Play asks for.
+  The legacy `ic_launcher.png`, which no minSdk-31 device ever shows, is now
+  the artwork as drawn, rounded plate included, rather than a filled square.
+  Verified by rendering the adaptive icon under circle, squircle,
+  rounded-square and teardrop masks, Android 13 themed icons in light and dark,
+  48–144px home-screen sizes, Play's corner mask, the maskable icon against its
+  safe zone, and iOS's mask. A second run of the generator is byte-identical.
+  Not seen on a device (none here); CI's assemble and lint are the resource
+  check.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
@@ -2149,9 +2192,12 @@ Marvel/Loki/TVA references anywhere (loom image guides form only, never copy).
 **Decided by the owner** (not by this build):
 - The app name — **"Nooz"** — delivered via the owner's own design mocks on
   2026-07-10 and applied per decision D5.
-- The app icon — the owner's 512×512 logo (2026-07-11/12 mock drop), applied
-  per decision D6 (launcher mipmaps + `fastlane/.../images/icon.png`). No
-  longer reserved/open.
+- The app icon — the owner's artwork, first applied per decision D6
+  (2026-07-11/12 mock drop), redrawn per D32 (2026-08-12), and revised with the
+  ASOC mark per D60 (2026-11-04). The current artwork is
+  `tools/icon/master.png`. Every icon file (launcher mipmaps,
+  `fastlane/.../images/icon.png`, `web/icons/`) is generated from it by
+  `tools/icon/generate.py`. No longer reserved/open.
 - The applicationId/package — **`dev.asystemofcells.nooz`** — forced by the
   owner's Play Console listing (2026-07-20); applied via a new
   `riverwip.applicationId` property, `AppInfo.PACKAGE_BASE`, and the `full`
