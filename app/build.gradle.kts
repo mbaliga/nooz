@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "${property("riverwip.packageBase")}"
-    compileSdk = 35
+    compileSdk = 36
 
     // Must match :core:inference's own ndkVersion. That module builds the
     // llama.cpp native libraries, but the *packaging* of them happens here,
@@ -35,7 +35,7 @@ android {
         // applicationIdSuffix so bundleFullRelease's AAB matches this exactly.
         applicationId = "${property("riverwip.applicationId")}"
         minSdk = 31
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 4
         versionName = "0.3.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
