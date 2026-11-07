@@ -9,7 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import xyz.mdhv.riverwip.model.ReaderFont
-import xyz.mdhv.riverwip.model.TextScale
+import xyz.mdhv.riverwip.model.ReaderAlign
 import xyz.mdhv.riverwip.model.ThemeMode
 
 /**
@@ -91,11 +91,18 @@ private val CharcoalScheme = darkColorScheme(
     error = Color(0xFFF2B8B5),
 )
 
+/** True when the reader should turn discrete pages instead of scrolling continuously. */
+val LocalPageTurn = androidx.compose.runtime.compositionLocalOf { false }
+
 @Composable
 fun RiverTheme(
     themeMode: ThemeMode = ThemeMode.SYSTEM,
     readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
-    textScale: TextScale = TextScale.PEANUT,
+    fontScale: Float = 1.0f,
+    fontWeight: Int = 400,
+    ligatures: Boolean = true,
+    textAlign: ReaderAlign = ReaderAlign.DEFAULT,
+    pageTurn: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     // The one place SYSTEM becomes a literal tint. Everything downstream — the
@@ -110,10 +117,10 @@ fun RiverTheme(
         else -> PaperScheme
     }
     val extended = if (tint == ThemeMode.DARK) DarkExtended else PaperExtended
-    CompositionLocalProvider(LocalExtendedColors provides extended) {
+    CompositionLocalProvider(LocalExtendedColors provides extended, LocalPageTurn provides pageTurn) {
         MaterialTheme(
             colorScheme = scheme,
-            typography = riverTypography(readerFont, textScale),
+            typography = riverTypography(readerFont, fontScale, fontWeight, ligatures, textAlign),
             content = content,
         )
     }

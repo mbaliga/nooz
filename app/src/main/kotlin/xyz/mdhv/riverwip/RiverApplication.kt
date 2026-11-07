@@ -4,6 +4,13 @@ import android.app.Application
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import xyz.mdhv.riverwip.crash.CrashRecovery
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import xyz.mdhv.riverwip.data.net.OfflineMode
 import xyz.mdhv.riverwip.data.work.FetchScheduler
 
 /**
@@ -35,5 +42,13 @@ class RiverApplication : Application() {
         container = AppContainer(this)
         WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(container.workerFactory).build())
         FetchScheduler.schedule(this)
+        // Mirror the persisted Offline toggle into the process-wide gate that
+        // HttpClient / the fetch worker / image loading all consult.
+        CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
+            container.settingsRepository.observeSettings()
+                .map { it.offlineMode }
+                .distinctUntilChanged()
+                .collect { OfflineMode.enabled = it }
+        }
     }
 }

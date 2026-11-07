@@ -111,6 +111,42 @@ enum class TextScale(val key: String, val multiplier: Float, val label: String) 
 }
 
 /**
+ * Reader body alignment: ragged-right ([DEFAULT], the browser/e-reader
+ * default) or [JUSTIFY], spread to both margins.
+ */
+enum class ReaderAlign(val key: String) {
+    DEFAULT("default"),
+    JUSTIFY("justify");
+
+    companion object {
+        fun fromKey(key: String?): ReaderAlign = entries.firstOrNull { it.key == key } ?: DEFAULT
+    }
+}
+
+/**
+ * How the reader moves through an article: one [CONTINUOUS] scroll (the
+ * default), or discrete [PAGE] turns — tap the right of the screen (or swipe
+ * up) for the next page, tap the left (or swipe down) for the previous one.
+ */
+enum class ReaderTransition(val key: String) {
+    CONTINUOUS("continuous"),
+    PAGE("page");
+
+    companion object {
+        fun fromKey(key: String?): ReaderTransition = entries.firstOrNull { it.key == key } ?: CONTINUOUS
+    }
+}
+
+/** Bounds for the continuous reading-size and weight sliders. */
+object ReaderTypeBounds {
+    const val MIN_SCALE = 0.8f
+    const val MAX_SCALE = 1.6f
+    const val MIN_WEIGHT = 400
+    const val MAX_WEIGHT = 700
+    const val WEIGHT_STEP = 100
+}
+
+/**
  * Paper texture (owner's ask, 2026-07): three fixed steps, not a slider —
  * "simplistic and minimal but serving a wide range." Applies to Paper's
  * background and Clippings' torn cards; None (the default) draws nothing.
@@ -189,7 +225,25 @@ data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
     val showReadingTime: Boolean = true,
-    val textScale: TextScale = TextScale.PEANUT,
+    /**
+     * Continuous reading-size multiplier on the type scale (the horizontal
+     * slider). 1.0 is the old "Peanut"; a reader who picked a three-step size
+     * before the slider existed is migrated to that step's multiplier.
+     */
+    val fontScale: Float = 1.0f,
+    /** Reader body weight, 400..700 in steps of 100. */
+    val fontWeight: Int = 400,
+    /** Ligatures on the reading body (only where the chosen font has them). */
+    val ligatures: Boolean = true,
+    val textAlign: ReaderAlign = ReaderAlign.DEFAULT,
+    val readerTransition: ReaderTransition = ReaderTransition.CONTINUOUS,
+    /** Lock the screen to its current orientation (large screens may ignore this on Android 16+). */
+    val rotationLock: Boolean = false,
+    /**
+     * Offline mode: no network requests at all — feeds, article text and
+     * images come only from what is already on the device.
+     */
+    val offlineMode: Boolean = false,
     /**
      * The lens's loaded-language highlighting (owner: the reader's eye toggle
      * was confusing and off-mock). Off by default; a single Settings switch

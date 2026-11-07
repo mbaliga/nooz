@@ -40,6 +40,7 @@ class HttpClient(
         etag: String? = null,
         lastModified: String? = null,
     ): Response = withContext(Dispatchers.IO) {
+        if (OfflineMode.enabled) throw OfflineException()
         var current = url
         var redirects = 0
         while (true) {
