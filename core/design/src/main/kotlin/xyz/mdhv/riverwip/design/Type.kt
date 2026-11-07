@@ -5,9 +5,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import xyz.mdhv.riverwip.model.ReaderFont
-import xyz.mdhv.riverwip.model.TextScale
+import xyz.mdhv.riverwip.model.ReaderAlign
 
 /**
  * Type scale. Sizes/weights mirror Hyle `typography.json`; the three reading
@@ -67,15 +70,32 @@ fun ReaderFont.family(): FontFamily = when (this) {
  */
 fun riverTypography(
     readerFont: ReaderFont = ReaderFont.GROTESK_CLASSIC,
-    textScale: TextScale = TextScale.PEANUT,
+    fontScale: Float = 1.0f,
+    bodyWeight: Int = 400,
+    ligatures: Boolean = true,
+    textAlign: ReaderAlign = ReaderAlign.DEFAULT,
 ): Typography {
-    val k = textScale.multiplier
+    val k = fontScale
     fun style(family: FontFamily, sizeSp: Int, weight: FontWeight, lineSp: Int) = TextStyle(
         fontFamily = family,
         fontWeight = weight,
         fontSize = (sizeSp * k).sp,
         lineHeight = (lineSp * k).sp,
     )
+    // Reading-body roles take the reader's weight and ligature choice; the
+    // headline/title roles keep the masthead's own voice. Only bodyLarge — the
+    // article text itself — is justified, so list rows and chrome stay ragged.
+    // The Hyle faces ship Regular/Medium/Bold, so an in-between weight snaps
+    // to the nearest real face rather than being synthesised.
+    val ligature = if (ligatures) "liga, clig" else "liga 0, clig 0"
+    fun bodyStyle(sizeSp: Int, lineSp: Int, justify: Boolean = false) =
+        style(readerFont.family(), sizeSp, FontWeight(bodyWeight), lineSp).copy(
+            fontFeatureSettings = ligature,
+            textAlign = if (justify) TextAlign.Justify else TextAlign.Unspecified,
+            // Justified text needs hyphenation or it opens rivers of white.
+            hyphens = if (justify) Hyphens.Auto else Hyphens.None,
+            lineBreak = if (justify) LineBreak.Paragraph else LineBreak.Simple,
+        )
 
     val body = readerFont.family()
     return Typography(
@@ -84,9 +104,9 @@ fun riverTypography(
         headlineSmall = style(DisplayFontFamily, 21, FontWeight.Medium, 27), // list titles (Stand mock)
         titleLarge = style(DisplayFontFamily, 18, FontWeight.Medium, 24),
         titleMedium = style(body, 16, FontWeight.Medium, 22),
-        bodyLarge = style(body, 16, FontWeight.Normal, 26),                  // reading body, relaxed
-        bodyMedium = style(body, 14, FontWeight.Normal, 21),
-        bodySmall = style(body, 12, FontWeight.Normal, 18),
+        bodyLarge = bodyStyle(16, 26, justify = textAlign == ReaderAlign.JUSTIFY), // reading body, relaxed
+        bodyMedium = bodyStyle(14, 21),
+        bodySmall = bodyStyle(12, 18),
         labelLarge = style(body, 14, FontWeight.Medium, 18),
         labelMedium = style(body, 12, FontWeight.Medium, 16),
         labelSmall = style(body, 11, FontWeight.Medium, 14),

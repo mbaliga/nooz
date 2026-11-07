@@ -103,7 +103,6 @@ import xyz.mdhv.riverwip.design.R as DesignR
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.ReaderFont
-import xyz.mdhv.riverwip.model.TextScale
 import xyz.mdhv.riverwip.model.ThemeMode
 import xyz.mdhv.riverwip.model.TranslationOption
 
@@ -198,7 +197,13 @@ class SettingsViewModel(
     fun setTheme(mode: ThemeMode) = viewModelScope.launch { repo.setThemeMode(mode) }
     fun setFont(font: ReaderFont) = viewModelScope.launch { repo.setReaderFont(font) }
     fun setShowReadingTime(show: Boolean) = viewModelScope.launch { repo.setShowReadingTime(show) }
-    fun setTextScale(scale: TextScale) = viewModelScope.launch { repo.setTextScale(scale) }
+    fun setFontScale(scale: Float) = viewModelScope.launch { repo.setFontScale(scale) }
+    fun setFontWeight(weight: Int) = viewModelScope.launch { repo.setFontWeight(weight) }
+    fun setLigatures(on: Boolean) = viewModelScope.launch { repo.setLigatures(on) }
+    fun setTextAlign(align: xyz.mdhv.riverwip.model.ReaderAlign) = viewModelScope.launch { repo.setTextAlign(align) }
+    fun setReaderTransition(t: xyz.mdhv.riverwip.model.ReaderTransition) = viewModelScope.launch { repo.setReaderTransition(t) }
+    fun setRotationLock(on: Boolean) = viewModelScope.launch { repo.setRotationLock(on) }
+    fun setOfflineMode(on: Boolean) = viewModelScope.launch { repo.setOfflineMode(on) }
     fun setHighlightLoadedLanguage(on: Boolean) = viewModelScope.launch { repo.setHighlightLoadedLanguage(on) }
     fun setImmersiveReader(on: Boolean) = viewModelScope.launch { repo.setImmersiveReader(on) }
     fun setTwoFingerBrightness(on: Boolean) = viewModelScope.launch { repo.setTwoFingerBrightness(on) }
@@ -454,35 +459,7 @@ fun SettingsBody(
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            SectionHeading(stringResource(DesignR.string.settings_text_size))
-            Row(
-                modifier = Modifier.selectableGroup(),
-                horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
-            ) {
-                for (scale in TextScale.entries) {
-                    val chosen = settings.textScale == scale
-                    Text(
-                        scale.label,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            // Non-colour channel: the chosen size is bold, not just darker.
-                            fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
-                        ),
-                        color = if (chosen) {
-                            MaterialTheme.colorScheme.onBackground
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                        modifier = Modifier
-                            .selectable(
-                                selected = chosen,
-                                role = Role.RadioButton,
-                                onClick = { vm.setTextScale(scale) },
-                            )
-                            .minimumInteractiveComponentSize()
-                            .padding(vertical = Tokens.Spacing.xxs),
-                    )
-                }
-            }
+            ReadingSection(settings, vm)
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             SectionHeading(stringResource(DesignR.string.settings_paper_grain))
@@ -1289,7 +1266,7 @@ private fun FeedbackRow() {
 }
 
 @Composable
-private fun SettingSwitchRow(title: String, subtitle: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+internal fun SettingSwitchRow(title: String, subtitle: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
