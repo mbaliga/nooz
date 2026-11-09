@@ -20,7 +20,13 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      # v3, and v4's DEFAULT packages input, both request the legacy 'tools'
+      # package, which Google's SDK repository no longer serves: sdkmanager
+      # exits 1 before Gradle runs. Only platform-tools is asked for; AGP
+      # fetches the platform it compiles against. Same fix as ci.yml.
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
       - uses: gradle/actions/setup-gradle@v4
 
       # Decoded to the runner's own temp dir, never written into the checkout
