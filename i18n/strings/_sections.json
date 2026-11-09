@@ -74,6 +74,10 @@
     {
       "title": "Settings. The largest single surface, and the last big one to move.",
       "prefix": "settings_"
+    },
+    {
+      "title": "Reading settings: typography, alignment, page turn, rotation lock and offline.",
+      "prefix": "reading_"
     }
   ]
 }

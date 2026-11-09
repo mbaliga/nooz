@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "${property("riverwip.packageBase")}.inference"
-    compileSdk = 35
+    compileSdk = 36
 
     // Pinned rather than left to whatever's on the machine/runner: this is
     // the first native (NDK/CMake) build in the project (Nooz Cast's

@@ -9,6 +9,14 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 /** Which room a lift-and-part gesture targets — Stand sits to the left, Settings to the right. */
 enum class ReaderRoom { STAND, SETTINGS }
@@ -142,3 +150,39 @@ fun Modifier.readerGestures(
             }
         }
     }
+
+/** Fraction of the viewport a page turn advances — a little overlap keeps the reader's place. */
+private const val PAGE_FRACTION = 0.9f
+
+/**
+ * Page-turn reading (Settings › Transitions › Page): with the list's own
+ * scrolling switched off, a tap on the right two-thirds of the screen turns to
+ * the next page and a tap on the left third goes back; an upward swipe is next,
+ * a downward swipe previous. Taps that land on something interactive (links,
+ * buttons, words) are consumed by it first and never turn the page. Two-finger
+ * gestures are untouched — [readerGestures] consumes those earlier.
+ */
+@Composable
+fun Modifier.pageTurnGestures(enabled: Boolean, state: LazyListState): Modifier {
+    if (!enabled) return this
+    val scope = rememberCoroutineScope()
+    fun turn(direction: Int) {
+        scope.launch {
+            val page = state.layoutInfo.viewportSize.height * PAGE_FRACTION
+            state.animateScrollBy(direction * page, tween(durationMillis = 280))
+        }
+    }
+    return this
+        .pointerInput(state) {
+            detectTapGestures { offset -> turn(if (offset.x < size.width / 3f) -1 else 1) }
+        }
+        .pointerInput(state) {
+            val thresholdPx = 48.dp.toPx()
+            var total = 0f
+            detectVerticalDragGestures(
+                onDragStart = { total = 0f },
+                onDragEnd = { if (abs(total) > thresholdPx) turn(if (total < 0f) 1 else -1) },
+                onVerticalDrag = { change, dy -> total += dy; change.consume() },
+            )
+        }
+}
