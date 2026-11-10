@@ -1,0 +1,5 @@
+Reading settings: a font size slider, font weight, ligatures, text alignment,
+page-turn or continuous reading, rotation lock, and an Offline mode that makes
+no network requests.
+
+Six home-screen widgets. Targets Android 16.
