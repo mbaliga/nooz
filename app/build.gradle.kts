@@ -36,8 +36,8 @@ android {
         applicationId = "${property("riverwip.applicationId")}"
         minSdk = 31
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.4.1"
+        versionCode = 7
+        versionName = "0.5.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // onnxruntime-android (Nooz Cast) bundles a real native libonnxruntime.so

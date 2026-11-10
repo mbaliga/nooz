@@ -15,8 +15,8 @@ The house-wide answers, publisher identity and deploy runbook live in
 - `title.txt` — **"Nooz"**, the owner's decision (D5, 2026-07-10). No longer a
   placeholder.
 - `short_description.txt`, `full_description.txt` — written and current.
-- `changelogs/1.txt`, `changelogs/4.txt` — `4` matches the current
-  `versionCode = 4`. Play needs a file named for the exact versionCode being shipped.
+- `changelogs/1.txt`, `changelogs/4.txt`, `changelogs/7.txt` — `7` matches the
+  current `versionCode = 7`. Play needs a file named for the exact versionCode being shipped.
 - `images/icon.png`, `images/featureGraphic.png` — **present** (owner asset drop,
   2026-07). See `images/README.md`.
 - `images/phoneScreenshots/` — **empty.** Needs a real device; run
