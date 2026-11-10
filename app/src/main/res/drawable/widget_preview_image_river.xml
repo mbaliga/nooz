@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- previewImage for the river widget, for launchers that do not draw previewLayout. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="88dp"
+    android:viewportWidth="250"
+    android:viewportHeight="110">
+    <path android:fillColor="@color/widget_surface" android:pathData="M16,0 L234,0 Q250,0 250,16 L250,94 Q250,110 234,110 L16,110 Q0,110 0,94 L0,16 Q0,0 16,0 Z" />
+    <path android:fillColor="@color/widget_skeleton_strong" android:pathData="M12,12 L110,12 L110,20 L12,20 Z" />
+    <group android:translateX="25" android:translateY="26" android:scaleX="1.0" android:scaleY="0.8">
+        <path android:fillColor="#FFDDCC77" android:fillAlpha="0.55" android:pathData="M0,12 L50,12 L80,68 L0,68 Z" />
+        <path android:fillColor="#FF332288" android:fillAlpha="0.55" android:pathData="M52,12 L90,12 L110,68 L82,68 Z" />
+        <path android:fillColor="#FF44AA99" android:fillAlpha="0.55" android:pathData="M92,12 L140,12 L112,68 L112,68 Z" />
+        <path android:fillColor="#FF117733" android:fillAlpha="0.55" android:pathData="M142,12 L200,12 L200,68 L113,68 Z" />
+        <path android:fillColor="#FFDDCC77" android:pathData="M0,0 L50,0 L50,12 L0,12 Z" />
+        <path android:fillColor="#FF332288" android:pathData="M52,0 L90,0 L90,12 L52,12 Z" />
+        <path android:fillColor="#FF44AA99" android:pathData="M92,0 L140,0 L140,12 L92,12 Z" />
+        <path android:fillColor="#FF117733" android:pathData="M142,0 L200,0 L200,12 L142,12 Z" />
+        <path android:fillColor="#FFDDCC77" android:pathData="M0,68 L80,68 L80,80 L0,80 Z" />
+        <path android:fillColor="#FF332288" android:pathData="M82,68 L110,68 L110,80 L82,80 Z" />
+        <path android:fillColor="#FF117733" android:pathData="M113,68 L200,68 L200,80 L113,80 Z" />
+    </group>
+</vector>

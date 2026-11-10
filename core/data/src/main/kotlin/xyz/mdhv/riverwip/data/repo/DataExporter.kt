@@ -38,7 +38,7 @@ class DataExporter(
             putJsonObjectBlock("settings") {
                 put("theme", settings.themeMode.key)
                 put("readerFont", settings.readerFont.key)
-                put("textScale", settings.textScale.key)
+                put("fontScale", settings.fontScale.toDouble())
                 put("showReadingTime", settings.showReadingTime)
                 put("highlightLoadedLanguage", settings.highlightLoadedLanguage)
                 put("immersiveReader", settings.immersiveReader)

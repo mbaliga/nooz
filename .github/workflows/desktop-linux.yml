@@ -1,0 +1,38 @@
+name: Desktop (Linux)
+
+# Standalone desktop build under desktop/. It does not touch the root build, so the
+# Android jobs in ci.yml are unaffected. Skeleton only: compiles, opens no screens.
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'desktop/**'
+      - 'core/model/**'
+      - '.github/workflows/desktop-linux.yml'
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'core/model/**'
+      - '.github/workflows/desktop-linux.yml'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skeleton:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Core model tests (desktop pins)
+        run: ../gradlew :core:model:test --stacktrace
+        working-directory: desktop
+      - name: Compile the desktop skeleton
+        run: ../gradlew :compileKotlinJvm --stacktrace
+        working-directory: desktop

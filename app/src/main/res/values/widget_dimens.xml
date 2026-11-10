@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Android 12's widget corner radius, so a Nooz widget's corners match every
+      other widget on the same home screen. minSdk is 31, the level that
+      introduced it, so no fixed fallback for older releases is needed.
+    -->
+    <dimen name="widget_corner_radius">@android:dimen/system_app_widget_background_radius</dimen>
+    <!--
+      The parts every layout's height is added up from are pinned to these by
+      WidgetLayoutBudgetTest (app/src/test), against WidgetSizing in :core:model.
+    -->
+    <dimen name="widget_padding">12dp</dimen>
+    <!-- The one-line summary is tighter, so it fits a single landscape row. -->
+    <dimen name="widget_tiny_padding_vertical">6dp</dimen>
+    <!-- Every tappable row is at least a 48dp touch target. -->
+    <dimen name="widget_row_min_height">48dp</dimen>
+    <!-- The leading column: a year, a status shape or a topic swatch. -->
+    <dimen name="widget_lead_width">36dp</dimen>
+</resources>

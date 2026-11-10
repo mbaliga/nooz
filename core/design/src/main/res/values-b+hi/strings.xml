@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 335 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">स्रोत जोड़ें</string>
     <string name="list_filter_region">%1$s पर छाँटें</string>
     <string name="list_toggle_topic">%1$s बदलें</string>
+    <string name="widget_loading">लोड हो रहा है…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s तक</string>
+    <string name="widget_error">Nooz अभी अपना डेटा नहीं पढ़ सका। खोलने के लिए टैप करें।</string>
+    <string name="widget_no_sources">अभी कोई स्रोत नहीं चुना गया है। अपने स्रोत चुनने के लिए टैप करें।</string>
+    <string name="widget_and_more">और %1$d</string>
+    <string name="widget_week_of">%1$s वाला सप्ताह</string>
+    <string name="widget_open_cross_section">%1$s खोलता है, जहाँ हर संख्या अपना नियम दिखाती है</string>
+    <string name="widget_open_stand">स्टैंड खोलता है</string>
+    <string name="widget_river_name">इस सप्ताह: जो बहा और जो पढ़ा</string>
+    <string name="widget_river_description">इस सप्ताह आपके स्रोतों से जो बहा और आपने जो पढ़ा, विषय के हिसाब से, एक चित्र में।</string>
+    <string name="widget_river_alt">%1$s वाला सप्ताह, आपके %2$s से: %3$d ख़बरें बहीं और आपने %4$d पढ़ीं। विषय के हिसाब से, बहे हुए का हिस्सा और पढ़े हुए का हिस्सा: %5$s।</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% बहीं, %3$d%% पढ़ीं</string>
+    <string name="widget_river_legend_head">हर विषय: बहे हुए का हिस्सा / पढ़े हुए का हिस्सा</string>
+    <string name="widget_river_empty">आपके %1$s से अभी तक कुछ नहीं बहा।</string>
+    <string name="widget_headlines_name">आपके स्रोतों की सुर्ख़ियाँ</string>
+    <string name="widget_headlines_description">आपके चुने हुए स्रोतों की सबसे नई ख़बरें, सबसे नई पहले, साफ़ अंत के साथ।</string>
+    <string name="widget_headlines_end">अंत · आपके %2$s से सबसे नई %1$d</string>
+    <string name="widget_headlines_empty">आपके %1$s से अभी तक कुछ नहीं आया।</string>
+    <string name="widget_history_description">स्टैंड का “आज इतिहास में” कॉलम, जब Nooz उसे लोड कर ले। कॉलम बंद हो तो कुछ नहीं दिखाता।</string>
+    <string name="widget_history_off">“आज इतिहास में” कॉलम बंद है। सेटिंग्स में चालू करने के लिए टैप करें।</string>
+    <string name="widget_history_not_loaded">आज का कॉलम स्टैंड के लोड करने के बाद यहाँ दिखेगा।</string>
+    <string name="widget_history_earlier">%1$s का। आज का कॉलम स्टैंड के लोड करने पर दिखेगा।</string>
+    <string name="widget_health_name">स्रोतों की सेहत</string>
+    <string name="widget_health_description">आपका हर स्रोत ठीक से आ रहा है या नहीं, गिनती और सीधे शब्दों में।</string>
+    <string name="widget_health_summary">आपके %2$s में से %1$d: आख़िरी फ़ेच सफल, 48 घंटों के भीतर</string>
+    <string name="widget_health_ok">आख़िरी फ़ेच सफल, 48 घंटों के भीतर</string>
+    <string name="widget_health_failing">आख़िरी फ़ेच विफल</string>
+    <string name="widget_health_rate_limited">Nooz से धीमा होने को कहा</string>
+    <string name="widget_health_stale">48 घंटों से कोई फ़ेच नहीं</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">आख़िरी कोशिश %1$s</string>
+    <string name="widget_clippings_description">आपकी काटी हुई रचनाएँ, सबसे हाल में काटी गई पहले।</string>
+    <string name="widget_clippings_count_one">%1$d कतरन</string>
+    <string name="widget_clippings_count_many">%1$d कतरनें</string>
+    <string name="widget_clipped_on">%1$s को काटा</string>
+    <string name="widget_coverage_name">कवरेज और विस्तार</string>
+    <string name="widget_coverage_description">क्रॉस-सेक्शन से इस सप्ताह का कवरेज और विस्तार, हर एक अपने नियम के साथ।</string>
+    <string name="widget_coverage_opened">आपने अपने %3$s से बही %2$d ख़बरों में से %1$d खोलीं।</string>
+    <string name="widget_coverage_rule">कवरेज: खोली गई ख़बरें ÷ बही ख़बरें। विस्तार: विषयों की प्रभावी संख्या, यानी e की घात शैनन एन्ट्रॉपी।</string>
 </resources>

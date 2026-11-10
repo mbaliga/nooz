@@ -191,6 +191,7 @@ fun ReaderDetailScreen(
     val nextItem = if (currentIndex != -1) listItems.getOrNull(currentIndex + 1) else null
 
     val listState = rememberLazyListState()
+    val pageTurn = xyz.mdhv.riverwip.design.LocalPageTurn.current
     // A Previous/Next tap swaps `item` under this same composable instance —
     // without this, the LazyColumn would keep whatever scroll offset the
     // reader was at (the very bottom, having just reached the end) and open
@@ -240,10 +241,13 @@ fun ReaderDetailScreen(
                     onParkedTap = onParkedTap,
                     onBrightnessDelta = onBrightnessDelta,
                     onThemeFlick = onThemeFlick,
-                ),
+                )
+                .pageTurnGestures(pageTurn, listState),
         ) {
             LazyColumn(
                 state = listState,
+                // Page-turn mode moves only by whole pages (see pageTurnGestures).
+                userScrollEnabled = !pageTurn,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     start = Tokens.Spacing.md,

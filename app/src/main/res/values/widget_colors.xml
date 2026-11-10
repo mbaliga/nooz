@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Home-screen widget colours, day values. The night values are in
+      values-night/widget_colors.xml: a widget follows the phone's own
+      light/dark setting, because the launcher draws it, not Nooz.
+
+      Mirrors the app's Paper tint (Tokens.Palette.paperField / paperInk /
+      paperInkDim). Ink is the only colour that carries text; colour carries no
+      meaning on its own anywhere in a widget. The topic swatches come from the
+      CVD-verified TopicPalette at runtime and are always next to the topic's
+      name, and health states are a shape and a word, never a hue.
+      widget_ink_dim on widget_surface is 4.6:1, above the 4.5:1 text minimum.
+    -->
+    <color name="widget_surface">#FFF7F6F3</color>
+    <color name="widget_ink">#FF141414</color>
+    <color name="widget_ink_dim">#FF70706C</color>
+    <!-- Placeholder bars in the picker preview only; never drawn over data. -->
+    <color name="widget_skeleton">#FFE4E2DD</color>
+    <color name="widget_skeleton_strong">#FFCFCDC8</color>
+</resources>

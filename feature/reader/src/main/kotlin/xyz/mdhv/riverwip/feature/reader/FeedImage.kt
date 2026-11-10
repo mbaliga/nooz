@@ -71,7 +71,7 @@ fun FeedImage(
 
 @Composable
 private fun crossfadeRequest(imageUrl: String) =
-    ImageRequest.Builder(LocalContext.current).data(imageUrl).crossfade(true).build()
+    ImageRequest.Builder(LocalContext.current).data(imageUrl).crossfade(true).offlineAware().build()
 
 /**
  * Grayscale (standard BT.601 luminance weights) with a mild contrast boost
@@ -177,7 +177,7 @@ private fun HalftoneImage(imageUrl: String, contentDescription: String?, modifie
  * [HalftoneImage]'s `LaunchedEffect`.
  */
 private suspend fun decodeSoftwareBitmap(context: Context, imageUrl: String): android.graphics.Bitmap? = try {
-    val request = ImageRequest.Builder(context).data(imageUrl).allowHardware(false).build()
+    val request = ImageRequest.Builder(context).data(imageUrl).allowHardware(false).offlineAware().build()
     val drawable = (context.imageLoader.execute(request) as? SuccessResult)?.drawable
     drawable?.let {
         val w = it.intrinsicWidth.coerceAtLeast(1)
@@ -191,3 +191,8 @@ private suspend fun decodeSoftwareBitmap(context: Context, imageUrl: String): an
 } catch (_: Exception) {
     null
 }
+
+/** Offline mode: serve images from Coil's caches only, never the network. */
+private fun ImageRequest.Builder.offlineAware(): ImageRequest.Builder = networkCachePolicy(
+    if (xyz.mdhv.riverwip.data.net.OfflineMode.enabled) coil.request.CachePolicy.DISABLED else coil.request.CachePolicy.ENABLED,
+)

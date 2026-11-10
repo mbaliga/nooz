@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Night values for the home-screen widgets: the app's Dark tint
+      (CharcoalScheme in Theme.kt). widget_ink_dim on widget_surface is 5.6:1.
+    -->
+    <color name="widget_surface">#FF262624</color>
+    <color name="widget_ink">#FFECEAE6</color>
+    <color name="widget_ink_dim">#FF9C9A96</color>
+    <color name="widget_skeleton">#FF353533</color>
+    <color name="widget_skeleton_strong">#FF474744</color>
+</resources>

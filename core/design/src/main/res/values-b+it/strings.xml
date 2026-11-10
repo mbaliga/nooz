@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 335 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">Aggiungi fonti</string>
     <string name="list_filter_region">Filtra su %1$s</string>
     <string name="list_toggle_topic">Attiva o disattiva %1$s</string>
+    <string name="widget_loading">Caricamento…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">Aggiornato: %1$s</string>
+    <string name="widget_error">Nooz non è riuscita a leggere i propri dati in questo momento. Tocca per aprirla.</string>
+    <string name="widget_no_sources">Nessuna fonte scelta finora. Tocca per scegliere le tue.</string>
+    <string name="widget_and_more">e altri %1$d</string>
+    <string name="widget_week_of">Settimana del %1$s</string>
+    <string name="widget_open_cross_section">Apre %1$s, dove ogni numero mostra la sua regola</string>
+    <string name="widget_open_stand">Apre l\'Edicola</string>
+    <string name="widget_river_name">Arrivate e lette, questa settimana</string>
+    <string name="widget_river_description">Ciò che è arrivato dalle tue fonti questa settimana rispetto a ciò che hai letto, per argomento, in un\'unica immagine.</string>
+    <string name="widget_river_alt">Settimana del %1$s, dalle tue %2$s: sono arrivate %3$d notizie e ne hai lette %4$d. Per argomento, quota di ciò che è arrivato e quota di ciò che hai letto: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %2$d%% arrivate, %3$d%% lette</string>
+    <string name="widget_river_legend_head">Ogni argomento: quota di ciò che è arrivato / quota di ciò che hai letto</string>
+    <string name="widget_river_empty">Dalle tue %1$s non è ancora arrivato nulla.</string>
+    <string name="widget_headlines_name">Titoli dalle tue fonti</string>
+    <string name="widget_headlines_description">Le notizie più recenti dalle fonti che hai scelto, dalla più nuova, con una fine chiara.</string>
+    <string name="widget_headlines_end">Fine · le %1$d più recenti dalle tue %2$s</string>
+    <string name="widget_headlines_empty">Dalle tue %1$s non è ancora giunto nulla.</string>
+    <string name="widget_history_description">La colonna Oggi nella storia dell\'Edicola, una volta che Nooz l\'ha caricata. Non mostra nulla finché la colonna è disattivata.</string>
+    <string name="widget_history_off">La colonna Oggi nella storia è disattivata. Tocca per attivarla nelle Impostazioni.</string>
+    <string name="widget_history_not_loaded">La colonna di oggi compare qui quando l\'Edicola l\'ha caricata.</string>
+    <string name="widget_history_earlier">Del %1$s. Quella di oggi compare quando l\'Edicola la carica.</string>
+    <string name="widget_health_name">Stato delle fonti</string>
+    <string name="widget_health_description">Se ciascuna delle tue fonti viene scaricata correttamente, in numeri e parole semplici.</string>
+    <string name="widget_health_summary">%1$d delle tue %2$s: ultimo download riuscito, nelle ultime 48 ore</string>
+    <string name="widget_health_ok">Ultimo download riuscito, nelle ultime 48 ore</string>
+    <string name="widget_health_failing">Ultimo download non riuscito</string>
+    <string name="widget_health_rate_limited">Ha chiesto a Nooz di rallentare</string>
+    <string name="widget_health_stale">Nessun download in 48 ore</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Ultimo tentativo %1$s</string>
+    <string name="widget_clippings_description">Gli articoli che hai ritagliato, dal ritaglio più recente.</string>
+    <string name="widget_clippings_count_one">%1$d ritaglio</string>
+    <string name="widget_clippings_count_many">%1$d ritagli</string>
+    <string name="widget_clipped_on">Ritagliato il %1$s</string>
+    <string name="widget_coverage_name">Copertura e ampiezza</string>
+    <string name="widget_coverage_description">Copertura e ampiezza di questa settimana dalla sezione trasversale, ciascuna con la sua regola.</string>
+    <string name="widget_coverage_opened">Hai aperto %1$d delle %2$d notizie arrivate dalle tue %3$s.</string>
+    <string name="widget_coverage_rule">Copertura: notizie aperte ÷ notizie arrivate. Ampiezza: il numero effettivo di argomenti, e elevato all\'entropia di Shannon.</string>
 </resources>

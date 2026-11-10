@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "${property("riverwip.packageBase")}.data"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 31

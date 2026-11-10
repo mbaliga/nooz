@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 335 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">情報源を追加</string>
     <string name="list_filter_region">%1$s で絞り込む</string>
     <string name="list_toggle_topic">%1$s を切り替える</string>
+    <string name="widget_loading">読み込み中…</string>
+    <string name="widget_pair">%1$s、%2$s</string>
+    <string name="widget_as_of">%1$s 時点</string>
+    <string name="widget_error">Nooz が自分のデータを読み込めませんでした。タップしてアプリを開いてください。</string>
+    <string name="widget_no_sources">まだ情報源が選ばれていません。タップして選んでください。</string>
+    <string name="widget_and_more">ほか %1$d 件</string>
+    <string name="widget_week_of">%1$s の週</string>
+    <string name="widget_open_cross_section">%1$s を開きます。各数値のルールが表示されます</string>
+    <string name="widget_open_stand">スタンドを開きます</string>
+    <string name="widget_river_name">今週、流れたものと読んだもの</string>
+    <string name="widget_river_description">今週あなたの情報源から流れたものと、あなたが読んだものを、トピック別に一枚の図で。</string>
+    <string name="widget_river_alt">%1$s の週、あなたの%2$sから：%3$d 本が流れ、%4$d 本を読みました。トピック別の、流れた割合と読んだ割合：%5$s。</string>
+    <string name="widget_river_alt_topic">%1$s 流れた %2$d%%、読んだ %3$d%%</string>
+    <string name="widget_river_legend_head">各トピック：流れた割合 / 読んだ割合</string>
+    <string name="widget_river_empty">あなたの%1$sからはまだ何も流れていません。</string>
+    <string name="widget_headlines_name">あなたの情報源の見出し</string>
+    <string name="widget_headlines_description">あなたが選んだ情報源の最新記事を新しい順に、はっきりした終わりとともに。</string>
+    <string name="widget_headlines_end">終わり · あなたの%2$sの最新 %1$d 本</string>
+    <string name="widget_headlines_empty">あなたの%1$sからはまだ何も届いていません。</string>
+    <string name="widget_history_description">スタンドの「今日は何の日」欄。Nooz が読み込んだあとに表示されます。欄がオフの間は何も表示しません。</string>
+    <string name="widget_history_off">「今日は何の日」欄はオフです。タップして設定でオンにしてください。</string>
+    <string name="widget_history_not_loaded">今日の欄は、スタンドが読み込むとここに表示されます。</string>
+    <string name="widget_history_earlier">%1$s の分です。今日の分はスタンドが読み込むと表示されます。</string>
+    <string name="widget_health_name">情報源の状態</string>
+    <string name="widget_health_description">あなたの情報源がそれぞれ正常に取得できているかを、件数とわかりやすい言葉で。</string>
+    <string name="widget_health_summary">%2$sのうち %1$d 件：直近の取得が成功（48 時間以内）</string>
+    <string name="widget_health_ok">直近の取得が成功（48 時間以内）</string>
+    <string name="widget_health_failing">直近の取得に失敗</string>
+    <string name="widget_health_rate_limited">Nooz に間隔をあけるよう求めた</string>
+    <string name="widget_health_stale">48 時間、取得なし</string>
+    <string name="widget_health_count">%1$s：%2$d</string>
+    <string name="widget_health_last_tried">最終試行 %1$s</string>
+    <string name="widget_clippings_description">あなたが切り抜いた記事を、新しく切り抜いた順に。</string>
+    <string name="widget_clippings_count_one">切り抜き %1$d 件</string>
+    <string name="widget_clippings_count_many">切り抜き %1$d 件</string>
+    <string name="widget_clipped_on">%1$s に切り抜き</string>
+    <string name="widget_coverage_name">カバー範囲と広さ</string>
+    <string name="widget_coverage_description">断面から今週のカバー範囲と広さを、それぞれのルールとともに。</string>
+    <string name="widget_coverage_opened">あなたの%3$sから流れた %2$d 本のうち %1$d 本を開きました。</string>
+    <string name="widget_coverage_rule">カバー範囲：開いた記事 ÷ 流れた記事。広さ：実効的なトピック数（シャノン・エントロピーを指数とする e の累乗）。</string>
 </resources>

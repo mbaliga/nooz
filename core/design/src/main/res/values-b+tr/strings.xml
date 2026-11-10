@@ -7,7 +7,7 @@
 
   Edit the JSON and re-run the generator. Keys absent here fall back to
   values/strings.xml, per key, so a partial translation is safe to ship.
-  334 of 335 strings translated.
+  374 of 395 strings translated.
 -->
 <resources>
 
@@ -345,4 +345,44 @@
     <string name="list_add_sources">Kaynak ekle</string>
     <string name="list_filter_region">%1$s ile süz</string>
     <string name="list_toggle_topic">%1$s aç/kapat</string>
+    <string name="widget_loading">Yükleniyor…</string>
+    <string name="widget_pair">%1$s, %2$s</string>
+    <string name="widget_as_of">%1$s itibarıyla</string>
+    <string name="widget_error">Nooz şu anda kendi verilerini okuyamadı. Açmak için dokunun.</string>
+    <string name="widget_no_sources">Henüz kaynak seçilmedi. Kendi kaynaklarınızı seçmek için dokunun.</string>
+    <string name="widget_and_more">ve %1$d tane daha</string>
+    <string name="widget_week_of">%1$s haftası</string>
+    <string name="widget_open_cross_section">Her sayının kuralını gösterdiği %1$s bölümünü açar</string>
+    <string name="widget_open_stand">Tezgâhı açar</string>
+    <string name="widget_river_name">Bu hafta akan ve okunan</string>
+    <string name="widget_river_description">Bu hafta kaynaklarınızdan akanla okuduklarınızın konu konu karşılaştırması, tek bir resim olarak.</string>
+    <string name="widget_river_alt">%1$s haftası, %2$s kaynağınızdan: %3$d haber aktı, %4$d tanesini okudunuz. Konuya göre akanın payı ve okuduğunuzun payı: %5$s.</string>
+    <string name="widget_river_alt_topic">%1$s %%%2$d aktı, %%%3$d okundu</string>
+    <string name="widget_river_legend_head">Her konu: akanın payı / okuduğunuzun payı</string>
+    <string name="widget_river_empty">%1$s kaynağınızdan henüz bir şey akmadı.</string>
+    <string name="widget_headlines_name">Kaynaklarınızdan manşetler</string>
+    <string name="widget_headlines_description">Seçtiğiniz kaynaklardan en yeni haberler, en yenisi önce, açık bir sonla.</string>
+    <string name="widget_headlines_end">Son · %2$s kaynağınızdan en yeni %1$d haber</string>
+    <string name="widget_headlines_empty">%1$s kaynağınızdan henüz bir şey gelmedi.</string>
+    <string name="widget_history_description">Nooz yükledikten sonra Tezgâh\'taki Tarihte bugün sütunu. Sütun kapalıyken hiçbir şey göstermez.</string>
+    <string name="widget_history_off">Tarihte bugün sütunu kapalı. Ayarlar\'da açmak için dokunun.</string>
+    <string name="widget_history_not_loaded">Bugünün sütunu, Tezgâh onu yükledikten sonra burada görünür.</string>
+    <string name="widget_history_earlier">%1$s tarihli. Bugünkü, Tezgâh yüklediğinde görünür.</string>
+    <string name="widget_health_name">Kaynak sağlığı</string>
+    <string name="widget_health_description">Kaynaklarınızın her birinin sorunsuz alınıp alınmadığı, sayılar ve açık sözcüklerle.</string>
+    <string name="widget_health_summary">%2$s kaynağınızdan %1$d tanesi: son alım başarılı, 48 saat içinde</string>
+    <string name="widget_health_ok">Son alım başarılı, 48 saat içinde</string>
+    <string name="widget_health_failing">Son alım başarısız</string>
+    <string name="widget_health_rate_limited">Nooz\'dan yavaşlamasını istedi</string>
+    <string name="widget_health_stale">48 saattir alım yok</string>
+    <string name="widget_health_count">%1$s: %2$d</string>
+    <string name="widget_health_last_tried">Son deneme %1$s</string>
+    <string name="widget_clippings_description">Kestiğiniz yazılar, en son kesilen önce.</string>
+    <string name="widget_clippings_count_one">%1$d kupür</string>
+    <string name="widget_clippings_count_many">%1$d kupür</string>
+    <string name="widget_clipped_on">%1$s tarihinde kesildi</string>
+    <string name="widget_coverage_name">Kapsam ve genişlik</string>
+    <string name="widget_coverage_description">Bu haftanın kesitten kapsamı ve genişliği, her biri kuralıyla.</string>
+    <string name="widget_coverage_opened">%3$s kaynağınızdan akan %2$d haberin %1$d tanesini açtınız.</string>
+    <string name="widget_coverage_rule">Kapsam: açılan haberler ÷ akan haberler. Genişlik: etkin konu sayısı, e üzeri Shannon entropisi.</string>
 </resources>
