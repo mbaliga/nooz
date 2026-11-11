@@ -2042,7 +2042,7 @@ respect as the CI-caught log above.
   can see is the copy that needs a test rather than a glance. 13 tests, 321
   across the build, all passing.
   29 locales complete at 330 strings; Kashmiri 119/330 (36%, up from 31%).
-- **D60 — The owner's revised icon, and one master for every copy of it
+- **D61 — The owner's revised icon, and one master for every copy of it
   (2026-11-04).** The owner supplied revised artwork: the same newspaper, now
   with the circled ASOC mark at its top-right corner, on a black rounded plate
   (1100px). It is committed verbatim as `tools/icon/master.png`, and
@@ -2213,7 +2213,7 @@ Marvel/Loki/TVA references anywhere (loom image guides form only, never copy).
   2026-07-10 and applied per decision D5.
 - The app icon — the owner's artwork, first applied per decision D6
   (2026-07-11/12 mock drop), redrawn per D32 (2026-08-12), and revised with the
-  ASOC mark per D60 (2026-11-04). The current artwork is
+  ASOC mark per D61 (2026-11-04). The current artwork is
   `tools/icon/master.png`. Every icon file (launcher mipmaps,
   `fastlane/.../images/icon.png`, `web/icons/`) is generated from it by
   `tools/icon/generate.py`. No longer reserved/open.
