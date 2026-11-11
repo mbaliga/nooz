@@ -35,9 +35,11 @@ revise once naming lands, not a final listing.
   draft/placeholder (see above).
 - `changelogs/1.txt` — present, matches `versionCode = 1` in
   `app/build.gradle.kts`.
-- `images/` — **empty**. Icon, feature graphic, and phone screenshots all
-  need either a real device/emulator (this build session has neither) or the
-  final icon (RESERVED, brief §9: "icon and any visual metaphor language").
+- `images/` — `icon.png` and `featureGraphic.png` are present. `icon.png` is
+  generated from the owner's artwork (`tools/icon/master.png`) by
+  `tools/icon/generate.py`, so replace the master and re-run rather than
+  editing it. Phone screenshots are still missing: they need a real
+  device/emulator, and this build session has neither.
   `scripts/capture_screenshots.sh` is the intended way to populate
   `images/phoneScreenshots/` once someone has a device to run it on.
 

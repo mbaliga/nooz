@@ -10,9 +10,15 @@
   the paper as the foreground, the artwork's own black as the background,
   masked to whatever shape the device uses.
 
-  `monochrome` is the Android 13+ themed-icon layer: a filled silhouette of
-  the paper, since a themed icon is tinted flat and the artwork's own black
-  linework would otherwise disappear into the tint.
+  `monochrome` is the Android 13+ themed-icon layer: the artwork's own
+  luminance as alpha, so the paper is solid and its ruled columns and
+  nameplate are knocked out. A themed icon is tinted flat, so the black
+  linework would otherwise vanish into the tint, and a filled silhouette of a
+  plain rectangle would be a featureless slab.
+
+  Every bitmap behind these layers is generated from tools/icon/master.png by
+  tools/icon/generate.py. To change the icon, replace the master and re-run;
+  don't edit the PNGs.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background" />
