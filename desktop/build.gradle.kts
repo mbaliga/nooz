@@ -23,6 +23,23 @@ kotlin {
             implementation(compose.material3)
             implementation(project(":core:model"))
         }
+        // Desktop-only test source set that compiles the pure-JVM Kokoro files straight
+        // out of :core:inference (which is an Android module and cannot be built here)
+        // and runs their characterization tests. KokoroLexicon imports android.content, so
+        // it is left out and src/jvmTest holds a map-backed test double of the same name
+        // for the two files that take one. Nothing here edits the root build; the tests
+        // under core/inference also run inside the Android module in ci.yml.
+        jvmTest {
+            kotlin {
+                srcDir("../core/inference/src/main/kotlin")
+                srcDir("../core/inference/src/test/kotlin")
+                include("**/inference/local/kokoro/**")
+                exclude("**/KokoroLexicon.kt")
+            }
+            dependencies {
+                implementation(libs.junit)
+            }
+        }
     }
 }
 

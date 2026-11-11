@@ -6,14 +6,22 @@ name: Desktop (Linux)
 on:
   push:
     branches: [ "main" ]
+    tags: [ "v*" ]
     paths:
       - 'desktop/**'
       - 'core/model/**'
+      - 'core/inference/src/**/kokoro/**'
       - '.github/workflows/desktop-linux.yml'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Draft release tag to attach the UNSIGNED tarball to'
+        required: true
   pull_request:
     paths:
       - 'desktop/**'
       - 'core/model/**'
+      - 'core/inference/src/**/kokoro/**'
       - '.github/workflows/desktop-linux.yml'
 
 concurrency:
@@ -36,3 +44,37 @@ jobs:
       - name: Compile the desktop skeleton
         run: ../gradlew :compileKotlinJvm --stacktrace
         working-directory: desktop
+      - name: Kokoro characterization tests (pure files from core/inference)
+        run: ../gradlew jvmTest --stacktrace
+        working-directory: desktop
+
+  # Tags and manual runs only. Builds the UNSIGNED skeleton tarball and attaches it to a
+  # DRAFT GitHub Release; nothing goes to Actions artifact storage (R6).
+  package:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: skeleton
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Packaging checks
+        run: bash packaging/linux/check.sh
+      - name: Build the app image
+        run: ./gradlew -p desktop createDistributable --stacktrace
+      - name: Build the tarball
+        run: bash packaging/linux/build-tarball.sh
+      - name: Attach to a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          gh release create "$TAG" --draft --prerelease \
+            --title "Nooz desktop skeleton (UNSIGNED, not for release)" \
+            --notes "Unsigned empty-window skeleton. Not a release." \
+            desktop/build/packaging/nooz-linux-x64-UNSIGNED-not-for-release.tar.gz
