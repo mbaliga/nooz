@@ -167,7 +167,25 @@ fun RiverApp() {
         }
     }
 
-    RiverTheme(themeMode = settings.themeMode, readerFont = settings.readerFont, textScale = settings.textScale) {
+    // Rotation lock: pin the current orientation, or hand it back to the sensor.
+    // (On Android 16+, screens >= 600dp ignore app orientation requests.)
+    LaunchedEffect(settings.rotationLock) {
+        activity?.requestedOrientation = if (settings.rotationLock) {
+            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LOCKED
+        } else {
+            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+    }
+
+    RiverTheme(
+        themeMode = settings.themeMode,
+        readerFont = settings.readerFont,
+        fontScale = settings.fontScale,
+        fontWeight = settings.fontWeight,
+        ligatures = settings.ligatures,
+        textAlign = settings.textAlign,
+        pageTurn = settings.readerTransition == xyz.mdhv.riverwip.model.ReaderTransition.PAGE,
+    ) {
         BoxWithConstraints(
             Modifier
                 .fillMaxSize()

@@ -3,6 +3,8 @@ package xyz.mdhv.riverwip.data.repo
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -13,7 +15,10 @@ import xyz.mdhv.riverwip.model.ImageStyle
 import xyz.mdhv.riverwip.model.PaperGrain
 import xyz.mdhv.riverwip.model.ReadMarkStyle
 import xyz.mdhv.riverwip.model.ReaderFilter
+import xyz.mdhv.riverwip.model.ReaderAlign
 import xyz.mdhv.riverwip.model.ReaderFont
+import xyz.mdhv.riverwip.model.ReaderTransition
+import xyz.mdhv.riverwip.model.ReaderTypeBounds
 import xyz.mdhv.riverwip.model.ReadingAsideStyle
 import xyz.mdhv.riverwip.model.Region
 import xyz.mdhv.riverwip.model.TextScale
@@ -33,6 +38,13 @@ class SettingsRepository(private val context: Context) {
         val FONT = stringPreferencesKey("reader_font")
         val READING_TIME = booleanPreferencesKey("show_reading_time")
         val TEXT_SCALE = stringPreferencesKey("text_scale")
+        val FONT_SCALE = floatPreferencesKey("font_scale")
+        val FONT_WEIGHT = intPreferencesKey("font_weight")
+        val LIGATURES = booleanPreferencesKey("ligatures")
+        val TEXT_ALIGN = stringPreferencesKey("text_align")
+        val TRANSITION = stringPreferencesKey("reader_transition")
+        val ROTATION_LOCK = booleanPreferencesKey("rotation_lock")
+        val OFFLINE = booleanPreferencesKey("offline_mode")
         val LENS_HIGHLIGHT = booleanPreferencesKey("highlight_loaded_language")
         val IMMERSIVE = booleanPreferencesKey("immersive_reader")
         val GESTURE_BRIGHTNESS = booleanPreferencesKey("gesture_brightness")
@@ -59,7 +71,16 @@ class SettingsRepository(private val context: Context) {
             themeMode = ThemeMode.fromKey(prefs[Keys.THEME]),
             readerFont = ReaderFont.fromKey(prefs[Keys.FONT]),
             showReadingTime = prefs[Keys.READING_TIME] ?: true,
-            textScale = TextScale.fromKey(prefs[Keys.TEXT_SCALE]),
+            // Pre-slider installs only have the three-step key: carry it over.
+            fontScale = (prefs[Keys.FONT_SCALE] ?: TextScale.fromKey(prefs[Keys.TEXT_SCALE]).multiplier)
+                .coerceIn(ReaderTypeBounds.MIN_SCALE, ReaderTypeBounds.MAX_SCALE),
+            fontWeight = (prefs[Keys.FONT_WEIGHT] ?: 400)
+                .coerceIn(ReaderTypeBounds.MIN_WEIGHT, ReaderTypeBounds.MAX_WEIGHT),
+            ligatures = prefs[Keys.LIGATURES] ?: true,
+            textAlign = ReaderAlign.fromKey(prefs[Keys.TEXT_ALIGN]),
+            readerTransition = ReaderTransition.fromKey(prefs[Keys.TRANSITION]),
+            rotationLock = prefs[Keys.ROTATION_LOCK] ?: false,
+            offlineMode = prefs[Keys.OFFLINE] ?: false,
             highlightLoadedLanguage = prefs[Keys.LENS_HIGHLIGHT] ?: false,
             immersiveReader = prefs[Keys.IMMERSIVE] ?: false,
             twoFingerBrightness = prefs[Keys.GESTURE_BRIGHTNESS] ?: true,
@@ -99,9 +120,23 @@ class SettingsRepository(private val context: Context) {
         context.settingsDataStore.edit { it[Keys.READING_TIME] = show }
     }
 
-    suspend fun setTextScale(scale: TextScale) {
-        context.settingsDataStore.edit { it[Keys.TEXT_SCALE] = scale.key }
+    suspend fun setFontScale(scale: Float) {
+        context.settingsDataStore.edit {
+            it[Keys.FONT_SCALE] = scale.coerceIn(ReaderTypeBounds.MIN_SCALE, ReaderTypeBounds.MAX_SCALE)
+        }
     }
+
+    suspend fun setFontWeight(weight: Int) {
+        context.settingsDataStore.edit {
+            it[Keys.FONT_WEIGHT] = weight.coerceIn(ReaderTypeBounds.MIN_WEIGHT, ReaderTypeBounds.MAX_WEIGHT)
+        }
+    }
+
+    suspend fun setLigatures(on: Boolean) { context.settingsDataStore.edit { it[Keys.LIGATURES] = on } }
+    suspend fun setTextAlign(align: ReaderAlign) { context.settingsDataStore.edit { it[Keys.TEXT_ALIGN] = align.key } }
+    suspend fun setReaderTransition(t: ReaderTransition) { context.settingsDataStore.edit { it[Keys.TRANSITION] = t.key } }
+    suspend fun setRotationLock(on: Boolean) { context.settingsDataStore.edit { it[Keys.ROTATION_LOCK] = on } }
+    suspend fun setOfflineMode(on: Boolean) { context.settingsDataStore.edit { it[Keys.OFFLINE] = on } }
 
     suspend fun setHighlightLoadedLanguage(enabled: Boolean) {
         context.settingsDataStore.edit { it[Keys.LENS_HIGHLIGHT] = enabled }

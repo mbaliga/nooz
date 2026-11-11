@@ -23,15 +23,22 @@ class FetchWorker(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = try {
+        doFetch()
+    } catch (e: Exception) {
+        Result.retry()
+    }
+
+    private suspend fun doFetch(): Result {
+        // Offline mode: nothing to fetch, and nothing to retry — the next
+        // periodic run after the reader turns it off picks up as normal.
+        if (xyz.mdhv.riverwip.data.net.OfflineMode.enabled) return Result.success()
         itemRepository.fetchAndIngestAllEnabled()
         weeklyAggregateRepository.recompute()
         itemRepository.pruneOlderThan()
         // Retention just removed items; the search index must follow them
         // out or it keeps prose for stories that can no longer be opened.
         articleRepository.pruneIndexOrphans()
-        Result.success()
-    } catch (e: Exception) {
-        Result.retry()
+        return Result.success()
     }
 
     companion object {

@@ -336,6 +336,28 @@
     <string name="settings_open_word_list">Open the loaded-language word list</string>
     <string name="settings_contact_email">Contact Nooz by email</string>
 
+    <!-- Reading settings: typography, alignment, page turn, rotation lock and offline. -->
+    <string name="reading_preview_label">Preview</string>
+    <string name="reading_preview_text">So we beat on, boats against the current, borne back ceaselessly into the past. Gatsby believed in the green light…</string>
+    <string name="reading_typography">Typography</string>
+    <string name="reading_font_size">Font size</string>
+    <string name="reading_font_size_value">%1$d%%</string>
+    <string name="reading_font_weight">Font weight</string>
+    <string name="reading_ligatures">Ligatures</string>
+    <string name="reading_ligatures_body">Smooth, connected characters (if supported by the font).</string>
+    <string name="reading_alignment">Text alignment</string>
+    <string name="reading_align_default">Default</string>
+    <string name="reading_align_justify">Justify</string>
+    <string name="reading_transitions">Transitions</string>
+    <string name="reading_transition_continuous">Continuous</string>
+    <string name="reading_transition_page">Page turn</string>
+    <string name="reading_transitions_body_page">Tap the right of the screen for the next page, the left for the previous one — or swipe up and down.</string>
+    <string name="reading_transitions_body_continuous">Scroll through the article in one continuous stretch.</string>
+    <string name="reading_rotation_lock">Rotation lock</string>
+    <string name="reading_rotation_lock_body">Keep the screen in its current orientation. Large screens may ignore this on Android 16.</string>
+    <string name="reading_offline">Offline</string>
+    <string name="reading_offline_body">Make no network requests. Only what’s already on your phone is shown; refreshing waits until you turn this off.</string>
+
     <!-- Uncategorised: give these a section in _sections.json. -->
     <string name="bar_waiting">Waiting for stories</string>
     <string name="empty_no_results">No results found</string>

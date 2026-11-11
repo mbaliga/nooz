@@ -2086,6 +2086,25 @@ respect as the CI-caught log above.
   Not seen on a device (none here); CI's assemble and lint are the resource
   check.
 
+- **D60 — Android 16 (API 36) target, and the reading settings (2026-11-07).**
+  (a) `compileSdk`/`targetSdk` are 36 in every module; AGP 8.7.3 → 8.9.3 (8.7
+  does not support compileSdk 36). Built and inspected with `aapt2` locally;
+  not device-verified. (b) **Reading settings** (Settings › Reading): a
+  continuous font-size slider (the old Rice/Peanut/Almond key is migrated to
+  its multiplier), a 400–700 weight slider, ligatures on/off, default/justify
+  alignment (justify turns on hyphenation), continuous vs **page-turn**
+  reading (tap right two-thirds / left third, or swipe; list scrolling is off
+  in that mode — a paged scroll, not a page-curl), rotation lock
+  (`requestedOrientation`; Android 16 ignores it on ≥600dp screens), and
+  **Offline** (`OfflineMode`: `HttpClient` throws, the fetch worker no-ops,
+  Coil serves cache only; user-started model/dictionary/translation downloads
+  are deliberately not gated). Typography options flow through `RiverTheme`
+  (`LocalPageTurn` for the transition) so no reader signature changed.
+  **Honest gaps:** the Hyle faces ship Regular/Medium/Bold only, so in-between
+  weights snap; whether they carry ligatures is unchecked; new strings are
+  English-only until translated; the Robolectric suites could not run in the
+  build sandbox (Maven Central 429), so CI is their first run.
+
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
   `ReadEventEntity`, `WeeklyAggregateEntity`, **`ClippingEntity`**).
