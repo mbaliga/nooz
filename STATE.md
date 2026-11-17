@@ -33,7 +33,7 @@ Living build state. Updated every session (brief §0).
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
 | P7 | Hardening & release prep | ◑ a11y pass done (+ adversarially reviewed/fixed); F-Droid/Play metadata skeleton + screenshot script done; **baseline profiles honestly not attempted** (see below) |
-| Platforms | Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) | PLAN only, nothing built or run on any target: see [`PORTING_PLAN.md`](PORTING_PLAN.md) (D60 proposed) |
+| Platforms | Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) | iOS companion shell (D63) and Ubuntu Touch thin-client shell (D64) built, device-unverified; native ports still PLAN: see [`PORTING_PLAN.md`](PORTING_PLAN.md) (D62 proposed) |
 
 ### Strategy: analytical cores first, then UI
 The brief's load-bearing, correctness-critical logic is pure and lives in
@@ -2134,6 +2134,25 @@ respect as the CI-caught log above.
   no background fetch, shell before native, bundle id). While merging the porting branch the
   iOS-PWA test was repointed at D61's content-hashed apple-touch-icon and the plan's
   duplicate `icon-180.png` dropped (the plan entry above is renumbered D62).
+
+- **D64 — Ubuntu Touch thin-client shell + CI lane (2026-11-17).** Owner request: Ubuntu
+  Touch builds happen on GitHub Actions. Built `ubuntu-touch/`: QML + QtWebEngine host for the
+  web reader (bundled to one classic script because Chromium blocks module scripts on `file:`),
+  native feed/article fetching over a console-line bridge (`qml/js/HostBridge.js`, pure and
+  node-tested; `shim/ut-shim.js` page side, reusing `apple/.../ios-shim.js` for Readability),
+  click packaging (CMake + `clickable.yaml`, AppArmor `networking`+`webview` only), a policy
+  lint, a headless Xvfb smoke, and `.github/workflows/ubuntu-touch.yml` (SHA-pinned; job `click`
+  plus advisory Clickable/click-review job; draft-release attach on tags only).
+  **Honest scope: a thin client, NOT a port of the Android app** (plan R12); U1 to U4 untouched.
+  Evidence: BUILT-HERE `node --test ubuntu-touch/tests/*.test.mjs apple/tests/*.test.mjs` 22/22,
+  web `npm test` 46/46, `qmllint` clean, `tests/smoke.sh` PASS (real QtWebEngine 5.15 under Xvfb,
+  x86_64 desktop), an unsigned `nooz.asoc_0.5.0_all.click` built by `click build`.
+  CI-LANE-WRITTEN: `ubuntu-touch.yml`. CODE-ONLY: nothing compiled for a device (QML is
+  interpreted; the device's Qt 5.12 vs the 5.15 used here is a difference). Gaps in
+  `ubuntu-touch/README.md`: OPML/clipping file exchange, 24.04, UT gestures. Decisions
+  D-UT-1..7 there (https only, `QTWEBENGINE_DISABLE_SANDBOX=1` unverified trade-off, provisional
+  click name `nooz.asoc` in `config/identity.env`: NAMES.md row and maintainer are owner
+  follow-ups). Device checklist: `ubuntu-touch/OWNER_VERIFY.md`.
 
 ## Spike K1: Room-KMP + FTS4 on a desktop JVM (CONTAINER-BUILD-ONLY, linux-x64 JVM)
 Throwaway, in `desktop/spikes/room-fts/` (standalone build; not in the root build, not

@@ -429,3 +429,21 @@ Compose Multiplatform route is untouched and remains PLAN. Evidence: NoozCore 9 
 parity 7 tests BUILT-HERE; app target CODE-ONLY; workflow CI-LANE-WRITTEN; device behaviour
 NEEDS-DEVICE-VALIDATION (`apple/OWNER_VERIFY.md`). Owner follow-ups: NAMES.md row (R11), Apple
 Developer enrolment, signing environment, App Review risk of a web wrapper.
+
+## Status update 2026-11-17: Ubuntu Touch (thin-client shell, not U1 to U4)
+
+Owner request of 2026-11-17 overrides the proposed line: Ubuntu Touch builds on GitHub Actions.
+Built in `ubuntu-touch/` (see its README): the web reader bundled in a click and hosted by a QML +
+QtWebEngine shell, with native fetching over a console-line bridge in place of `/api/feed` and
+`/api/article` (the plan's own "QML WebView shell with a native fetch bridge" alternative; it
+answers NQ-1 with **native fetch, no proxy**, still the owner's to confirm). **A thin client, never a
+port of the Android app (R12); U1 to U4 (QML over a JVM core) are untouched and remain PLAN.**
+Evidence: 22 node tests (bridge, shims, page chain, SSRF vectors) BUILT-HERE; `qmllint` BUILT-HERE;
+the shell booted the reader and round-tripped the bridge under real QtWebEngine 5.15 + Xvfb
+BUILT-HERE (x86_64 desktop, not a phone); a real unsigned `.click` built with Ubuntu's `click build`
+BUILT-HERE; `ubuntu-touch.yml` CI-LANE-WRITTEN; Clickable-in-Docker and click-review never run;
+everything on a phone NEEDS-DEVICE-VALIDATION (`ubuntu-touch/OWNER_VERIFY.md`). Not written:
+OPML/clipping file exchange (Content Hub), 24.04 framework and canary lane. Owner follow-ups:
+NAMES.md row for the click name (R11; `nooz.asoc` is provisional in `ubuntu-touch/config/identity.env`),
+maintainer field, an OnePlus 6 session, OQ-12 before any OpenStore listing.
+
