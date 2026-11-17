@@ -33,7 +33,7 @@ Living build state. Updated every session (brief §0).
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
 | P7 | Hardening & release prep | ◑ a11y pass done (+ adversarially reviewed/fixed); F-Droid/Play metadata skeleton + screenshot script done; **baseline profiles honestly not attempted** (see below) |
-| Platforms | Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) | iOS companion shell (D63) and Ubuntu Touch thin-client shell (D64) built, device-unverified; native ports still PLAN: see [`PORTING_PLAN.md`](PORTING_PLAN.md) (D62 proposed) |
+| Platforms | Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) | iOS companion shell (D63), Ubuntu Touch thin-client shell (D64) and Linux desktop thin client (D65) built, device-unverified; native ports still PLAN: see [`PORTING_PLAN.md`](PORTING_PLAN.md) (D62 proposed) |
 
 ### Strategy: analytical cores first, then UI
 The brief's load-bearing, correctness-critical logic is pure and lives in
@@ -2153,6 +2153,28 @@ respect as the CI-caught log above.
   D-UT-1..7 there (https only, `QTWEBENGINE_DISABLE_SANDBOX=1` unverified trade-off, provisional
   click name `nooz.asoc` in `config/identity.env`: NAMES.md row and maintainer are owner
   follow-ups). Device checklist: `ubuntu-touch/OWNER_VERIFY.md`.
+
+- **D65 — Linux desktop thin client + CI lane (2026-11-17).** Owner request: builds on GitHub
+  Actions, Linux included. Built `linux-shell/`: a resizable `Desktop.qml` window around the
+  Ubuntu Touch shell (`ubuntu-touch/qml/Main.qml`, shipped unmodified: one shell source), a
+  `bin/nooz` launcher over the system Qt 5 `qmlscene`, a per-user installer, an arch-independent
+  `nooz-linux-thin-client-UNSIGNED-not-for-release.tar.gz`, and `.github/workflows/linux-shell.yml`
+  (SHA-pinned; ubuntu-22.04 and 24.04 matrix; draft-release attach on tags only). It also saves
+  the reader's `blob:`/`data:` exports (OPML, clipping) to `~/Downloads` and refuses other
+  downloads. **Honest scope: a thin client, NOT the plan's Compose Desktop port** (L1 to L7, KMP
+  conversion, untouched; `desktop/` is still the L0 skeleton). Evidence: BUILT-HERE
+  `linux-shell/tests/launcher.test.sh` PASS, `linux-shell/scripts/check.sh` (bash -n, qmllint,
+  identifier lint; shellcheck not installed here), `linux-shell/tests/smoke.sh` PASS (extracted
+  tarball booted under real QtWebEngine 5.15 + Xvfb: reader rendered at 1100 px, both shims,
+  bridge refused an internal address, a `blob:` download saved, data dir `~/.local/share/nooz`),
+  node tests 22/22, web `npm test` 46/46, `./gradlew -p desktop jvmTest` BUILD SUCCESSFUL (first
+  attempt hit a Maven Central 429, rerun passed). CI-LANE-WRITTEN: `linux-shell.yml`; the
+  existing `desktop-linux.yml` actions were also SHA-pinned (not re-run). NEEDS-DEVICE-VALIDATION:
+  everything on a real desktop (`linux-shell/OWNER_VERIFY.md`). Not done: `.desktop` entry/icon
+  and app id (R11, NAMES.md row is an owner follow-up), deb/rpm/Flatpak/Snap (OQ-12), OPML import
+  dialog (needs `qml-module-qtquick-dialogs`, absent here, untested), native Wayland, and the
+  durability risk that distributions are dropping Qt 5 WebEngine. Decisions D-LX-1..6 in
+  `linux-shell/README.md`.
 
 ## Spike K1: Room-KMP + FTS4 on a desktop JVM (CONTAINER-BUILD-ONLY, linux-x64 JVM)
 Throwaway, in `desktop/spikes/room-fts/` (standalone build; not in the root build, not

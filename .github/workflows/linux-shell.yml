@@ -1,0 +1,98 @@
+name: linux-shell
+
+# Builds and tests the Linux desktop thin client (linux-shell/): the web reader in the QML +
+# QtWebEngine shell shared with the Ubuntu Touch click. UNSIGNED, arch-independent tarball; no
+# signing material or secret is used anywhere in this file. A tag, or a manual run with a tag
+# input, attaches the tarball to a DRAFT release (never to Actions artifact storage, whose quota
+# this repo has hit before). This is the thin client, not the plan's Compose Desktop port
+# (that lane is desktop-linux.yml and is still a skeleton).
+#
+# EVIDENCE: CI-LANE-WRITTEN. Every command below except the apt install lines and the release
+# step was run in the authoring container (Ubuntu 24.04, Qt 5.15.13); this workflow has never run.
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+    paths:
+      - 'linux-shell/**'
+      - 'ubuntu-touch/qml/**'
+      - 'ubuntu-touch/shim/**'
+      - 'ubuntu-touch/scripts/stage.sh'
+      - 'web/**'
+      - 'apple/Nooz/Resources/ios-shim.js'
+      - '.github/workflows/linux-shell.yml'
+  pull_request:
+    paths:
+      - 'linux-shell/**'
+      - 'ubuntu-touch/qml/**'
+      - 'ubuntu-touch/shim/**'
+      - 'ubuntu-touch/scripts/stage.sh'
+      - 'web/**'
+      - 'apple/Nooz/Resources/ios-shim.js'
+      - '.github/workflows/linux-shell.yml'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Draft release tag to attach the UNSIGNED tarball to (empty = build only)'
+        required: false
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  shell:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both ship Qt 5.15; 22.04 is the older of the two distros a user is likely to have.
+        os: [ ubuntu-22.04, ubuntu-24.04 ]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    permissions:
+      contents: write   # only used by the last step, on 24.04, tags / manual runs with a tag
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
+      - name: Web reader tests (the shell ships this code unchanged)
+        run: npm test
+        working-directory: web
+      - name: Bridge, shim and host-guard tests (node)
+        run: node --test ubuntu-touch/tests/*.test.mjs apple/tests/*.test.mjs
+      - name: Install Qt 5 qmlscene + WebEngine QML, Xvfb, Mesa, shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            qmlscene qtdeclarative5-dev-tools qml-module-qtquick2 qml-module-qtquick-window2 \
+            qml-module-qtwebengine xvfb xauth libgl1-mesa-dri libglx-mesa0 \
+            libxcb-xinerama0 libxcb-cursor0 shellcheck
+      - name: Static checks (bash -n, shellcheck, qmllint, identifier lint)
+        run: bash linux-shell/scripts/check.sh
+      - name: Launcher and installer tests (no Qt, no display)
+        run: bash linux-shell/tests/launcher.test.sh
+      - name: Build the tarball
+        run: bash linux-shell/scripts/build-tarball.sh
+      - name: Headless window smoke (real QtWebEngine under Xvfb, desktop x86_64)
+        # Boots the extracted tarball's window, checks the reader rendered, the native bridge
+        # answers, a blob: download is saved. It proves the shell loads under desktop Qt 5.15;
+        # it says nothing about a real desktop session.
+        run: bash linux-shell/tests/smoke.sh
+      - name: Attach to a draft release (24.04; tags and manual runs only)
+        if: matrix.os == 'ubuntu-24.04' && (startsWith(github.ref, 'refs/tags/') || github.event.inputs.tag != '')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          cd linux-shell/build/out
+          sha256sum ./*.tar.gz > SHA256SUMS
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --draft --title "$TAG (unsigned Linux thin client)" --notes "UNSIGNED Linux desktop thin client. Not verified on a real desktop; see linux-shell/README.md and OWNER_VERIFY.md."
+          gh release upload "$TAG" ./*.tar.gz SHA256SUMS --clobber

@@ -447,3 +447,17 @@ OPML/clipping file exchange (Content Hub), 24.04 framework and canary lane. Owne
 NAMES.md row for the click name (R11; `nooz.asoc` is provisional in `ubuntu-touch/config/identity.env`),
 maintainer field, an OnePlus 6 session, OQ-12 before any OpenStore listing.
 
+## Status update 2026-11-17: Linux desktop (thin-client shell, not L1 to L7)
+
+Owner request of 2026-11-17 overrides the proposed line: Linux builds on GitHub Actions.
+Built in `linux-shell/` (see its README): the same QML + QtWebEngine shell as the Ubuntu Touch
+click, in a desktop window, packaged as an unsigned arch-independent tarball with a per-user
+installer, native fetch and no proxy (D-LX-2). **A thin client, never a port of the Android app
+(R12); L1 to L7 (Compose Desktop over a converted `:core:model`/`:core:data`) are untouched and
+remain PLAN**; `desktop/` is still the L0 skeleton, `packaging/linux/` its scaffold. Evidence:
+launcher/installer test, identifier lint, `qmllint` and a headless Xvfb smoke of the extracted
+tarball under real QtWebEngine 5.15 BUILT-HERE; `./gradlew -p desktop jvmTest` BUILD SUCCESSFUL
+BUILT-HERE; `linux-shell.yml` CI-LANE-WRITTEN (never run); everything on a real desktop
+NEEDS-DEVICE-VALIDATION (`linux-shell/OWNER_VERIFY.md`). Not done: `.desktop` entry and app id
+(R11: NAMES.md row first), deb/rpm/Flatpak/Snap (OQ-12), OPML import dialog, native Wayland.
+Risk: distributions are retiring Qt 5 WebEngine, which is why L1 to L7 stay the destination.
