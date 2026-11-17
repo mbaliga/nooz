@@ -19,3 +19,6 @@ which fails if an app id or desktop entry appears here.
 
 Not done: deb/rpm, Flatpak and Snap wait on OQ-12. The CI `package` job (tags and manual
 runs only) writes a draft GitHub Release and uploads no Actions artifacts (R6).
+
+For the Qt thin client (the web reader in a desktop window, not this Compose skeleton) see
+`../../linux-shell/README.md`.

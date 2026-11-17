@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Launcher for the Nooz Linux desktop thin client (UNSIGNED, unverified on a desktop).
+# Runs the QML shell under the system's qmlscene. It sets no environment that weakens the
+# browser sandbox, makes no network call of its own, and writes nothing outside the
+# user's own data and Downloads folders.
+set -euo pipefail
+self="$(readlink -f "${BASH_SOURCE[0]}")"   # ~/.local/bin/nooz is a symlink
+here="$(cd "$(dirname "$self")/.." && pwd)"
+qml="$here/qml/Desktop.qml"
+[ -f "$qml" ] || { echo "nooz: $qml not found; run from an installed or extracted tree." >&2; exit 1; }
+
+qmlscene_bin="${NOOZ_QMLSCENE:-}"
+if [ -z "$qmlscene_bin" ]; then
+  for c in qmlscene qmlscene-qt5; do
+    if command -v "$c" >/dev/null 2>&1; then qmlscene_bin="$c"; break; fi
+  done
+fi
+if [ -z "$qmlscene_bin" ]; then
+  cat >&2 <<'MSG'
+nooz: Qt 5 qmlscene was not found. Install it with your distribution's packages:
+  Debian/Ubuntu:  sudo apt install qmlscene qml-module-qtwebengine qml-module-qtquick-window2
+  Fedora:         sudo dnf install qt5-qtdeclarative qt5-qtwebengine
+  Arch:           sudo pacman -S qt5-declarative qt5-webengine
+MSG
+  exit 127
+fi
+# Qt 5's default platform plugin is X11 (XWayland on Wayland sessions); nothing to set.
+exec "$qmlscene_bin" "$qml"
