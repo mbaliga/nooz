@@ -1,0 +1,8 @@
+/Nooz/Resources/web/
+/Nooz/Resources/Readability.js
+/Nooz.xcodeproj/
+/build/
+/NoozCore/.build/
+/Nooz/Info.plist
+*.xcarchive
+/Nooz/Resources/Readability-LICENSE.md

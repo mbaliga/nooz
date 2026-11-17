@@ -1,0 +1,69 @@
+# XcodeGen spec. `xcodegen generate` writes Nooz.xcodeproj (not committed: generated).
+# Needs scripts/stage-web.sh to have run first so Nooz/Resources/web exists.
+name: Nooz
+options:
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+configFiles:
+  Debug: Config/Identity.xcconfig
+  Release: Config/Identity.xcconfig
+packages:
+  NoozCore:
+    path: NoozCore
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+targets:
+  Nooz:
+    type: application
+    platform: iOS
+    sources:
+      - path: Nooz/Sources
+      - path: Nooz/Assets.xcassets
+      - path: Nooz/PrivacyInfo.xcprivacy
+      # Staged by scripts/stage-web.sh: the web reader (folder reference, kept as `web/`),
+      # Readability.js (from npm) and the in-page shim.
+      - path: Nooz/Resources/web
+        type: folder
+        buildPhase: resources
+      - path: Nooz/Resources/Readability.js
+        buildPhase: resources
+      - path: Nooz/Resources/ios-shim.js
+        buildPhase: resources
+      - path: Nooz/Resources/Readability-LICENSE.md
+        buildPhase: resources
+    dependencies:
+      - package: NoozCore
+        product: NoozCore
+    info:
+      path: Nooz/Info.plist
+      properties:
+        CFBundleDisplayName: Nooz
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: ""
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIRequiresFullScreen: false
+        # Standard HTTPS only: no proprietary or non-exempt cryptography.
+        ITSAppUsesNonExemptEncryption: false
+        # No NSAppTransportSecurity exceptions: plain-http feeds are refused natively
+        # (decision D-iOS-1 in apple/README.md). No usage-description keys: the app asks for
+        # no camera, microphone, location, photos or contacts.
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO

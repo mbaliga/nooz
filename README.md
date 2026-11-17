@@ -58,7 +58,9 @@ and screenshot script done, with baseline profiles logged as a deliberate,
 undone gap (no device/emulator available to generate or verify one).
 
 Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) is planned,
-not built: see [`PORTING_PLAN.md`](PORTING_PLAN.md).
+not built (except an iOS companion shell of the web reader, `apple/`, unverified on a device): see [`PORTING_PLAN.md`](PORTING_PLAN.md).
+
+Apple platforms: no analytics or crash SDK; the only Apple-side collection is the crash reports Apple itself gathers for TestFlight/App Store builds, which this app neither sends nor reads.
 
 ## License
 **RESERVED** — see [`LICENSE.RESERVED`](LICENSE.RESERVED). F-Droid eligibility for

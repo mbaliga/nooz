@@ -418,3 +418,14 @@ The Apple column is now split: iPhone and iPad are judged apart. Where an app po
 - **Skin contract (OQ-39, 2026-10-14):** proposed conformance level for this app: Level 1, cost class A (two surfaces: Kotlin tokens and web variables). The owner chose Tier 1 (palette) everywhere first and every app declaring its own level; the assistant chose JSON, not XML, after the owner asked for a check; the draft spec is Personal-Tracker `porting/skin-contract/SPEC-DRAFT.md`. This is a proposal, not decided for this app.
 
 When the owner confirms or changes the line, this repo's original cells above stay as the engineering detail; only the verdicts and re-costs in program section 5A.12 change.
+
+## Status update 2026-11-17: iOS (companion shell, not the native port)
+
+Owner request of 2026-11-17 overrides the proposed no-port line: iOS builds on GitHub Actions, bundle
+id `com.asoc.nooz`. Built in `apple/` (see `apple/README.md`): the web reader packaged in a
+WKWebView with native feed fetching, an in-page Readability shim, a Foundation-only `NoozCore`
+Swift package, and `.github/workflows/ios.yml`. **This is a companion shell, not I1 to I5**: the
+Compose Multiplatform route is untouched and remains PLAN. Evidence: NoozCore 9 tests and shim
+parity 7 tests BUILT-HERE; app target CODE-ONLY; workflow CI-LANE-WRITTEN; device behaviour
+NEEDS-DEVICE-VALIDATION (`apple/OWNER_VERIFY.md`). Owner follow-ups: NAMES.md row (R11), Apple
+Developer enrolment, signing environment, App Review risk of a web wrapper.

@@ -1,0 +1,11 @@
+// The ONE place the Apple identity lives.
+//
+// OWNER FOLLOW-UP: bundle id com.asoc.nooz follows the owner ruling (2026-11-17,
+// "Apple bundle IDs will be com.asoc.appname"). Plan rule R11 wants a NAMES.md row first;
+// NAMES.md lives outside this repo, so that row is still to be added there.
+//
+// No team id, no signing identity, no provisioning profile here, ever (signing material is
+// GitHub environment secrets behind approval, applied by the signed lane at build time).
+PRODUCT_BUNDLE_IDENTIFIER = com.asoc.nooz
+MARKETING_VERSION = 0.5.0
+CURRENT_PROJECT_VERSION = 7

@@ -1,0 +1,128 @@
+name: iOS
+
+# Builds the iOS shell (apple/) on GitHub-hosted runners. Nothing here is signed:
+# `CODE_SIGNING_ALLOWED=NO`, no certificates, no profiles, no secrets. A tag or manual run
+# attaches the UNSIGNED simulator-app zip and xcarchive zip to a DRAFT release (never to
+# Actions artifact storage, whose quota this repo has hit before; CLAUDE-era note in STATE).
+#
+# EVIDENCE: CI-LANE-WRITTEN. The Linux job's commands were run locally; the macOS job has
+# never run. Signing/TestFlight is NOT in this file by design: see apple/README.md.
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+    paths:
+      - 'apple/**'
+      - 'web/**'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    paths:
+      - 'apple/**'
+      - 'web/**'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Draft release tag to attach the UNSIGNED iOS artifacts to (empty = build only)'
+        required: false
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Cheap lane: no Mac needed. Proves the shared logic of the shell on Linux.
+  shell-logic-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
+      - name: Shim parity and host-guard vectors (node)
+        run: node --test apple/tests/*.test.mjs
+      - name: Staging script produces the bundle layout
+        run: bash apple/scripts/stage-web.sh
+      - name: NoozCore Swift tests (Linux toolchain)
+        # The Swift image runs on the hosted Linux runner; NoozCore is Foundation-only.
+        run: |
+          docker run --rm -v "$PWD/apple/NoozCore:/pkg" -w /pkg swift:6.0.3-noble swift test
+
+  # The Mac lane: NoozCore tests on macOS, then the real app for the simulator, then an
+  # unsigned device archive. Private repos bill macOS minutes at 10x; this repo is public.
+  ios-build:
+    needs: shell-logic-linux
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
+      - name: Stage the web reader into the bundle
+        run: bash apple/scripts/stage-web.sh
+      - name: NoozCore tests on macOS
+        run: swift test
+        working-directory: apple/NoozCore
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the Xcode project
+        run: xcodegen generate
+        working-directory: apple
+      - name: Show toolchain
+        run: xcodebuild -version && xcrun simctl list devices available | head -20
+      - name: Build for the iPhone simulator (unsigned)
+        run: |
+          set -o pipefail
+          mkdir -p apple/build
+          xcodebuild build \
+            -project apple/Nooz.xcodeproj -scheme Nooz \
+            -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath apple/build/dd \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            | tee apple/build/xcodebuild-sim.log | tail -40
+      - name: Launch smoke test on a simulator
+        # Boots a simulator, installs and launches the app, waits, and checks it did not crash.
+        # It proves the app starts; it does not prove the reader renders (screenshot is kept
+        # in the log step below for the owner to look at).
+        run: bash apple/scripts/simulator-smoke.sh apple/build/dd/Build/Products/Debug-iphonesimulator/Nooz.app
+      - name: Unsigned device archive
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project apple/Nooz.xcodeproj -scheme Nooz \
+            -configuration Release -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath apple/build/Nooz.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee apple/build/xcodebuild-archive.log | tail -40
+      - name: Check the privacy manifest shipped and the bundle id
+        run: bash apple/scripts/verify-archive.sh apple/build/Nooz.xcarchive
+      - name: Zip unsigned products
+        run: |
+          cd apple/build
+          ditto -c -k --sequesterRsrc --keepParent dd/Build/Products/Debug-iphonesimulator/Nooz.app Nooz-simulator.app.zip
+          ditto -c -k --sequesterRsrc --keepParent Nooz.xcarchive Nooz-unsigned.xcarchive.zip
+          shasum -a 256 *.zip > SHA256SUMS
+      - name: Attach to a draft release (tags and manual runs only)
+        if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        # Needs contents: write, granted on this step's job only via the permissions block below.
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --draft --title "$TAG (unsigned iOS build)" --notes "UNSIGNED iOS artifacts. Not installable on a device; see apple/README.md."
+          gh release upload "$TAG" apple/build/*.zip apple/build/SHA256SUMS --clobber
+    permissions:
+      contents: write

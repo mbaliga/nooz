@@ -1,0 +1,28 @@
+{
+  "_comment": "Hostnames and whether the SSRF guard must refuse them. Mirrors isBlockedTarget in web/api/feed.js and web/api/article.js. Consumed by apple/tests/host-guard.test.mjs (against those functions) and by NoozCoreTests (against HostGuard.swift). Known gap shared by all three: hostnames that only RESOLVE to an internal address (DNS rebinding) are not detected.",
+  "cases": [
+    { "host": "localhost", "blocked": true },
+    { "host": "LOCALHOST", "blocked": true },
+    { "host": "127.0.0.1", "blocked": true },
+    { "host": "127.8.9.10", "blocked": true },
+    { "host": "10.0.0.1", "blocked": true },
+    { "host": "0.0.0.0", "blocked": true },
+    { "host": "172.16.0.1", "blocked": true },
+    { "host": "172.31.255.255", "blocked": true },
+    { "host": "172.15.0.1", "blocked": false },
+    { "host": "172.32.0.1", "blocked": false },
+    { "host": "192.168.1.1", "blocked": true },
+    { "host": "192.169.1.1", "blocked": false },
+    { "host": "169.254.169.254", "blocked": true },
+    { "host": "169.255.0.1", "blocked": false },
+    { "host": "8.8.8.8", "blocked": false },
+    { "host": "::1", "blocked": true },
+    { "host": "fe80::1", "blocked": true },
+    { "host": "fc00::1", "blocked": true },
+    { "host": "fd12:3456::1", "blocked": true },
+    { "host": "example.com", "blocked": false },
+    { "host": "feeds.bbci.co.uk", "blocked": false },
+    { "host": "news.ycombinator.com", "blocked": false },
+    { "host": "fcbarcelona.com", "blocked": true, "note": "SHARED QUIRK: the reference guard's startsWith('fc') also refuses hostnames beginning fc/fd. Kept identical on purpose so the native shell and the web proxy never disagree; fixing it is a web/ change (owner)." }
+  ]
+}

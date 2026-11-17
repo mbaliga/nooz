@@ -2115,6 +2115,26 @@ respect as the CI-caught log above.
   (direct downloads only, none suggested) and `ai-catalogue/` is untouched. No
   module is converted until the owner answers the plan's §8 questions.
 
+- **D63 — iOS companion shell + CI lane (2026-11-17).** Owner request: macOS, iOS,
+  Windows and Ubuntu Touch builds happen on GitHub Actions; Apple bundle ids are
+  `com.asoc.<appname>` (`com.asoc.nooz`, in `apple/Config/Identity.xcconfig` only; the
+  NAMES.md row is an owner follow-up outside this repo). Built `apple/`: a SwiftUI +
+  `WKWebView` host for the **web reader**, native `URLSession` replacing `/api/feed`, an
+  in-page Readability shim replacing `/api/article`, `NoozCore` (Foundation-only Swift
+  package), XcodeGen spec, privacy manifest, 1024px icon derived from the one master, and
+  `.github/workflows/ios.yml` (SHA-pinned; Linux logic lane + macOS simulator/archive lane,
+  unsigned, release assets only on tags to a draft).
+  **Honest scope: a companion shell, NOT a port of the Android app.** The plan's native
+  route (CMP iOS, I1 to I5) is not started. Evidence: BUILT-HERE `node --test
+  apple/tests/*.test.mjs` 7/7 (shim output equals `web/api/article.js` output on 3 pages;
+  host-guard vectors agree with both server guards) and `swift test` in `apple/NoozCore`
+  on Linux (Swift 6.0.3), 9/9; web `npm test` 46/46. CODE-ONLY: the SwiftUI/WebKit app
+  target. CI-LANE-WRITTEN: `ios.yml`. NEEDS-DEVICE-VALIDATION: everything in
+  `apple/OWNER_VERIFY.md`. Decisions D-iOS-1..4 in `apple/README.md` (no ATS exceptions,
+  no background fetch, shell before native, bundle id). While merging the porting branch the
+  iOS-PWA test was repointed at D61's content-hashed apple-touch-icon and the plan's
+  duplicate `icon-180.png` dropped (the plan entry above is renumbered D62).
+
 ## Spike K1: Room-KMP + FTS4 on a desktop JVM (CONTAINER-BUILD-ONLY, linux-x64 JVM)
 Throwaway, in `desktop/spikes/room-fts/` (standalone build; not in the root build, not
 run by `desktop-linux.yml`). Room 2.7.1, `sqlite-bundled` 2.5.1 `BundledSQLiteDriver`,
