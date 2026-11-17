@@ -64,7 +64,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            qtdeclarative5-dev-tools qml-module-qtquick2 qml-module-qtwebengine \
+            qmlscene qtdeclarative5-dev-tools qml-module-qtquick2 qml-module-qtwebengine \
             xvfb xauth libgl1-mesa-dri libglx-mesa0 libxcb-xinerama0 libxcb-cursor0 \
             click cmake
       - name: Lint the QML

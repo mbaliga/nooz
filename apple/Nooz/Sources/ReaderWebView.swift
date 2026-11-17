@@ -34,7 +34,8 @@ struct ReaderWebView: UIViewRepresentable {
         view.backgroundColor = UIColor(red: 0.078, green: 0.078, blue: 0.078, alpha: 1)
         view.allowsBackForwardNavigationGestures = false
         #if DEBUG
-        view.isInspectable = true
+        // isInspectable is iOS 16.4+; the deployment target is 16.0.
+        if #available(iOS 16.4, *) { view.isInspectable = true }
         #endif
         view.load(URLRequest(url: URL(string: "\(RequestRoute.scheme)://\(RequestRoute.host)/")!))
         return view
