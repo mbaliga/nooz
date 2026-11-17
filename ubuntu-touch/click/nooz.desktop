@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Nooz
+Comment=A reader for the sources you chose
+Exec=env QTWEBENGINE_DISABLE_SANDBOX=1 qmlscene $@ qml/Main.qml
+Icon=assets/icon.png
+Terminal=false
+Type=Application
+X-Lomiri-Touch=true

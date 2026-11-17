@@ -1,0 +1,6 @@
+# Clickable config for the Nooz Ubuntu Touch click. Run scripts/stage.sh first (it builds
+# the payload/ directory CMake installs); .github/workflows/ubuntu-touch.yml does both.
+clickable_minimum_required: 7.0.0
+builder: pure-qml-cmake
+framework: ubuntu-sdk-20.04
+kill: qmlscene

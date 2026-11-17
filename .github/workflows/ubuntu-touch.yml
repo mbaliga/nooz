@@ -1,0 +1,112 @@
+name: ubuntu-touch
+
+# Builds the Ubuntu Touch click (ubuntu-touch/) on GitHub-hosted Linux runners.
+# The click is UNSIGNED and arch-independent (pure QML + bundled web reader); the OpenStore
+# signs on upload, and no signing material or secret is used anywhere in this file.
+# A tag or manual run with a tag input attaches the click to a DRAFT release (never to
+# Actions artifact storage, whose quota this repo has hit before).
+#
+# EVIDENCE: CI-LANE-WRITTEN. Every command in job `click` except the apt install lines and
+# the release step was run in the authoring container (Ubuntu 24.04, same package set); this
+# workflow itself has never run. `clickable-review` is advisory (continue-on-error) because
+# it needs Docker + the Clickable image, which the authoring container did not have.
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+    paths:
+      - 'ubuntu-touch/**'
+      - 'web/**'
+      - 'apple/Nooz/Resources/ios-shim.js'
+      - 'apple/shared/**'
+      - '.github/workflows/ubuntu-touch.yml'
+  pull_request:
+    paths:
+      - 'ubuntu-touch/**'
+      - 'web/**'
+      - 'apple/Nooz/Resources/ios-shim.js'
+      - 'apple/shared/**'
+      - '.github/workflows/ubuntu-touch.yml'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Draft release tag to attach the UNSIGNED click to (empty = build only)'
+        required: false
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  click:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write   # only used by the last step, and only on tags / manual runs with a tag
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
+      - name: Web reader tests (the shell ships this code unchanged)
+        run: npm test
+        working-directory: web
+      - name: Bridge, shim and host-guard tests (node)
+        run: node --test ubuntu-touch/tests/*.test.mjs apple/tests/*.test.mjs
+      - name: Install Qt 5 WebEngine QML, Xvfb, Mesa, click, CMake
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            qtdeclarative5-dev-tools qml-module-qtquick2 qml-module-qtwebengine \
+            xvfb xauth libgl1-mesa-dri libglx-mesa0 libxcb-xinerama0 libxcb-cursor0 \
+            click cmake
+      - name: Lint the QML
+        run: qmllint ubuntu-touch/qml/Main.qml
+      - name: Stage, install and build the click
+        run: bash ubuntu-touch/scripts/build-click.sh
+      - name: Headless shell smoke (real QtWebEngine under Xvfb, desktop x86_64)
+        # Boots the installed layout, checks the reader rendered and the native bridge
+        # answers. It proves the shell loads under desktop Qt 5.15; it says nothing about a phone.
+        run: bash ubuntu-touch/tests/smoke.sh
+      - name: Attach to a draft release (tags and manual runs only)
+        if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          cd ubuntu-touch/build/out
+          sha256sum *.click > SHA256SUMS
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --draft --title "$TAG (unsigned Ubuntu Touch click)" --notes "UNSIGNED click. Not device-verified; see ubuntu-touch/README.md and OWNER_VERIFY.md."
+          gh release upload "$TAG" *.click SHA256SUMS --clobber
+
+  # The route the Ubuntu Touch community uses: Clickable in Docker, which also runs click-review.
+  # Advisory until it has been seen to pass once (docs: the review output is the point).
+  clickable-review:
+    needs: click
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.12'
+      - name: Install web dependencies and stage the payload
+        run: |
+          npm ci --prefix web
+          bash ubuntu-touch/scripts/stage.sh
+      - name: Install Clickable
+        run: pip install clickable-ut==8.10.0
+      - name: Clickable build + click-review (Docker)
+        run: clickable build --arch all --non-interactive --accept-review-warnings
+        working-directory: ubuntu-touch

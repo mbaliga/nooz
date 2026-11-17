@@ -1,0 +1,15 @@
+{
+  "name": "@CLICK_NAME@",
+  "title": "Nooz",
+  "description": "A reader for the sources you chose. A thin client over the Nooz web reader; see the app's About.",
+  "architecture": "@CLICK_ARCH@",
+  "version": "@CLICK_VERSION@",
+  "maintainer": "@CLICK_MAINTAINER@",
+  "framework": "@CLICK_FRAMEWORK@",
+  "hooks": {
+    "nooz": {
+      "apparmor": "nooz.apparmor",
+      "desktop": "nooz.desktop"
+    }
+  }
+}
