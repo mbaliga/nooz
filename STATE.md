@@ -15,6 +15,8 @@ Living build state. Updated every session (brief §0).
   sibling session's shared **ai-catalogue/** (open models + free-tier data).
   P7's a11y pass, F-Droid/Play metadata skeleton, and screenshot script are in;
   baseline profiles remain an honestly-logged gap (see P7 section below).
+- **Platforms:** a multi-platform porting plan is written, nothing built: see
+  [`PORTING_PLAN.md`](PORTING_PLAN.md) (proposed D60).
 
 ---
 
@@ -31,6 +33,7 @@ Living build state. Updated every session (brief §0).
 | §8 | CVD palette | ✅ done + verified (build-failing pairwise test) |
 | P6 | Catalogue sensing layer | ◑ device-side layer complete (remote refresh + local health monitor); CI sentry built but **targets this repo's own mirror, not the real provider-catalogue project** (see below) |
 | P7 | Hardening & release prep | ◑ a11y pass done (+ adversarially reviewed/fixed); F-Droid/Play metadata skeleton + screenshot script done; **baseline profiles honestly not attempted** (see below) |
+| Platforms | Multi-platform porting (Ubuntu Touch, Linux, iOS/iPadOS, macOS, Windows) | PLAN only, nothing built or run on any target: see [`PORTING_PLAN.md`](PORTING_PLAN.md) (D60 proposed) |
 
 ### Strategy: analytical cores first, then UI
 The brief's load-bearing, correctness-critical logic is pure and lives in
@@ -2104,6 +2107,47 @@ respect as the CI-caught log above.
   weights snap; whether they carry ligatures is unchecked; new strings are
   English-only until translated; the Robolectric suites could not run in the
   build sandbox (Maven Central 429), so CI is their first run.
+
+- **D62 — PROPOSED, not ruled: a multi-platform porting plan (2026-10-06).**
+  `PORTING_PLAN.md` plans Ubuntu Touch, Linux, iOS/iPadOS, macOS and Windows, in
+  that order; nothing is built or run. Why: the owner asked for those platforms
+  and `:core:model` is already Android-free (D2). The licence stays RESERVED
+  (direct downloads only, none suggested) and `ai-catalogue/` is untouched. No
+  module is converted until the owner answers the plan's §8 questions.
+
+## Spike K1: Room-KMP + FTS4 on a desktop JVM (CONTAINER-BUILD-ONLY, linux-x64 JVM)
+Throwaway, in `desktop/spikes/room-fts/` (standalone build; not in the root build, not
+run by `desktop-linux.yml`). Room 2.7.1, `sqlite-bundled` 2.5.1 `BundledSQLiteDriver`,
+Kotlin 2.1.20 (the OQ-17 pin). It compiles the app's real `Entities.kt` and DAOs by
+directory; only `RiverDatabase` is a spike copy. Not run on Android, a device or any
+other OS.
+
+**Verdict: Room-KMP works for this store. `@Fts4(tokenizer = unicode61)` is accepted
+unchanged and no desktop-only store behind the DAO interfaces is needed.**
+Real output of `cd desktop/spikes/room-fts && ../../../gradlew test --stacktrace`
+(BUILD SUCCESSFUL, 5 of 5 tests passed):
+- `migratingFromV3KeepsTheReadersOwnData` PASSED: v3 rows survive `MIGRATION_3_4`,
+  `runMigrationsAndValidate` against the checked-in `4.json` accepts the result.
+- `ftsIndexFindsBothLatinAndIndicScriptsByPrefix` PASSED (Latin, Telugu, Devanagari
+  prefix hits, multi-term AND by whitespace), with one divergence below.
+- `reindexingAnArticleDoesNotDuplicateIt` PASSED.
+- `exportedSchemaHasTheSameIdentityHashAsTheCheckedInV4` PASSED:
+  `identityHash app=dc7c8e3bd7b27e49edc44d114204e312 kmp=dc7c8e3bd7b27e49edc44d114204e312`.
+  The KMP-exported JSON omits only empty defaults (`foreignKeys`, `views`, empty
+  `indices`, `notNull:false`).
+- `bundledSqliteReportsItsFtsBuild` PASSED: SQLite 3.46.0, `ENABLE_FTS3_PARENTHESIS=1`.
+
+**Findings for a real conversion**
+1. Divergence: the Android test asserts `"dozen* AND lawsuit*"` finds nothing (literal
+   `AND`). Bundled SQLite has enhanced FTS query syntax, so uppercase `AND` is an
+   operator and the query matches. The app is unaffected in practice
+   (`ArticleSearch.toMatchQuery` lowercases tokens and drops "and"/"or"), but a port
+   must not copy that assertion verbatim and should pin the syntax it relies on.
+2. `Migration.migrate(SQLiteConnection)` replaces `SupportSQLiteDatabase`; the DDL string
+   is unchanged. `@ConstructedBy` plus an `expect object` constructor is required.
+3. The bundled driver's package is `androidx.sqlite.driver.bundled`.
+4. Not tested: Android runtime with the bundled driver, a file-backed database across
+   restarts, concurrent access, or the other platforms' natives.
 
 ## Schema versions
 - Data model: **v2**, materialized in Room (`SourceEntity`, `ItemEntity`,
