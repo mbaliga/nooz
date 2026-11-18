@@ -36,7 +36,7 @@ android {
         applicationId = "${property("riverwip.applicationId")}"
         minSdk = 31
         targetSdk = 36
-        versionCode = 4
+        versionCode = 8
         versionName = "0.3.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
